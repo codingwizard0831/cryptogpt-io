@@ -50,6 +50,7 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       <Box sx={{
         backgroundColor: alpha(theme.palette.background.default, 0.2),
         backdropFilter: 'blur(10px)',
+        outline: '1px solid transparent',
         borderRadius: 2,
         p: 4,
       }}>
