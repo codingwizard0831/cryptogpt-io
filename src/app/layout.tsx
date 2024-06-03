@@ -14,7 +14,6 @@ import SnackbarProvider from 'src/components/snackbar/snackbar-provider';
 import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
 
 import { AuthProvider } from 'src/auth/context/jwt';
-import { BackgroundGradientAnimationProvider } from 'src/components/background-gradient-animation/context/background-gradient-animation-provider';
 import ConvexClientProvider from 'src/convex/convex-client-provider';
 
 // ----------------------------------------------------------------------
@@ -57,7 +56,7 @@ export default function RootLayout({ children }: Props) {
                   themeDirection: 'ltr', //  'rtl' | 'ltr'
                   themeContrast: 'default', // 'default' | 'bold'
                   themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-                  themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+                  themeColorPresets: 'orange', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
                   themeStretch: false,
                 }}
               >
@@ -66,9 +65,7 @@ export default function RootLayout({ children }: Props) {
                     <SnackbarProvider>
                       <SettingsDrawer />
                       <ProgressBar />
-                      <BackgroundGradientAnimationProvider>
-                        {children}
-                      </BackgroundGradientAnimationProvider>
+                      {children}
                     </SnackbarProvider>
                   </MotionLazy>
                 </ThemeProvider>

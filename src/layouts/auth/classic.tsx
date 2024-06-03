@@ -37,13 +37,24 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       sx={{
         width: 1,
         mx: 'auto',
-        maxWidth: 480,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        maxWidth: 520,
         px: { xs: 2, md: 8 },
-        pt: { xs: 15, md: 20 },
-        pb: { xs: 15, md: 0 },
+        backgroundColor: 'transparent',
+        // pt: { xs: 15, md: 20 },
+        // pb: { xs: 15, md: 0 },
       }}
     >
-      {children}
+      <Box sx={{
+        backgroundColor: alpha(theme.palette.background.default, 0.2),
+        backdropFilter: 'blur(10px)',
+        borderRadius: 2,
+        p: 4,
+      }}>
+        {children}
+      </Box>
     </Stack>
   );
 
@@ -54,13 +65,6 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       alignItems="center"
       justifyContent="center"
       sx={{
-        ...bgGradient({
-          color: alpha(
-            theme.palette.background.default,
-            theme.palette.mode === 'light' ? 0.88 : 0.94
-          ),
-          imgUrl: '/assets/background/overlay_2.jpg',
-        }),
       }}
     >
       <Typography variant="h3" sx={{ maxWidth: 480, textAlign: 'center' }}>
@@ -88,6 +92,10 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       direction="row"
       sx={{
         minHeight: '100vh',
+        ...bgGradient({
+          color: 'transparent',
+          imgUrl: '/assets/background/overlay.png',
+        }),
       }}
     >
       {renderLogo}
