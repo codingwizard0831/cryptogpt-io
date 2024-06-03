@@ -1,0 +1,1 @@
+export { default } from './cube-3d-effect';

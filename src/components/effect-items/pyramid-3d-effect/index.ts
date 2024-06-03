@@ -1,0 +1,1 @@
+export { default } from './pyramid-3d-effect';

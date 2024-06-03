@@ -1,0 +1,1 @@
+export { default as LampButton } from './lamp-button';

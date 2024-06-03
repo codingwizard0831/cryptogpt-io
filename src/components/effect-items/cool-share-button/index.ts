@@ -1,0 +1,1 @@
+export { default as CoolShareButton } from './cool-share-button';
