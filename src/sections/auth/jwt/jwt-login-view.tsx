@@ -1,17 +1,14 @@
 'use client';
 
-import * as Yup from 'yup';
+import Image from 'next/image';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import InputAdornment from '@mui/material/InputAdornment';
+import { Button, Divider, TextField } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -23,7 +20,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
-import FormProvider, { RHFSwitch, RHFTextField } from 'src/components/hook-form';
+
 
 // ----------------------------------------------------------------------
 
@@ -31,47 +28,26 @@ export default function JwtLoginView() {
   const { login } = useAuthContext();
 
   const router = useRouter();
-
-  const [errorMsg, setErrorMsg] = useState('');
-
   const searchParams = useSearchParams();
-
   const returnTo = searchParams.get('returnTo');
 
-  const password = useBoolean();
+  const [errorMsg, setErrorMsg] = useState('');
+  const [email, setEmail] = useState('');
+  const isSubmitting = useBoolean(false);
+  const isShowLoginOptions = useBoolean(false);
 
-  const LoginSchema = Yup.object().shape({
-    username: Yup.string().required('Username is required'),
-    password: Yup.string().required('Password is required'),
-    remember: Yup.boolean(),
-  });
 
-  const defaultValues = {
-    username: 'john',
-    password: 'demo1234',
-    remember: false,
-  };
 
-  const methods = useForm({
-    resolver: yupResolver(LoginSchema),
-    defaultValues,
-  });
-
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = (async () => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
     try {
-      await login?.(data.username, data.password, data.remember as boolean);
-
+      isSubmitting.onFalse();
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
       console.error(error);
-      reset();
       setErrorMsg(typeof error === 'string' ? error : error.message);
+      isSubmitting.onFalse();
     }
   });
 
@@ -90,40 +66,173 @@ export default function JwtLoginView() {
   );
 
   const renderForm = (
-    <Stack spacing={2.5}>
-      <RHFTextField name="username" type='text' label="Username" />
+    <Stack>
+      <Stack spacing={2}>
+        <TextField fullWidth type='text' label="Email or phone" placeholder='Enter phonenumber or email'
+          value={email} onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <RHFTextField
-        name="password"
-        label="Password"
-        type={password.value ? 'text' : 'password'}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={password.onToggle} edge="end">
-                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
+        <LoadingButton
+          fullWidth
+          variant="contained"
+          color='primary'
+          loading={isSubmitting.value}
+          onClick={onSubmit}
+        >
+          Continue
+        </LoadingButton>
 
-      <RHFSwitch name='remember' label="Remember me for 30 days" />
+        <Divider />
 
-      <Link href={paths.auth.jwt.forgotPassword} component={RouterLink} variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
-        Forgot password?
-      </Link>
+        <Button fullWidth endIcon={<Iconify
+          icon="mingcute:down-line"
+          sx={{
+            transition: 'transform 0.3s',
+            transform: isShowLoginOptions.value ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        />} onClick={isShowLoginOptions.onToggle}>More options</Button>
+      </Stack>
 
-      <LoadingButton
-        fullWidth
-        color="inherit"
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-      >
-        Login
-      </LoadingButton>
+
+      <Stack spacing={2} sx={{
+        transition: 'height 0.3s',
+        height: isShowLoginOptions.value ? '232px' : 0,
+        overflow: 'hidden',
+      }}>
+        <LoadingButton
+          fullWidth
+          variant="outlined"
+          color='primary'
+          startIcon={<Image src="/assets/icons/project/logo-metamask.png" alt='metamask' width={24} height={24} />}
+          loading={isSubmitting.value}
+          onClick={onSubmit}
+          sx={{
+            mt: 2,
+          }}
+        >
+          Continue with MetaMask
+        </LoadingButton>
+        <LoadingButton
+          fullWidth
+          variant="outlined"
+          color='primary'
+          startIcon={<Image src="/assets/icons/project/logo-binance.svg" alt='binance' width={24} height={24} />}
+          loading={isSubmitting.value}
+          onClick={onSubmit}
+        >
+          Continue with Binance
+        </LoadingButton>
+        <Stack spacing={2}>
+          <Stack direction="row" justifyContent="center" spacing={2}>
+            <LoadingButton
+              fullWidth
+              variant="outlined"
+              loading={isSubmitting.value}
+              onClick={onSubmit}
+              sx={{
+                width: '48px',
+                minWidth: '48px',
+                height: '48px',
+              }}
+            >
+              <Image src="/assets/icons/project/logo-google.png" alt='google' width={36} height={36} />
+            </LoadingButton>
+            <LoadingButton
+              fullWidth
+              variant="outlined"
+              loading={isSubmitting.value}
+              onClick={onSubmit}
+              sx={{
+                width: '48px',
+                minWidth: '48px',
+                height: '48px',
+              }}
+            >
+              <Iconify icon="logos:facebook" />
+            </LoadingButton>
+            <LoadingButton
+              fullWidth
+              variant="outlined"
+              loading={isSubmitting.value}
+              onClick={onSubmit}
+              sx={{
+                width: '48px',
+                minWidth: '48px',
+                height: '48px',
+              }}
+            >
+              <Iconify icon="logos:apple" />
+            </LoadingButton>
+            <LoadingButton
+              fullWidth
+              variant="outlined"
+              loading={isSubmitting.value}
+              onClick={onSubmit}
+              sx={{
+                width: '48px',
+                minWidth: '48px',
+                height: '48px',
+              }}
+            >
+              <Image src="/assets/icons/project/logo-okex.svg" alt='okex' width={36} height={36} />
+            </LoadingButton>
+          </Stack>
+          <Stack direction="row" justifyContent="center" spacing={2}>
+            <LoadingButton
+              fullWidth
+              variant="outlined"
+              loading={isSubmitting.value}
+              onClick={onSubmit}
+              sx={{
+                width: '48px',
+                minWidth: '48px',
+                height: '48px',
+              }}
+            >
+              <Iconify icon="logos:twitter" />
+            </LoadingButton>
+            <LoadingButton
+              fullWidth
+              variant="outlined"
+              loading={isSubmitting.value}
+              onClick={onSubmit}
+              sx={{
+                width: '48px',
+                minWidth: '48px',
+                height: '48px',
+              }}
+            >
+              <Image src="/assets/icons/project/logo-slack.svg" alt='slack' width={36} height={36} />
+            </LoadingButton>
+            <LoadingButton
+              fullWidth
+              variant="outlined"
+              loading={isSubmitting.value}
+              onClick={onSubmit}
+              sx={{
+                width: '48px',
+                minWidth: '48px',
+                height: '48px',
+              }}
+            >
+              <Image src="/assets/icons/project/logo-telegram.svg" alt='telegram' width={36} height={36} />
+            </LoadingButton>
+            <LoadingButton
+              fullWidth
+              variant="outlined"
+              loading={isSubmitting.value}
+              onClick={onSubmit}
+              sx={{
+                width: '48px',
+                minWidth: '48px',
+                height: '48px',
+              }}
+            >
+              <Iconify icon="mdi:github" />
+            </LoadingButton>
+          </Stack>
+        </Stack>
+      </Stack>
     </Stack>
   );
 
@@ -131,19 +240,13 @@ export default function JwtLoginView() {
     <>
       {renderHead}
 
-      <Alert severity="info" sx={{ mb: 3 }}>
-        Username : <strong>john</strong> / password :<strong> demo1234</strong>
-      </Alert>
-
       {!!errorMsg && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {errorMsg}
         </Alert>
       )}
 
-      <FormProvider methods={methods} onSubmit={onSubmit}>
-        {renderForm}
-      </FormProvider>
+      {renderForm}
     </>
   );
 }

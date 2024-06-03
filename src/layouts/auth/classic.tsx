@@ -50,7 +50,8 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       <Box sx={{
         backgroundColor: alpha(theme.palette.background.default, 0.2),
         backdropFilter: 'blur(10px)',
-        outline: '1px solid transparent',
+        border: `1px solid ${alpha(theme.palette.grey[200], 0.2)}`,
+        // outline: '1px solid white',
         borderRadius: 2,
         p: 4,
       }}>
@@ -62,7 +63,7 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
   const renderSection = (
     <Stack
       flexGrow={1}
-      spacing={10}
+      spacing={6}
       alignItems="center"
       justifyContent="center"
       sx={{
@@ -75,7 +76,7 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       <Box
         component="img"
         alt="auth"
-        src={image || '/assets/illustrations/illustration_dashboard.png'}
+        src={image || '/assets/images/project/02.png'}
         sx={{
           maxWidth: {
             xs: 480,
