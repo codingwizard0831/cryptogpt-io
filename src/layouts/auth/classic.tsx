@@ -48,8 +48,8 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       }}
     >
       <Box sx={{
-        backgroundColor: alpha(theme.palette.background.default, 0.2),
-        backdropFilter: 'blur(10px)',
+        backgroundColor: alpha(theme.palette.background.default, 0.1),
+        backdropFilter: 'blur(14px)',
         border: `1px solid ${alpha(theme.palette.grey[200], 0.2)}`,
         // outline: '1px solid white',
         borderRadius: 2,
@@ -96,10 +96,25 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
         minHeight: '100vh',
         ...bgGradient({
           color: 'transparent',
-          imgUrl: '/assets/background/overlay.png',
+          // imgUrl: '/assets/background/overlay-1.png',
         }),
       }}
     >
+
+      <video autoPlay style={{
+        zIndex: -1,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+      }}>
+        <source src="/assets/videos/background.mp4" type="video/mp4" />
+        <track kind="captions" src="captions.vtt" srcLang="en" label="English" />
+        Your browser does not support the video tag.
+      </video>
+
       {renderLogo}
 
       {mdUp && renderSection}

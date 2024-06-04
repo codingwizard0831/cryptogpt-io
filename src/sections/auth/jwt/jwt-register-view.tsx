@@ -1,13 +1,11 @@
 'use client';
 
-import * as Yup from 'yup';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import { TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -22,7 +20,6 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from 'src/components/iconify';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -30,52 +27,25 @@ export default function JwtRegisterView() {
   const { register } = useAuthContext();
 
   const router = useRouter();
-
-  const [errorMsg, setErrorMsg] = useState('');
-
   const searchParams = useSearchParams();
-
   const returnTo = searchParams.get('returnTo');
 
-  const password = useBoolean();
+  const [errorMsg, setErrorMsg] = useState('');
+  const isSubmitting = useBoolean(false);
+  const isShowPassword = useBoolean(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const RegisterSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    username: Yup.string().required('Username is required'),
-    password: Yup.string().required('Password is required'),
-    phone: Yup.string().required('Phone number is required').matches(
-      /^(\+\d{1,3}[- ]?)?\d{10}$/,
-      'Phone number must be a valid number'
-    ),
-  });
-
-  const defaultValues = {
-    email: '',
-    username: '',
-    password: '',
-    phone: '',
-  };
-
-  const methods = useForm({
-    resolver: yupResolver(RegisterSchema),
-    defaultValues,
-  });
-
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = (async () => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
     try {
-      await register?.(data.email, data.username, data.password, data.phone);
-
+      isSubmitting.onFalse();
       router.push(paths.auth.jwt.emailCheck);
     } catch (error) {
       console.error(error);
-      reset();
       setErrorMsg(typeof error === 'string' ? error : error.message);
+      isSubmitting.onFalse();
     }
   });
 
@@ -117,19 +87,20 @@ export default function JwtRegisterView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-      <RHFTextField name="username" label="Username" />
-      <RHFTextField name="email" label="Email address" />
-      <RHFTextField name="phone" label="Phone" />
+      <TextField fullWidth type='text' label="Email address" placeholder='Enter your email'
+        value={email} onChange={(e) => setEmail(e.target.value)}
+      />
 
-      <RHFTextField
-        name="password"
+      <TextField
         label="Password"
-        type={password.value ? 'text' : 'password'}
+        placeholder='Enter your password'
+        type={isShowPassword.value ? 'text' : 'password'}
+        value={password} onChange={(e) => setPassword(e.target.value)}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={password.onToggle} edge="end">
-                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+              <IconButton onClick={isShowPassword.onToggle} edge="end">
+                <Iconify icon={isShowPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
               </IconButton>
             </InputAdornment>
           ),
@@ -138,11 +109,10 @@ export default function JwtRegisterView() {
 
       <LoadingButton
         fullWidth
-        color="inherit"
         size="large"
-        type="submit"
         variant="contained"
-        loading={isSubmitting}
+        color='primary'
+        loading={isSubmitting.value}
       >
         Create account
       </LoadingButton>
@@ -159,9 +129,7 @@ export default function JwtRegisterView() {
         </Alert>
       )}
 
-      <FormProvider methods={methods} onSubmit={onSubmit}>
-        {renderForm}
-      </FormProvider>
+      {renderForm}
 
       {renderTerms}
     </>

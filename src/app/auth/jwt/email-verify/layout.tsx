@@ -1,6 +1,6 @@
 'use client';
 
-import CompactLayout from 'src/layouts/compact';
+import AuthClassicLayout from 'src/layouts/auth/classic';
 
 // ----------------------------------------------------------------------
 
@@ -9,5 +9,5 @@ type Props = {
 };
 
 export default function Layout({ children }: Props) {
-    return <CompactLayout>{children}</CompactLayout>;
+    return <AuthClassicLayout>{children}</AuthClassicLayout>;
 }
