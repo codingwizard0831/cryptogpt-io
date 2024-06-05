@@ -1,13 +1,11 @@
 'use client';
 
-import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { useState, useCallback } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { MuiOtpInput } from 'mui-one-time-password-input';
 
-import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import { Button, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -25,7 +23,6 @@ import EmailInboxIcon from 'src/assets/icons/email-inbox-icon';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar, VariantType } from 'src/components/snackbar';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -35,8 +32,10 @@ export default function JwtResetPasswordView() {
     const loadFlag = useBoolean(false);
     const [confirmFlag, setConfirm] = useState(0); // 0: loading, 1: success, 2: failed
     const { enqueueSnackbar } = useSnackbar();
-    const password = useBoolean();
-    const repassword = useBoolean();
+    const [password, setPassword] = useState('');
+    const [code, setCode] = useState('');
+    const isShowPassword = useBoolean(false);
+    const isSubmitting = useBoolean(false);
 
     const actionHandle = useCallback((color: VariantType, text: string = "") => {
         enqueueSnackbar(text, {
@@ -47,59 +46,36 @@ export default function JwtResetPasswordView() {
     const resetPasswordToken = searchParams.get('token');
 
     if (resetPasswordToken && loadFlag.value === false) {
-        loadFlag.onTrue();
-        const [token, id] = resetPasswordToken.split('__');
-        (async () => {
-            try {
-                const res = await axios.post(endpoints.auth.passwordResetValidate, {
-                    token,
-                    id,
-                });
-                const { success, message } = res.data;
-                if (success) {
-                    setConfirm(1);
-                    actionHandle('success', message);
-                } else {
-                    setConfirm(2);
-                    actionHandle('error', message);
-                    router.push(paths.error.somethingWrong);
-                }
-                sessionStorage.setItem('user_profile_id', id);
-            } catch (error) {
-                setConfirm(2);
-                actionHandle('error', error.message);
-                router.push(paths.error.somethingWrong);
-            }
-        })();
+        // loadFlag.onTrue();
+        // const [token, id] = resetPasswordToken.split('__');
+        // (async () => {
+        //     try {
+        //         const res = await axios.post(endpoints.auth.passwordResetValidate, {
+        //             token,
+        //             id,
+        //         });
+        //         const { success, message } = res.data;
+        //         if (success) {
+        //             setConfirm(1);
+        //             actionHandle('success', message);
+        //         } else {
+        //             setConfirm(2);
+        //             actionHandle('error', message);
+        //             router.push(paths.error.somethingWrong);
+        //         }
+        //         sessionStorage.setItem('user_profile_id', id);
+        //     } catch (error) {
+        //         setConfirm(2);
+        //         actionHandle('error', error.message);
+        //         router.push(paths.error.somethingWrong);
+        //     }
+        // })();
     }
 
     const [errorMsg, setErrorMsg] = useState('');
 
-    const LoginSchema = Yup.object().shape({
-        password: Yup.string().required('Password is required'),
-        repassword: Yup.string()
-            .nullable()
-            .oneOf([Yup.ref('password'), null], 'Passwords must match')
-            .required('Password confirmation is required'),
-    });
 
-    const defaultValues = {
-        password: '',
-        repassword: '',
-    };
-
-    const methods = useForm({
-        resolver: yupResolver(LoginSchema),
-        defaultValues,
-    });
-
-    const {
-        reset,
-        handleSubmit,
-        formState: { isSubmitting },
-    } = methods;
-
-    const onSubmit = handleSubmit(async (data) => {
+    const onSubmit = (async () => {
         try {
             if (resetPasswordToken === null) {
                 throw new Error("resetPasswordToken is null");
@@ -109,7 +85,7 @@ export default function JwtResetPasswordView() {
             const res = await axios.post(endpoints.auth.passwordResetConfirm, {
                 token,
                 id,
-                new_password: data.password,
+                new_password: password,
             });
             const { success, message } = res.data;
             if (success) {
@@ -120,7 +96,6 @@ export default function JwtResetPasswordView() {
             }
         } catch (error) {
             console.error(error);
-            reset();
             setErrorMsg(typeof error === 'string' ? error : error.message);
         }
     });
@@ -137,30 +112,35 @@ export default function JwtResetPasswordView() {
 
     const renderForm = (
         <Stack spacing={2.5}>
-            <RHFTextField
-                name="password"
-                label="Password"
-                type={password.value ? 'text' : 'password'}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton onClick={password.onToggle} edge="end">
-                                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                            </IconButton>
-                        </InputAdornment>
-                    ),
+            <MuiOtpInput
+                autoFocus
+                gap={1}
+                length={6}
+                TextFieldsProps={{
+                    placeholder: '-',
+                }}
+                value={code}
+                onChange={(value) => setCode(value)}
+                onComplete={(value) => { console.log(value) }}
+                sx={{
+                    '& .MuiOutlinedInput-root': {
+                        height: '48px',
+                    },
+                    '& input': {
+                        textAlign: 'center',
+                    },
                 }}
             />
 
-            <RHFTextField
-                name="repassword"
-                label="Password Confirm"
-                type={repassword.value ? 'text' : 'password'}
+            <TextField
+                name="password"
+                label="Password"
+                type={isShowPassword.value ? 'text' : 'password'}
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <IconButton onClick={repassword.onToggle} edge="end">
-                                <Iconify icon={repassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                            <IconButton onClick={isShowPassword.onToggle} edge="end">
+                                <Iconify icon={isShowPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
                             </IconButton>
                         </InputAdornment>
                     ),
@@ -169,11 +149,11 @@ export default function JwtResetPasswordView() {
 
             <LoadingButton
                 fullWidth
-                color="inherit"
+                color="primary"
                 size="large"
                 type="submit"
                 variant="contained"
-                loading={isSubmitting}
+                loading={isSubmitting.value}
             >
                 Update Password
             </LoadingButton>
@@ -190,9 +170,7 @@ export default function JwtResetPasswordView() {
                 </Alert>
             )}
 
-            <FormProvider methods={methods} onSubmit={onSubmit}>
-                {renderForm}
-            </FormProvider>
+            {renderForm}
 
             <Button
                 component={RouterLink}

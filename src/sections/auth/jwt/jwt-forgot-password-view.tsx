@@ -29,6 +29,17 @@ export default function JwtForgotPasswordView() {
     const [email, setEmail] = useState('');
     const isSubmitting = useBoolean(false);
 
+    const handleSendRequest = async () => {
+        try {
+            isSubmitting.onTrue();
+            // await forgotPassword(email);
+            router.push(paths.auth.jwt.emailCheck);
+        } catch (error) {
+            console.error(error);
+            isSubmitting.onFalse();
+        }
+    };
+
     const renderForm = (
         <Stack spacing={3} alignItems="center">
             <TextField fullWidth type='text' label="Email or phone" placeholder='Enter phonenumber or email'
@@ -41,6 +52,7 @@ export default function JwtForgotPasswordView() {
                 variant="outlined"
                 color='primary'
                 loading={isSubmitting.value}
+                onClick={handleSendRequest}
             >
                 Send Request
             </LoadingButton>
