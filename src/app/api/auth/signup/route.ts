@@ -7,8 +7,7 @@ export async function POST(req: Request) {
     const email = res.email;
     const password = res.password;
     const response = await supabase.auth.signUp({ email, password })
-
-    return NextResponse.json(response.data);
+    return NextResponse.json(response);
   } catch (error) {
     console.log(error);
   }

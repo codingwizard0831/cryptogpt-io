@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const response = await supabase.auth.updateUser({
       password: new_password
     })
-    return NextResponse.json(response.data)
+    return NextResponse.json(response)
   } catch (error) {
     console.log(error);
   }

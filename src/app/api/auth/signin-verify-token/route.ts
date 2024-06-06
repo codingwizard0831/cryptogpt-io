@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         type: "sms"
       };
     const response = await supabase.auth.verifyOtp(options);
-    return NextResponse.json(response.data);
+    return NextResponse.json(response);
   } catch (error) {
     console.log(error);
   }

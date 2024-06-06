@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const res = await req.json();
     const provider = res.provider;
     const response = await supabase.auth.signInWithOAuth({ provider });
-    return NextResponse.json(response.data)
+    return NextResponse.json(response)
   } catch (error) {
     console.log(error);
   }

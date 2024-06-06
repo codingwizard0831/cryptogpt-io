@@ -5,10 +5,10 @@ export async function POST(req: Request) {
   try {
     const res = await req.json();
     const email = res.email;
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    const response = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'https://example.com/update-password',
     })
-    return NextResponse.json({ success: data })
+    return NextResponse.json(response)
   } catch (error) {
     console.log(error);
   }
