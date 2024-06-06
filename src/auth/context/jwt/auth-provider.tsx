@@ -126,26 +126,34 @@ export function AuthProvider({ children }: Props) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (username: string, password: string, remember: boolean) => {
-    const data = {
+  const loginWithEmailAndPassword = useCallback(async (username: string, password: string) => {
+    const playloadData = {
       username,
       password,
-      remember,
     };
 
-    const res = await axios.post(endpoints.auth.login, data);
+    const res = await axios.post(endpoints.auth.loginWithEmailAndPassword, playloadData);
     const {
-      access_token,
-      refresh_token,
-      user,
-      success,
-      message,
+      data,
+      error,
     } = res.data;
 
-    setAccessToken(access_token);
-    setRefreshToken(refresh_token);
-    console.log('user', user);
-    setUserInfo(user);
+    if (!data || error) {
+      const { message } = error;
+      throw new Error(message || 'Login failed');
+    }
+
+    const { user, session } = data;
+    const { access_token, refresh_token } = session;
+
+    if (session) {
+      setAccessToken(access_token);
+      setRefreshToken(refresh_token);
+    }
+    if (user) {
+      console.log('user', user);
+      setUserInfo(user);
+    }
 
     dispatch({
       type: Types.LOGIN,
@@ -161,32 +169,29 @@ export function AuthProvider({ children }: Props) {
 
   // REGISTER
   const register = useCallback(
-    async (email: string, username: string, password: string, phone: string) => {
-      const data = {
+    async (email: string, password: string) => {
+      const payloadData = {
         email,
-        username,
         password,
-        phone_number: phone,
       };
 
-      const res = await axios.post(endpoints.auth.register, data);
+      const res = await axios.post(endpoints.auth.register, payloadData);
+      const {
+        data,
+        error,
+      } = res.data;
 
-      const { success, message } = res.data;
-      if (!success) {
-        throw new Error(message);
+      if (!data || error) {
+        const { message } = error;
+        throw new Error(message || 'Rigister failed');
       }
 
-      // sessionStorage.setItem(STORAGE_KEY, accessToken);
+      const { user } = data;
+      console.log('user', user);
 
-      // dispatch({
-      //   type: Types.REGISTER,
-      //   payload: {
-      //     user: {
-      //       ...user,
-      //       accessToken,
-      //     },
-      //   },
-      // });
+      if (!user) {
+        throw new Error("Can't register user");
+      }
     },
     []
   );
@@ -220,11 +225,11 @@ export function AuthProvider({ children }: Props) {
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
       //
-      login,
+      loginWithEmailAndPassword,
       register,
       logout,
     }),
-    [login, logout, register, state.user, status]
+    [loginWithEmailAndPassword, logout, register, state.user, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

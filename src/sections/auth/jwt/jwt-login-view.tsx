@@ -16,14 +16,13 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { signInWithMetamask } from 'src/lib/auth';
 
 import Iconify from 'src/components/iconify';
-
-
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
-  const { login } = useAuthContext();
+  const { loginWithEmailAndPassword } = useAuthContext();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -74,6 +73,24 @@ export default function JwtLoginView() {
     isEmailWithPasswordCase.onFalse();
     isEmailWithCodeCase.onFalse();
     isPhoneWithCodeCase.onFalse();
+  }
+
+  const handleLoginWIthEmailAndPassword = async () => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
+    try {
+      await loginWithEmailAndPassword(email, password);
+      isSubmitting.onFalse();
+      router.push(returnTo || paths.dashboard.root);
+    } catch (error) {
+      console.error(error);
+      setErrorMsg(typeof error === 'string' ? error : error.message);
+      isSubmitting.onFalse();
+    }
+  }
+
+  const handleLoginWithMetamask = async () => {
+    signInWithMetamask();
   }
 
   const renderHead = (
@@ -165,6 +182,7 @@ export default function JwtLoginView() {
                 variant="contained"
                 color='primary'
                 loading={isSubmitting.value}
+                onClick={() => handleLoginWIthEmailAndPassword()}
               >
                 Sign in
               </LoadingButton>
@@ -232,6 +250,7 @@ export default function JwtLoginView() {
           color='primary'
           startIcon={<Image src="/assets/icons/project/logo-metamask.png" alt='metamask' width={24} height={24} />}
           loading={isSubmitting.value}
+          onClick={() => handleLoginWithMetamask()}
           sx={{
             mt: 2,
           }}

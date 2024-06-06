@@ -31,9 +31,9 @@ export const endpoints = {
   calendar: '/api/calendar',
   auth: {
     me: '/api/check-auth/',
-    logout: '/auth/signout/',
-    login: '/auth/signin/',
-    register: '/auth/signup/',
+    register: '/api/auth/signup/',
+    logout: '/api/auth/signout/',
+    loginWithEmailAndPassword: '/api/auth/signin-email-password/',
     confirmEmail: '/auth/confirm_email/',
     resendEmail: '/auth/resend_email_token/',
     confirmPhone: '/auth/confirm_phone/',

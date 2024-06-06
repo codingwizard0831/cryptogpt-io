@@ -40,8 +40,9 @@ export default function JwtRegisterView() {
     setErrorMsg('');
     isSubmitting.onTrue();
     try {
+      await register(email, password);
       isSubmitting.onFalse();
-      router.push(paths.auth.jwt.emailCheck);
+      router.push(paths.auth.jwt.login);
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
@@ -113,6 +114,7 @@ export default function JwtRegisterView() {
         variant="contained"
         color='primary'
         loading={isSubmitting.value}
+        onClick={onSubmit}
       >
         Create account
       </LoadingButton>
