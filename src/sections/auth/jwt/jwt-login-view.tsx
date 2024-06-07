@@ -15,6 +15,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
+import { supabase } from 'src/lib/supabase';
 import { useAuthContext } from 'src/auth/hooks';
 import { signInWithMetamask } from 'src/lib/metamask';
 
@@ -140,6 +141,34 @@ export default function JwtLoginView() {
 
   const handleLoginWithMetamask = async () => {
     signInWithMetamask();
+  }
+
+  const handleLoginWithGoogle = async () => {
+    console.log('Login with Google');
+    const response = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: 'http://localhost:8083/',
+      },
+    });
+    console.log('response', response);
+    // const playloadData = {
+    //   provider: 'google',
+    // };
+
+    // const res = await axios.post(endpoints.auth.loginWithOAuth, playloadData);
+    // const {
+    //   data,
+    //   error,
+    // } = res.data;
+
+    // if (!data || error) {
+    //   const { message } = error;
+    //   throw new Error(message || 'Login failed');
+    // }
+
+    // const { user, session } = data;
+    // const { access_token, refresh_token } = session;
   }
 
   const renderHead = (
@@ -326,6 +355,7 @@ export default function JwtLoginView() {
                 minWidth: '48px',
                 height: '48px',
               }}
+              onClick={() => handleLoginWithGoogle()}
             >
               <Image src="/assets/icons/project/logo-google.png" alt='google' width={36} height={36} />
             </LoadingButton>

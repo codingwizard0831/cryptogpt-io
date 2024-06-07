@@ -36,6 +36,9 @@ export const endpoints = {
     loginWithEmailAndPassword: '/api/auth/signin-email-password/',
     loginWithCodeSend: '/api/auth/signin-send-token/',
     loginWithCodeVerify: '/api/auth/signin-verify-token/',
+
+    loginWithOAuth: '/api/auth/signin-oauth/',
+
     confirmEmail: '/auth/confirm_email/',
     resendEmail: '/auth/resend_email_token/',
     confirmPhone: '/auth/confirm_phone/',
