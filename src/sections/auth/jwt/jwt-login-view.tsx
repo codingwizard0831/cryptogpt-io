@@ -19,10 +19,12 @@ import { useAuthContext } from 'src/auth/hooks';
 import { signInWithMetamask } from 'src/lib/auth';
 
 import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
-  const { loginWithEmailAndPassword } = useAuthContext();
+  const { loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify } = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -58,13 +60,19 @@ export default function JwtLoginView() {
       isEmailWithCodeCase.onFalse();
       isPhoneWithCodeCase.onFalse();
     } else if (type === 'code') {
-      isEmailWithCodeCase.onTrue();
-      isEmailWithPasswordCase.onFalse();
-      isPhoneWithCodeCase.onFalse();
+      const succcess = await handleLoginWithCodeSend(email, "");
+      if (succcess) {
+        isEmailWithCodeCase.onTrue();
+        isEmailWithPasswordCase.onFalse();
+        isPhoneWithCodeCase.onFalse();
+      }
     } else {
-      isPhoneWithCodeCase.onTrue();
-      isEmailWithPasswordCase.onFalse();
-      isEmailWithCodeCase.onFalse();
+      const succcess = await handleLoginWithCodeSend("", email);
+      if (succcess) {
+        isPhoneWithCodeCase.onTrue();
+        isEmailWithPasswordCase.onFalse();
+        isEmailWithCodeCase.onFalse();
+      }
     }
   });
 
@@ -86,6 +94,47 @@ export default function JwtLoginView() {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
       isSubmitting.onFalse();
+    }
+  }
+
+  const handleLoginWithCodeSend = async (_email: string, _phone: string) => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
+    try {
+      await loginWithCodeSend(_email, _phone);
+      enqueueSnackbar("6-digital Code sent successful", { variant: 'success' });
+      isSubmitting.onFalse();
+      return true;
+    } catch (error) {
+      console.error(error);
+      setErrorMsg(typeof error === 'string' ? error : error.message);
+      enqueueSnackbar(typeof error === 'string' ? error : error.message, { variant: 'error' });
+      isSubmitting.onFalse();
+      return false;
+    }
+  }
+
+  const handleLoginWithCodeVerify = async (_email: string, _phone: string, _code: string) => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
+    try {
+      await loginWithCodeVerify(_email, _phone, _code);
+      enqueueSnackbar("Login successful", { variant: 'success' });
+      isSubmitting.onFalse();
+    } catch (error) {
+      console.error(error);
+      setCode('');
+      setErrorMsg(typeof error === 'string' ? error : error.message);
+      enqueueSnackbar(typeof error === 'string' ? error : error.message, { variant: 'error' });
+      isSubmitting.onFalse();
+    }
+  }
+
+  const handleCodeComplete = (value: string) => {
+    if (isEmailWithCodeCase.value) {
+      handleLoginWithCodeVerify(email, "", value);
+    } else if (isPhoneWithCodeCase.value) {
+      handleLoginWithCodeVerify("", email, value);
     }
   }
 
@@ -203,7 +252,7 @@ export default function JwtLoginView() {
                 }}
                 value={code}
                 onChange={(value) => setCode(value)}
-                onComplete={(value) => { console.log(value) }}
+                onComplete={(value) => handleCodeComplete(value)}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     height: '48px',

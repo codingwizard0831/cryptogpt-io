@@ -125,14 +125,78 @@ export function AuthProvider({ children }: Props) {
     initialize();
   }, [initialize]);
 
-  // LOGIN
-  const loginWithEmailAndPassword = useCallback(async (username: string, password: string) => {
+  // LOGIN WITH EMAIL AND PASSWORD
+  const loginWithEmailAndPassword = useCallback(async (email: string, password: string) => {
     const playloadData = {
-      username,
+      email,
       password,
     };
 
     const res = await axios.post(endpoints.auth.loginWithEmailAndPassword, playloadData);
+    const {
+      data,
+      error,
+    } = res.data;
+
+    if (!data || error) {
+      const { message } = error;
+      throw new Error(message || 'Login failed');
+    }
+
+    const { user, session } = data;
+    const { access_token, refresh_token } = session;
+
+    if (session) {
+      setAccessToken(access_token);
+      setRefreshToken(refresh_token);
+    }
+    if (user) {
+      console.log('user', user);
+      setUserInfo(user);
+    }
+
+    dispatch({
+      type: Types.LOGIN,
+      payload: {
+        user: {
+          ...user,
+          access_token,
+          refresh_token,
+        },
+      },
+    });
+  }, []);
+
+  // LOGIN WITH CODE SEND - EMAIL OR PHONE
+  const loginWithCodeSend = useCallback(async (email: string, phone: string) => {
+    const playloadData = {
+      ...(email && { email }),
+      ...(phone && { phone }),
+    };
+
+    const res = await axios.post(endpoints.auth.loginWithCodeSend, playloadData);
+    const {
+      data,
+      error,
+    } = res.data;
+
+    if (!data || error) {
+      const { message } = error;
+      throw new Error(message || 'Send code failed');
+    }
+    console.log('data', data);
+  }, []);
+
+  // LOGIN WITH CODE VERIFY - EMAIL OR PHONE
+  const loginWithCodeVerify = useCallback(async (email: string, phone: string, code: string) => {
+    const playloadData = {
+      ...(email && { email }),
+      ...(phone && { phone }),
+      token: code,
+      type: email ? "email" : "sms",
+    };
+
+    const res = await axios.post(endpoints.auth.loginWithCodeVerify, playloadData);
     const {
       data,
       error,
@@ -226,10 +290,12 @@ export function AuthProvider({ children }: Props) {
       unauthenticated: status === 'unauthenticated',
       //
       loginWithEmailAndPassword,
+      loginWithCodeSend,
+      loginWithCodeVerify,
       register,
       logout,
     }),
-    [loginWithEmailAndPassword, logout, register, state.user, status]
+    [loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, logout, register, state.user, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

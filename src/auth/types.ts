@@ -53,8 +53,8 @@ export type JWTContextType = CanRemove & {
   authenticated: boolean;
   unauthenticated: boolean;
   loginWithEmailAndPassword: (email: string, password: string) => Promise<void>;
-  loginWithEmailAndCode?: (email: string, code: string) => Promise<void>;
-  loginWithPhoneAndCode?: (phone: string, code: string) => Promise<void>;
+  loginWithCodeSend: (email: string, code: string) => Promise<void>;
+  loginWithCodeVerify: (email: string, phone: string, code: string) => Promise<void>;
   register: (
     email: string,
     password: string,
