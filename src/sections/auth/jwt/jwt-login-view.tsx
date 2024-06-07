@@ -16,7 +16,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { signInWithMetamask } from 'src/lib/auth';
+import { signInWithMetamask } from 'src/lib/metamask';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
