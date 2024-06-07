@@ -170,8 +170,8 @@ export function AuthProvider({ children }: Props) {
   // LOGIN WITH CODE SEND - EMAIL OR PHONE
   const loginWithCodeSend = useCallback(async (email: string, phone: string) => {
     const playloadData = {
-      email,
-      phone,
+      ...(email && { email }),
+      ...(phone && { phone }),
     };
 
     const res = await axios.post(endpoints.auth.loginWithCodeSend, playloadData);
@@ -190,8 +190,8 @@ export function AuthProvider({ children }: Props) {
   // LOGIN WITH CODE VERIFY - EMAIL OR PHONE
   const loginWithCodeVerify = useCallback(async (email: string, phone: string, code: string) => {
     const playloadData = {
-      email,
-      phone,
+      ...(email && { email }),
+      ...(phone && { phone }),
       token: code,
       type: email ? "email" : "sms",
     };

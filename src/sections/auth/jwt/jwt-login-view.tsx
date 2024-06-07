@@ -56,19 +56,23 @@ export default function JwtLoginView() {
   const handleContinue = (async (type: "password" | "code" | undefined) => {
     setErrorMsg('');
     if (type === 'password') {
-      await handleLoginWithCodeSend("", email);
       isEmailWithPasswordCase.onTrue();
       isEmailWithCodeCase.onFalse();
       isPhoneWithCodeCase.onFalse();
     } else if (type === 'code') {
-      await handleLoginWithCodeSend(email, "");
-      isEmailWithCodeCase.onTrue();
-      isEmailWithPasswordCase.onFalse();
-      isPhoneWithCodeCase.onFalse();
+      const succcess = await handleLoginWithCodeSend(email, "");
+      if (succcess) {
+        isEmailWithCodeCase.onTrue();
+        isEmailWithPasswordCase.onFalse();
+        isPhoneWithCodeCase.onFalse();
+      }
     } else {
-      isPhoneWithCodeCase.onTrue();
-      isEmailWithPasswordCase.onFalse();
-      isEmailWithCodeCase.onFalse();
+      const succcess = await handleLoginWithCodeSend("", email);
+      if (succcess) {
+        isPhoneWithCodeCase.onTrue();
+        isEmailWithPasswordCase.onFalse();
+        isEmailWithCodeCase.onFalse();
+      }
     }
   });
 
@@ -100,11 +104,13 @@ export default function JwtLoginView() {
       await loginWithCodeSend(_email, _phone);
       enqueueSnackbar("6-digital Code sent successful", { variant: 'success' });
       isSubmitting.onFalse();
+      return true;
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
       enqueueSnackbar(typeof error === 'string' ? error : error.message, { variant: 'error' });
       isSubmitting.onFalse();
+      return false;
     }
   }
 
