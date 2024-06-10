@@ -18,7 +18,6 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import axios, { endpoints } from 'src/utils/axios';
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
-import { verifyToken } from 'src/lib/utils';
 import { supabase } from 'src/lib/supabase';
 import { useAuthContext } from 'src/auth/hooks';
 
@@ -142,45 +141,45 @@ export default function JwtLoginView() {
     }
   }
 
+  const handleLoginWithTest = async () => {
+    const userAddress = '0x0000001003'
+    const nonceResponse = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
+      address: userAddress,
+    })
+    console.log('nonceResponse', nonceResponse.data);
+    const userNonce = nonceResponse.data.data[0].nonce;
+    const signedMessage = `0x0000001003${userNonce}`;
+
+    const response = await axios.post(endpoints.auth.loginWithMetamaskSignin, {
+      address: userAddress,
+      signedMessage,
+      nonce: userNonce,
+    })
+
+    console.log('response', response);
+  }
+
   const handleLoginWithMetamask = async () => {
     try {
-      // const address = cookies().get('address')?.value || ''
-      // const web3jwt = cookies().get('web3jwt')?.value || ''
-      // console.log('web3jwt', web3jwt);
-
-      // const validToken = await verifyToken(web3jwt, address)
-
-      const validToken = await verifyToken('eyJhbGciOiJIUzI1NiJ9.eyJhZGRyZXNzIjoiMHgxMjM0NTY3ODkwMCIsInN1YiI6NSwiYXVkIjoiYXV0aGVudGljYXRlZCIsImp0aSI6Imc4dWJ5cWYiLCJpYXQiOjE3MTc5NzAyMTAsImV4cCI6MTcxNzk3NzQxMH0.ttNjJyaSMAM4x2RJ5akswqkYF2BjBdx7lpQKeKYsPbs', '0x123456789000')
-      console.log('validToken', validToken);
+      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHgwMDAwMDAxMDAzIiwic3ViIjoiZWNkYzQ3YzUtYmExNS00ZTBhLWFhOGMtNzQwNGZmYzY2M2Q0IiwiYXVkIjoiYXV0aGVudGljYXRlZCIsImlhdCI6MTcxODAzNTcwNSwiZXhwIjoxNzI4MDM1NzA1fQ.Tdax8_RAajDlHa7H4-HeUb7H-bpcJJmdf39hYIe4SPE";
       const headers = {
         global: {
-          headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhZGRyZXNzIjoiMHgxMjM0NTY3ODkwMDAiLCJzdWIiOjYsImF1ZCI6ImF1dGhlbnRpY2F0ZWQiLCJqdGkiOiJkTlNsS2RFIiwiaWF0IjoxNzE3OTcxMjMxLCJleHAiOjE3MTc5Nzg0MzF9.nasloE85NCW8A2lRptBXUYRB1VA2UrLB5mQD1tFHwl8` }
+          headers: { Authorization: `Bearer ${token}` }
         },
         auth: { persistSession: false }
       }
 
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-      const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, headers)
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+      const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, headers);
+      supabaseWithAuth.functions.setAuth(token);
+      supabaseWithAuth.realtime.setAuth(token);
       console.log('supabaseWithAuth', supabaseWithAuth);
       const { data } = await supabaseWithAuth.auth.getUser()
       console.log('user: ', data);
-      return;
-      const userAddress = '0x123456789000'
-      const nonceResponse = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
-        address: userAddress,
-      })
 
-      const userNonce = nonceResponse.data.user[0].nonce
-      const signedMessage = `0x123456789000${userNonce}`
-
-      const response = await axios.post(endpoints.auth.loginWithMetamaskSignin, {
-        address: userAddress,
-        signedMessage,
-        nonce: userNonce,
-      })
-
-      console.log('response', response);
+      const { data: userData } = await supabaseWithAuth.from('users').select('*').eq('address', '0x0000001003').single()
+      console.log('user: ', userData);
     } catch (error) {
       console.error(error);
     }
@@ -384,6 +383,7 @@ export default function JwtLoginView() {
           color='primary'
           startIcon={<Image src="/assets/icons/project/logo-binance.svg" alt='binance' width={24} height={24} />}
           loading={isSubmitting.value}
+          onClick={() => handleLoginWithTest()}
         >
           Continue with Binance
         </LoadingButton>

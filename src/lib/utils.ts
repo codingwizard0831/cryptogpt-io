@@ -1,16 +1,4 @@
-import { customAlphabet } from 'nanoid'
-import { twMerge } from 'tailwind-merge'
-import { SignJWT, jwtVerify } from 'jose';
-import { clsx, type ClassValue } from 'clsx'
-
-export function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs))
-}
-
-export const nanoid = customAlphabet(
-    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-    7
-) // 7-character random string
+import jwt from 'jsonwebtoken';
 
 export async function fetcher<JSON = any>(
     input: RequestInfo,
@@ -43,32 +31,16 @@ export function formatDate(input: string | number | Date): string {
     })
 }
 
-interface UserJwtPayload {
-    jti: string
-    iat: number
-}
-
 export async function signToken(payload: any, options: any) {
-    const token = await new SignJWT(payload)
-        .setProtectedHeader({ alg: 'HS256' })
-        .setJti(nanoid())
-        .setIssuedAt()
-        .setExpirationTime('2h')
-        .sign(new TextEncoder().encode(process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET))
-
-    return token
+    const token = jwt.sign(payload, "process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET", options)
+    console.log('signToken: token', token);
+    return token;
 }
 
-export async function verifyToken(token: string, address: string) {
-    try {
-        const verified = await jwtVerify(
-            token,
-            new TextEncoder().encode(process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET)
-        )
-        return verified.payload as UserJwtPayload
-    } catch (err) {
-        return jsonResponse(401, { error: { message: 'Your token has expired.' } })
-    }
+export async function verifyToken(token: string) {
+    console.log('verifyToken: token', token);
+    console.log('verifyToken: JWT_SECRET', process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET);
+    return jwt.verify(token, "process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET")
 }
 
 export function jsonResponse(status: number, data: any, init?: ResponseInit) {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { signToken } from 'src/lib/utils'
+import { signToken, verifyToken } from 'src/lib/utils'
 import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 
 
@@ -91,13 +91,15 @@ export async function POST(req: Request) {
                 const token = await signToken(
                     {
                         address,
-                        sub: user.id,
+                        sub: finalAuthUser.id,
                         aud: 'authenticated'
                     },
                     { expiresIn: `${10000000}s` }
                 )
                 console.log('token', token);
-                const response = NextResponse.json('success', { status: 200 })
+                const rst = await verifyToken(token);
+                console.log('rst', rst);
+                const response = NextResponse.json({ token }, { status: 200 })
                 response.cookies.set('address', address)
                 response.cookies.set('web3jwt', token)
                 return response

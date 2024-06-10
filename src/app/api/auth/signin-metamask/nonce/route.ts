@@ -9,8 +9,7 @@ export async function POST(req: Request) {
         const nonce = Math.floor(Math.random() * 1000000);
         const { data, error } = await supabase.from('users').select('id').eq('address', res.address).single();
         if (!data || error) {
-            // const { data: user, error: upsertError } = await supabase
-            const ttt = await supabase
+            const { data: user, error: upsertError } = await supabase
                 .from('users')
                 .upsert([
                     {
@@ -21,12 +20,10 @@ export async function POST(req: Request) {
                     }
                 ])
                 .select()
-
-            return NextResponse.json({ ttt }, { status: 200 })
-            // if (data || !upsertError) {
-            //     return NextResponse.json({ user }, { status: 200 })
-            // }
-            // throw new Error("Failed to create user")
+            if (data || !upsertError) {
+                return NextResponse.json({ user }, { status: 200 })
+            }
+            throw new Error("Failed to create user")
         }
         const { data: user, error: updateError } = await supabase
             .from('users')
