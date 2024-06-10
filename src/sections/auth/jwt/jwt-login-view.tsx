@@ -142,13 +142,13 @@ export default function JwtLoginView() {
   }
 
   const handleLoginWithTest = async () => {
-    const userAddress = '0x0000001003'
+    const userAddress = '0x0000001006'
     const nonceResponse = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
       address: userAddress,
     })
     console.log('nonceResponse', nonceResponse.data);
-    const userNonce = nonceResponse.data.data[0].nonce;
-    const signedMessage = `0x0000001003${userNonce}`;
+    const userNonce = nonceResponse.data.user[0].nonce;
+    const signedMessage = `0x0000001006${userNonce}`;
 
     const response = await axios.post(endpoints.auth.loginWithMetamaskSignin, {
       address: userAddress,
@@ -161,7 +161,7 @@ export default function JwtLoginView() {
 
   const handleLoginWithMetamask = async () => {
     try {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHgwMDAwMDAxMDAzIiwic3ViIjoiZWNkYzQ3YzUtYmExNS00ZTBhLWFhOGMtNzQwNGZmYzY2M2Q0IiwiYXVkIjoiYXV0aGVudGljYXRlZCIsImlhdCI6MTcxODAzNTcwNSwiZXhwIjoxNzI4MDM1NzA1fQ.Tdax8_RAajDlHa7H4-HeUb7H-bpcJJmdf39hYIe4SPE";
+      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHgwMDAwMDAxMDA1Iiwic3ViIjoiZDBkOGU4YmMtNzU3Yy00Yjg5LWI5NGQtZjRkNTg3NWM1MzllIiwiYXVkIjoiYXV0aGVudGljYXRlZCIsImlhdCI6MTcxODAzOTU2MSwiZXhwIjoxNzI4MDM5NTYxfQ.F3aPeClXo5jHnfo6C--kEcECVvferWCNMThQips01OI";
       const headers = {
         global: {
           headers: { Authorization: `Bearer ${token}` }
@@ -172,14 +172,14 @@ export default function JwtLoginView() {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
       const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
       const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, headers);
-      supabaseWithAuth.functions.setAuth(token);
-      supabaseWithAuth.realtime.setAuth(token);
       console.log('supabaseWithAuth', supabaseWithAuth);
       const { data } = await supabaseWithAuth.auth.getUser()
       console.log('user: ', data);
 
-      const { data: userData } = await supabaseWithAuth.from('users').select('*').eq('address', '0x0000001003').single()
+      const { data: userData } = await supabaseWithAuth.from('users').select('*').eq('address', '0x0000001006').single()
       console.log('user: ', userData);
+      const { data: authUsersData, error: authUsersError } = await supabaseWithAuth.from('auth.users').select('*')
+      console.log('auth User: ', authUsersData, authUsersError);
     } catch (error) {
       console.error(error);
     }

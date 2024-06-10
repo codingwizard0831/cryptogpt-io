@@ -32,7 +32,7 @@ export function formatDate(input: string | number | Date): string {
 }
 
 export async function signToken(payload: any, options: any) {
-    const token = jwt.sign(payload, "process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET", options)
+    const token = jwt.sign(payload, process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET, options)
     console.log('signToken: token', token);
     return token;
 }
@@ -40,7 +40,7 @@ export async function signToken(payload: any, options: any) {
 export async function verifyToken(token: string) {
     console.log('verifyToken: token', token);
     console.log('verifyToken: JWT_SECRET', process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET);
-    return jwt.verify(token, "process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET")
+    return jwt.verify(token, process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET)
 }
 
 export function jsonResponse(status: number, data: any, init?: ResponseInit) {

@@ -46,6 +46,7 @@ export async function POST(req: Request) {
 
                 if (!authUser || authUserError) {
                     // 4. If there's no auth.users.id for that address
+                    console.log('Creating new user');
                     const { data: newUser, error: newUserError } =
                         await supabaseServiceRole.auth.admin.createUser({
                             email: `${address}@cryptogpt.io`,
