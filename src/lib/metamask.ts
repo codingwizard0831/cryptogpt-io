@@ -51,6 +51,7 @@ export const signInWithMetamask = async () => {
       const messageString = JSON.stringify(message);
       const signature = await signer.signMessage(messageString);
       console.log('Signature:', signature);
+      return { address, balance, network, wallet, signature };
     } catch (error: Error | any) {
       alert(`Error connecting to MetaMask: ${error?.message ?? error}`);
     }

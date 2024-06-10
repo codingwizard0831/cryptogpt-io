@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js'
+// import { cookies } from 'next/headers'
 import { MuiOtpInput } from 'mui-one-time-password-input';
 
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -13,11 +15,12 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import axios, { endpoints } from 'src/utils/axios';
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
+import { verifyToken } from 'src/lib/utils';
 import { supabase } from 'src/lib/supabase';
 import { useAuthContext } from 'src/auth/hooks';
-import { signInWithMetamask } from 'src/lib/metamask';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -140,7 +143,47 @@ export default function JwtLoginView() {
   }
 
   const handleLoginWithMetamask = async () => {
-    signInWithMetamask();
+    try {
+      // const address = cookies().get('address')?.value || ''
+      // const web3jwt = cookies().get('web3jwt')?.value || ''
+      // console.log('web3jwt', web3jwt);
+
+      // const validToken = await verifyToken(web3jwt, address)
+
+      const validToken = await verifyToken('eyJhbGciOiJIUzI1NiJ9.eyJhZGRyZXNzIjoiMHgxMjM0NTY3ODkwMCIsInN1YiI6NSwiYXVkIjoiYXV0aGVudGljYXRlZCIsImp0aSI6Imc4dWJ5cWYiLCJpYXQiOjE3MTc5NzAyMTAsImV4cCI6MTcxNzk3NzQxMH0.ttNjJyaSMAM4x2RJ5akswqkYF2BjBdx7lpQKeKYsPbs', '0x123456789000')
+      console.log('validToken', validToken);
+      const headers = {
+        global: {
+          headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhZGRyZXNzIjoiMHgxMjM0NTY3ODkwMDAiLCJzdWIiOjYsImF1ZCI6ImF1dGhlbnRpY2F0ZWQiLCJqdGkiOiJkTlNsS2RFIiwiaWF0IjoxNzE3OTcxMjMxLCJleHAiOjE3MTc5Nzg0MzF9.nasloE85NCW8A2lRptBXUYRB1VA2UrLB5mQD1tFHwl8` }
+        },
+        auth: { persistSession: false }
+      }
+
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+      const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, headers)
+      console.log('supabaseWithAuth', supabaseWithAuth);
+      const { data } = await supabaseWithAuth.auth.getUser()
+      console.log('user: ', data);
+      return;
+      const userAddress = '0x123456789000'
+      const nonceResponse = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
+        address: userAddress,
+      })
+
+      const userNonce = nonceResponse.data.user[0].nonce
+      const signedMessage = `0x123456789000${userNonce}`
+
+      const response = await axios.post(endpoints.auth.loginWithMetamaskSignin, {
+        address: userAddress,
+        signedMessage,
+        nonce: userNonce,
+      })
+
+      console.log('response', response);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const handleLoginWithGoogle = async () => {

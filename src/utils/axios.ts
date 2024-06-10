@@ -39,6 +39,10 @@ export const endpoints = {
 
     loginWithOAuth: '/api/auth/signin-oauth/',
 
+    loginWithMetamaskNonce: '/api/auth/signin-metamask/nonce/',
+    loginWithMetamaskSignin: '/api/auth/signin-metamask/signin/',
+    loginWithMetamask: '/api/auth/signin-metamask/sign/',
+
     confirmEmail: '/auth/confirm_email/',
     resendEmail: '/auth/resend_email_token/',
     confirmPhone: '/auth/confirm_phone/',
