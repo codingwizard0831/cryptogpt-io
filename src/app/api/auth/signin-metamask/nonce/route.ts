@@ -21,7 +21,7 @@ export async function POST(req: Request) {
                     }
                 ])
                 .select()
-            if (data || !upsertError) {
+            if (user || !upsertError) {
                 return NextResponse.json({ user }, { status: 200 })
             }
             throw new Error("Failed to create user")
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
             .eq('address', res.address)
             .select()
 
-        if (data || !updateError) {
+        if (user || !updateError) {
             return NextResponse.json({ user }, { status: 200 })
         }
         throw new Error("Failed to update user")
