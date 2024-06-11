@@ -15,18 +15,18 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import axios, { endpoints } from 'src/utils/axios';
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
 import { supabase } from 'src/lib/supabase';
 import { useAuthContext } from 'src/auth/hooks';
+import { getAccessToken } from 'src/auth/context/jwt/utils';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
-  const { loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify } = useAuthContext();
+  const { loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const router = useRouter();
@@ -141,27 +141,23 @@ export default function JwtLoginView() {
     }
   }
 
-  const handleLoginWithTest = async () => {
-    const userAddress = '0x0000001006'
-    const nonceResponse = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
-      address: userAddress,
-    })
-    console.log('nonceResponse', nonceResponse.data);
-    const userNonce = nonceResponse.data.user[0].nonce;
-    const signedMessage = `0x0000001006${userNonce}`;
-
-    const response = await axios.post(endpoints.auth.loginWithMetamaskSignin, {
-      address: userAddress,
-      signedMessage,
-      nonce: userNonce,
-    })
-
-    console.log('response', response);
+  const handleLoginWithMetamask = async () => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
+    try {
+      await loginWithMetamask();
+      enqueueSnackbar("Login successful", { variant: 'success' });
+      isSubmitting.onFalse();
+    } catch (error) {
+      console.error(error);
+      isSubmitting.onFalse();
+      enqueueSnackbar(error.message, { variant: 'error' });
+    }
   }
 
-  const handleLoginWithMetamask = async () => {
+  const handleLoginWithTest = async () => {
     try {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHgwMDAwMDAxMDA1Iiwic3ViIjoiZDBkOGU4YmMtNzU3Yy00Yjg5LWI5NGQtZjRkNTg3NWM1MzllIiwiYXVkIjoiYXV0aGVudGljYXRlZCIsImlhdCI6MTcxODAzOTU2MSwiZXhwIjoxNzI4MDM5NTYxfQ.F3aPeClXo5jHnfo6C--kEcECVvferWCNMThQips01OI";
+      const token = getAccessToken();
       const headers = {
         global: {
           headers: { Authorization: `Bearer ${token}` }

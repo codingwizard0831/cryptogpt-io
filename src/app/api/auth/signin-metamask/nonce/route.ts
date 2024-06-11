@@ -5,7 +5,6 @@ import { supabase } from 'src/lib/supabase';
 export async function POST(req: Request) {
     try {
         const res = await req.json();
-        console.log('res', res);
         const nonce = Math.floor(Math.random() * 1000000);
         const { data, error } = await supabase.from('users').select('id').eq('address', res.address).single();
         if (!data || error) {
@@ -14,9 +13,11 @@ export async function POST(req: Request) {
                 .upsert([
                     {
                         address: res.address,
-                        nonce: nonce.toString(),
-                        lastAuth: new Date().toISOString(),
-                        lastAuthStatus: "pending"
+                        auth: {
+                            nonce: nonce.toString(),
+                            lastAuth: new Date().toISOString(),
+                            lastAuthStatus: "pending"
+                        }
                     }
                 ])
                 .select()
@@ -29,9 +30,11 @@ export async function POST(req: Request) {
             .from('users')
             .update([
                 {
-                    nonce: nonce.toString(),
-                    lastAuth: new Date().toISOString(),
-                    lastAuthStatus: "pending"
+                    auth: {
+                        nonce: nonce.toString(),
+                        lastAuth: new Date().toISOString(),
+                        lastAuthStatus: "pending"
+                    }
                 }
             ])
             .eq('address', res.address)
@@ -41,15 +44,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ user }, { status: 200 })
         }
         throw new Error("Failed to update user")
-
-        // if (error) throw error;
-        // if (!data) {
-        //   await supabase.from('users').insert([{ address: res.address, nonce }]);
-        // } else {
-        //   await supabase.from('users').update({ nonce }).eq('address', res.address);
-        // }
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

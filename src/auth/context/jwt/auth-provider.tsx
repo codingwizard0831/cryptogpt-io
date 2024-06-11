@@ -4,6 +4,8 @@ import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
 
+import { signMessageWithMetamask, connectWalletWithMetamask } from 'src/lib/metamask';
+
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
 import { getUserInfo, setUserInfo, isValidToken, getAccessToken, setAccessToken, setRefreshToken } from './utils';
@@ -231,6 +233,50 @@ export function AuthProvider({ children }: Props) {
     });
   }, []);
 
+  const loginWithMetamask = useCallback(async () => {
+    const { address, error: walletConnecError } = await connectWalletWithMetamask();
+    if (walletConnecError) {
+      throw new Error(walletConnecError);
+    }
+    const nonceResponse = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
+      address,
+    })
+    const userNonce = nonceResponse.data.user[0].auth.nonce;
+    console.log('nonce', userNonce);
+    const rst = await signMessageWithMetamask(userNonce);
+    if (rst.error) {
+      throw new Error(rst.error);
+    }
+    const signedMessage = rst.signature;
+
+    const response = await axios.post(endpoints.auth.loginWithMetamaskSignin, {
+      address,
+      signedMessage,
+      message: rst.message,
+      nonce: userNonce,
+    })
+    const { data, error } = response.data;
+    if (error) {
+      throw new Error(error);
+    } else {
+      const { user, token } = data;
+      if (user) {
+        console.log('user', user);
+        setUserInfo(user);
+      }
+
+      dispatch({
+        type: Types.LOGIN,
+        payload: {
+          user: {
+            ...user,
+            access_token: token,
+          },
+        },
+      });
+    }
+  }, []);
+
   // REGISTER
   const register = useCallback(
     async (email: string, password: string) => {
@@ -292,10 +338,11 @@ export function AuthProvider({ children }: Props) {
       loginWithEmailAndPassword,
       loginWithCodeSend,
       loginWithCodeVerify,
+      loginWithMetamask,
       register,
       logout,
     }),
-    [loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, logout, register, state.user, status]
+    [loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask, logout, register, state.user, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

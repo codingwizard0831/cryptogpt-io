@@ -1,23 +1,19 @@
 import { NextResponse } from "next/server";
 
-import { signToken, verifyToken } from 'src/lib/utils'
+import { signToken } from 'src/lib/utils'
+import { verifyMessageWithMetamask } from "src/lib/metamask";
 import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 
 
 export async function POST(req: Request) {
     try {
         const res = await req.json();
-        const { address, signedMessage, nonce } = res;
+        const { address, signedMessage, message, nonce } = res;
 
-        // const message = process.env.NEXT_PUBLIC_WEB3AUTH_MESSAGE + nonce
-        // const recoveredAddress = ethers.verifyMessage(message, signedMessage)
-
-        // if (recoveredAddress !== address) {
-        //     return NextResponse.json(
-        //         { error: 'Signature verification failed' },
-        //         { status: 401 }
-        //     )
-        // }
+        const rst = await verifyMessageWithMetamask(message, signedMessage);
+        if (rst.status === 'error' && rst.error) {
+            return NextResponse.json({ error: rst.error }, { status: 401 })
+        }
 
         try {
             // 2. Select * from public.user table to get nonce
@@ -29,9 +25,9 @@ export async function POST(req: Request) {
 
             if (user && !userError) {
                 // 3. Verify the nonce included in the request matches what's already in public.users table for that address
-                if (user?.nonce !== nonce) {
+                if (user?.auth.nonce !== nonce) {
                     return NextResponse.json(
-                        { error: 'Nonce verification failed' },
+                        { data: null, error: 'Nonce verification failed' },
                         { status: 401 }
                     )
                 }
@@ -45,18 +41,16 @@ export async function POST(req: Request) {
                     .single()
 
                 if (!authUser || authUserError) {
-                    // 4. If there's no auth.users.id for that address
-                    console.log('Creating new user');
                     const { data: newUser, error: newUserError } =
                         await supabaseServiceRole.auth.admin.createUser({
                             email: `${address}@cryptogpt.io`,
                             user_metadata: { address },
                             email_confirm: true
                         })
-                    console.log('newUserError', newUserError);
+
                     if (newUserError || !newUser) {
                         return NextResponse.json(
-                            { error: 'Failed to create auth user' },
+                            { data: null, error: 'Failed to create auth user' },
                             { status: 500 }
                         )
                     }
@@ -74,19 +68,15 @@ export async function POST(req: Request) {
                     .update([
                         {
                             id: finalAuthUser?.id,
-                            nonce,
-                            lastAuth: new Date().toISOString(),
-                            lastAuthStatus: 'success'
+                            auth: {
+                                nonce,
+                                lastAuth: new Date().toISOString(),
+                                lastAuthStatus: 'success'
+                            }
                         }
                     ])
                     .eq('address', address)
                     .select()
-
-                // const ttl = await getTTLofUser(address)
-
-                // if (!ttl) {
-                //     return NextResponse.json({ error: 'Token expired' }, { status: 401 })
-                // }
 
                 // 6. We sign the token and return it to client
                 const token = await signToken(
@@ -97,28 +87,29 @@ export async function POST(req: Request) {
                     },
                     { expiresIn: `${10000000}s` }
                 )
-                console.log('token', token);
-                const rst = await verifyToken(token);
-                console.log('rst', rst);
-                const response = NextResponse.json({ token }, { status: 200 })
-                response.cookies.set('address', address)
-                response.cookies.set('web3jwt', token)
+                const response = NextResponse.json({
+                    data: {
+                        token,
+                        user: finalAuthUser,
+                    },
+                    error: null,
+                }, { status: 200 })
                 return response
             }
 
             return NextResponse.json(
-                { error: userError?.message || 'Internal Server Error' },
+                { data: null, error: userError?.message || 'Internal Server Error' },
                 { status: 500 }
             )
         } catch (error: any) {
             return NextResponse.json(
-                { error: error?.message || 'Internal Server Error' },
+                { data: null, error: error?.message || 'Internal Server Error' },
                 { status: 500 }
             )
         }
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }
