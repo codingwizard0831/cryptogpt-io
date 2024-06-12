@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { useAccount } from 'wagmi';
 import { createClient } from '@supabase/supabase-js'
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 // import { cookies } from 'next/headers'
@@ -30,6 +31,8 @@ export default function JwtLoginView() {
   const { open, close } = useWeb3Modal()
   const { loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
+  const { isConnected } = useAccount();
+  console.log('isConnected', isConnected);
 
   const router = useRouter();
   const searchParams = useSearchParams();

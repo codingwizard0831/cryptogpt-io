@@ -1,5 +1,7 @@
 'use client';
 
+import { useAccount, useConnect } from 'wagmi';
+import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
@@ -85,6 +87,9 @@ type Props = {
 
 export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { open, close } = useWeb3Modal();
+  const { isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
 
   const initialize = useCallback(async () => {
     try {
@@ -275,7 +280,7 @@ export function AuthProvider({ children }: Props) {
         },
       });
     }
-  }, []);
+  }, [open]);
 
   // REGISTER
   const register = useCallback(

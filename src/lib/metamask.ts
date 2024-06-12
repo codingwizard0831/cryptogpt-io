@@ -9,7 +9,7 @@ declare global {
 export const connectWalletWithMetamask = async () => {
   const { ethereum } = window;
   // Check if MetaMask is installed
-  if (typeof ethereum !== "undefined") {
+  if (typeof ethereum !== "undefined" && ethereum.isMetaMask) {
     try {
       // Request access to the user's MetaMask accounts
       const accounts = await ethereum.request({
@@ -72,8 +72,14 @@ export const signMessageWithMetamask = async (nonce: string) => {
       console.log('Signature:', signature);
       return { address, balance, network, wallet, signature, message, error: null };
     } catch (e) {
-      console.error(e);
-      return { address: null, balance: null, network: null, wallet: null, signature: null, message: null, error: e.message };
+      console.log('1', e.info);
+      let errorMesssage = e.message;
+      if (e.info.error.code === 4001) {
+        errorMesssage = "User rejected the request";
+      } else {
+        console.error(e);
+      }
+      return { address: null, balance: null, network: null, wallet: null, signature: null, message: null, error: errorMesssage };
     }
   } else {
     console.error("MetaMask is not installed");
