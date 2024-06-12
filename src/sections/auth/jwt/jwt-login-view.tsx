@@ -190,7 +190,7 @@ export default function JwtLoginView() {
     const response = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: 'http://localhost:8083/',
+        redirectTo: 'http://localhost:8083/dashboard',
       },
     });
     console.log('response', response);
