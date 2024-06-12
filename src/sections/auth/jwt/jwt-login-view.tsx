@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js'
+import { useWeb3Modal } from '@web3modal/wagmi/react';
 // import { cookies } from 'next/headers'
 import { MuiOtpInput } from 'mui-one-time-password-input';
 
@@ -26,6 +27,7 @@ import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
+  const { open, close } = useWeb3Modal()
   const { loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -157,6 +159,8 @@ export default function JwtLoginView() {
 
   const handleLoginWithTest = async () => {
     try {
+      open({ view: 'Connect' });
+      return;
       const token = getAccessToken();
       const headers = {
         global: {

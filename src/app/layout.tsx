@@ -1,3 +1,7 @@
+
+import { headers } from 'next/headers'
+import { cookieToInitialState } from 'wagmi'
+
 /* eslint-disable perfectionist/sort-imports */
 import 'src/global.css';
 import 'src/converted-styles.css';
@@ -14,6 +18,8 @@ import SnackbarProvider from 'src/components/snackbar/snackbar-provider';
 import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
 
 import { AuthProvider } from 'src/auth/context/jwt';
+import Web3ModalProvider from 'src/web3/context';
+import { config } from 'src/web3/config';
 
 // ----------------------------------------------------------------------
 
@@ -43,33 +49,37 @@ type Props = {
 };
 
 export default function RootLayout({ children }: Props) {
+  const initialState = cookieToInitialState(config, headers().get('cookie'))
+
   return (
     <html lang="en" className={primaryFont.className}>
       <body>
-        <AuthProvider>
-          <LocalizationProvider>
-            <SettingsProvider
-              defaultSettings={{
-                themeMode: 'light', // 'light' | 'dark'
-                themeDirection: 'ltr', //  'rtl' | 'ltr'
-                themeContrast: 'default', // 'default' | 'bold'
-                themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-                themeColorPresets: 'orange', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
-                themeStretch: false,
-              }}
-            >
-              <ThemeProvider>
-                <MotionLazy>
-                  <SnackbarProvider>
-                    <SettingsDrawer />
-                    <ProgressBar />
-                    {children}
-                  </SnackbarProvider>
-                </MotionLazy>
-              </ThemeProvider>
-            </SettingsProvider>
-          </LocalizationProvider>
-        </AuthProvider>
+        <Web3ModalProvider initialState={initialState}>
+          <AuthProvider>
+            <LocalizationProvider>
+              <SettingsProvider
+                defaultSettings={{
+                  themeMode: 'light', // 'light' | 'dark'
+                  themeDirection: 'ltr', //  'rtl' | 'ltr'
+                  themeContrast: 'default', // 'default' | 'bold'
+                  themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
+                  themeColorPresets: 'orange', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+                  themeStretch: false,
+                }}
+              >
+                <ThemeProvider>
+                  <MotionLazy>
+                    <SnackbarProvider>
+                      <SettingsDrawer />
+                      <ProgressBar />
+                      {children}
+                    </SnackbarProvider>
+                  </MotionLazy>
+                </ThemeProvider>
+              </SettingsProvider>
+            </LocalizationProvider>
+          </AuthProvider>
+        </Web3ModalProvider>
       </body>
     </html>
   );
