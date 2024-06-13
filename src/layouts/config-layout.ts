@@ -8,7 +8,15 @@ export const HEADER = {
 
 export const NAV = {
   W_VERTICAL: 280,
-  W_MINI: 88,
+  W_SIDE_BAR_MENU: 72,
+};
+
+export const SPACING = {
+  xs: 4,
+  sm: 6,
+  md: 16,
+  lg: 20,
+  xl: 24,
 };
 
 export const MESSAGE_RIGHT_PANEL = {

@@ -265,6 +265,9 @@ export function AuthProvider({ children }: Props) {
       throw new Error(error);
     } else {
       const { user, token } = data;
+      if (token) {
+        setAccessToken(token);
+      }
       if (user) {
         console.log('user', user);
         setUserInfo(user);
@@ -280,7 +283,7 @@ export function AuthProvider({ children }: Props) {
         },
       });
     }
-  }, [open]);
+  }, []);
 
   // REGISTER
   const register = useCallback(

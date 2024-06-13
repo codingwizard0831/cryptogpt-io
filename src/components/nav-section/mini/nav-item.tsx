@@ -38,43 +38,41 @@ const NavItem = forwardRef<HTMLDivElement, NavItemProps>(
     const subItem = depth !== 1;
 
     const renderContent = (
-      <Tooltip title={tooltip} placement="bottom">
-        <StyledNavItem
-          disableGutters
-          ref={ref}
-          open={open}
-          depth={depth}
-          active={active}
-          disabled={disabled}
-          {...other}
-        >
-          {icon && (
-            <Box component="span" className="icon">
-              {icon}
-            </Box>
-          )}
+      <StyledNavItem
+        disableGutters
+        ref={ref}
+        open={open}
+        depth={depth}
+        active={active}
+        disabled={disabled}
+        {...other}
+      >
+        {icon && (
+          <Box component="span" className="icon">
+            {icon}
+          </Box>
+        )}
 
-          {title && (
-            <Box component="span" className="label">
-              {title}
-            </Box>
-          )}
+        {/* {title && (
+          <Box component="span" className="label">
+            {title}
+          </Box>
+        )} */}
 
-          {caption && (
-            <Tooltip title={caption} arrow placement="right">
-              <Iconify width={16} icon="eva:info-outline" className="caption" />
-            </Tooltip>
-          )}
+        {caption && (
+          <Tooltip title={caption} arrow placement="right">
+            <Iconify width={16} icon="eva:info-outline" className="caption" />
+          </Tooltip>
+        )}
 
-          {info && subItem && (
-            <Box component="span" className="info">
-              {info}
-            </Box>
-          )}
+        {info && subItem && (
+          <Box component="span" className="info">
+            {info}
+          </Box>
+        )}
 
-          {hasChild && <Iconify width={16} className="arrow" icon="eva:arrow-ios-forward-fill" />}
-        </StyledNavItem>
-      </Tooltip>
+        {hasChild && <Iconify width={16} className="arrow" icon="eva:arrow-ios-forward-fill" />}
+      </StyledNavItem>
     );
 
     // Hidden item by role
@@ -165,7 +163,7 @@ const StyledNavItem = styled(ListItemButton, {
     ...(!subItem && {
       ...baseStyles.item,
       fontSize: 10,
-      minHeight: 56,
+      minHeight: 48,
       lineHeight: '16px',
       textAlign: 'center',
       flexDirection: 'column',
