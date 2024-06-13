@@ -36,7 +36,7 @@ export default function DashboardLayout({ children }: Props) {
         sx={{
           minHeight: 1,
           display: 'flex',
-          flexDirection: { xs: 'column', lg: 'row' },
+          flexDirection: 'row',
         }}
       >
         <NavMini />

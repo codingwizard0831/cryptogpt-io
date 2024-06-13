@@ -23,8 +23,7 @@ export default function NavMini() {
   return (
     <Box
       sx={{
-        flexShrink: { lg: 0 },
-        width: { lg: NAV.W_SIDE_BAR_MENU },
+        width: NAV.W_SIDE_BAR_MENU,
       }}
     >
       <Stack sx={{
