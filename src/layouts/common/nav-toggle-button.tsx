@@ -6,7 +6,6 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
-import { NAV } from '../config-layout';
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +28,6 @@ export default function NavToggleButton({ sx, ...other }: IconButtonProps) {
       }
       sx={{
         p: 0.5,
-        left: NAV.W_VERTICAL - 12,
         zIndex: theme.zIndex.appBar + 1,
         border: `dashed 1px ${theme.palette.divider}`,
         backgroundColor: alpha(theme.palette.background.default, 0.2),

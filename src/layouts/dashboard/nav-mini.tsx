@@ -35,7 +35,7 @@ export default function NavMini() {
   const NavToggleButtonLeftSpacing = useMemo(() => {
     if (smUp) return '10px';
     if (settings.isShowMenu) return '10px';
-    return `${NAV.W_SIDE_BAR_MENU + SPACING.sm}px`;
+    return `${NAV.W_SIDE_BAR_MENU + SPACING.sm * 2}px`;
   }, [smUp, settings.isShowMenu]);
 
   return (
@@ -68,7 +68,7 @@ export default function NavMini() {
             backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
             backdropFilter: 'blur(20px)',
             borderRadius: theme => theme.shape.borderRadius,
-            borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
+            border: (theme) => `solid 1px ${alpha(theme.palette.background.opposite, 0.2)}`,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',

@@ -63,6 +63,7 @@ export default function Header({ onOpenNav }: Props) {
         backdropFilter: 'blur(20px)',
         backgroundColor: alpha(theme.palette.background.opposite, 0.1),
         borderRadius: theme.shape.borderRadius,
+        border: `solid 1px ${alpha(theme.palette.background.opposite, 0.2)}`,
         transition: 'all 225ms cubic-bezier(0.4, 0, 0.6, 1)',
       }}
     >

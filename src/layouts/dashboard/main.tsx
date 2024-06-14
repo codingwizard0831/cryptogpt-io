@@ -10,7 +10,7 @@ import { NAV, HEADER, SPACING } from '../config-layout';
 
 export default function Main({ children, sx, ...other }: BoxProps) {
   const settings = useSettingsContext();
-  const smUp = useResponsive('up', 'lg');
+  const smUp = useResponsive('up', 'sm');
 
   return (
     <Box
