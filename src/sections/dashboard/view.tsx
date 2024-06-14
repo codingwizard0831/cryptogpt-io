@@ -2,7 +2,7 @@
 
 
 import Box from '@mui/material/Box';
-import { useTheme } from '@mui/material';
+import { Card, useTheme } from '@mui/material';
 import Container from '@mui/material/Container';
 
 import { useSettingsContext } from 'src/components/settings';
@@ -13,13 +13,37 @@ export default function DashboardView() {
     const settings = useSettingsContext();
 
     return (
+        <Box sx={{
+            height: '100%',
+            pb: 2,
+        }}>
+            <Card sx={{
+                p: 2,
+                borderRadius: 1,
+                boxShadow: 2,
+                height: '200px',
+            }}>
+                <Box>
+                    Dashboard
+                </Box>
+            </Card>
+        </Box>
+    );
+    return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'} sx={{
             height: '100%',
             pb: 2,
         }}>
-            <Box>
-                Dashboard
-            </Box>
+            <Card sx={{
+                p: 2,
+                borderRadius: 1,
+                boxShadow: 2,
+                height: '200px',
+            }}>
+                <Box>
+                    Dashboard
+                </Box>
+            </Card>
         </Container>
     );
 }

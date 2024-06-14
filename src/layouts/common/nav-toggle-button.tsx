@@ -1,9 +1,7 @@
-import { useTheme } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 
 import { useResponsive } from 'src/hooks/use-responsive';
-
-import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -17,9 +15,9 @@ export default function NavToggleButton({ sx, ...other }: IconButtonProps) {
 
   const settings = useSettingsContext();
 
-  const lgUp = useResponsive('up', 'lg');
+  const smUp = useResponsive('up', 'sm');
 
-  if (!lgUp) {
+  if (smUp) {
     return null;
   }
 
@@ -27,18 +25,18 @@ export default function NavToggleButton({ sx, ...other }: IconButtonProps) {
     <IconButton
       size="small"
       onClick={() =>
-        settings.onUpdate('themeLayout', settings.themeLayout === 'vertical' ? 'mini' : 'vertical')
+        settings.onToggleMenu()
       }
       sx={{
         p: 0.5,
-        top: 32,
-        position: 'fixed',
         left: NAV.W_VERTICAL - 12,
         zIndex: theme.zIndex.appBar + 1,
         border: `dashed 1px ${theme.palette.divider}`,
-        ...bgBlur({ opacity: 0.48, color: theme.palette.background.default }),
+        backgroundColor: alpha(theme.palette.background.default, 0.2),
+        backdropFilter: 'blur(10px)',
+        transition: `all ${settings.isShowMenu ? '' : '0.3s'} 0.3s ease-in-out`,
         '&:hover': {
-          bgcolor: 'background.default',
+          backgroundColor: alpha(theme.palette.background.default, 0.4),
         },
         ...sx,
       }}
@@ -46,11 +44,11 @@ export default function NavToggleButton({ sx, ...other }: IconButtonProps) {
     >
       <Iconify
         width={16}
-        icon={
-          settings.themeLayout === 'vertical'
-            ? 'eva:arrow-ios-back-fill'
-            : 'eva:arrow-ios-forward-fill'
-        }
+        icon='eva:arrow-ios-back-fill'
+        sx={{
+          transition: 'all 0.24s ease-in-out',
+          transform: settings.isShowMenu ? 'rotate(0deg)' : 'rotate(180deg)',
+        }}
       />
     </IconButton>
   );

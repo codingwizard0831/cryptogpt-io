@@ -10,7 +10,7 @@ import { NAV, HEADER, SPACING } from '../config-layout';
 
 export default function Main({ children, sx, ...other }: BoxProps) {
   const settings = useSettingsContext();
-  const lgUp = useResponsive('up', 'lg');
+  const smUp = useResponsive('up', 'lg');
 
   return (
     <Box
@@ -24,8 +24,8 @@ export default function Main({ children, sx, ...other }: BoxProps) {
         height: '100vh',
         overflowX: 'hidden',
         overflowY: 'hidden',
-        px: 2,
-        pt: `${HEADER.H_DESKTOP + SPACING.md * 2}px`,
+        px: `${smUp ? SPACING.md : SPACING.sm}px`,
+        pt: smUp ? `${HEADER.H_DESKTOP + SPACING.md * 2}px` : `${HEADER.H_MOBILE + SPACING.sm * 2}px`,
         width: `calc(100% - ${NAV.W_SIDE_BAR_MENU}px)`,
         ...sx,
       }}

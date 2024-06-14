@@ -9,7 +9,7 @@ export function card(theme: Theme) {
         root: {
           position: 'relative',
           boxShadow: theme.customShadows.card,
-          backdropFilter: 'blur(10px)',
+          backdropFilter: 'blur(20px)',
           backgroundColor: alpha(theme.palette.background.opposite, 0.1),
           borderRadius: theme.shape.borderRadius * 2,
           zIndex: 0, // Fix Safari overflow: hidden with border radius
