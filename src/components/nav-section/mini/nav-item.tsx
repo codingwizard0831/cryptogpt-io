@@ -53,11 +53,11 @@ const NavItem = forwardRef<HTMLDivElement, NavItemProps>(
           </Box>
         )}
 
-        {/* {title && (
+        {title && (
           <Box component="span" className="label">
             {title}
           </Box>
-        )} */}
+        )}
 
         {caption && (
           <Tooltip title={caption} arrow placement="right">
@@ -152,6 +152,20 @@ const StyledNavItem = styled(ListItemButton, {
     },
     label: {
       textTransform: 'capitalize',
+      position: 'absolute',
+      left: 'calc(100% + 14px)',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      backgroundColor: `${alpha(theme.palette.background.opposite, 0.1)}!important`,
+      color: theme.palette.text.primary,
+      border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
+      backdropFilter: 'blur(8px)',
+      borderRadius: 2,
+      padding: theme.spacing(0.5, 1),
+      whiteSpace: 'nowrap',
+      transition: 'opacity 0.3s, visibility 0.3s',
+      opacity: 0,
+      visibility: 'hidden',
     },
     caption: {
       color: theme.palette.text.disabled,
@@ -171,11 +185,13 @@ const StyledNavItem = styled(ListItemButton, {
       padding: theme.spacing(0.5),
       margin: theme.spacing(0, 0.5),
       fontWeight: theme.typography.fontWeightSemiBold,
+      position: 'relative',
+      border: `1px solid transparent`,
+
       '& .icon': {
         ...baseStyles.icon,
       },
       '& .label': {
-        ...noWrapStyles,
         ...baseStyles.label,
         marginTop: theme.spacing(0.5),
       },
@@ -192,12 +208,17 @@ const StyledNavItem = styled(ListItemButton, {
       },
       ...(active && {
         fontWeight: theme.typography.fontWeightBold,
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
+        backgroundColor: alpha(theme.palette.primary.main, 0.2),
         color: lightMode ? theme.palette.primary.main : theme.palette.primary.light,
+        border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
         '&:hover': {
           backgroundColor: alpha(theme.palette.primary.main, 0.16),
         },
       }),
+      ":hover .label": {
+        opacity: 1,
+        visibility: 'visible',
+      },
       ...(opened && {
         color: theme.palette.text.primary,
         backgroundColor: theme.palette.action.hover,

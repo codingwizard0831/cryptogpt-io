@@ -7,8 +7,6 @@ import Stack from '@mui/material/Stack';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
-import { hideScroll } from 'src/theme/css';
-
 import Logo from 'src/components/logo';
 import { NavSectionMini } from 'src/components/nav-section';
 import { useSettingsContext } from 'src/components/settings';
@@ -60,9 +58,6 @@ export default function NavMini() {
         <Stack
           sx={{
             pb: 2,
-            height: 1,
-            maxHeight: '50vh',
-            minHeight: smUp ? '300px' : '200px',
             width: (NAV.W_SIDE_BAR_MENU - (smUp ? SPACING.md : SPACING.md + 10)),
             position: 'relative',
             backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
@@ -93,8 +88,6 @@ export default function NavMini() {
               currentRole: user?.role,
             }}
             sx={{
-              flex: 1,
-              ...hideScroll.x,
             }}
           />
         </Stack>

@@ -14007,6 +14007,11 @@ react-apexcharts@^1.4.1:
   dependencies:
     prop-types "^15.8.1"
 
+react-candlestick-chart@^1.0.15:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/react-candlestick-chart/-/react-candlestick-chart-1.0.15.tgz#f64be79314f498c596c45c20c2d50405ab6c54d6"
+  integrity sha512-QmXTWVI+fYLAVuujEMrqz2L3xdly8q9Xdq96uDLGsLNbK7QIRUyhLpPhWEELOL7j/YqPmAxhZU99uLfZHTSMtA==
+
 react-credit-cards@^0.8.3:
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/react-credit-cards/-/react-credit-cards-0.8.3.tgz#608a8ee8bf3a88857fc83023ffba1ad536ba8c7e"

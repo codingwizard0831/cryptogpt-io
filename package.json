@@ -89,6 +89,7 @@
     "postcss-cli": "^11.0.0",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
+    "react-candlestick-chart": "^1.0.15",
     "react-credit-cards": "^0.8.3",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
