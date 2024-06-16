@@ -162,27 +162,28 @@ export default function JwtLoginView() {
 
   const handleLoginWithTest = async () => {
     try {
-      open({ view: 'Connect' });
-      return;
-      const token = getAccessToken();
-      const headers = {
-        global: {
-          headers: { Authorization: `Bearer ${token}` }
-        },
-        auth: { persistSession: false }
-      }
+      
+      // open({ view: 'Connect' });
+      // return;
+      // const token = getAccessToken();
+      // const headers = {
+      //   global: {
+      //     headers: { Authorization: `Bearer ${token}` }
+      //   },
+      //   auth: { persistSession: false }
+      // }
 
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
-      const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, headers);
-      console.log('supabaseWithAuth', supabaseWithAuth);
-      const { data } = await supabaseWithAuth.auth.getUser()
-      console.log('user: ', data);
+      // const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+      // const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+      // const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, headers);
+      // console.log('supabaseWithAuth', supabaseWithAuth);
+      // const { data } = await supabaseWithAuth.auth.getUser()
+      // console.log('user: ', data);
 
-      const { data: userData } = await supabaseWithAuth.from('users').select('*').eq('address', '0x0000001006').single()
-      console.log('user: ', userData);
-      const { data: authUsersData, error: authUsersError } = await supabaseWithAuth.from('auth.users').select('*')
-      console.log('auth User: ', authUsersData, authUsersError);
+      // const { data: userData } = await supabaseWithAuth.from('users').select('*').eq('address', '0x0000001006').single()
+      // console.log('user: ', userData);
+      // const { data: authUsersData, error: authUsersError } = await supabaseWithAuth.from('auth.users').select('*')
+      // console.log('auth User: ', authUsersData, authUsersError);
     } catch (error) {
       console.error(error);
     }
@@ -193,27 +194,9 @@ export default function JwtLoginView() {
     const response = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: 'http://localhost:8083/dashboard',
+        redirectTo: 'http://localhost:8083/auth/jwt/oauth?',
       },
     });
-    console.log('response', response);
-    // const playloadData = {
-    //   provider: 'google',
-    // };
-
-    // const res = await axios.post(endpoints.auth.loginWithOAuth, playloadData);
-    // const {
-    //   data,
-    //   error,
-    // } = res.data;
-
-    // if (!data || error) {
-    //   const { message } = error;
-    //   throw new Error(message || 'Login failed');
-    // }
-
-    // const { user, session } = data;
-    // const { access_token, refresh_token } = session;
   }
 
   const renderHead = (
