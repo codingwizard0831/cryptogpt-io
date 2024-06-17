@@ -1,0 +1,35 @@
+import { Box, BoxProps } from '@mui/material';
+import Chart, { useChart } from 'src/components/chart';
+
+// ----------------------------------------------------------------------
+
+interface DashboardLineChartProps extends BoxProps {
+    data?: number[]
+}
+
+export default function DashboardLineChart({ data = dummyData, sx, ...other }: DashboardLineChartProps) {
+    const chartOptions = useChart({
+        xaxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        },
+        tooltip: {
+            x: {
+                show: false,
+            },
+            marker: { show: false },
+        },
+    });
+
+    return (
+        <Box sx={{
+            ...sx,
+        }} {...other}>
+            <Chart dir="ltr" type="line" series={[{
+                name: 'Price',
+                data,
+            }]} options={chartOptions} width="100%" height={320} />
+        </Box>
+    );
+}
+
+const dummyData = [10, 15, 8, 15, 7, 12, 8, 15, 10];
