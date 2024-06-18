@@ -43,6 +43,8 @@ export const endpoints = {
     loginWithMetamaskSignin: '/api/auth/signin-metamask/signin/',
     loginWithMetamask: '/api/auth/signin-metamask/sign/',
 
+    loginWithBinance: '/api/auth/signin-binance/',
+
     confirmEmail: '/auth/confirm_email/',
     resendEmail: '/auth/resend_email_token/',
     confirmPhone: '/auth/confirm_phone/',

@@ -11,6 +11,8 @@ import { MuiOtpInput } from 'mui-one-time-password-input';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Link, Alert, Stack, Button, Divider, TextField, Typography, IconButton, InputAdornment } from '@mui/material';
 
+import { BINANCE_API, PROJECT_URL } from 'src/config-global';
+
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
@@ -162,7 +164,8 @@ export default function JwtLoginView() {
 
   const handleLoginWithTest = async () => {
     try {
-      
+      // window.location.href = `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=${BINANCE_API.clientId}&redirect_uri=${PROJECT_URL + '/auth/jwt/binance-oauth-callback/'}&scope=user:openId`;
+      window.location.href = `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=${BINANCE_API.clientId}&redirect_uri=${PROJECT_URL}&scope=user:openId`;
       // open({ view: 'Connect' });
       // return;
       // const token = getAccessToken();
@@ -194,7 +197,7 @@ export default function JwtLoginView() {
     const response = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: 'http://localhost:8083/auth/jwt/oauth?',
+        redirectTo: PROJECT_URL + '/auth/jwt/supabase-oauth-callback?',
       },
     });
   }

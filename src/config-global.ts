@@ -37,3 +37,10 @@ export const MAPBOX_API = process.env.NEXT_PUBLIC_MAPBOX_API;
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
+
+export const PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL
+
+export const BINANCE_API = {
+  clientId: process.env.NEXT_PUBLIC_BINANCE_CLIENT_ID,
+  clientSecret: process.env.NEXT_PUBLIC_BINANCE_SECRET_KEY,
+}
