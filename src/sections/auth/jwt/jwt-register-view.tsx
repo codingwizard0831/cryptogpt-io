@@ -1,13 +1,12 @@
 'use client';
 
-import * as Yup from 'yup';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { MuiOtpInput } from 'mui-one-time-password-input';
 
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import { TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -22,62 +21,63 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from 'src/components/iconify';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 
 export default function JwtRegisterView() {
-  const { register } = useAuthContext();
+  const { register, loginWithCodeSend, loginWithCodeVerify } = useAuthContext();
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [errorMsg, setErrorMsg] = useState('');
+  const isSubmitting = useBoolean(false);
+  const isShowPassword = useBoolean(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const isShowEmailVerifyForm = useBoolean(false);
 
-  const searchParams = useSearchParams();
-
-  const returnTo = searchParams.get('returnTo');
-
-  const password = useBoolean();
-
-  const RegisterSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    username: Yup.string().required('Username is required'),
-    password: Yup.string().required('Password is required'),
-    phone: Yup.string().required('Phone number is required').matches(
-      /^(\+\d{1,3}[- ]?)?\d{10}$/,
-      'Phone number must be a valid number'
-    ),
-  });
-
-  const defaultValues = {
-    email: '',
-    username: '',
-    password: '',
-    phone: '',
-  };
-
-  const methods = useForm({
-    resolver: yupResolver(RegisterSchema),
-    defaultValues,
-  });
-
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = (async () => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
     try {
-      await register?.(data.email, data.username, data.password, data.phone);
-
-      router.push(paths.auth.jwt.emailCheck);
+      await register(email, password);
+      isSubmitting.onFalse();
+      isShowEmailVerifyForm.onTrue();
     } catch (error) {
       console.error(error);
-      reset();
       setErrorMsg(typeof error === 'string' ? error : error.message);
+      isSubmitting.onFalse();
     }
   });
+
+  const handleResend = () => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
+    try {
+      loginWithCodeSend(email, '');
+      isSubmitting.onFalse();
+    } catch (error) {
+      console.error(error);
+      setErrorMsg(typeof error === 'string' ? error : error.message);
+      isSubmitting.onFalse();
+    }
+  }
+
+  const handleVerify = () => {
+    setErrorMsg('');
+    isSubmitting.onTrue();
+    try {
+      loginWithCodeVerify(email, "", code);
+    } catch (error) {
+      console.error(error);
+      setErrorMsg(typeof error === 'string' ? error : error.message);
+      isSubmitting.onFalse();
+    }
+  }
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
@@ -117,19 +117,20 @@ export default function JwtRegisterView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-      <RHFTextField name="username" label="Username" />
-      <RHFTextField name="email" label="Email address" />
-      <RHFTextField name="phone" label="Phone" />
+      <TextField fullWidth type='text' label="Email address" placeholder='Enter your email'
+        value={email} onChange={(e) => setEmail(e.target.value)}
+      />
 
-      <RHFTextField
-        name="password"
+      <TextField
         label="Password"
-        type={password.value ? 'text' : 'password'}
+        placeholder='Enter your password'
+        type={isShowPassword.value ? 'text' : 'password'}
+        value={password} onChange={(e) => setPassword(e.target.value)}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={password.onToggle} edge="end">
-                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+              <IconButton onClick={isShowPassword.onToggle} edge="end">
+                <Iconify icon={isShowPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
               </IconButton>
             </InputAdornment>
           ),
@@ -138,14 +139,75 @@ export default function JwtRegisterView() {
 
       <LoadingButton
         fullWidth
-        color="inherit"
         size="large"
-        type="submit"
         variant="contained"
-        loading={isSubmitting}
+        color='primary'
+        loading={isSubmitting.value}
+        onClick={onSubmit}
       >
         Create account
       </LoadingButton>
+    </Stack>
+  );
+
+  const renderEmailVerifyForm = (
+    <Stack spacing={2.5}>
+      <MuiOtpInput
+        autoFocus
+        gap={1}
+        length={6}
+        TextFieldsProps={{
+          placeholder: '-',
+        }}
+        value={code}
+        onChange={(value) => setCode(value)}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            height: '48px',
+          },
+          '& input': {
+            textAlign: 'center',
+          },
+        }}
+      />
+
+      <LoadingButton
+        fullWidth
+        loading={isSubmitting.value}
+        color='primary'
+        size="large"
+        variant="contained"
+        onClick={handleVerify}
+      >
+        Verify
+      </LoadingButton>
+
+      <Typography variant="body2">
+        {`Don’t have a code? `}
+        <Link
+          variant="subtitle2"
+          onClick={handleResend}
+          sx={{
+            cursor: 'pointer',
+          }}
+        >
+          Resend code
+        </Link>
+      </Typography>
+
+      <Link
+        component={RouterLink}
+        href={paths.auth.jwt.login}
+        color="inherit"
+        variant="subtitle2"
+        sx={{
+          alignItems: 'center',
+          display: 'inline-flex',
+        }}
+      >
+        <Iconify icon="eva:arrow-ios-back-fill" width={16} />
+        Return to sign in
+      </Link>
     </Stack>
   );
 
@@ -159,11 +221,17 @@ export default function JwtRegisterView() {
         </Alert>
       )}
 
-      <FormProvider methods={methods} onSubmit={onSubmit}>
-        {renderForm}
-      </FormProvider>
+      {
+        isShowEmailVerifyForm.value ? (
+          renderEmailVerifyForm
+        ) : (
+          <>
+            {renderForm}
+            {renderTerms}
+          </>
+        )
+      }
 
-      {renderTerms}
     </>
   );
 }

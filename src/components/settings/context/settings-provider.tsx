@@ -23,6 +23,7 @@ export function SettingsProvider({ children, defaultSettings }: SettingsProvider
   const { state, update, reset } = useLocalStorage(STORAGE_KEY, defaultSettings);
 
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [isShowMenu, setIsShowMenu] = useState(false);
 
   const isArabic = localStorageGetItem('i18nextLng') === 'ar';
 
@@ -50,6 +51,15 @@ export function SettingsProvider({ children, defaultSettings }: SettingsProvider
     setOpenDrawer(false);
   }, []);
 
+  // Menu
+  const onToggleMenu = useCallback(() => {
+    setIsShowMenu((prev) => !prev);
+  }, []);
+
+  const onCloseMenu = useCallback(() => {
+    setIsShowMenu(false);
+  }, []);
+
   const canReset = !isEqual(state, defaultSettings);
 
   const memoizedValue = useMemo(
@@ -65,6 +75,10 @@ export function SettingsProvider({ children, defaultSettings }: SettingsProvider
       open: openDrawer,
       onToggle: onToggleDrawer,
       onClose: onCloseDrawer,
+      // Menu
+      isShowMenu,
+      onToggleMenu,
+      onCloseMenu,
     }),
     [
       reset,
@@ -75,6 +89,9 @@ export function SettingsProvider({ children, defaultSettings }: SettingsProvider
       onCloseDrawer,
       onToggleDrawer,
       onChangeDirectionByLang,
+      isShowMenu,
+      onToggleMenu,
+      onCloseMenu,
     ]
   );
 

@@ -37,30 +37,36 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       sx={{
         width: 1,
         mx: 'auto',
-        maxWidth: 480,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        maxWidth: 520,
         px: { xs: 2, md: 8 },
-        pt: { xs: 15, md: 20 },
-        pb: { xs: 15, md: 0 },
+        backgroundColor: 'transparent',
+        // pt: { xs: 15, md: 20 },
+        // pb: { xs: 15, md: 0 },
       }}
     >
-      {children}
+      <Box sx={{
+        backgroundColor: alpha(theme.palette.background.default, 0.1),
+        backdropFilter: 'blur(14px)',
+        border: `1px solid ${alpha(theme.palette.grey[200], 0.2)}`,
+        // outline: '1px solid white',
+        borderRadius: 2,
+        p: 4,
+      }}>
+        {children}
+      </Box>
     </Stack>
   );
 
   const renderSection = (
     <Stack
       flexGrow={1}
-      spacing={10}
+      spacing={6}
       alignItems="center"
       justifyContent="center"
       sx={{
-        ...bgGradient({
-          color: alpha(
-            theme.palette.background.default,
-            theme.palette.mode === 'light' ? 0.88 : 0.94
-          ),
-          imgUrl: '/assets/background/overlay_2.jpg',
-        }),
       }}
     >
       <Typography variant="h3" sx={{ maxWidth: 480, textAlign: 'center' }}>
@@ -70,7 +76,7 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       <Box
         component="img"
         alt="auth"
-        src={image || '/assets/illustrations/illustration_dashboard.png'}
+        src={image || '/assets/images/project/02.png'}
         sx={{
           maxWidth: {
             xs: 480,
@@ -88,8 +94,27 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
       direction="row"
       sx={{
         minHeight: '100vh',
+        ...bgGradient({
+          color: 'transparent',
+          // imgUrl: '/assets/background/overlay-1.png',
+        }),
       }}
     >
+
+      <video autoPlay style={{
+        zIndex: -1,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+      }}>
+        <source src="/assets/videos/background.mp4" type="video/mp4" />
+        <track kind="captions" src="captions.vtt" srcLang="en" label="English" />
+        Your browser does not support the video tag.
+      </video>
+
       {renderLogo}
 
       {mdUp && renderSection}

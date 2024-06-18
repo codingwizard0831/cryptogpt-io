@@ -4,6 +4,8 @@ import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
 
+import { signMessageWithMetamask, connectWalletWithMetamask } from 'src/lib/metamask';
+
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
 import { getUserInfo, setUserInfo, isValidToken, getAccessToken, setAccessToken, setRefreshToken } from './utils';
@@ -125,27 +127,35 @@ export function AuthProvider({ children }: Props) {
     initialize();
   }, [initialize]);
 
-  // LOGIN
-  const login = useCallback(async (username: string, password: string, remember: boolean) => {
-    const data = {
-      username,
+  // LOGIN WITH EMAIL AND PASSWORD
+  const loginWithEmailAndPassword = useCallback(async (email: string, password: string) => {
+    const playloadData = {
+      email,
       password,
-      remember,
     };
 
-    const res = await axios.post(endpoints.auth.login, data);
+    const res = await axios.post(endpoints.auth.loginWithEmailAndPassword, playloadData);
     const {
-      access_token,
-      refresh_token,
-      user,
-      success,
-      message,
+      data,
+      error,
     } = res.data;
 
-    setAccessToken(access_token);
-    setRefreshToken(refresh_token);
-    console.log('user', user);
-    setUserInfo(user);
+    if (!data || error) {
+      const { message } = error;
+      throw new Error(message || 'Login failed');
+    }
+
+    const { user, session } = data;
+    const { access_token, refresh_token } = session;
+
+    if (session) {
+      setAccessToken(access_token);
+      setRefreshToken(refresh_token);
+    }
+    if (user) {
+      console.log('user', user);
+      setUserInfo(user);
+    }
 
     dispatch({
       type: Types.LOGIN,
@@ -159,34 +169,142 @@ export function AuthProvider({ children }: Props) {
     });
   }, []);
 
-  // REGISTER
-  const register = useCallback(
-    async (email: string, username: string, password: string, phone: string) => {
-      const data = {
-        email,
-        username,
-        password,
-        phone_number: phone,
-      };
+  // LOGIN WITH CODE SEND - EMAIL OR PHONE
+  const loginWithCodeSend = useCallback(async (email: string, phone: string) => {
+    const playloadData = {
+      ...(email && { email }),
+      ...(phone && { phone }),
+    };
 
-      const res = await axios.post(endpoints.auth.register, data);
+    const res = await axios.post(endpoints.auth.loginWithCodeSend, playloadData);
+    const {
+      data,
+      error,
+    } = res.data;
 
-      const { success, message } = res.data;
-      if (!success) {
-        throw new Error(message);
+    if (!data || error) {
+      const { message } = error;
+      throw new Error(message || 'Send code failed');
+    }
+    console.log('data', data);
+  }, []);
+
+  // LOGIN WITH CODE VERIFY - EMAIL OR PHONE
+  const loginWithCodeVerify = useCallback(async (email: string, phone: string, code: string) => {
+    const playloadData = {
+      ...(email && { email }),
+      ...(phone && { phone }),
+      token: code,
+      type: email ? "email" : "sms",
+    };
+
+    const res = await axios.post(endpoints.auth.loginWithCodeVerify, playloadData);
+    const {
+      data,
+      error,
+    } = res.data;
+
+    if (!data || error) {
+      const { message } = error;
+      throw new Error(message || 'Login failed');
+    }
+
+    const { user, session } = data;
+    const { access_token, refresh_token } = session;
+
+    if (session) {
+      setAccessToken(access_token);
+      setRefreshToken(refresh_token);
+    }
+    if (user) {
+      console.log('user', user);
+      setUserInfo(user);
+    }
+
+    dispatch({
+      type: Types.LOGIN,
+      payload: {
+        user: {
+          ...user,
+          access_token,
+          refresh_token,
+        },
+      },
+    });
+  }, []);
+
+  const loginWithMetamask = useCallback(async () => {
+    const { address, error: walletConnecError } = await connectWalletWithMetamask();
+    if (walletConnecError) {
+      throw new Error(walletConnecError);
+    }
+    const nonceResponse = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
+      address,
+    })
+    const userNonce = nonceResponse.data.user[0].auth.nonce;
+    console.log('nonce', userNonce);
+    const rst = await signMessageWithMetamask(userNonce);
+    if (rst.error) {
+      throw new Error(rst.error);
+    }
+    const signedMessage = rst.signature;
+
+    const response = await axios.post(endpoints.auth.loginWithMetamaskSignin, {
+      address,
+      signedMessage,
+      message: rst.message,
+      nonce: userNonce,
+    })
+    const { data, error } = response.data;
+    if (error) {
+      throw new Error(error);
+    } else {
+      const { user, token } = data;
+      if (token) {
+        setAccessToken(token);
+      }
+      if (user) {
+        console.log('user', user);
+        setUserInfo(user);
       }
 
-      // sessionStorage.setItem(STORAGE_KEY, accessToken);
+      dispatch({
+        type: Types.LOGIN,
+        payload: {
+          user: {
+            ...user,
+            access_token: token,
+          },
+        },
+      });
+    }
+  }, []);
 
-      // dispatch({
-      //   type: Types.REGISTER,
-      //   payload: {
-      //     user: {
-      //       ...user,
-      //       accessToken,
-      //     },
-      //   },
-      // });
+  // REGISTER
+  const register = useCallback(
+    async (email: string, password: string) => {
+      const payloadData = {
+        email,
+        password,
+      };
+
+      const res = await axios.post(endpoints.auth.register, payloadData);
+      const {
+        data,
+        error,
+      } = res.data;
+
+      if (!data || error) {
+        const { message } = error;
+        throw new Error(message || 'Rigister failed');
+      }
+
+      const { user } = data;
+      console.log('user', user);
+
+      if (!user) {
+        throw new Error("Can't register user");
+      }
     },
     []
   );
@@ -220,11 +338,14 @@ export function AuthProvider({ children }: Props) {
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
       //
-      login,
+      loginWithEmailAndPassword,
+      loginWithCodeSend,
+      loginWithCodeVerify,
+      loginWithMetamask,
       register,
       logout,
     }),
-    [login, logout, register, state.user, status]
+    [loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask, logout, register, state.user, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

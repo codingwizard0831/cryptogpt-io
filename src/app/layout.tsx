@@ -1,3 +1,7 @@
+
+import { headers } from 'next/headers'
+import { cookieToInitialState } from 'wagmi'
+
 /* eslint-disable perfectionist/sort-imports */
 import 'src/global.css';
 import 'src/converted-styles.css';
@@ -14,8 +18,8 @@ import SnackbarProvider from 'src/components/snackbar/snackbar-provider';
 import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
 
 import { AuthProvider } from 'src/auth/context/jwt';
-import { BackgroundGradientAnimationProvider } from 'src/components/background-gradient-animation/context/background-gradient-animation-provider';
-import ConvexClientProvider from 'src/convex/convex-client-provider';
+import Web3ModalProvider from 'src/web3/context';
+import { config } from 'src/web3/config';
 
 // ----------------------------------------------------------------------
 
@@ -45,10 +49,12 @@ type Props = {
 };
 
 export default function RootLayout({ children }: Props) {
+  const initialState = cookieToInitialState(config, headers().get('cookie'))
+
   return (
     <html lang="en" className={primaryFont.className}>
       <body>
-        <ConvexClientProvider>
+        <Web3ModalProvider initialState={initialState}>
           <AuthProvider>
             <LocalizationProvider>
               <SettingsProvider
@@ -57,7 +63,7 @@ export default function RootLayout({ children }: Props) {
                   themeDirection: 'ltr', //  'rtl' | 'ltr'
                   themeContrast: 'default', // 'default' | 'bold'
                   themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-                  themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+                  themeColorPresets: 'orange', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
                   themeStretch: false,
                 }}
               >
@@ -66,16 +72,14 @@ export default function RootLayout({ children }: Props) {
                     <SnackbarProvider>
                       <SettingsDrawer />
                       <ProgressBar />
-                      <BackgroundGradientAnimationProvider>
-                        {children}
-                      </BackgroundGradientAnimationProvider>
+                      {children}
                     </SnackbarProvider>
                   </MotionLazy>
                 </ThemeProvider>
               </SettingsProvider>
             </LocalizationProvider>
           </AuthProvider>
-        </ConvexClientProvider>
+        </Web3ModalProvider>
       </body>
     </html>
   );

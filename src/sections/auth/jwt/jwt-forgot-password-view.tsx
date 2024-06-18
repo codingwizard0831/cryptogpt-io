@@ -1,11 +1,11 @@
 'use client';
 
-import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+
+import { useState } from 'react';
 
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import { TextField } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
@@ -13,13 +13,12 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
-import axios, { endpoints } from 'src/utils/axios';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { PasswordIcon } from 'src/assets/icons';
 
 import Iconify from 'src/components/iconify';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -27,48 +26,33 @@ export default function JwtForgotPasswordView() {
     const { forgotPassword } = useAuthContext();
 
     const router = useRouter();
+    const [email, setEmail] = useState('');
+    const isSubmitting = useBoolean(false);
 
-    const ForgotPasswordSchema = Yup.object().shape({
-        email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    });
-
-    const defaultValues = {
-        email: '',
-    };
-
-    const methods = useForm({
-        resolver: yupResolver(ForgotPasswordSchema),
-        defaultValues,
-    });
-
-    const {
-        handleSubmit,
-        formState: { isSubmitting },
-    } = methods;
-
-    const onSubmit = handleSubmit(async (data) => {
+    const handleSendRequest = async () => {
         try {
-            await axios.post(endpoints.auth.passwordResetRequest, {
-                email: data.email,
-            });
-            // await forgotPassword?.(data.email);
-
+            isSubmitting.onTrue();
+            // await forgotPassword(email);
             router.push(paths.auth.jwt.emailCheck);
         } catch (error) {
             console.error(error);
+            isSubmitting.onFalse();
         }
-    });
+    };
 
     const renderForm = (
         <Stack spacing={3} alignItems="center">
-            <RHFTextField name="email" label="Email address" />
+            <TextField fullWidth type='text' label="Email or phone" placeholder='Enter phonenumber or email'
+                value={email} onChange={(e) => setEmail(e.target.value)}
+            />
 
             <LoadingButton
                 fullWidth
                 size="large"
-                type="submit"
-                variant="contained"
-                loading={isSubmitting}
+                variant="outlined"
+                color='primary'
+                loading={isSubmitting.value}
+                onClick={handleSendRequest}
             >
                 Send Request
             </LoadingButton>
@@ -108,9 +92,7 @@ export default function JwtForgotPasswordView() {
         <>
             {renderHead}
 
-            <FormProvider methods={methods} onSubmit={onSubmit}>
-                {renderForm}
-            </FormProvider>
+            {renderForm}
         </>
     );
 }

@@ -1,23 +1,16 @@
 import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import { useTheme } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
+import { alpha, useTheme } from '@mui/material/styles';
 
-import { useOffSetTop } from 'src/hooks/use-off-set-top';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { bgBlur } from 'src/theme/css';
-
-import Logo from 'src/components/logo';
-import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
-import { NAV, HEADER } from '../config-layout';
-import SharePopover from '../common/share-popover';
 import SearchAgentBar from '../common/searchAgentBar';
 import SettingsButton from '../common/settings-button';
 import AccountPopover from '../common/account-popover';
+import { NAV, HEADER, SPACING } from '../config-layout';
 import ContactsPopover from '../common/contacts-popover';
 import LanguagePopover from '../common/language-popover';
 import NotificationsPopover from '../common/notifications-popover';
@@ -32,27 +25,10 @@ export default function Header({ onOpenNav }: Props) {
   const theme = useTheme();
 
   const settings = useSettingsContext();
-
-  const isNavHorizontal = settings.themeLayout === 'horizontal';
-
-  const isNavMini = settings.themeLayout === 'mini';
-
-  const lgUp = useResponsive('up', 'lg');
-
-  const offset = useOffSetTop(HEADER.H_DESKTOP);
-
-  const offsetTop = offset && !isNavHorizontal;
+  const smUp = useResponsive('up', 'sm');
 
   const renderContent = (
     <>
-      {lgUp && isNavHorizontal && <Logo sx={{ mr: 2.5 }} />}
-
-      {!lgUp && (
-        <IconButton onClick={onOpenNav}>
-          <SvgColor src="/assets/icons/navbar/ic_menu_item.svg" />
-        </IconButton>
-      )}
-
       <SearchAgentBar />
 
       <Stack
@@ -62,8 +38,6 @@ export default function Header({ onOpenNav }: Props) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-        <SharePopover />
-
         <LanguagePopover />
 
         <NotificationsPopover />
@@ -80,33 +54,17 @@ export default function Header({ onOpenNav }: Props) {
   return (
     <AppBar
       sx={{
-        height: HEADER.H_MOBILE,
+        height: smUp ? HEADER.H_DESKTOP : HEADER.H_MOBILE,
+        width: smUp ? `calc(100% - ${NAV.W_SIDE_BAR_MENU + 1}px - ${SPACING.md * 2}px)` : `calc(100% - ${SPACING.sm * 2}px)`,
         // zIndex: theme.zIndex.appBar + 1,
         zIndex: 998, // Duffel component is 999
-        ...bgBlur({
-          color: theme.palette.background.default,
-          blur: 10,
-          opacity: 0.2,
-        }),
-        transition: theme.transitions.create(['height'], {
-          duration: theme.transitions.duration.shorter,
-        }),
-        ...(lgUp && {
-          width: `calc(100% - ${NAV.W_VERTICAL + 1}px)`,
-          height: HEADER.H_DESKTOP,
-          ...(offsetTop && {
-            height: HEADER.H_DESKTOP_OFFSET,
-          }),
-          ...(isNavHorizontal && {
-            width: 1,
-            bgcolor: 'background.default',
-            height: HEADER.H_DESKTOP_OFFSET,
-            borderBottom: `dashed 1px ${theme.palette.divider}`,
-          }),
-          ...(isNavMini && {
-            width: `calc(100% - ${NAV.W_MINI + 1}px)`,
-          }),
-        }),
+        top: `${smUp ? SPACING.md : SPACING.sm}px !important`,
+        right: smUp ? `${SPACING.md}px !important` : `${SPACING.sm}px !important`,
+        backdropFilter: 'blur(20px)',
+        backgroundColor: alpha(theme.palette.background.opposite, 0.1),
+        borderRadius: theme.shape.borderRadius,
+        border: `solid 1px ${alpha(theme.palette.background.opposite, 0.2)}`,
+        transition: 'all 225ms cubic-bezier(0.4, 0, 0.6, 1)',
       }}
     >
       <Toolbar
@@ -117,6 +75,6 @@ export default function Header({ onOpenNav }: Props) {
       >
         {renderContent}
       </Toolbar>
-    </AppBar>
+    </AppBar >
   );
 }

@@ -1,38 +1,52 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useMutation } from "convex/react";
+
+
+import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import { useTheme } from '@mui/material';
-import Container from '@mui/material/Container';
+import { Tab, Card, Tabs, Stack } from '@mui/material';
 
-import { useSettingsContext } from 'src/components/settings';
+import { DashboardNews } from './dashboard-news';
+import DashboardLineChart from './dashboard-line-chart';
+import DashBoardTradingChart from './dashboard-trading-chart';
 
-import { api } from "../../../convex/_generated/api";
+
 
 export default function DashboardView() {
-    const theme = useTheme();
-    const settings = useSettingsContext();
-    const tasks = useMutation(api.profile.getByUserId);
-    console.log(tasks({ user_id: 28 }));
+    const [currentTab, setCurrentTab] = useState('candle');
 
-    useEffect(() => {
-        Promise.all([
-            tasks({ user_id: 28 }),
-        ]).then((data) => {
-            console.log("finaly", data);
-        });
-    }, [tasks]);
+    const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+        setCurrentTab(newValue);
+    }, []);
 
     return (
-        <Container maxWidth={settings.themeStretch ? false : 'xl'} sx={{
+        <Box sx={{
             height: '100%',
             pb: 2,
         }}>
-            <Box>
-                Dashboard
-            </Box>
-        </Container>
+            <Card sx={{
+                p: 2,
+                borderRadius: 1,
+                boxShadow: 2,
+            }}>
+                <Stack direction="column" spacing={2}>
+                    <Tabs value={currentTab} onChange={handleChangeTab}>
+                        <Tab value='candle' label="Candle" />
+                        <Tab value='line' label="Line" />
+                        <Tab value='news' label="News" />
+                    </Tabs>
+                    {
+                        currentTab === 'candle' && <DashBoardTradingChart />
+                    }
+                    {
+                        currentTab === 'line' && <DashboardLineChart />
+                    }
+                    {
+                        currentTab === 'news' && <DashboardNews />
+                    }
+                </Stack>
+            </Card>
+        </Box>
     );
 }

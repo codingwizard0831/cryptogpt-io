@@ -7,9 +7,13 @@ import { NavProps, NavGroupProps } from '../types';
 
 // ----------------------------------------------------------------------
 
-function NavSectionMini({ data, slotProps, ...other }: NavProps) {
+function NavSectionMini({ data, slotProps, sx, ...other }: NavProps) {
   return (
-    <Stack component="nav" id="nav-section-mini" spacing={`${slotProps?.gap || 4}px`} {...other}>
+    <Stack component="nav" id="nav-section-mini" spacing={`${slotProps?.gap || 4}px`} sx={{
+      p: '2px',
+      width: '100%',
+      ...sx,
+    }} {...other}>
       {data.map((group, index) => (
         <Group key={group.subheader || index} items={group.items} slotProps={slotProps} />
       ))}

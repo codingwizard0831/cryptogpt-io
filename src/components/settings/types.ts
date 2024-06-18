@@ -21,4 +21,8 @@ export type SettingsContextProps = SettingsValueProps & {
   open: boolean;
   onToggle: VoidFunction;
   onClose: VoidFunction;
+  // Menu
+  isShowMenu: boolean;
+  onToggleMenu: VoidFunction;
+  onCloseMenu: VoidFunction;
 };

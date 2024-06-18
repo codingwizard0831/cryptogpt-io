@@ -24,7 +24,7 @@ export type AuthStateType = {
 // ----------------------------------------------------------------------
 
 type CanRemove = {
-  login?: (email: string, password: string, remember: boolean) => Promise<void>;
+  login?: (email: string, password: string) => Promise<void>;
   register?: (
     email: string,
     username: string,
@@ -52,8 +52,14 @@ export type JWTContextType = CanRemove & {
   loading: boolean;
   authenticated: boolean;
   unauthenticated: boolean;
-  login: (email: string, password: string, remember: boolean) => Promise<void>;
-  register: (email: string, username: string, password: string, phone: string) => Promise<void>;
+  loginWithEmailAndPassword: (email: string, password: string) => Promise<void>;
+  loginWithCodeSend: (email: string, code: string) => Promise<void>;
+  loginWithCodeVerify: (email: string, phone: string, code: string) => Promise<void>;
+  loginWithMetamask: () => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
 };
 
