@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 
 export async function POST(req: Request) {
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
       if (!authUser || authUserError) {
         const { data: newUser, error: newUserError } =
           await supabaseServiceRole.auth.admin.createUser({
-            email: email,
+            email,
             email_confirm: true,
           });
 

@@ -3,15 +3,12 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
-import { createClient } from '@supabase/supabase-js'
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 // import { cookies } from 'next/headers'
 import { MuiOtpInput } from 'mui-one-time-password-input';
 
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Link, Alert, Stack, Button, Divider, TextField, Typography, IconButton, InputAdornment } from '@mui/material';
-
-import { BINANCE_API, PROJECT_URL } from 'src/config-global';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -23,7 +20,7 @@ import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
 import { supabase } from 'src/lib/supabase';
 import { useAuthContext } from 'src/auth/hooks';
-import { getAccessToken } from 'src/auth/context/jwt/utils';
+import { BINANCE_API, PROJECT_URL } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -197,7 +194,7 @@ export default function JwtLoginView() {
     const response = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: PROJECT_URL + '/auth/jwt/supabase-oauth-callback?',
+        redirectTo: `${PROJECT_URL}/auth/jwt/supabase-oauth-callback?`,
       },
     });
   }
