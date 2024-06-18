@@ -1,10 +1,11 @@
-import { supabase } from 'src/lib/supabase';
 import { NextResponse } from "next/server";
+
+import { supabase } from 'src/lib/supabase';
 
 export async function POST(req: Request) {
   try {
     const res = await req.json();
-    const new_password = res.new_password;
+    const { new_password } = res;
     const response = await supabase.auth.updateUser({
       password: new_password
     })

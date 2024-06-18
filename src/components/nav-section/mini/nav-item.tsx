@@ -131,15 +131,6 @@ const StyledNavItem = styled(ListItemButton, {
 
   const lightMode = theme.palette.mode === 'light';
 
-  const noWrapStyles = {
-    width: '100%',
-    maxWidth: '100%',
-    display: 'block',
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-  } as const;
-
   const baseStyles = {
     item: {
       borderRadius: 6,

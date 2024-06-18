@@ -16,50 +16,35 @@ export interface UserData {
 // Authentication functions
 
 export const signUp = async (email: string, password: string) => {
-  return await supabase.auth.signUp({ email, password })
+  console.log('email', email);
+  return supabase.auth.signUp({ email, password })
 }
 
-export const signIn = async (email: string, password: string) => {
-  return await supabase.auth.signInWithPassword({ email, password })
-}
+export const signIn = async (email: string, password: string) => supabase.auth.signInWithPassword({ email, password })
 
-export const signOut = async () => {
-  return await supabase.auth.signOut()
-}
 
-export const resetPassword = async (email: string) => {
-  return await supabase.auth.resetPasswordForEmail(email)
-}
+export const signOut = async () => supabase.auth.signOut()
 
-export const updateUser = async (userData: Partial<UserData>) => {
-  return await supabase.auth.updateUser(userData)
-}
 
-export const getUser = () => {
-  return supabase.auth.getUser()
-}
+export const resetPassword = async (email: string) => supabase.auth.resetPasswordForEmail(email)
+
+
+export const updateUser = async (userData: Partial<UserData>) => supabase.auth.updateUser(userData)
+
+
+export const getUser = () => supabase.auth.getUser()
 
 // CRUD operations for a sample table (e.g., 'profiles')
 
-export const fetchProfiles = async () => {
-  return await supabase.from('profiles').select('*')
-}
+export const fetchProfiles = async () => supabase.from('profiles').select('*')
 
-export const fetchProfileById = async (id: string) => {
-  return await supabase.from('profiles').select('*').eq('id', id).single()
-}
+export const fetchProfileById = async (id: string) => supabase.from('profiles').select('*').eq('id', id).single()
 
-export const createProfile = async (profileData: UserProfile) => {
-  return await supabase.from('profiles').insert([profileData])
-}
+export const createProfile = async (profileData: UserProfile) => supabase.from('profiles').insert([profileData])
 
-export const updateProfile = async (id: string, profileData: Partial<UserProfile>) => {
-  return await supabase.from('profiles').update(profileData).eq('id', id)
-}
+export const updateProfile = async (id: string, profileData: Partial<UserProfile>) => supabase.from('profiles').update(profileData).eq('id', id)
 
-export const deleteProfile = async (id: string) => {
-  return await supabase.from('profiles').delete().eq('id', id)
-}
+export const deleteProfile = async (id: string) => supabase.from('profiles').delete().eq('id', id)
 
 // Export the supabase client for direct use if needed
 export default supabase

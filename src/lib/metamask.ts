@@ -2,12 +2,14 @@
 // utils/metamask.js
 const ethers = require('ethers');
 
-declare global {
-  interface Window { ethereum: any; }
-}
+// declare global {
+//   interface Window {
+//     ethereum: any;
+//   }
+// }
 
 export const connectWalletWithMetamask = async () => {
-  const { ethereum } = window;
+  const ethereum = window.ethereum as any;
   // Check if MetaMask is installed
   if (typeof ethereum !== "undefined" && ethereum.isMetaMask) {
     try {

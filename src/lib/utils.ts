@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
 export async function fetcher<JSON = any>(
     input: RequestInfo,
