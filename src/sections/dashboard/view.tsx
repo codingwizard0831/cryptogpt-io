@@ -5,18 +5,15 @@
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import { Tab, Card, Tabs, Stack, useTheme } from '@mui/material';
+import { Tab, Card, Tabs, Stack } from '@mui/material';
 
-import { useSettingsContext } from 'src/components/settings';
-
+import { DashboardNews } from './dashboard-news';
 import DashboardLineChart from './dashboard-line-chart';
 import DashBoardTradingChart from './dashboard-trading-chart';
 
 
 
 export default function DashboardView() {
-    const theme = useTheme();
-    const settings = useSettingsContext();
     const [currentTab, setCurrentTab] = useState('candle');
 
     const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
@@ -44,6 +41,9 @@ export default function DashboardView() {
                     }
                     {
                         currentTab === 'line' && <DashboardLineChart />
+                    }
+                    {
+                        currentTab === 'news' && <DashboardNews />
                     }
                 </Stack>
             </Card>
