@@ -14055,7 +14055,7 @@ react-floater@^0.7.9:
     prop-types "^15.8.1"
     tree-changes "^0.9.1"
 
-react-gauge-component@^1.2.2:
+react-gauge-component@^1.2.21:
   version "1.2.21"
   resolved "https://registry.yarnpkg.com/react-gauge-component/-/react-gauge-component-1.2.21.tgz#2c09821476af13f82d7d787904fb1768f83a3240"
   integrity sha512-L4Wjqb/jiGArztvp7ukBEUWO5gii0XGGnxM8M/hmpOA7BBFN95MMGFi+xGcvPZqGkq1eTu6k7BIst6oigF0UrQ==
