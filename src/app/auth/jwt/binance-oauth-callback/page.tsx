@@ -2,13 +2,15 @@
 
 import React, { useCallback } from 'react';
 
-import axios, { endpoints } from 'src/utils/axios';
+import axios from 'src/utils/axios';
 
 import { GuestGuard } from 'src/auth/guard';
+import { useAuthContext } from 'src/auth/hooks';
 import { BINANCE_API, PROJECT_URL } from 'src/config-global';
 import { setAccessToken, setRefreshToken } from 'src/auth/context/jwt/utils';
 
 export default function OAuthPage() {
+  const { loginWithBinance } = useAuthContext();
   // const encodedRedirectUri = encodeURIComponent('http://localhost:8083/dashboard');
   const redirect_uri = `${PROJECT_URL}/auth/jwt/binance-oauth-callback`;
   const fetchData = useCallback(async (code: string) => {
@@ -26,23 +28,11 @@ export default function OAuthPage() {
       const userInfo = await axios.get(
         `https://www.binanceapis.com/oauth-api/user-info?access_token=${accessToken}`
       );
-      const user = userInfo.data;
-      const responseUser = await axios.post(endpoints.auth.loginWithBinance, {
-        email: user.data.email,
-      });
-      // const { data, error } = responseUser.data;
-      // if (error) {
-      //   throw new Error(error);
-      // } else {
-      //   const { user } = data;
-      //   if (user) {
-      //     console.log('user', user);
-      //     // setUserInfo(user);
-      //   }
-      // }
-      window.location.href = '/dashboard';
+      const userData = userInfo.data;
+      await loginWithBinance(userData.data.email);
+      // window.location.href = '/dashboard';
     }
-  }, [redirect_uri]);
+  }, [redirect_uri, loginWithBinance]);
 
   React.useEffect(() => {
     const callbackURL = new URL(window.location.href);
