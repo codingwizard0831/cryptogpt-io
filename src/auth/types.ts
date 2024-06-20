@@ -56,6 +56,7 @@ export type JWTContextType = CanRemove & {
   loginWithCodeSend: (email: string, code: string) => Promise<void>;
   loginWithCodeVerify: (email: string, phone: string, code: string) => Promise<void>;
   loginWithMetamask: () => Promise<void>;
+  loginWithBinance: (email: string) => Promise<void>;
   register: (
     email: string,
     password: string,

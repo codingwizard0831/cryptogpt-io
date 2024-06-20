@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { signToken } from 'src/lib/utils'
 import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 
 export async function POST(req: Request) {
@@ -52,16 +53,22 @@ export async function POST(req: Request) {
         .eq('email', email)
         .select();
 
-      const response = NextResponse.json(
-        {
-          data: {
-            user: finalAuthUser,
-          },
-          error: null,
-        },
-        { status: 200 }
-      );
-      return response;
+        const token = await signToken(
+            {
+                email,
+                sub: finalAuthUser.id,
+                aud: 'authenticated'
+            },
+            { expiresIn: `${10000000}s` }
+        )
+        const response = NextResponse.json({
+            data: {
+                token,
+                user: finalAuthUser,
+            },
+            error: null,
+        }, { status: 200 })
+        return response
     } catch (error: any) {
       return NextResponse.json(
         { data: null, error: error?.message || 'Internal Server Error' },

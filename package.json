@@ -93,7 +93,7 @@
     "react-credit-cards": "^0.8.3",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
-    "react-gauge-component": "^1.2.2",
+    "react-gauge-component": "^1.2.21",
     "react-hook-form": "^7.48.2",
     "react-i18next": "^13.5.0",
     "react-joyride": "^2.7.1",
