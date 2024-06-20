@@ -2,7 +2,7 @@
 
 import CandlestickChart from 'react-candlestick-chart';
 
-import { Box, BoxProps, useTheme } from '@mui/material';
+import { Box, Stack, Button, BoxProps, useTheme, Typography, InputLabel, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
 
 export interface DashboardTradingChartProps extends BoxProps {
     data?: any[];
@@ -15,62 +15,147 @@ export default function DashBoardTradingChart({ data = dummyData, sx, ...other }
         <Box sx={{
             ...sx,
         }} {...other}>
-            <CandlestickChart
-                data={data}
-                id="candlestick-chart"
-                width={1200}
-                height={600}
-                decimal={2}
-                scrollZoom={{
-                    enable: true,
-                    max: 20,
-                }}
-                rangeSelector={{
-                    enable: true,
-                    height: 150,
-                    initialRange: { type: "month", value: 1 },
-                }}
-                dataViewerColors={{
-                    shortPositionLabel: "#b2b5be",
-                    shortPositionData: "#fff",
-                    longPositionLabel: "#b2b5be",
-                    longPositionData: "#fff",
-                    stopLossLabel: "#b2b5be",
-                    stopLossData: "#F9DB04",
-                    takeProfitLabel: "#b2b5be",
-                    takeProfitData: "#04F5F9",
-                    openLabel: "#b2b5be",
-                    openDataUp: "#ffb22e",
-                    openDataDown: "#bbbbbb",
-                    highLabel: "#b2b5be",
-                    highDataUp: "#ffb22e",
-                    highDataDown: "#bbbbbb",
-                    lowLabel: "#b2b5be",
-                    lowDataUp: "#ffb22e",
-                    lowDataDown: "#bbbbbb",
-                    closeLabel: "#b2b5be",
-                    closeDataUp: "#ffb22e",
-                    closeDataDown: "#bbbbbb",
-                }}
-                ColorPalette={{
-                    background: "#ffffff11",
-                    grid: "#ffffff22",
-                    tick: "#b2b5be",
-                    selectorLine: "#ffb22e",
-                    selectorLabelBackground: "#2a2e39",
-                    selectorLabelText: "#b2b5be",
-                    greenCandle: "#ffb22e",
-                    redCandle: "#000000",
-                    longPosition: "#ffb22e",
-                    shortPosition: "#ffb22e",
-                    tp: "#ffb22e",
-                    sl: "#000000",
-                    RSChartStroke: "#ffb22e",
-                    RSChartOverlay: "#ffffff55",
-                    RSChartOverlayResize: "#ffffff22",
-                    resetButtonColor: theme.palette.primary.main,
-                }}
-            />
+            <Stack direction="column" spacing={2}>
+                <CandlestickChart
+                    data={data}
+                    id="candlestick-chart"
+                    width={800}
+                    height={500}
+                    decimal={2}
+                    scrollZoom={{
+                        enable: true,
+                        max: 20,
+                    }}
+                    rangeSelector={{
+                        enable: true,
+                        height: 150,
+                        initialRange: { type: "month", value: 1 },
+                    }}
+                    dataViewerColors={{
+                        shortPositionLabel: "#b2b5be",
+                        shortPositionData: "#fff",
+                        longPositionLabel: "#b2b5be",
+                        longPositionData: "#fff",
+                        stopLossLabel: "#b2b5be",
+                        stopLossData: "#F9DB04",
+                        takeProfitLabel: "#b2b5be",
+                        takeProfitData: "#04F5F9",
+                        openLabel: "#b2b5be",
+                        openDataUp: "#ffb22e",
+                        openDataDown: "#bbbbbb",
+                        highLabel: "#b2b5be",
+                        highDataUp: "#ffb22e",
+                        highDataDown: "#bbbbbb",
+                        lowLabel: "#b2b5be",
+                        lowDataUp: "#ffb22e",
+                        lowDataDown: "#bbbbbb",
+                        closeLabel: "#b2b5be",
+                        closeDataUp: "#ffb22e",
+                        closeDataDown: "#bbbbbb",
+                    }}
+                    ColorPalette={{
+                        background: "#ffffff11",
+                        grid: "#ffffff22",
+                        tick: "#b2b5be",
+                        selectorLine: "#ffb22e",
+                        selectorLabelBackground: "#2a2e39",
+                        selectorLabelText: "#b2b5be",
+                        greenCandle: "#ffb22e",
+                        redCandle: "#000000",
+                        longPosition: "#ffb22e",
+                        shortPosition: "#ffb22e",
+                        tp: "#ffb22e",
+                        sl: "#000000",
+                        RSChartStroke: "#ffb22e",
+                        RSChartOverlay: "#ffffff55",
+                        RSChartOverlayResize: "#ffffff22",
+                        resetButtonColor: theme.palette.primary.main,
+                    }}
+                />
+                <Stack direction="row" spacing={1}>
+                    <Stack direction="column" spacing={1} sx={{
+                    }}>
+                        <Stack direction="row" spacing={1}>
+                            <Typography sx={{
+                                color: 'text.secondary',
+                                fontSize: '14px',
+                            }}>Avbl</Typography>
+                            <Typography sx={{
+                                fontSize: '14px',
+                                ml: 1,
+                            }}>USDT</Typography>
+                        </Stack>
+                        <FormControl sx={{ width: '25ch' }} variant="outlined">
+                            <InputLabel htmlFor="buy-price">Price</InputLabel>
+                            <OutlinedInput
+                                id="buy-price"
+                                type='text'
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <Typography>USDT</Typography>
+                                    </InputAdornment>
+                                }
+                                label="Price"
+                            />
+                        </FormControl>
+                        <FormControl sx={{ width: '25ch' }} variant="outlined">
+                            <InputLabel htmlFor="buy-amount">Amount</InputLabel>
+                            <OutlinedInput
+                                id="buy-amount"
+                                type='text'
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <Typography>BTC</Typography>
+                                    </InputAdornment>
+                                }
+                                label="Price"
+                            />
+                        </FormControl>
+                        <Button variant='contained' color="success" fullWidth>BUY</Button>
+                    </Stack>
+
+                    <Stack direction="column" spacing={1} sx={{
+                    }}>
+                        <Stack direction="row" spacing={1}>
+                            <Typography sx={{
+                                color: 'text.secondary',
+                                fontSize: '14px',
+                            }}>Avbl</Typography>
+                            <Typography sx={{
+                                fontSize: '14px',
+                                ml: 1,
+                            }}>BTC</Typography>
+                        </Stack>
+                        <FormControl sx={{ width: '25ch' }} variant="outlined">
+                            <InputLabel htmlFor="buy-price">Price</InputLabel>
+                            <OutlinedInput
+                                id="buy-price"
+                                type='text'
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <Typography>USDT</Typography>
+                                    </InputAdornment>
+                                }
+                                label="Price"
+                            />
+                        </FormControl>
+                        <FormControl sx={{ width: '25ch' }} variant="outlined">
+                            <InputLabel htmlFor="buy-amount">Amount</InputLabel>
+                            <OutlinedInput
+                                id="buy-amount"
+                                type='text'
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <Typography>BTC</Typography>
+                                    </InputAdornment>
+                                }
+                                label="Price"
+                            />
+                        </FormControl>
+                        <Button variant='contained' color="error" fullWidth>SELL</Button>
+                    </Stack>
+                </Stack>
+            </Stack>
         </Box>
     );
 }
