@@ -24,7 +24,7 @@ export default function OAuthPage() {
     if (accessToken && refreshToken) {
       const userInfo = await axios.get(`https://www.binanceapis.com/oauth-api/user-info`, {
         headers: {
-          'Authorization': `Bearer ${data.id_token}`,
+          'Authorization': data.id_token,
         },
         params: {
           access_token: data.access_token,
