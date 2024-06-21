@@ -7,7 +7,6 @@ import axios from 'src/utils/axios';
 import { GuestGuard } from 'src/auth/guard';
 import { useAuthContext } from 'src/auth/hooks';
 import { BINANCE_API, PROJECT_URL } from 'src/config-global';
-import { setAccessToken, setRefreshToken } from 'src/auth/context/jwt/utils';
 
 export default function OAuthPage() {
   const { loginWithBinance } = useAuthContext();
@@ -23,13 +22,16 @@ export default function OAuthPage() {
     const accessToken = data.access_token;
     const refreshToken = data.refresh_token;
     if (accessToken && refreshToken) {
-      setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
-      const userInfo = await axios.get(
-        `https://www.binanceapis.com/oauth-api/user-info?access_token=${accessToken}`
-      );
+      const userInfo = await axios.get(`https://www.binanceapis.com/oauth-api/user-info`, {
+        headers: {
+          'Authorization': data.id_token,
+        },
+        params: {
+          access_token: data.access_token,
+        },
+      });
       const userData = userInfo.data;
-      await loginWithBinance(userData.data.email);
+      await loginWithBinance(userData.data.userId);
       // window.location.href = '/dashboard';
     }
   }, [redirect_uri, loginWithBinance]);
