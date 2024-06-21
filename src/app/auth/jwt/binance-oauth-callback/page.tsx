@@ -31,7 +31,7 @@ export default function OAuthPage() {
         },
       });
       const userData = userInfo.data;
-      await loginWithBinance(userData.data.email);
+      await loginWithBinance(userData.data.userId);
       // window.location.href = '/dashboard';
     }
   }, [redirect_uri, loginWithBinance]);
