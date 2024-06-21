@@ -6,7 +6,7 @@ import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 export async function POST(req: Request) {
   try {
     const res = await req.json();
-    const { email } = res;
+    const { userId } = res;
 
     try {
       let finalAuthUser = null;
@@ -14,13 +14,13 @@ export async function POST(req: Request) {
       const { data: authUser, error: authUserError } = await supabase
         .from('auth_users')
         .select('*')
-        .eq('email', email)
+        .eq('email', `${userId}@cryptogpt.io`)
         .single();
 
       if (!authUser || authUserError) {
         const { data: newUser, error: newUserError } =
           await supabaseServiceRole.auth.admin.createUser({
-            email,
+            email: `${userId}@cryptogpt.io`,
             email_confirm: true,
           });
 
@@ -50,12 +50,12 @@ export async function POST(req: Request) {
             },
           },
         ])
-        .eq('email', email)
+        .eq('email', `${userId}@cryptogpt.io`)
         .select();
 
         const token = await signToken(
             {
-                email,
+                email: `${userId}@cryptogpt.io`,
                 sub: finalAuthUser.id,
                 aud: 'authenticated'
             },

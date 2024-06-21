@@ -280,9 +280,9 @@ export function AuthProvider({ children }: Props) {
     }
   }, []);
 
-  const loginWithBinance = useCallback(async (email: string) => {
+  const loginWithBinance = useCallback(async (userId: string) => {
     const response = await axios.post(endpoints.auth.loginWithBinance, {
-        email
+        userId
       });
       const responseData = response.data;
       if (responseData.error) {
