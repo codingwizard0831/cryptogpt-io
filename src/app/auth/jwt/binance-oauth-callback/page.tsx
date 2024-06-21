@@ -22,9 +22,14 @@ export default function OAuthPage() {
     const accessToken = data.access_token;
     const refreshToken = data.refresh_token;
     if (accessToken && refreshToken) {
-      const userInfo = await axios.get(
-        `https://www.binanceapis.com/oauth-api/user-info?access_token=${accessToken}`
-      );
+      const userInfo = await axios.get(`https://www.binanceapis.com/oauth-api/user-info`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        params: {
+          access_token: accessToken,
+        },
+      });
       const userData = userInfo.data;
       await loginWithBinance(userData.data.email);
       // window.location.href = '/dashboard';
