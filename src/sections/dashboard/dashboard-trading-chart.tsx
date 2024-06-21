@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import CandlestickChart from 'react-candlestick-chart';
+import { useState, useEffect, useRef } from 'react';
+// import CandlestickChart from 'react-candlestick-chart';
 
 import { Box, BoxProps, useTheme } from '@mui/material';
+
+declare global {
+    interface Window {
+        TradingView: any;
+    }
+}
 
 export interface DashboardTradingChartProps extends BoxProps {
     data?: any[];
@@ -25,7 +31,7 @@ export default function DashBoardTradingChart({ data = dummyData, sx, ...other }
         <Box sx={{
             ...sx,
         }} {...other}>
-            <CandlestickChart
+            {/* <CandlestickChart
                 data={data}
                 id="candlestick-chart"
                 width={windowWidth}
@@ -80,7 +86,7 @@ export default function DashBoardTradingChart({ data = dummyData, sx, ...other }
                     RSChartOverlayResize: "#ffffff22",
                     resetButtonColor: theme.palette.primary.main,
                 }}
-            />
+            /> */}
         </Box>
     );
 }

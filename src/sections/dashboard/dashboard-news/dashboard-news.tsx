@@ -73,7 +73,7 @@ export default function DashboardNews({ sx, ...other }: DashboardLineChartProps)
                             }}
                         >
                             {
-                                dummyData.map((item, index) => (
+                                [...dummyData, ...dummyData, ...dummyData, ...dummyData, ...dummyData, ...dummyData, ...dummyData].map((item, index) => (
                                     <TimelineItem key={index}>
                                         <TimelineSeparator>
                                             <TimelineDot />

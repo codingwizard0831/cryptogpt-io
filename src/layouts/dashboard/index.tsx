@@ -24,10 +24,10 @@ export default function DashboardLayout({ children }: Props) {
         left: 0,
         width: '100%',
         height: '100%',
-        objectFit: 'cover',
-        backgroundImage: 'url(/assets/background/overlay.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        // objectFit: 'cover',
+        // backgroundImage: 'url(/assets/background/overlay.png)',
+        // backgroundSize: 'cover',
+        // backgroundPosition: 'center',
       }} />
 
       <Header onOpenNav={nav.onTrue} />

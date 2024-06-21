@@ -5,11 +5,12 @@
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import { Tab, Card, Tabs, Stack, Button, InputLabel, Typography, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
+import { Tab, Card, Tabs, Stack, Button, InputLabel, Typography, FormControl, OutlinedInput, InputAdornment, Table, TableHead, TableRow, TableCell, TableBody, alpha } from '@mui/material';
 
 import { DashboardNews } from './dashboard-news';
 import DashboardLineChart from './dashboard-line-chart';
 import DashBoardTradingChart from './dashboard-trading-chart';
+import Iconify from 'src/components/iconify';
 
 
 
@@ -29,9 +30,10 @@ export default function DashboardView() {
             gap: 2,
             pb: 2,
         }}>
-            <Stack direction="row" justifyContent="space-between" spacing={2}>
+            <Stack direction="row" justifyContent="space-between" spacing={2} sx={{ flex: 1 }}>
                 <Card sx={{
                     p: 2,
+                    flex: 1,
                     borderRadius: 1,
                     boxShadow: 2,
                     height: '100%',
@@ -62,14 +64,68 @@ export default function DashboardView() {
                 </Card>
 
                 <Card sx={{
-                    p: 2,
+                    p: 1,
                     minWidth: '300px',
                 }}>
-                    <Stack direction="column" spacing={1} sx={{
-                        p: 2,
-                    }}>
-                        <Typography variant="h6">Order Book</Typography>
-                    </Stack>
+                    <Box>
+                        <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                            <Iconify icon="fluent:layout-column-two-split-left-focus-top-left-24-filled" sx={{
+                                cursor: 'pointer',
+                            }} />
+                            <Iconify icon="fluent:layout-column-two-focus-left-24-filled" sx={{
+                                cursor: 'pointer',
+                            }} />
+                            <Iconify icon="fluent:layout-column-two-16-regular" sx={{
+                                cursor: 'pointer',
+                            }} />
+                        </Stack>
+                        <Table sx={{
+                            "& td,th": {
+                                fontSize: '10px',
+                                padding: '0px',
+                            },
+                            "& th": {
+                                backgroundColor: 'transparent',
+                            },
+                            "& tbody tr": {
+                                transition: 'background-color 0.3s',
+                                "&:hover": {
+                                    backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+                                },
+                            },
+                        }}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>
+                                        <Typography variant="body2">Price(USDT)</Typography>
+                                    </TableCell>
+                                    <TableCell align='right'>
+                                        <Typography variant="body2">Amount(BTC)</Typography>
+                                    </TableCell>
+                                    <TableCell align='right'>
+                                        <Typography variant="body2">Total</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {
+                                    [...Array(10)].map((i) => (
+                                        <TableRow key={i}>
+                                            <TableCell>
+                                                <Typography variant="body2" color="error">0.00000000</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="body2">0.00000000</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="body2">0.00000000</Typography>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                }
+                            </TableBody>
+                        </Table>
+                    </Box>
                 </Card>
             </Stack>
             <Stack direction="row">
