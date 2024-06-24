@@ -4,20 +4,20 @@
 
 import { useState, useCallback } from 'react';
 
-import Box from '@mui/material/Box';
-import { Tab, Card, Tabs, Stack, Button, InputLabel, Typography, FormControl, OutlinedInput, InputAdornment, Table, TableHead, TableRow, TableCell, TableBody, alpha, TextField } from '@mui/material';
+import { Box, Tab, Card, Tabs, Stack, Button, TextField, InputLabel, Typography, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
+
+import { useResponsive } from 'src/hooks/use-responsive';
+
+import { useCarousel } from 'src/components/carousel';
 
 import { DashboardNews } from './dashboard-news';
 import DashboardLineChart from './dashboard-line-chart';
+import DashboardOrderBook from './dashboard-order-book';
 import DashBoardTradingChart from './dashboard-trading-chart';
-import Iconify from 'src/components/iconify';
-import { HEADER, SPACING } from 'src/layouts/config-layout';
-
-import Carousel, { useCarousel, CarouselArrowIndex } from 'src/components/carousel';
-
 
 export default function DashboardView() {
     const [currentTab, setCurrentTab] = useState('candle');
+    const smUp = useResponsive('up', 'sm');
 
     const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
         setCurrentTab(newValue);
@@ -71,6 +71,9 @@ export default function DashboardView() {
                             <Tab value='candle' label="Candle" />
                             <Tab value='line' label="Line" />
                             <Tab value='news' label="News" />
+                            {
+                                !smUp && <Tab value='order-book' label="Order Book" />
+                            }
                         </Tabs>
                         <Box sx={{
                             height: 0,
@@ -85,75 +88,21 @@ export default function DashboardView() {
                             {
                                 currentTab === 'news' && <DashboardNews />
                             }
+                            {
+                                currentTab === 'order-book' && <DashboardOrderBook />
+                            }
                         </Box>
                     </Stack>
                 </Card>
 
                 {
-                    currentTab !== 'news' &&
+                    currentTab !== 'news' && smUp &&
                     <Card sx={{
                         p: 1,
                         minWidth: '300px',
+                        borderRadius: 1,
                     }}>
-                        <Box>
-                            <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                                <Iconify icon="fluent:layout-column-two-split-left-focus-top-left-24-filled" sx={{
-                                    cursor: 'pointer',
-                                }} />
-                                <Iconify icon="fluent:layout-column-two-focus-left-24-filled" sx={{
-                                    cursor: 'pointer',
-                                }} />
-                                <Iconify icon="fluent:layout-column-two-16-regular" sx={{
-                                    cursor: 'pointer',
-                                }} />
-                            </Stack>
-                            <Table sx={{
-                                "& td,th": {
-                                    fontSize: '10px',
-                                    padding: '0px',
-                                },
-                                "& th": {
-                                    backgroundColor: 'transparent',
-                                },
-                                "& tbody tr": {
-                                    transition: 'background-color 0.3s',
-                                    "&:hover": {
-                                        backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
-                                    },
-                                },
-                            }}>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>
-                                            <Typography variant="body2">Price(USDT)</Typography>
-                                        </TableCell>
-                                        <TableCell align='right'>
-                                            <Typography variant="body2">Amount(BTC)</Typography>
-                                        </TableCell>
-                                        <TableCell align='right'>
-                                            <Typography variant="body2">Total</Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {
-                                        [...Array(10)].map((i) => (
-                                            <TableRow key={i}>
-                                                <TableCell>
-                                                    <Typography variant="body2" color="error">0.00000000</Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography variant="body2">0.00000000</Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography variant="body2">0.00000000</Typography>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    }
-                                </TableBody>
-                            </Table>
-                        </Box>
+                        <DashboardOrderBook />
                     </Card>
                 }
             </Stack>
