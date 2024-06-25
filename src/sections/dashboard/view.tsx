@@ -15,6 +15,7 @@ import { DashboardNews } from './dashboard-news';
 import { DashboardAIChat } from './dashboard-ai-chat';
 import DashboardLineChart from './dashboard-line-chart';
 import DashboardOrderBook from './dashboard-order-book';
+import { DashboardTopMover } from './dashboard-top-mover';
 import DashBoardTradingChart from './dashboard-trading-chart';
 
 export default function DashboardView() {
@@ -239,7 +240,9 @@ export default function DashboardView() {
                             p: 2,
                             height: '100%',
                             aspectRatio: '2/1',
-                        }} />
+                        }}>
+                            <DashboardTopMover />
+                        </Card>
 
                         <Card sx={{
                             p: 2,
@@ -358,8 +361,9 @@ export default function DashboardView() {
                         <Card sx={{
                             p: 2,
                             height: '100%',
-                            aspectRatio: '2/1',
-                        }} />
+                        }}>
+                            <DashboardTopMover />
+                        </Card>
 
                         <Card sx={{
                             p: 2,
