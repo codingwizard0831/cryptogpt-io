@@ -170,6 +170,32 @@ export default function DashboardOrderBook() {
                 </TableBody>
             </Table>
 
+            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 2 }}>
+                <Typography variant="body2">B</Typography>
+                <Typography variant="caption" sx={{
+                    color: theme => theme.palette.success.main,
+                }}>32.34%</Typography>
+                <Stack direction="row" alignItems="center" spacing={0.5} sx={{
+                    borderRadius: '4px',
+                    flex: 1,
+                }}>
+                    <Box sx={{
+                        width: '30%',
+                        height: '4px',
+                        backgroundColor: theme => theme.palette.success.main,
+                    }} />
+                    <Box sx={{
+                        flexGrow: 1,
+                        height: '4px',
+                        backgroundColor: theme => theme.palette.error.main,
+                    }} />
+                </Stack>
+                <Typography variant="caption" sx={{
+                    color: theme => theme.palette.error.main,
+                }}>{(100 - 32.34).toFixed(2)}%</Typography>
+                <Typography variant="body2">S</Typography>
+            </Stack>
+
             <Box sx={{
                 width: '240px',
                 p: 1,
