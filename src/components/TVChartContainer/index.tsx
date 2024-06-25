@@ -33,6 +33,12 @@ export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) =
             autosize: props?.autosize,
             theme: 'dark',
             timezone: 'Asia/Bangkok',
+            overrides: {
+                "paneProperties.background": "rgba(0, 0, 0, 0)",
+                "paneProperties.backgroundType": "solid",
+            },
+
+            // custom_css_url: '/static/charting_library/custom.css',
             // debug: true,
         };
 
@@ -40,7 +46,14 @@ export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) =
 
         tvWidget.onChartReady(() => {
             tvWidget.headerReady().then(() => {
-                ;
+                tvWidget.chart().getSeries().setChartStyleProperties(1, {
+                    upColor: '#fda92d',
+                    downColor: '#CCC',
+                    borderUpColor: '#fda92d',
+                    borderDownColor: '#CCC',
+                    wickUpColor: '#fda92d',
+                    wickDownColor: '#CCC',
+                });
                 const button = tvWidget.createButton();
                 button.setAttribute("title", "Click to show a notification popup");
                 button.classList.add("apply-common-tooltip");
