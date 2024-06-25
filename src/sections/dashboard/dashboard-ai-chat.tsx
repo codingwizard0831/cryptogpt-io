@@ -59,15 +59,15 @@ export function DashboardAIChat({ sx, isMinimized = true, onBlockResize, ...othe
                 overflowX: 'hidden',
             }}>
                 {
-                    Array.from({ length: 8 }).map((_, index) => (
-                        <Stack direction="row" justifyContent={index % 2 === 0 ? 'space-between' : 'flex-end'} sx={{
+                    dummyChatMessages.map((_message, index) => (
+                        <Stack direction="row" justifyContent={!_message.isUser ? 'space-between' : 'flex-end'} sx={{
                             py: 1,
                             my: 0.5,
                             borderRadius: 0.5,
-                            ...(index % 2 === 0 ? { backgroundColor: theme => alpha(theme.palette.primary.main, 0.1) } : {}),
-                        }} key={index}>
+                            ...(_message.isUser ? { backgroundColor: theme => alpha(theme.palette.primary.main, 0.1) } : {}),
+                        }} key={`chat-${index}`}>
                             {
-                                index % 2 === 0 && <Iconify icon="mdi:brain-freeze" sx={{
+                                !_message.isUser && <Iconify icon="mdi:brain-freeze" sx={{
                                     minWidth: '32px',
                                     height: '32px',
                                     fontSize: '32px',
@@ -77,7 +77,7 @@ export function DashboardAIChat({ sx, isMinimized = true, onBlockResize, ...othe
                             <Box sx={{
                                 width: "calc(100% - 36px)"
                             }}>
-                                <Typography variant="body2">AI Assistant is a tool that helps you to make better trading decisions by providing you with real-time market analysis and insights.</Typography>
+                                <Typography variant="body2">{_message.message}</Typography>
                             </Box>
                         </Stack>
                     ))
@@ -104,3 +104,106 @@ export function DashboardAIChat({ sx, isMinimized = true, onBlockResize, ...othe
         </Box>
     );
 }
+
+const dummyChatMessages = [
+    {
+        id: '1',
+        message: 'Hi, how can I help you today?',
+        isUser: false,
+    },
+    {
+        id: '2',
+        message: 'I would like to know more about the current market trends.',
+        isUser: true,
+    },
+    {
+        id: '3',
+        message: 'Sure, let me check that for you.',
+        isUser: false,
+    },
+    {
+        id: '4',
+        message: 'Thank you!',
+        isUser: true,
+    },
+    {
+        id: '5',
+        message: 'You are welcome!',
+        isUser: false,
+    },
+    {
+        id: '6',
+        message: 'Hi, how can I help you today?',
+        isUser: false,
+    },
+    {
+        id: '7',
+        message: 'I would like to know more about the current market trends.',
+        isUser: true,
+    },
+    {
+        id: '8',
+        message: 'Sure, let me check that for you.',
+        isUser: false,
+    },
+    {
+        id: '9',
+        message: 'Thank you!',
+        isUser: true,
+    },
+    {
+        id: '10',
+        message: 'You are welcome!',
+        isUser: false,
+    },
+    {
+        id: '11',
+        message: 'Hi, how can I help you today?',
+        isUser: false,
+    },
+    {
+        id: '12',
+        message: 'I would like to know more about the current market trends.',
+        isUser: true,
+    },
+    {
+        id: '13',
+        message: 'Sure, let me check that for you.',
+        isUser: false,
+    },
+    {
+        id: '14',
+        message: 'Thank you!',
+        isUser: true,
+    },
+    {
+        id: '15',
+        message: 'You are welcome!',
+        isUser: false,
+    },
+    {
+        id: '16',
+        message: 'Hi, how can I help you today?',
+        isUser: false,
+    },
+    {
+        id: '17',
+        message: 'I would like to know more about the current market trends.',
+        isUser: true,
+    },
+    {
+        id: '18',
+        message: 'Sure, let me check that for you.',
+        isUser: false,
+    },
+    {
+        id: '19',
+        message: 'Thank you!',
+        isUser: true,
+    },
+    {
+        id: '20',
+        message: 'You are welcome!',
+        isUser: false,
+    },
+];

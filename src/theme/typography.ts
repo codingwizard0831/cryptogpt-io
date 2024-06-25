@@ -1,4 +1,3 @@
-import { Barlow, Public_Sans } from 'next/font/google';
 
 // ----------------------------------------------------------------------
 
@@ -31,19 +30,19 @@ declare module '@mui/material/styles' {
   }
 }
 
-export const primaryFont = Public_Sans({
-  weight: ['400', '500', '600', '700', '800', '900'],
+export const primaryFont = {
+  family: 'IBMPlexMono, RobotoMono, Helvetica, Arial, sans-serif',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
   subsets: ['latin'],
   display: 'swap',
-  fallback: ['Helvetica', 'Arial', 'sans-serif'],
-});
+};
 
-export const secondaryFont = Barlow({
-  weight: ['400', '500', '600', '700', '800', '900'],
+export const secondaryFont = {
+  family: 'IBMPlexMono, RobotoMono, Helvetica, Arial, sans-serif',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
   subsets: ['latin'],
   display: 'swap',
-  fallback: ['Helvetica', 'Arial', 'sans-serif'],
-});
+};
 
 // ----------------------------------------------------------------------
 
@@ -51,8 +50,8 @@ export const secondaryFont = Barlow({
 // https://nextjs.org/docs/basic-features/font-optimization#google-fonts
 
 export const typography = {
-  fontFamily: primaryFont.style.fontFamily,
-  fontSecondaryFamily: secondaryFont.style.fontFamily,
+  fontFamily: primaryFont.family,
+  fontSecondaryFamily: secondaryFont.family,
   fontWeightRegular: 400,
   fontWeightMedium: 500,
   fontWeightSemiBold: 600,
