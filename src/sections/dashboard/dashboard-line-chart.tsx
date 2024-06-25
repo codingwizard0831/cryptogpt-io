@@ -1,4 +1,5 @@
 import { Box, BoxProps } from '@mui/material';
+
 import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
@@ -27,7 +28,7 @@ export default function DashboardLineChart({ data = dummyData, sx, ...other }: D
             <Chart dir="ltr" type="line" series={[{
                 name: 'Price',
                 data,
-            }]} options={chartOptions} width="100%" height={320} />
+            }]} options={chartOptions} width="100%" height={480} />
         </Box>
     );
 }

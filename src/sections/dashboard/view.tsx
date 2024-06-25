@@ -65,8 +65,7 @@ export default function DashboardView() {
             <Stack direction="row" justifyContent="space-between" spacing={2} sx={{
                 flexGrow: 0,
                 flexShrink: 0,
-                aspectRatio: '2.5/1',
-                minHeight: '640px',
+                minHeight: '568px',
             }}>
                 <Card sx={{
                     p: 2,
