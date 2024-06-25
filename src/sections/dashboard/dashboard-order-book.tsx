@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 import { Box, Stack, Table, alpha, TableRow, TableHead, TableCell, TableBody, Typography } from '@mui/material';
 
@@ -11,15 +11,15 @@ import Iconify from 'src/components/iconify';
 export default function DashboardOrderBook() {
     const [sellOrders, setSellOrders] = useState([...dummySellOrders]);
     const [buyOrders, setBuyOrders] = useState([...dummyBuyOrders]);
+    const orderBookContainer = useRef<HTMLDivElement>(null);
     const [currentSelectedSellOrder, setCurrentSelectedSellOrder] = useState(dummySellOrders.length - 1);
     const [currentSelectedBuyOrder, setCurrentSelectedBuyOrder] = useState(0);
     const [averagePrice, setAveragePrice] = useState(0);
     const [sumBTC, setSumBTC] = useState(0);
     const [sumUSDT, setSumUSDT] = useState(0);
+    const [topOfInfoModal, setTopOfInfoModal] = useState("calc(50% - 47px)");
 
     useEffect(() => {
-        console.log('currentSelectedSellOrder:', currentSelectedSellOrder);
-        console.log('currentSelectedBuyOrder:', currentSelectedBuyOrder);
         let _averagePrice = 0;
         let _sumBTC = 0;
         let _sumUSDT = 0;
@@ -38,8 +38,24 @@ export default function DashboardOrderBook() {
         setSumUSDT(_sumUSDT);
     }, [currentSelectedSellOrder, currentSelectedBuyOrder, sellOrders, buyOrders]);
 
+    const handleMouseEnterSellOrder = (e: React.MouseEvent, orderIndex: number) => {
+        setCurrentSelectedSellOrder(orderIndex);
+        if (orderBookContainer.current) {
+            const rect = orderBookContainer.current.getBoundingClientRect();
+            setTopOfInfoModal(`${e.clientY - rect.top - 32}px`);
+        }
+    };
+
+    const handleMouseEnterBuyOrder = (e: React.MouseEvent, orderIndex: number) => {
+        setCurrentSelectedBuyOrder(orderIndex);
+        if (orderBookContainer.current) {
+            const rect = orderBookContainer.current.getBoundingClientRect();
+            setTopOfInfoModal(`${e.clientY - rect.top - 32}px`);
+        }
+    };
+
     return (
-        <Box>
+        <Box ref={orderBookContainer}>
             <Typography variant="h6">Order Book</Typography>
             <Stack direction="row" spacing={1} sx={{ my: 1 }}>
                 <Iconify icon="fluent:layout-column-two-split-left-focus-top-left-24-filled" sx={{
@@ -85,7 +101,7 @@ export default function DashboardOrderBook() {
                     {
                         dummySellOrders.map((_sellOrder, _index) => (
                             <TableRow key={`row-key-${_index}`}
-                                onMouseEnter={() => setCurrentSelectedSellOrder(_index)}
+                                onMouseEnter={(e) => handleMouseEnterSellOrder(e, _index)}
                                 onMouseLeave={() => setCurrentSelectedSellOrder(dummySellOrders.length - 1)}
                                 sx={{
                                     backgroundColor: currentSelectedSellOrder <= _index ? theme => alpha(theme.palette.error.main, 0.1) : 'transparent',
@@ -132,7 +148,7 @@ export default function DashboardOrderBook() {
                     {
                         dummyBuyOrders.map((_buyOrder, _index) => (
                             <TableRow key={`row-key-${_index}`}
-                                onMouseEnter={() => setCurrentSelectedBuyOrder(_index)}
+                                onMouseEnter={(e) => handleMouseEnterBuyOrder(e, _index)}
                                 onMouseLeave={() => setCurrentSelectedBuyOrder(0)}
                                 sx={{
                                     backgroundColor: currentSelectedBuyOrder >= _index ? theme => alpha(theme.palette.success.main, 0.1) : 'transparent',
@@ -164,7 +180,7 @@ export default function DashboardOrderBook() {
                 transition: 'all 0.3s',
                 position: 'absolute',
                 left: '-244px',
-                bottom: 'calc(50% - 47px)',
+                top: topOfInfoModal,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 1,
