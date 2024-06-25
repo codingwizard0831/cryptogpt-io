@@ -7,7 +7,7 @@ import { Box, Tab, Card, Tabs, Stack, Button, InputLabel, Typography, FormContro
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { NAV, SPACING } from 'src/layouts/config-layout';
+import { NAV, SPACING, MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
 import Carousel, { useCarousel } from 'src/components/carousel';
 
@@ -65,7 +65,7 @@ export default function DashboardView() {
             <Stack direction="row" justifyContent="space-between" spacing={2} sx={{
                 flexGrow: 0,
                 flexShrink: 0,
-                minHeight: '568px',
+                minHeight: `${MAIN_CHART_PANEL.W_DESKTOP}px`,
             }}>
                 <Card sx={{
                     p: 2,
