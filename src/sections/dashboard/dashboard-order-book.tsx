@@ -1,14 +1,42 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Box, Stack, Table, alpha, TableRow, TableHead, TableCell, TableBody, Typography } from '@mui/material';
+
+import { fNumberPrice } from 'src/utils/format-number';
 
 import Iconify from 'src/components/iconify';
 
 export default function DashboardOrderBook() {
+    const [sellOrders, setSellOrders] = useState([...dummySellOrders]);
+    const [buyOrders, setBuyOrders] = useState([...dummyBuyOrders]);
     const [currentSelectedSellOrder, setCurrentSelectedSellOrder] = useState(dummySellOrders.length - 1);
     const [currentSelectedBuyOrder, setCurrentSelectedBuyOrder] = useState(0);
+    const [averagePrice, setAveragePrice] = useState(0);
+    const [sumBTC, setSumBTC] = useState(0);
+    const [sumUSDT, setSumUSDT] = useState(0);
+
+    useEffect(() => {
+        console.log('currentSelectedSellOrder:', currentSelectedSellOrder);
+        console.log('currentSelectedBuyOrder:', currentSelectedBuyOrder);
+        let _averagePrice = 0;
+        let _sumBTC = 0;
+        let _sumUSDT = 0;
+        if (currentSelectedSellOrder < sellOrders.length - 1) {
+            _averagePrice = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.price, 0) / (sellOrders.length - currentSelectedSellOrder);
+            _sumBTC = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.amount, 0);
+            _sumUSDT = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.price * _order.amount, 0);
+        }
+        if (currentSelectedBuyOrder > 0) {
+            _averagePrice = buyOrders.filter((_order, _index) => _index <= currentSelectedBuyOrder).reduce((_sum, _order) => _sum + _order.price, 0) / (currentSelectedBuyOrder + 1);
+            _sumBTC = buyOrders.filter((_order, _index) => _index <= currentSelectedBuyOrder).reduce((_sum, _order) => _sum + _order.amount, 0);
+            _sumUSDT = buyOrders.filter((_order, _index) => _index <= currentSelectedBuyOrder).reduce((_sum, _order) => _sum + _order.price * _order.amount, 0);
+        }
+        setAveragePrice(_averagePrice);
+        setSumBTC(_sumBTC);
+        setSumUSDT(_sumUSDT);
+    }, [currentSelectedSellOrder, currentSelectedBuyOrder, sellOrders, buyOrders]);
 
     return (
         <Box>
@@ -43,13 +71,13 @@ export default function DashboardOrderBook() {
                 <TableHead>
                     <TableRow>
                         <TableCell>
-                            <Typography variant="caption" width="40%">Price(USDT)</Typography>
+                            <Typography variant="caption" width="30%">Price(USDT)</Typography>
                         </TableCell>
                         <TableCell align='right'>
-                            <Typography variant="caption" width="30%">Amount(BTC)</Typography>
+                            <Typography variant="caption" width="35%">Amount(BTC)</Typography>
                         </TableCell>
                         <TableCell align='right'>
-                            <Typography variant="caption" width="30%">Total</Typography>
+                            <Typography variant="caption" width="35%">Total</Typography>
                         </TableCell>
                     </TableRow>
                 </TableHead>
@@ -62,16 +90,16 @@ export default function DashboardOrderBook() {
                                 sx={{
                                     backgroundColor: currentSelectedSellOrder <= _index ? theme => alpha(theme.palette.error.main, 0.1) : 'transparent',
                                 }}>
-                                <TableCell align='left' width="40%">
+                                <TableCell align='left' width="30%">
                                     <Typography variant="caption" align='left' sx={{
                                         color: theme => theme.palette.error.main,
-                                    }}>{_sellOrder.price.toFixed(2)}</Typography>
+                                    }}>{fNumberPrice(_sellOrder.price, 2)}</Typography>
                                 </TableCell>
-                                <TableCell align='right' width="30%">
-                                    <Typography variant="caption" align="right">{_sellOrder.amount.toFixed(5)}</Typography>
+                                <TableCell align='right' width="35%">
+                                    <Typography variant="caption" align="right">{fNumberPrice(_sellOrder.amount)}</Typography>
                                 </TableCell>
-                                <TableCell align='right' width="30%">
-                                    <Typography variant="caption" align="right">{(_sellOrder.price * _sellOrder.amount).toFixed(5)}</Typography>
+                                <TableCell align='right' width="35%">
+                                    <Typography variant="caption" align="right">{fNumberPrice(_sellOrder.price * _sellOrder.amount)}</Typography>
                                 </TableCell>
                             </TableRow>
                         ))
@@ -109,22 +137,80 @@ export default function DashboardOrderBook() {
                                 sx={{
                                     backgroundColor: currentSelectedBuyOrder >= _index ? theme => alpha(theme.palette.success.main, 0.1) : 'transparent',
                                 }}>
-                                <TableCell align='left' width="40%">
+                                <TableCell align='left' width="30%">
                                     <Typography variant="caption" align='left' sx={{
                                         color: theme => theme.palette.success.main,
-                                    }}>{_buyOrder.price.toFixed(2)}</Typography>
+                                    }}>{fNumberPrice(_buyOrder.price, 2)}</Typography>
                                 </TableCell>
-                                <TableCell align='right' width="30%">
-                                    <Typography variant="caption" align="right">{_buyOrder.amount.toFixed(5)}</Typography>
+                                <TableCell align='right' width="35%">
+                                    <Typography variant="caption" align="right">{fNumberPrice(_buyOrder.amount)}</Typography>
                                 </TableCell>
-                                <TableCell align='right' width="30%">
-                                    <Typography variant="caption" align="right">{(_buyOrder.price * _buyOrder.amount).toFixed(5)}</Typography>
+                                <TableCell align='right' width="35%">
+                                    <Typography variant="caption" align="right">{fNumberPrice(_buyOrder.price * _buyOrder.amount)}</Typography>
                                 </TableCell>
                             </TableRow>
                         ))
                     }
                 </TableBody>
             </Table>
+
+            <Box sx={{
+                width: '240px',
+                p: 1,
+                borderRadius: 1,
+                backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                backdropFilter: 'blur(10px)',
+                border: theme => `1px solid ${theme.palette.primary.main}`,
+                transition: 'all 0.3s',
+                position: 'absolute',
+                left: '-244px',
+                bottom: 'calc(50% - 47px)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                opacity: currentSelectedSellOrder < sellOrders.length - 1 || currentSelectedBuyOrder > 0 ? 1 : 0,
+                visibility: currentSelectedSellOrder < sellOrders.length - 1 || currentSelectedBuyOrder > 0 ? 'visible' : 'hidden',
+            }}>
+                <Stack direction="row" alignItems="center">
+                    <Iconify icon="hugeicons:chart-average" sx={{
+                        color: theme => theme.palette.primary.main,
+                        mr: 1,
+                    }} />
+                    <Typography variant="caption" color="text.secondary">Avg.Price:</Typography>
+
+                    <Typography variant="caption" sx={{
+                        display: 'block',
+                        flexGrow: 1,
+                        textAlign: 'right',
+                    }}>≈ ${fNumberPrice(averagePrice)}</Typography>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                    <Iconify icon="mdi:bitcoin" sx={{
+                        color: theme => theme.palette.primary.main,
+                        mr: 1,
+                    }} />
+                    <Typography variant="caption" color="text.secondary">Sum BTC:</Typography>
+
+                    <Typography variant="caption" color="success" sx={{
+                        display: 'block',
+                        flexGrow: 1,
+                        textAlign: 'right',
+                    }}>{fNumberPrice(sumBTC)}</Typography>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                    <Iconify icon="token:usdt" sx={{
+                        color: theme => theme.palette.primary.main,
+                        mr: 1,
+                    }} />
+                    <Typography variant="caption" color="text.secondary">Sum USDT:</Typography>
+
+                    <Typography variant="caption" color="success" sx={{
+                        display: 'block',
+                        flexGrow: 1,
+                        textAlign: 'right',
+                    }}>{fNumberPrice(sumUSDT)}</Typography>
+                </Stack>
+            </Box>
         </Box>
     );
 }
@@ -170,18 +256,6 @@ const dummySellOrders = [
         price: 61006.88,
         amount: 0.07743,
     },
-    {
-        price: 61006.88,
-        amount: 0.07743,
-    },
-    {
-        price: 61006.88,
-        amount: 0.07743,
-    },
-    {
-        price: 61006.88,
-        amount: 0.07743,
-    },
 ];
 
 const dummyBuyOrders = [
@@ -219,18 +293,6 @@ const dummyBuyOrders = [
     },
     {
         price: 60016.88,
-        amount: 0.07743,
-    },
-    {
-        price: 60006.88,
-        amount: 0.07743,
-    },
-    {
-        price: 60006.88,
-        amount: 0.07743,
-    },
-    {
-        price: 60006.88,
         amount: 0.07743,
     },
     {

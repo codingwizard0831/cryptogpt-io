@@ -114,3 +114,15 @@ export function fData(inputValue: InputValue) {
 
   return fm;
 }
+
+// ----------------------------------------------------------------------
+export function fNumberPrice(inputValue: number, floatNumber: number = 5): string {
+  // First, round the number to the desired number of decimal places
+  const roundedValue = Number(inputValue.toFixed(floatNumber));
+
+  // Then, format the number with commas and the specified number of decimal places
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: floatNumber,
+    maximumFractionDigits: floatNumber,
+  }).format(roundedValue);
+}

@@ -110,6 +110,7 @@ export default function DashboardView() {
                         p: 1,
                         minWidth: '300px',
                         borderRadius: 1,
+                        overflow: 'visible',
                     }}>
                         <DashboardOrderBook />
                     </Card>
