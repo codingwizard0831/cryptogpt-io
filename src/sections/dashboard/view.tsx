@@ -70,7 +70,7 @@ export default function DashboardView() {
                 minHeight: `${MAIN_CHART_PANEL.W_DESKTOP}px`,
             }}>
                 <Card sx={{
-                    p: 2,
+                    p: smUp ? 2 : 1,
                     flex: 1,
                     borderRadius: 1,
                     boxShadow: 2,
@@ -260,7 +260,7 @@ export default function DashboardView() {
                     !smUp &&
                     <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
                         <Card sx={{
-                            p: 2,
+                            p: 1,
                             height: '100%',
                             transition: 'aspect-ratio 0.5s',
                             aspectRatio: isFullWidth.value ? `${chatAreaFullWidth}/309` : '2/1',
@@ -364,14 +364,14 @@ export default function DashboardView() {
                         </Card>
 
                         <Card sx={{
-                            p: 2,
+                            p: 1,
                             height: '100%',
                         }}>
                             <DashboardTopMover />
                         </Card>
 
                         <Card sx={{
-                            p: 2,
+                            p: 1,
                             height: '100%',
                             aspectRatio: '1/1',
                         }} />

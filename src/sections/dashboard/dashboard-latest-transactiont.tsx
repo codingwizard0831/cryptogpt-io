@@ -4,6 +4,8 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fNumberPrice } from 'src/utils/format-number';
 
+import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
+
 import Iconify from 'src/components/iconify';
 
 interface DashboardLatestTransactionProps extends BoxProps {
@@ -16,13 +18,19 @@ export default function DashboardLatestTransaction({ sx, ...other }: DashboardLa
         <Box sx={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 1,
+            gap: 2,
             height: '100%',
             ...sx,
         }} {...other}>
             <Typography variant="h6">Latest Transaction</Typography>
 
-            <Grid container spacing={smUp ? 6 : 2}>
+            <Grid container spacing={{
+                xs: 1,
+                sm: 2,
+                md: 2,
+                lg: 2,
+                xl: 6,
+            }}>
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={3}>
                     <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{
                         width: '100%',
@@ -190,6 +198,7 @@ export default function DashboardLatestTransaction({ sx, ...other }: DashboardLa
             <Box sx={{
                 flex: 1,
                 width: '100%',
+                maxHeight: `${MAIN_CHART_PANEL.W_DESKTOP - 168}px`,
                 overflowY: 'auto',
             }}>
                 <Table sx={{
@@ -221,7 +230,9 @@ export default function DashboardLatestTransaction({ sx, ...other }: DashboardLa
                                 <Typography variant="caption">Size</Typography>
                             </TableCell>
                             <TableCell>
-                                <Typography variant="caption">Close Date</Typography>
+                                <Typography variant="caption" sx={{
+                                    whiteSpace: 'nowrap',
+                                }}>Close Date</Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="caption">Entry</Typography>
@@ -233,10 +244,14 @@ export default function DashboardLatestTransaction({ sx, ...other }: DashboardLa
                                 <Typography variant="caption">Duration</Typography>
                             </TableCell>
                             <TableCell align='center'>
-                                <Typography variant="caption">Acc Risk</Typography>
+                                <Typography variant="caption" sx={{
+                                    whiteSpace: 'nowrap',
+                                }}>Acc Risk</Typography>
                             </TableCell>
                             <TableCell>
-                                <Typography variant="caption">Final R</Typography>
+                                <Typography variant="caption" sx={{
+                                    whiteSpace: 'nowrap',
+                                }}>Final R</Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="caption">Content</Typography>
@@ -249,7 +264,7 @@ export default function DashboardLatestTransaction({ sx, ...other }: DashboardLa
 
                     <TableBody>
                         {
-                            [1, 2].map((_data, _index) => (
+                            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((_data, _index) => (
                                 <TableRow key={`latest-row-key-${_index}`}>
                                     <TableCell>
                                         <Box sx={{
@@ -287,6 +302,7 @@ export default function DashboardLatestTransaction({ sx, ...other }: DashboardLa
                                             px: 1,
                                             borderRadius: '10px',
                                             backgroundColor: theme => alpha(theme.palette.info.main, 0.3),
+                                            whiteSpace: 'nowrap',
                                         }}>1d 4h 23m</Typography>
                                     </TableCell>
                                     <TableCell align='center'>

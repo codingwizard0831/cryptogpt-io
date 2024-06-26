@@ -28,7 +28,6 @@ export default function DashboardOrderBook() {
         let _averagePrice = 0;
         let _sumBTC = 0;
         let _sumUSDT = 0;
-        console.log("Order:", currentSelectedSellOrder, currentSelectedBuyOrder);
         if (currentSelectedSellOrder < sellOrders.length - 1) {
             _averagePrice = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.price, 0) / (sellOrders.length - currentSelectedSellOrder);
             _sumBTC = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.amount, 0);
