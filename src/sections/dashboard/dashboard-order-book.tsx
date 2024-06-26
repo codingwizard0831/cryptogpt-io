@@ -30,11 +30,19 @@ export default function DashboardOrderBook() {
             _averagePrice = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.price, 0) / (sellOrders.length - currentSelectedSellOrder);
             _sumBTC = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.amount, 0);
             _sumUSDT = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.price * _order.amount, 0);
+        } else {
+            _averagePrice = 0;
+            _sumBTC = 0;
+            _sumUSDT = 0;
         }
         if (currentSelectedBuyOrder > 0) {
             _averagePrice = buyOrders.filter((_order, _index) => _index <= currentSelectedBuyOrder).reduce((_sum, _order) => _sum + _order.price, 0) / (currentSelectedBuyOrder + 1);
             _sumBTC = buyOrders.filter((_order, _index) => _index <= currentSelectedBuyOrder).reduce((_sum, _order) => _sum + _order.amount, 0);
             _sumUSDT = buyOrders.filter((_order, _index) => _index <= currentSelectedBuyOrder).reduce((_sum, _order) => _sum + _order.price * _order.amount, 0);
+        } else {
+            _averagePrice = 0;
+            _sumBTC = 0;
+            _sumUSDT = 0;
         }
         setAveragePrice(_averagePrice);
         setSumBTC(_sumBTC);

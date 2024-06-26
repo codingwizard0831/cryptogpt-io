@@ -17,6 +17,7 @@ import DashboardLineChart from './dashboard-line-chart';
 import DashboardOrderBook from './dashboard-order-book';
 import { DashboardTopMover } from './dashboard-top-mover';
 import DashBoardTradingChart from './dashboard-trading-chart';
+import DashboardLatestTransaction from './dashboard-latest-transactiont';
 
 export default function DashboardView() {
     const [currentTab, setCurrentTab] = useState('candle');
@@ -83,6 +84,7 @@ export default function DashboardView() {
                             {
                                 !smUp && <Tab value='order-book' label="Order Book" />
                             }
+                            <Tab value='transactions' label="My Transactions" />
                         </Tabs>
                         <Box sx={{
                             height: 0,
@@ -99,6 +101,9 @@ export default function DashboardView() {
                             }
                             {
                                 currentTab === 'order-book' && <DashboardOrderBook />
+                            }
+                            {
+                                currentTab === 'transactions' && <DashboardLatestTransaction />
                             }
                         </Box>
                     </Stack>
