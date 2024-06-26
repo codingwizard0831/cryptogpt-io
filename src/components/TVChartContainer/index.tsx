@@ -34,11 +34,11 @@ export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) =
             theme: 'dark',
             timezone: 'Asia/Bangkok',
             overrides: {
-                "paneProperties.background": "rgba(0, 0, 0, 0)",
+                "paneProperties.background": "rgb(41, 36, 35)",
                 "paneProperties.backgroundType": "solid",
             },
 
-            // custom_css_url: '/static/charting_library/custom.css',
+            custom_css_url: '/static/charting_library/custom.css',
             // debug: true,
         };
 
