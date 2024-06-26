@@ -10,6 +10,8 @@ import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
 import Iconify from 'src/components/iconify';
 
+const fixedOrderBookNumber = 11;
+
 export default function DashboardOrderBook() {
     const [sellOrders, setSellOrders] = useState([...dummySellOrders, ...dummySellOrders, ...dummySellOrders]);
     const [buyOrders, setBuyOrders] = useState([...dummyBuyOrders, ...dummyBuyOrders, ...dummyBuyOrders]);
@@ -26,6 +28,7 @@ export default function DashboardOrderBook() {
         let _averagePrice = 0;
         let _sumBTC = 0;
         let _sumUSDT = 0;
+        console.log("Order:", currentSelectedSellOrder, currentSelectedBuyOrder);
         if (currentSelectedSellOrder < sellOrders.length - 1) {
             _averagePrice = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.price, 0) / (sellOrders.length - currentSelectedSellOrder);
             _sumBTC = sellOrders.filter((_order, _index) => _index >= currentSelectedSellOrder).reduce((_sum, _order) => _sum + _order.amount, 0);
@@ -137,10 +140,10 @@ export default function DashboardOrderBook() {
                         buySellLayout !== "BUY" &&
                         <TableBody>
                             {
-                                (buySellLayout === "BOTH" ? sellOrders.filter((_, _i) => _i < 11) : sellOrders).map((_sellOrder, _index) => (
+                                (buySellLayout === "BOTH" ? sellOrders.filter((_, _i) => _i < fixedOrderBookNumber) : sellOrders).map((_sellOrder, _index) => (
                                     <TableRow key={`row-key-${_index}`}
                                         onMouseEnter={(e) => handleMouseEnterSellOrder(e, _index)}
-                                        onMouseLeave={() => setCurrentSelectedSellOrder(dummySellOrders.length - 1)}
+                                        onMouseLeave={() => setCurrentSelectedSellOrder(buySellLayout === "BOTH" ? fixedOrderBookNumber - 1 : sellOrders.length - 1)}
                                         sx={{
                                             backgroundColor: currentSelectedSellOrder <= _index ? theme => alpha(theme.palette.error.main, 0.1) : 'transparent',
                                         }}>
@@ -196,7 +199,7 @@ export default function DashboardOrderBook() {
                         buySellLayout !== "SELL" &&
                         <TableBody>
                             {
-                                (buySellLayout === "BOTH" ? buyOrders.filter((_, _i) => _i > buyOrders.length - 11) : buyOrders).map((_buyOrder, _index) => (
+                                (buySellLayout === "BOTH" ? buyOrders.filter((_, _i) => _i > buyOrders.length - fixedOrderBookNumber) : buyOrders).map((_buyOrder, _index) => (
                                     <TableRow key={`row-key-${_index}`}
                                         onMouseEnter={(e) => handleMouseEnterBuyOrder(e, _index)}
                                         onMouseLeave={() => setCurrentSelectedBuyOrder(0)}
@@ -265,8 +268,8 @@ export default function DashboardOrderBook() {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 1,
-                opacity: currentSelectedSellOrder < sellOrders.length - 1 || currentSelectedBuyOrder > 0 ? 1 : 0,
-                visibility: currentSelectedSellOrder < sellOrders.length - 1 || currentSelectedBuyOrder > 0 ? 'visible' : 'hidden',
+                opacity: (currentSelectedSellOrder < (buySellLayout === "BOTH" ? fixedOrderBookNumber - 1 : sellOrders.length - 1) || currentSelectedBuyOrder > 0) ? 1 : 0,
+                visibility: (currentSelectedSellOrder < (buySellLayout === "BOTH" ? fixedOrderBookNumber - 1 : sellOrders.length - 1) || currentSelectedBuyOrder > 0) ? 'visible' : 'hidden',
             }}>
                 <Stack direction="row" alignItems="center">
                     <Iconify icon="hugeicons:chart-average" sx={{
