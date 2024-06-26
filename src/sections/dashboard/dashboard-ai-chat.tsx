@@ -4,6 +4,7 @@ import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAuto
 import { Box, Stack, alpha, styled, BoxProps, Typography, IconButton } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import Iconify from 'src/components/iconify';
 
@@ -30,6 +31,7 @@ interface DashboardAIChatProps extends BoxProps {
 
 export function DashboardAIChat({ sx, isMinimized = true, onBlockResize, ...other }: DashboardAIChatProps) {
     const isFocus = useBoolean();
+    const smUp = useResponsive('up', 'sm');
 
     const handleChatResize = () => {
         if (onBlockResize) {
@@ -48,9 +50,18 @@ export function DashboardAIChat({ sx, isMinimized = true, onBlockResize, ...othe
             <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{
             }}>
                 <Typography variant="h6">AI Assistant</Typography>
-                <IconButton onClick={() => handleChatResize()}>
-                    {isMinimized ? <Iconify icon="fluent-mdl2:minimum-value" /> : <Iconify icon="fluent-mdl2:maximum-value" />}
-                </IconButton>
+                {
+                    smUp &&
+                    <IconButton onClick={() => handleChatResize()}>
+                        {isMinimized ? <Iconify icon="fluent-mdl2:minimum-value" /> : <Iconify icon="fluent-mdl2:maximum-value" />}
+                    </IconButton>
+                }
+                {
+                    !smUp &&
+                    <IconButton onClick={() => handleChatResize()}>
+                        {isMinimized ? <Iconify icon="material-symbols:close" /> : <Iconify icon="charm:screen-maximise" />}
+                    </IconButton>
+                }
             </Stack>
             <Box sx={{
                 flex: 1,

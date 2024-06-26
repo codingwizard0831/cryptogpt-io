@@ -7,7 +7,7 @@ import { Box, Tab, Card, Tabs, Stack, Button, InputLabel, Typography, FormContro
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { NAV, SPACING, MAIN_CHART_PANEL } from 'src/layouts/config-layout';
+import { NAV, HEADER, SPACING, MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
 import Carousel, { useCarousel } from 'src/components/carousel';
 
@@ -377,7 +377,30 @@ export default function DashboardView() {
                         }} />
                     </Carousel>
                 }
-            </Box >
-        </Box >
+            </Box>
+
+            <Box sx={{
+                display: 'none',
+                ...(
+                    (isFullWidth.value && !smUp) ? {
+                        display: 'block',
+                        height: `calc(100vh - ${HEADER.H_MOBILE + SPACING.sm * 2}px)`,
+                        position: 'fixed',
+                        bottom: 0,
+                        left: `${SPACING.sm}px`,
+                        right: `${SPACING.sm}px`,
+                        zIndex: 1000,
+                    } : {}),
+            }}>
+                <Card sx={{
+                    p: 1,
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 1,
+                }}>
+                    <DashboardAIChat isMinimized={isFullWidth.value} onBlockResize={() => isFullWidth.onToggle()} />
+                </Card>
+            </Box>
+        </Box>
     );
 }
