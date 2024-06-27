@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, Stack, alpha, styled, BoxProps, Typography, IconButton } from '@mui/material';
+import { Box, Stack, alpha, styled, Switch, BoxProps, Typography, IconButton } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -32,6 +34,16 @@ interface DashboardAIChatProps extends BoxProps {
 export function DashboardAIChat({ sx, isMinimized = true, onBlockResize, ...other }: DashboardAIChatProps) {
     const isFocus = useBoolean();
     const smUp = useResponsive('up', 'sm');
+    const [text, setText] = useState('');
+    const isMultipleLines = useBoolean();
+
+    useEffect(() => {
+        if (text.split('\n').length > 2) {
+            isMultipleLines.onTrue();
+        } else {
+            isMultipleLines.onFalse();
+        }
+    }, [text, isMultipleLines]);
 
     const handleChatResize = () => {
         if (onBlockResize) {
@@ -45,29 +57,64 @@ export function DashboardAIChat({ sx, isMinimized = true, onBlockResize, ...othe
             flexDirection: 'column',
             gap: 1,
             height: '100%',
+            position: 'relative',
             ...sx,
         }} {...other}>
             <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{
             }}>
                 <Typography variant="h6">AI Assistant</Typography>
-                {
-                    smUp &&
-                    <IconButton onClick={() => handleChatResize()}>
-                        {isMinimized ? <Iconify icon="fluent-mdl2:minimum-value" /> : <Iconify icon="fluent-mdl2:maximum-value" />}
+
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                }}>
+                    <IconButton size="small" sx={{
+                    }}>
+                        <Iconify icon="lucide:video" sx={{
+                            color: theme => theme.palette.text.primary,
+                        }} />
                     </IconButton>
-                }
-                {
-                    !smUp &&
-                    <IconButton onClick={() => handleChatResize()}>
-                        {isMinimized ? <Iconify icon="material-symbols:close" /> : <Iconify icon="charm:screen-maximise" />}
+                    <IconButton size="small" sx={{
+                    }}>
+                        <Iconify icon="gg:record" sx={{
+                            color: theme => theme.palette.text.primary,
+                        }} />
                     </IconButton>
-                }
+                    <IconButton size="small" sx={{
+                    }}>
+                        <Iconify icon="bx:headphone" sx={{
+                            color: theme => theme.palette.text.primary,
+                        }} />
+                    </IconButton>
+                    {
+                        smUp &&
+                        <IconButton onClick={() => handleChatResize()}>
+                            {isMinimized ? <Iconify icon="fluent-mdl2:minimum-value" sx={{
+                                color: theme => theme.palette.text.primary,
+                            }} /> : <Iconify icon="fluent-mdl2:maximum-value" sx={{
+                                color: theme => theme.palette.text.primary,
+                            }} />}
+                        </IconButton>
+                    }
+                    {
+                        !smUp &&
+                        <IconButton onClick={() => handleChatResize()}>
+                            {isMinimized ? <Iconify icon="material-symbols:close" sx={{
+                                color: theme => theme.palette.text.primary,
+                            }} /> : <Iconify icon="charm:screen-maximise" sx={{
+                                color: theme => theme.palette.text.primary,
+                            }} />}
+                        </IconButton>
+                    }
+                </Box>
             </Stack>
             <Box sx={{
                 flex: 1,
                 height: '0',
                 overflowY: 'auto',
                 overflowX: 'hidden',
+                pb: 4,
             }}>
                 {
                     dummyChatMessages.map((_message, index) => (
@@ -96,21 +143,96 @@ export function DashboardAIChat({ sx, isMinimized = true, onBlockResize, ...othe
             </Box>
 
             <Box sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
                 p: 1,
-                pb: 0,
                 width: '100%',
-                borderRadius: '6px',
-                border: theme => `1px solid ${theme.palette.divider}`,
+                borderRadius: '40px',
+                backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
                 backdropFilter: 'blur(10px)',
-                transition: 'all 0.3s',
                 ...(isFocus.value ? {
-                    border: theme => `1px solid ${theme.palette.primary.main}`,
-                    background: theme => alpha(theme.palette.primary.main, 0.05),
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
+                    // backgroundColor: theme => theme.palette.background.paper,
+                } : {}),
+                ...(isMultipleLines.value ? {
+                    borderRadius: '16px',
                 } : {}),
             }}>
-                <Textarea placeholder="Message" onFocus={() => isFocus.onTrue()} onBlur={() => isFocus.onFalse()} sx={{
-                    width: '100%',
-                }} />
+                <Box sx={{
+                    borderRadius: '30px',
+                    border: theme => `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
+                    transition: 'all 0.3s',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 1,
+                    p: 1,
+                    ...(isFocus.value ? {
+                        border: theme => `1px solid ${theme.palette.primary.main}`,
+                    } : {}),
+                    ...(isMultipleLines.value ? {
+                        borderRadius: '10px',
+                        flexWrap: 'wrap',
+                    } : {}),
+                }}>
+                    <IconButton size="small" sx={{
+                        order: !isMultipleLines.value ? 0 : 1,
+                    }}>
+                        <Iconify icon="gg:add" sx={{
+                            color: theme => theme.palette.text.primary,
+                        }} />
+                    </IconButton>
+                    <Box sx={{
+                        width: '100%',
+                        order: !isMultipleLines.value ? 1 : 0,
+                        maxHeight: '100px',
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                    }}>
+                        <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Message" onFocus={() => isFocus.onTrue()} onBlur={() => isFocus.onFalse()} sx={{
+                            width: '100%',
+                            height: '100%',
+                        }} />
+                    </Box>
+
+                    <Box sx={{
+                        order: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                    }}>
+                        <IconButton size="small" sx={{
+                        }}>
+                            <Iconify icon="majesticons:underline-2" sx={{
+                                color: theme => theme.palette.text.primary,
+                            }} />
+                        </IconButton>
+                        <IconButton size="small" sx={{
+                        }}>
+                            <Iconify icon="mingcute:emoji-line" sx={{
+                                color: theme => theme.palette.text.primary,
+                            }} />
+                        </IconButton>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            pr: 1,
+                        }}>
+                            <Switch />
+                            <Typography variant="body2">Pro</Typography>
+                        </Box>
+                        <IconButton size="small" sx={{
+                            backgroundColor: theme => theme.palette.primary.main,
+                        }}>
+                            <Iconify icon="ph:arrow-up-bold" sx={{
+                                color: theme => theme.palette.text.primary,
+                            }} />
+                        </IconButton>
+                    </Box>
+                </Box>
             </Box>
         </Box>
     );
