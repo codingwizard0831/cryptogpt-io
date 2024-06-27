@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import { Box, Tab, Card, Tabs, Stack, Button, InputLabel, Typography, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
+import { Box, Tab, Card, Tabs, Stack } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -12,11 +12,10 @@ import { NAV, HEADER, SPACING, MAIN_CHART_PANEL } from 'src/layouts/config-layou
 import Carousel, { useCarousel } from 'src/components/carousel';
 
 import { DashboardNews } from './dashboard-news';
+import { DashboardTrade } from './dashboard-trade';
 import { DashboardAIChat } from './dashboard-ai-chat';
-import DashboardTradeBuy from './dashboard-trade-buy';
 import DashboardLineChart from './dashboard-line-chart';
 import DashboardOrderBook from './dashboard-order-book';
-import DashboardTradeSell from './dashboard-trade-sell';
 import { DashboardTopMover } from './dashboard-top-mover';
 import DashBoardTradingChart from './dashboard-trading-chart';
 import DashboardLatestTransaction from './dashboard-latest-transactiont';
@@ -149,98 +148,12 @@ export default function DashboardView() {
                         </Card>
 
                         <Card sx={{
-                            p: 2,
+                            py: 2,
+                            px: 1,
                             height: '100%',
+                            aspectRatio: '2/1',
                         }}>
-                            <Stack direction="column" spacing={1} sx={{
-                                height: '100%',
-                                justifyContent: 'flex-end',
-                            }}>
-                                <Stack direction="row" spacing={1}>
-                                    <Typography sx={{
-                                        color: 'text.secondary',
-                                        fontSize: '14px',
-                                    }}>Avbl</Typography>
-                                    <Typography sx={{
-                                        fontSize: '14px',
-                                        ml: 1,
-                                    }}>USDT</Typography>
-                                </Stack>
-                                <FormControl sx={{ width: '25ch' }} variant="outlined">
-                                    <InputLabel htmlFor="buy-price">Price</InputLabel>
-                                    <OutlinedInput
-                                        id="buy-price"
-                                        type='text'
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <Typography>USDT</Typography>
-                                            </InputAdornment>
-                                        }
-                                        label="Price"
-                                    />
-                                </FormControl>
-                                <FormControl sx={{ width: '25ch' }} variant="outlined">
-                                    <InputLabel htmlFor="buy-amount">Amount</InputLabel>
-                                    <OutlinedInput
-                                        id="buy-amount"
-                                        type='text'
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <Typography>BTC</Typography>
-                                            </InputAdornment>
-                                        }
-                                        label="Price"
-                                    />
-                                </FormControl>
-                                <Button variant='contained' color="success" fullWidth>BUY</Button>
-                            </Stack>
-                        </Card>
-                        <Card sx={{
-                            p: 2,
-                            height: '100%',
-                        }}>
-                            <Stack direction="column" spacing={1} sx={{
-                                height: '100%',
-                                justifyContent: 'flex-end',
-                            }}>
-                                <Stack direction="row" spacing={1}>
-                                    <Typography sx={{
-                                        color: 'text.secondary',
-                                        fontSize: '14px',
-                                    }}>Avbl</Typography>
-                                    <Typography sx={{
-                                        fontSize: '14px',
-                                        ml: 1,
-                                    }}>BTC</Typography>
-                                </Stack>
-                                <FormControl sx={{ width: '25ch' }} variant="outlined">
-                                    <InputLabel htmlFor="buy-price">Price</InputLabel>
-                                    <OutlinedInput
-                                        id="buy-price"
-                                        type='text'
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <Typography>USDT</Typography>
-                                            </InputAdornment>
-                                        }
-                                        label="Price"
-                                    />
-                                </FormControl>
-                                <FormControl sx={{ width: '25ch' }} variant="outlined">
-                                    <InputLabel htmlFor="buy-amount">Amount</InputLabel>
-                                    <OutlinedInput
-                                        id="buy-amount"
-                                        type='text'
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <Typography>BTC</Typography>
-                                            </InputAdornment>
-                                        }
-                                        label="Price"
-                                    />
-                                </FormControl>
-                                <Button variant='contained' color="error" fullWidth>SELL</Button>
-                            </Stack>
+                            <DashboardTrade />
                         </Card>
 
                         <Card sx={{
@@ -250,12 +163,6 @@ export default function DashboardView() {
                         }}>
                             <DashboardTopMover />
                         </Card>
-
-                        <Card sx={{
-                            p: 2,
-                            height: '100%',
-                            aspectRatio: '1/1',
-                        }} />
                     </Stack>
                 }
                 {
@@ -274,13 +181,7 @@ export default function DashboardView() {
                             p: 2,
                             height: '100%',
                         }}>
-                            <DashboardTradeBuy />
-                        </Card>
-                        <Card sx={{
-                            p: 2,
-                            height: '100%',
-                        }}>
-                            <DashboardTradeSell />
+                            <DashboardTrade />
                         </Card>
 
                         <Card sx={{
