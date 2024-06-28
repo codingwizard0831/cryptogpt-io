@@ -1,8 +1,6 @@
 import Script from "next/script";
 import dynamic from "next/dynamic";
-import { useState, useEffect } from "react";
-
-import { useLocales } from "src/locales";
+import { memo, useState } from "react";
 
 import {
     ResolutionString,
@@ -15,8 +13,8 @@ const TVChartContainer = dynamic(
     { ssr: false }
 );
 
-export default function DashBoardTradingChart() {
-    const { currentLang } = useLocales()
+export default memo(() => {
+    // const { currentLang } = useLocales()
     const [isScriptReady, setIsScriptReady] = useState(false);
     const [defaultWidgetProps, setDefaultWidgetProps] = useState<Partial<ChartingLibraryWidgetOptions>>({
         symbol: "AAPL",
@@ -31,13 +29,13 @@ export default function DashBoardTradingChart() {
         autosize: true,
     });
 
-
-    useEffect(() => {
-        setDefaultWidgetProps((prevProps) => ({
-            ...prevProps,
-            locale: currentLang.value,
-        }));
-    }, [currentLang, setDefaultWidgetProps]);
+    // useEffect(() => {
+    //     console.log(444)
+    //     setDefaultWidgetProps((prevProps) => ({
+    //         ...prevProps,
+    //         locale: currentLang.value,
+    //     }));
+    // }, [currentLang, setDefaultWidgetProps]);
 
     return (
         <>
@@ -51,4 +49,4 @@ export default function DashBoardTradingChart() {
             {isScriptReady && <TVChartContainer {...defaultWidgetProps} />}
         </>
     );
-}
+})
