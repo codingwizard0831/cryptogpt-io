@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Box, Stack, alpha, BoxProps, IconButton, Typography, ButtonBase } from '@mui/material';
 
+import { useResponsive } from 'src/hooks/use-responsive';
+
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 
@@ -17,8 +19,10 @@ export default function DashboardTradeHome({
     sx,
     ...other
 }: DashboardTradeProps) {
+    const smUp = useResponsive('up', 'sm');
+
     return <Box sx={{
-        p: 2,
+        p: smUp ? 2 : 1,
         display: 'flex',
         flexDirection: 'column',
         height: '100%',

@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
-import Logo from 'src/components/logo';
+import Image from 'src/components/image';
 import { NavSectionMini } from 'src/components/nav-section';
 import { useSettingsContext } from 'src/components/settings';
 
@@ -74,13 +74,20 @@ export default function NavMini() {
           <NavToggleButton
             sx={{
               position: 'absolute',
-              top: 60,
+              top: 42,
               left: NavToggleButtonLeftSpacing,
               zIndex: 999,
             }}
           />
 
-          <Logo sx={{ mx: 'auto', my: 2 }} />
+          {/* <Logo sx={{ mx: 'auto', my: 2 }} /> */}
+          <Image src="/logo/crgpt-icon-full.png" alt="logo" sx={{
+            width: '32px',
+            height: '32px',
+            borderRadius: 1,
+            mt: 1.5,
+            mb: 1,
+          }} />
 
           <NavSectionMini
             data={navData}

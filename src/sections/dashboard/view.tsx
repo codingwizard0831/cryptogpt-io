@@ -178,7 +178,6 @@ export default function DashboardView() {
                         </Card>
 
                         <Card sx={{
-                            p: 2,
                             height: '100%',
                         }}>
                             <DashboardTradeHome />
