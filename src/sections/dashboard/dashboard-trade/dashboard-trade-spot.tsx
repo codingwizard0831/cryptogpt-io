@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
-import { Box, Tab, Tabs, Stack, Button, InputLabel, Typography, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
+import { Box, Tab, Tabs, Stack, Button, Slider, Typography } from '@mui/material';
+
+import { TradeInput } from 'src/components/trade-input';
 
 
 export function DashboardTradeSpot() {
@@ -11,7 +13,7 @@ export function DashboardTradeSpot() {
 
     return <Box>
         <Tabs value={currentSpotTab} onChange={handleChangeSpotTab} sx={{
-            mb: 1,
+            mb: 2,
         }}>
             <Tab label="Limit" value="limit" />
             <Tab label="Market" value="market" />
@@ -20,31 +22,36 @@ export function DashboardTradeSpot() {
             <Tab label="OCO" value="oco" />
         </Tabs>
 
-        <Stack direction="row" spacing={1}>
-            <Typography variant="caption" sx={{
-                color: 'text.secondary',
-            }}>Avbl</Typography>
-            <Typography variant="caption" sx={{
-                color: 'text.secondary',
-            }}>-</Typography>
-            <Typography variant="caption" sx={{
-            }}>USDT</Typography>
-        </Stack>
+        <Stack direction="column" spacing={1} sx={{
+            maxWidth: '300px',
+        }}>
+            <Stack direction="row" spacing={1}>
+                <Typography variant="caption" sx={{
+                    color: 'text.secondary',
+                }}>Avbl</Typography>
+                <Typography variant="caption" sx={{
+                    color: 'text.secondary',
+                }}>-</Typography>
+                <Typography variant="caption" sx={{
+                }}>USDT</Typography>
+            </Stack>
 
-        <FormControl sx={{ width: '25ch' }} variant="outlined">
-            <InputLabel htmlFor="buy-price">Price</InputLabel>
-            <OutlinedInput
-                id="buy-price"
-                type='text'
-                endAdornment={
-                    <InputAdornment position="end">
-                        <Typography>USDT</Typography>
-                    </InputAdornment>
-                }
-                label="Price"
+            <TradeInput label='Price' currentType='USDT' />
+            <TradeInput label='Amount' currentType='BTC' />
+
+            <Slider
+                size="medium"
+                marks
+                min={10}
+                step={10}
+                max={110}
+                defaultValue={30}
+                valueLabelDisplay="auto"
+            // getAriaValueText={valuetext}
+            // sx={{ [`& .${sliderClasses.mark}[data-index="10"]`]: { display: 'none' } }}
             />
-        </FormControl>
 
-        <Button variant='contained' color="success" fullWidth>BUY</Button>
+            <Button variant='contained' color="success" fullWidth>BUY</Button>
+        </Stack>
     </Box>
 }
