@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
 
 import { useLocales } from "src/locales";
-import { getUserInfo } from "src/auth/context/jwt/utils";
 
 import {
     ResolutionString,
@@ -18,7 +17,6 @@ const TVChartContainer = dynamic(
 
 export default function DashBoardTradingChart() {
     const { currentLang } = useLocales()
-    const user = getUserInfo();
     const [isScriptReady, setIsScriptReady] = useState(false);
     const [defaultWidgetProps, setDefaultWidgetProps] = useState<Partial<ChartingLibraryWidgetOptions>>({
         symbol: "AAPL",
