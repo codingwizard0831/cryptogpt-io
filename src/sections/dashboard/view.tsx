@@ -12,8 +12,8 @@ import { NAV, HEADER, SPACING, MAIN_CHART_PANEL } from 'src/layouts/config-layou
 import Carousel, { useCarousel } from 'src/components/carousel';
 
 import { DashboardNews } from './dashboard-news';
-import { DashboardTrade } from './dashboard-trade';
 import { DashboardAIChat } from './dashboard-ai-chat';
+import { DashboardTradeHome } from './dashboard-trade';
 import DashboardLineChart from './dashboard-line-chart';
 import DashboardOrderBook from './dashboard-order-book';
 import { DashboardTopMover } from './dashboard-top-mover';
@@ -143,24 +143,17 @@ export default function DashboardView() {
                             height: '100%',
                             transition: 'aspect-ratio 0.5s',
                             aspectRatio: isFullWidth.value ? `${chatAreaFullWidth}/309` : '2/1',
+                            backdropFilter: 'none',
                         }}>
                             <DashboardAIChat isMinimized={isFullWidth.value} onBlockResize={() => isFullWidth.onToggle()} />
                         </Card>
 
                         <Card sx={{
-                            py: 2,
-                            px: 1,
                             height: '100%',
-                            aspectRatio: '2/1',
+                            aspectRatio: '1.2/1',
                         }}>
-                            <DashboardTrade />
+                            <DashboardTradeHome />
                         </Card>
-
-                        <Card sx={{
-                            p: 2,
-                            height: '100%',
-                            aspectRatio: '1/1',
-                        }} />
 
                         <Card sx={{
                             p: 2,
@@ -179,6 +172,7 @@ export default function DashboardView() {
                             height: '100%',
                             transition: 'aspect-ratio 0.5s',
                             aspectRatio: isFullWidth.value ? `${chatAreaFullWidth}/309` : '2/1',
+                            backdropFilter: 'none',
                         }}>
                             <DashboardAIChat isMinimized={isFullWidth.value} onBlockResize={() => isFullWidth.onToggle()} />
                         </Card>
@@ -187,7 +181,7 @@ export default function DashboardView() {
                             p: 2,
                             height: '100%',
                         }}>
-                            <DashboardTrade />
+                            <DashboardTradeHome />
                         </Card>
 
                         <Card sx={{
@@ -196,12 +190,6 @@ export default function DashboardView() {
                         }}>
                             <DashboardTopMover />
                         </Card>
-
-                        <Card sx={{
-                            p: 1,
-                            height: '100%',
-                            aspectRatio: '1/1',
-                        }} />
                     </Carousel>
                 }
             </Box>

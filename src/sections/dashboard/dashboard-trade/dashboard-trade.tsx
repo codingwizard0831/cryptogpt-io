@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 
-import { Box, Tab, Tabs, alpha } from '@mui/material';
+import { Box, Tab, Tabs, alpha, BoxProps } from '@mui/material';
 
 import { DashboardTradeSpot } from './dashboard-trade-spot';
 import { DashboardTradeGrid } from './dashboard-trade-grid';
 
-export default function DashboardTrade() {
+interface DashboardTradeProps extends BoxProps {
+    handleWindowResize?: () => void;
+    isMinimized?: boolean;
+}
+
+export default function DashboardTrade({
+    isMinimized = false,
+    handleWindowResize,
+    sx,
+    ...other
+}: DashboardTradeProps) {
     const [currentTypeTab, setCurrentTypeTab] = useState('spot');
 
     const handleChangeTypeTab = (event: React.SyntheticEvent, newValue: string) => {
@@ -52,6 +62,5 @@ export default function DashboardTrade() {
                 currentTypeTab === 'grid' && <DashboardTradeGrid />
             }
         </Box>
-
     </Box>;
 }
