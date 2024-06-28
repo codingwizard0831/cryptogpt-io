@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     const res = await req.json();
     const { email } = res;
     const response = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://example.com/update-password',
+      redirectTo: 'http://localhost:8083/update-password',
     })
     return NextResponse.json(response)
   } catch (error) {
