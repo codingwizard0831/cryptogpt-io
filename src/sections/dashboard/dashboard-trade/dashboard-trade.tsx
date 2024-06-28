@@ -35,6 +35,7 @@ export default function DashboardTrade({
     }} {...other}>
         <Stack direction="row" alignItems='center' justifyContent='space-between' sx={{
             width: '100%',
+            mb: 1,
         }}>
             <Typography variant="h6">Trade</Typography>
 
@@ -65,13 +66,15 @@ export default function DashboardTrade({
             },
         }}>
             <Tab label="Spot" value="spot" />
+            <Tab label="Cross 5x" value="cross" />
+            <Tab label="Isolate" value="isolated" />
             <Tab label="Grid" value="grid" />
         </Tabs>
 
         <Box sx={{
             p: 1,
             flex: 1,
-            backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
+            backgroundImage: theme => `linear-gradient(to bottom, ${alpha(theme.palette.primary.main, 0.05)}, transparent)`,
         }}>
             {
                 currentTypeTab === 'spot' && <DashboardTradeSpot />

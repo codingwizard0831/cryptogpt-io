@@ -233,9 +233,8 @@ export default function DashboardView() {
                     } : {}),
             }}>
                 <Card sx={{
-                    p: 1,
+                    p: smUp ? 2 : 1,
                     width: '100%',
-                    height: '100%',
                     borderRadius: 1,
                 }}>
                     <DashboardTrade onBlockResize={() => isTradeWindowFull.onToggle()} />

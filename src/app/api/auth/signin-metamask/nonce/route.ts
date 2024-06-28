@@ -6,17 +6,24 @@ export async function POST(req: Request) {
     try {
         const res = await req.json();
         const nonce = Math.floor(Math.random() * 1000000);
-        const { data, error } = await supabase.from('users').select('id').eq('address', res.address).single();
+        const { data, error } = await supabase
+            .from('users')
+            .select('id')
+            .eq('metamask_metadata->>address', res.address)
+            .single()
         if (!data || error) {
             const { data: user, error: upsertError } = await supabase
                 .from('users')
                 .upsert([
                     {
-                        address: res.address,
-                        auth: {
+                        metamask_metadata: {
+                            address: res.address,
                             nonce: nonce.toString(),
-                            lastAuth: new Date().toISOString(),
-                            lastAuthStatus: "pending"
+                        },
+                        auth: {
+                            lastLoggedinTime: new Date().toISOString(),
+                            lastAuthStatus: "pending",
+                            lastLoggedinProvider: "metamask"
                         }
                     }
                 ])
@@ -30,14 +37,18 @@ export async function POST(req: Request) {
             .from('users')
             .update([
                 {
-                    auth: {
+                    metamask_metadata: {
+                        address: res.address,
                         nonce: nonce.toString(),
-                        lastAuth: new Date().toISOString(),
-                        lastAuthStatus: "pending"
+                    },
+                    auth: {
+                        lastLoggedinTime: new Date().toISOString(),
+                        lastAuthStatus: "pending",
+                        lastLoggedinProvider: "metamask"
                     }
                 }
             ])
-            .eq('address', res.address)
+            .eq('metamask_metadata->>address', res.address)
             .select()
 
         if (user || !updateError) {

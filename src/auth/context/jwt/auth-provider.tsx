@@ -241,7 +241,7 @@ export function AuthProvider({ children }: Props) {
     const nonceResponse = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
       address,
     })
-    const userNonce = nonceResponse.data.user[0].auth.nonce;
+    const userNonce = nonceResponse.data.user[0].metamask_metadata.nonce;
     console.log('nonce', userNonce);
     const rst = await signMessageWithMetamask(userNonce);
     if (rst.error) {
@@ -282,31 +282,31 @@ export function AuthProvider({ children }: Props) {
 
   const loginWithBinance = useCallback(async (userId: string) => {
     const response = await axios.post(endpoints.auth.loginWithBinance, {
-        userId
-      });
-      const responseData = response.data;
-      if (responseData.error) {
-        throw new Error(responseData.error);
-      } else {
-        const { user, token } = responseData.data;
-        if (token) {
-          setAccessToken(token);
-        }
-        if (user) {
-          console.log('user', user);
-          setUserInfo(user);
-        }
-
-        dispatch({
-          type: Types.LOGIN,
-          payload: {
-            user: {
-              ...user,
-              access_token: token,
-            },
-          },
-        });
+      userId
+    });
+    const responseData = response.data;
+    if (responseData.error) {
+      throw new Error(responseData.error);
+    } else {
+      const { user, token } = responseData.data;
+      if (token) {
+        setAccessToken(token);
       }
+      if (user) {
+        console.log('user', user);
+        setUserInfo(user);
+      }
+
+      dispatch({
+        type: Types.LOGIN,
+        payload: {
+          user: {
+            ...user,
+            access_token: token,
+          },
+        },
+      });
+    }
   }, []);
 
   // REGISTER

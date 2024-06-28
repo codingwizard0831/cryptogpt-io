@@ -20,12 +20,12 @@ export async function POST(req: Request) {
             const { data: user, error: userError } = await supabase
                 .from('users')
                 .select('*')
-                .eq('address', address)
+                .eq('metamask_metadata->>address', address)
                 .single()
 
             if (user && !userError) {
                 // 3. Verify the nonce included in the request matches what's already in public.users table for that address
-                if (user?.auth.nonce !== nonce) {
+                if (user?.metamask_metadata.nonce !== nonce) {
                     return NextResponse.json(
                         { data: null, error: 'Nonce verification failed' },
                         { status: 401 }
@@ -67,15 +67,19 @@ export async function POST(req: Request) {
                     .from('users')
                     .update([
                         {
-                            id: finalAuthUser?.id,
+                            userId: finalAuthUser?.id,
+                            metamask_metadata: {
+                                address,
+                                nonce
+                            },
                             auth: {
-                                nonce,
-                                lastAuth: new Date().toISOString(),
-                                lastAuthStatus: 'success'
+                                lastLoggedinTime: new Date().toISOString(),
+                                lastAuthStatus: "success",
+                                lastLoggedinProvider: "metamask"
                             }
                         }
                     ])
-                    .eq('address', address)
+                    .eq('metamask_metadata->>address', address)
                     .select()
 
                 // 6. We sign the token and return it to client
@@ -85,7 +89,7 @@ export async function POST(req: Request) {
                         sub: finalAuthUser.id,
                         aud: 'authenticated'
                     },
-                    { expiresIn: `${10000000}s` }
+                    { expiresIn: `${60 * 60 * 24}s` }
                 )
                 const response = NextResponse.json({
                     data: {
