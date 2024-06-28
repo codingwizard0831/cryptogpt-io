@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 
-import { Box, Tab, Tabs, alpha, BoxProps } from '@mui/material';
+import { Box, Tab, Tabs, alpha, Stack, BoxProps, Typography, IconButton } from '@mui/material';
+
+import Iconify from 'src/components/iconify';
 
 import { DashboardTradeSpot } from './dashboard-trade-spot';
 import { DashboardTradeGrid } from './dashboard-trade-grid';
 
 interface DashboardTradeProps extends BoxProps {
-    handleWindowResize?: () => void;
-    isMinimized?: boolean;
+    onBlockResize?: () => void;
 }
 
 export default function DashboardTrade({
-    isMinimized = false,
-    handleWindowResize,
+    onBlockResize,
     sx,
     ...other
 }: DashboardTradeProps) {
@@ -22,11 +22,29 @@ export default function DashboardTrade({
         setCurrentTypeTab(newValue);
     }
 
+    const handleBlockResize = () => {
+        if (onBlockResize) {
+            onBlockResize();
+        }
+    }
+
     return <Box sx={{
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-    }}>
+    }} {...other}>
+        <Stack direction="row" alignItems='center' justifyContent='space-between' sx={{
+            width: '100%',
+        }}>
+            <Typography variant="h6">Trade</Typography>
+
+            <IconButton onClick={() => handleBlockResize()}>
+                <Iconify icon="fluent-mdl2:minimum-value" sx={{
+                    color: theme => theme.palette.text.primary,
+                }} />
+            </IconButton>
+        </Stack>
+
         <Tabs value={currentTypeTab} onChange={handleChangeTypeTab} sx={{
             borderRadius: '0px',
             '.MuiTabs-indicator': {

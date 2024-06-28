@@ -9,17 +9,21 @@ import Iconify from 'src/components/iconify';
 
 
 interface DashboardTradeProps extends BoxProps {
-    handleWindowResize?: () => void;
-    isMinimized?: boolean;
+    onBlockResize?: () => void;
 }
 
 export default function DashboardTradeHome({
-    isMinimized = false,
-    handleWindowResize,
+    onBlockResize,
     sx,
     ...other
 }: DashboardTradeProps) {
     const smUp = useResponsive('up', 'sm');
+
+    const handleBlockResize = () => {
+        if (onBlockResize) {
+            onBlockResize();
+        }
+    }
 
     return <Box sx={{
         p: smUp ? 2 : 1,
@@ -29,18 +33,17 @@ export default function DashboardTradeHome({
         gap: 1,
         position: 'relative',
         overflow: 'hidden',
-    }}>
+        ...sx,
+    }} {...other}>
         <Stack direction="row" alignItems='center' justifyContent='space-between' sx={{
             width: '100%',
         }}>
             <Typography variant="h6">Trade</Typography>
 
-            <IconButton>
-                {isMinimized ? <Iconify icon="fluent-mdl2:minimum-value" sx={{
+            <IconButton onClick={() => handleBlockResize()}>
+                <Iconify icon="lucide:maximize" sx={{
                     color: theme => theme.palette.text.primary,
-                }} /> : <Iconify icon="lucide:maximize" sx={{
-                    color: theme => theme.palette.text.primary,
-                }} />}
+                }} />
             </IconButton>
         </Stack>
 
