@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 
-import { Box, Input, alpha, BoxProps, Typography } from "@mui/material";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { Box, Input, alpha, BoxProps, MenuItem, Typography } from "@mui/material";
 
 import { useBoolean } from "src/hooks/use-boolean";
 
@@ -11,6 +12,10 @@ export interface TradeInputProps extends BoxProps {
     currentType?: string;
     inputValue?: string;
     onInputChange?: (v: string) => void;
+    readOnly?: boolean;
+    multiOptions?: string[];
+    selectedMultiOption?: string;
+    onMultiOptionChange?: (v: string) => void;
 }
 
 export default function TradeInput({
@@ -18,6 +23,10 @@ export default function TradeInput({
     currentType = '',
     inputValue = '',
     onInputChange,
+    readOnly = false,
+    multiOptions = [],
+    selectedMultiOption = "",
+    onMultiOptionChange,
     sx,
     ...other
 }: TradeInputProps) {
@@ -40,6 +49,12 @@ export default function TradeInput({
         }
     }
 
+    const handleMultiOptionChange = (event: SelectChangeEvent) => {
+        if (onMultiOptionChange) {
+            onMultiOptionChange(event.target.value);
+        }
+    }
+
     return <Box sx={{
         width: '100%',
         display: 'flex',
@@ -47,18 +62,39 @@ export default function TradeInput({
         alignItems: 'center',
         px: 1,
         py: 0.5,
-        backgroundColor: theme => alpha(theme.palette.background.opposite, 0.05),
+        backgroundColor: theme => alpha(theme.palette.background.opposite, readOnly ? 0.25 : 0.1),
         borderRadius: 0.5,
         border: '1px solid transparent',
         transition: 'border-color 0.25s',
-        "&:hover": {
-            borderColor: theme => alpha(theme.palette.primary.main, 1),
-        },
-        ...(isFocused.value && {
+        cursor: readOnly ? 'unset' : 'pointer',
+        ...(
+            readOnly ? {} : {
+                "&:hover": {
+                    borderColor: theme => alpha(theme.palette.primary.main, 1),
+                }
+            }
+        ),
+        ...(!readOnly && isFocused.value && {
             borderColor: theme => alpha(theme.palette.primary.main, 1),
         }),
     }} {...other} onClick={() => handleTouchElement()}>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>{label}</Typography>
+        {
+            multiOptions.length ? <Select size="small" value={selectedMultiOption} onChange={handleMultiOptionChange} sx={{
+                width: '100px',
+                borderRadius: 0.5,
+                border: '1px solid transparent',
+                backgroundColor: 'transparent',
+                height: '28px',
+                '&:focus': {
+                    outline: 'none',
+                },
+            }}>
+                {
+                    multiOptions.map((option, index) => <MenuItem key={`trade-menu-${index}`} value={option}>{option}</MenuItem>)
+                }
+            </Select> :
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>{label}</Typography>
+        }
         <Input ref={inputRef} disableUnderline sx={{
             flex: 1,
             '& input': {
@@ -69,6 +105,7 @@ export default function TradeInput({
             onChange={handleValueChange}
             onFocus={() => isFocused.onTrue()}
             onBlur={() => isFocused.onFalse()}
+            readOnly={readOnly}
         />
         <Typography variant="body2" sx={{ color: 'text.primary' }}>{currentType}</Typography>
     </Box>

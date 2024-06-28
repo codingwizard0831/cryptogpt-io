@@ -1,99 +1,431 @@
 import { useState } from 'react';
 
-import { Box, Tab, Tabs, Stack, Button, Slider, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Stack, alpha, Button, Slider, Typography } from '@mui/material';
 
 import { TradeInput } from 'src/components/trade-input';
 
 
 export function DashboardTradeSpot() {
     const [currentSpotTab, setCurrentSpotTab] = useState('limit');
+    const [spotMarket, setSpotMarket] = useState('Amount');
+
+
     const handleChangeSpotTab = (event: React.SyntheticEvent, newValue: string) => {
         setCurrentSpotTab(newValue);
     };
 
     return <Box>
-        <Tabs value={currentSpotTab} onChange={handleChangeSpotTab} sx={{
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
             mb: 2,
         }}>
-            <Tab label="Limit" value="limit" />
-            <Tab label="Market" value="market" />
-            <Tab label="Stop limit" value="stop-limit" />
-            <Tab label="Trailing limit" value="trailing-limit" />
-            <Tab label="OCO" value="oco" />
-        </Tabs>
-
-        <Stack direction="row" spacing={2}>
-            <Stack direction="column" spacing={1} sx={{
-                maxWidth: '300px',
+            <Tabs value={currentSpotTab} onChange={handleChangeSpotTab} sx={{
+                backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
+                border: theme => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                p: 0.5,
+                borderRadius: '0px',
+                '.MuiTabs-indicator': {
+                    backgroundColor: 'transparent',
+                    top: 0,
+                },
+                '.MuiTab-root': {
+                    px: 1,
+                    color: 'text.secondary',
+                    fontSize: '12px',
+                    lineHeight: '12px',
+                    minHeight: '28px',
+                    height: '28px',
+                    '&.Mui-selected': {
+                        color: 'text.primary',
+                    },
+                },
+                ".Mui-selected": {
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+                },
             }}>
-                <Stack direction="row" spacing={1}>
-                    <Typography variant="caption" sx={{
-                        color: 'text.secondary',
-                    }}>Avbl</Typography>
-                    <Typography variant="caption" sx={{
-                        color: 'text.secondary',
-                    }}>-</Typography>
-                    <Typography variant="caption" sx={{
-                    }}>USDT</Typography>
+                <Tab label="Limit" value="limit" />
+                <Tab label="Market" value="market" />
+                <Tab label="Stop limit" value="stop-limit" />
+                <Tab label="Trailing limit" value="trailing-limit" />
+                <Tab label="OCO" value="oco" />
+            </Tabs>
+        </Box>
+
+        {
+            currentSpotTab === 'limit' && <Stack direction="row" spacing={2}>
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
+
+                    <TradeInput label='Price' currentType='USDT' />
+                    <TradeInput label='Amount' currentType='BTC' />
+
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant="contained" color="primary" fullWidth sx={{
+                        color: 'text.primary',
+                    }}>BUY</Button>
                 </Stack>
 
-                <TradeInput label='Price' currentType='USDT' />
-                <TradeInput label='Amount' currentType='BTC' />
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
 
-                <Slider
-                    size="medium"
-                    marks
-                    min={10}
-                    step={10}
-                    max={110}
-                    defaultValue={30}
-                    valueLabelDisplay="auto"
-                />
+                    <TradeInput label='Price' currentType='USDT' />
+                    <TradeInput label='Amount' currentType='BTC' />
 
-                <Button variant='contained' fullWidth sx={{
-                    backgroundImage: `
-                        repeating-linear-gradient(45deg, yellow, yellow 10px, brown 10px, brown 20px),
-                        repeating-linear-gradient(-45deg, yellow, yellow 10px, brown 10px, brown 20px)
-                    `
-                }}>BUY</Button>
-                <Button variant='contained' fullWidth sx={{
-                    backgroundImage: theme => `
-        linear-gradient(135deg, ${theme.palette.primary.main} 25%, ${theme.palette.secondary.main} 25%, ${theme.palette.secondary.main} 50%, ${theme.palette.primary.main} 50%, ${theme.palette.primary.main} 75%, ${theme.palette.secondary.main} 75%, ${theme.palette.secondary.main})
-    `,
-                    backgroundSize: '20px 20px',
-                    color: theme => theme.palette.getContrastText(theme.palette.primary.main),
-                }}>BUY</Button>
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
+                </Stack>
             </Stack>
+        }
 
-            <Stack direction="column" spacing={1} sx={{
-                maxWidth: '300px',
-            }}>
-                <Stack direction="row" spacing={1}>
-                    <Typography variant="caption" sx={{
-                        color: 'text.secondary',
-                    }}>Avbl</Typography>
-                    <Typography variant="caption" sx={{
-                        color: 'text.secondary',
-                    }}>-</Typography>
-                    <Typography variant="caption" sx={{
-                    }}>USDT</Typography>
+        {
+            currentSpotTab === 'market' && <Stack direction="row" spacing={2}>
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
+
+                    <TradeInput label='Price' currentType='BTC' readOnly inputValue='Market' />
+                    <TradeInput label='Amount' currentType='BTC' multiOptions={['Amount', 'Total']} selectedMultiOption={spotMarket} onMultiOptionChange={(v) => setSpotMarket(v)} />
+
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant="contained" color="primary" fullWidth sx={{
+                        color: 'text.primary',
+                    }}>BUY</Button>
                 </Stack>
 
-                <TradeInput label='Price' currentType='USDT' />
-                <TradeInput label='Amount' currentType='BTC' />
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
 
-                <Slider
-                    size="medium"
-                    marks
-                    min={10}
-                    step={10}
-                    max={110}
-                    defaultValue={30}
-                    valueLabelDisplay="auto"
-                />
+                    <TradeInput label='Amount' currentType='BTC' readOnly inputValue='Market' />
+                    <TradeInput label='Amount' currentType='BTC' multiOptions={['Amount', 'Total']} selectedMultiOption={spotMarket} onMultiOptionChange={(v) => setSpotMarket(v)} />
 
-                <Button variant='contained' color="success" fullWidth>SELL</Button>
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
+                </Stack>
             </Stack>
-        </Stack>
+        }
+
+
+        {
+            currentSpotTab === 'stop-limit' && <Stack direction="row" spacing={2}>
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
+
+                    <TradeInput label='Stop' currentType='USDT' />
+                    <TradeInput label='Limit' currentType='USDT' />
+                    <TradeInput label='Amount' currentType='BTC' />
+
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant="contained" color="primary" fullWidth sx={{
+                        color: 'text.primary',
+                    }}>BUY</Button>
+                </Stack>
+
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
+
+                    <TradeInput label='Stop' currentType='USDT' />
+                    <TradeInput label='Limit' currentType='USDT' />
+                    <TradeInput label='Amount' currentType='BTC' />
+
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
+                </Stack>
+            </Stack>
+        }
+
+        {
+            currentSpotTab === 'trailing-limit' && <Stack direction="row" spacing={2}>
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
+
+                    <Stack direction="row" spacing={1}>
+                        <TradeInput label='Trailing Delta' currentType='%' />
+                        <Button sx={{
+                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                            color: 'text.primary',
+                            borderRadius: '2px',
+                            px: 0.5,
+                            minWidth: '38px',
+                            height: '38px',
+                        }}>1%</Button>
+                        <Button sx={{
+                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                            color: 'text.primary',
+                            borderRadius: '2px',
+                            px: 0.5,
+                            minWidth: '38px',
+                            height: '38px',
+                        }}>2%</Button>
+                    </Stack>
+                    <TradeInput label='Limit' currentType='USDT' />
+                    <TradeInput label='Amount' currentType='BTC' />
+
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant="contained" color="primary" fullWidth sx={{
+                        color: 'text.primary',
+                    }}>BUY</Button>
+                </Stack>
+
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
+
+                    <Stack direction="row" spacing={1}>
+                        <TradeInput label='Trailing Delta' currentType='%' />
+                        <Button sx={{
+                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                            color: 'text.primary',
+                            borderRadius: '2px',
+                            px: 0.5,
+                            minWidth: '38px',
+                            height: '38px',
+                        }}>1%</Button>
+                        <Button sx={{
+                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                            color: 'text.primary',
+                            borderRadius: '2px',
+                            px: 0.5,
+                            minWidth: '38px',
+                            height: '38px',
+                        }}>2%</Button>
+                    </Stack>
+                    <TradeInput label='Limit' currentType='USDT' />
+                    <TradeInput label='Amount' currentType='BTC' />
+
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
+                </Stack>
+            </Stack>
+        }
+
+        {
+            currentSpotTab === 'oco' && <Stack direction="row" spacing={2}>
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
+
+                    <TradeInput label='Price' currentType='USDT' />
+                    <TradeInput label='Stop' currentType='USDT' />
+                    <TradeInput label='Limit' currentType='USDT' />
+                    <TradeInput label='Amount' currentType='BTC' />
+
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant="contained" color="primary" fullWidth sx={{
+                        color: 'text.primary',
+                    }}>BUY</Button>
+                </Stack>
+
+                <Stack direction="column" spacing={1} sx={{
+                    maxWidth: '300px',
+                }}>
+                    <Stack direction="row" spacing={1}>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>Avbl</Typography>
+                        <Typography variant="caption" sx={{
+                            color: 'text.secondary',
+                        }}>-</Typography>
+                        <Typography variant="caption" sx={{
+                        }}>USDT</Typography>
+                    </Stack>
+
+                    <TradeInput label='Price' currentType='USDT' />
+                    <TradeInput label='Stop' currentType='USDT' />
+                    <TradeInput label='Limit' currentType='USDT' />
+                    <TradeInput label='Amount' currentType='BTC' />
+
+                    <Slider
+                        size="medium"
+                        marks
+                        min={10}
+                        step={10}
+                        max={110}
+                        defaultValue={30}
+                        valueLabelDisplay="auto"
+                    />
+
+                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
+                </Stack>
+            </Stack>
+        }
     </Box>
 }
