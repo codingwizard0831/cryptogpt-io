@@ -53,22 +53,22 @@ export async function POST(req: Request) {
         .eq('email', `${userId}@cryptogpt.io`)
         .select();
 
-        const token = await signToken(
-            {
-                email: `${userId}@cryptogpt.io`,
-                sub: finalAuthUser.id,
-                aud: 'authenticated'
-            },
-            { expiresIn: `${10000000}s` }
-        )
-        const response = NextResponse.json({
-            data: {
-                token,
-                user: finalAuthUser,
-            },
-            error: null,
-        }, { status: 200 })
-        return response
+      const token = await signToken(
+        {
+          email: `${userId}@cryptogpt.io`,
+          sub: finalAuthUser.id,
+          aud: 'authenticated'
+        },
+        { expiresIn: `${10000000}s` }
+      )
+      const response = NextResponse.json({
+        data: {
+          token,
+          user: finalAuthUser,
+        },
+        error: null,
+      }, { status: 200 })
+      return response
     } catch (error: any) {
       return NextResponse.json(
         { data: null, error: error?.message || 'Internal Server Error' },

@@ -20,6 +20,26 @@ export async function POST(req: Request) {
         type: "sms" as any
       };
     const response = await supabase.auth.verifyOtp(options);
+    console.log('response', response)
+    const userId = response?.data?.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'Failed to sign in' }, { status: 500 })
+    }
+    const { error: upsertError } = await supabase
+      .from('users')
+      .update([
+        {
+          auth: {
+            lastLoggedinTime: new Date().toISOString(),
+            lastAuthStatus: "success",
+            lastLoggedinProvider: type
+          }
+        }
+      ])
+      .eq('userId', userId)
+    if (upsertError) {
+      throw new Error("Failed to put data to users table")
+    }
     return NextResponse.json(response);
   } catch (error) {
     console.log(error);
