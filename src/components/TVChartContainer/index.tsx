@@ -23,7 +23,7 @@ export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) =
             container: chartContainerRef.current,
             library_path: props?.library_path,
             locale: props?.locale as LanguageCode,
-            disabled_features: ["use_localstorage_for_settings", 'header_resolutions'],
+            disabled_features: ["use_localstorage_for_settings", 'header_resolutions', 'create_volume_indicator_by_default'],
             enabled_features: [],
             charts_storage_url: props?.charts_storage_url,
             charts_storage_api_version: props?.charts_storage_api_version,
@@ -47,12 +47,12 @@ export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) =
         tvWidget.onChartReady(() => {
             tvWidget.headerReady().then(() => {
                 tvWidget.chart().getSeries().setChartStyleProperties(1, {
-                    upColor: '#fda92d',
-                    downColor: '#CCC',
-                    borderUpColor: '#fda92d',
-                    borderDownColor: '#CCC',
-                    wickUpColor: '#fda92d',
-                    wickDownColor: '#CCC',
+                    upColor: 'orange',
+                    downColor: 'cyan',
+                    borderUpColor: 'orange',
+                    borderDownColor: 'cyan',
+                    wickUpColor: 'orange',
+                    wickDownColor: 'cyan',
                 });
                 const button = tvWidget.createButton();
                 button.setAttribute("title", "Click to show a notification popup");
