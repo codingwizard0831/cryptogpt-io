@@ -6,6 +6,8 @@ import Iconify from 'src/components/iconify';
 
 import { DashboardTradeSpot } from './dashboard-trade-spot';
 import { DashboardTradeGrid } from './dashboard-trade-grid';
+import { DashboardTradeCross } from './dashboard-trade-cross';
+import { DashboardTradeIsolated } from './dashboard-trade-isolated';
 
 interface DashboardTradeProps extends BoxProps {
     onBlockResize?: () => void;
@@ -78,6 +80,12 @@ export default function DashboardTrade({
         }}>
             {
                 currentTypeTab === 'spot' && <DashboardTradeSpot />
+            }
+            {
+                currentTypeTab === 'cross' && <DashboardTradeCross />
+            }
+            {
+                currentTypeTab === 'isolated' && <DashboardTradeIsolated />
             }
             {
                 currentTypeTab === 'grid' && <DashboardTradeGrid />

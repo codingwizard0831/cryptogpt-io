@@ -27,7 +27,7 @@ export default function DashboardLineChart({ data = dummyData, sx, ...other }: D
         <Box sx={{
             ...sx,
         }} {...other}>
-            <Chart dir="ltr" type="line" series={[{
+            <Chart dir="ltr" type="area" series={[{
                 name: 'Price',
                 data,
             }]} options={chartOptions} width="100%" height={MAIN_CHART_PANEL.W_DESKTOP - 88} />
