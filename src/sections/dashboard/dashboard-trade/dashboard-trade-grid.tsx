@@ -1,16 +1,20 @@
 import { useState } from 'react';
 
-import { Box, Tab, Tabs, Stack, alpha, Input, Slider, Button, Divider, Checkbox, MenuItem, Typography, FormControlLabel } from '@mui/material';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { Box, Tab, Tabs, Stack, alpha, Input, Slider, Button, Divider, Checkbox, MenuItem, useTheme, TextField, Typography, IconButton, InputLabel, FormControl, FormControlLabel } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify';
 import { TradeInput } from 'src/components/trade-input';
 import { usePopover } from 'src/components/custom-popover';
-import { StyledPopover } from 'src/components/styled-component';
+import { StyledDialog, StyledPopover } from 'src/components/styled-component';
+
+import DashboardTradeGridPopularStrategy from './dashboard-trade-grid-popular-strategy';
 
 
 export function DashboardTradeGrid() {
+    const theme = useTheme();
     const [currentGridTab, setCurrentGridTab] = useState('ai');
     const [currentAiPeriod, setCurrentAiPeriod] = useState('3d');
     const [currentPopularType, setCurrentPopularType] = useState('top-roi');
@@ -18,7 +22,12 @@ export function DashboardTradeGrid() {
     const [investMentCurrency, setInvestMentCurrency] = useState('USDT');
     const investMentCurrencyMenuShow = useBoolean(false);
     const advancedPopover = usePopover();
+    const popularGridStrategiesDialog = useBoolean(false);
+    const [popularGridDataSort, setPopularGridDataSort] = useState('asc');
 
+    const handleChangePopularGridDataSort = (event: SelectChangeEvent) => {
+        setPopularGridDataSort(event.target.value as string);
+    };
 
     const handleChangeGridTab = (event: React.SyntheticEvent, newValue: string) => {
         setCurrentGridTab(newValue);
@@ -40,8 +49,8 @@ export function DashboardTradeGrid() {
             mb: 2,
         }}>
             <Tabs value={currentGridTab} onChange={handleChangeGridTab} sx={{
-                backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
-                border: theme => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                backgroundColor: alpha(theme.palette.background.default, 0.2),
+                border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
                 p: 0.5,
                 borderRadius: '0px',
                 '.MuiTabs-indicator': {
@@ -60,7 +69,7 @@ export function DashboardTradeGrid() {
                     },
                 },
                 ".Mui-selected": {
-                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+                    backgroundColor: alpha(theme.palette.primary.main, 0.2),
                 },
             }}>
                 <Tab label="AI" value="ai" icon={<Iconify icon="hugeicons:bot" sx={{ width: '14px', height: '14px', color: 'primary.main' }} />} iconPosition='start' />
@@ -91,7 +100,7 @@ export function DashboardTradeGrid() {
                                 height: '20px',
                                 '&.Mui-selected': {
                                     color: 'text.primary',
-                                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+                                    backgroundColor: alpha(theme.palette.primary.main, 0.2),
                                 },
                             },
                             ".MuiTabs-indicator": {
@@ -178,7 +187,7 @@ export function DashboardTradeGrid() {
                             height: '20px',
                             '&.Mui-selected': {
                                 color: 'text.primary',
-                                backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+                                backgroundColor: alpha(theme.palette.primary.main, 0.2),
                             },
                         },
                         ".MuiTabs-indicator": {
@@ -191,70 +200,99 @@ export function DashboardTradeGrid() {
                         <Tab label="Most Matched" value="most-matched" />
                     </Tabs>
 
-                    <Button color="primary" size="small">View More Grids</Button>
+                    <Button color="primary" size="small" onClick={() => popularGridStrategiesDialog.onTrue()}>View More Grids</Button>
+
+                    <StyledDialog maxWidth="lg" open={popularGridStrategiesDialog.value} onClose={() => popularGridStrategiesDialog.onFalse()}>
+                        <Box sx={{
+                            p: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1,
+                        }}>
+                            <Stack direction="row" spacing={1} alignItems='center' justifyContent='space-between' sx={{ mb: 2 }}>
+                                <Typography variant="subtitle1">Popular Grid Strategies</Typography>
+                                <IconButton onClick={() => popularGridStrategiesDialog.onFalse()}><Iconify icon="bx:bx-x" sx={{ color: 'text.secondary' }} /></IconButton>
+                            </Stack>
+
+                            <Stack direction="row" spacing={2} justifyContent="space-between" alignItems='center' sx={{ mb: 2 }} >
+                                <TextField label="Search" variant="outlined" size="small" fullWidth />
+
+                                <FormControl sx={{
+                                    mt: 0,
+                                }}>
+                                    <InputLabel id="data-sort-label">Date Sort</InputLabel>
+                                    <Select
+                                        labelId="data-sort-label"
+                                        id="data-sort"
+                                        value={popularGridDataSort}
+                                        label="Date Sort"
+                                        size="small"
+                                        onChange={handleChangePopularGridDataSort}
+                                    >
+                                        <MenuItem value='asc'>Ascending</MenuItem>
+                                        <MenuItem value='desc'>Descending</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Stack>
+
+                            <Tabs value={currentPopularType} onChange={handleChangePopularType} sx={{
+                                padding: 0,
+                                minHeight: 0,
+                                ".MuiTab-root": {
+                                    py: 0.25,
+                                    px: 0.5,
+                                    fontSize: '12px',
+                                    lineHeight: '12px',
+                                    minHeight: '20px',
+                                    height: '20px',
+                                    '&.Mui-selected': {
+                                        color: 'text.primary',
+                                        backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                                    },
+                                },
+                                ".MuiTabs-indicator": {
+                                    display: 'none',
+                                },
+                            }}>
+                                <Tab label="Top ROI" value="top-roi" />
+                                <Tab label="Top PNL" value="top-pnl" />
+                                <Tab label="Top Copied" value="top-copied" />
+                                <Tab label="Most Matched" value="most-matched" />
+                            </Tabs>
+
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                flexWrap: 'wrap',
+                                justifyContent: 'space-between',
+                                gap: 1,
+                                flex: 1,
+                                overflowY: 'auto',
+                                overflowX: 'hidden',
+                                maxHeight: '320px',
+                                width: '660px',
+                            }}>
+                                {
+                                    Array.from({ length: 10 }).map((_, i) => <DashboardTradeGridPopularStrategy key={`grid-popular-key-${i}`} />)
+                                }
+                            </Box>
+                        </Box>
+                    </StyledDialog>
                 </Stack>
 
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'row',
                     flexWrap: 'wrap',
+                    gap: 2,
                     flex: 1,
                     overflowY: 'auto',
                     overflowX: 'hidden',
+                    maxHeight: '204px',
                 }}>
-                    <Stack direction="column" spacing={1} sx={{
-                        borderRadius: 1,
-                        border: theme => `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
-                        width: '100%',
-                        maxWidth: '320px',
-                        p: 2,
-                        transition: 'border-color 0.25s',
-                        cursor: 'pointer',
-                        "&:hover": {
-                            border: theme => `1px solid ${theme.palette.primary.main}`,
-                        },
-                    }}>
-                        <Stack direction="row" spacing={1} alignItems='center' justifyContent="space-between">
-                            <Typography variant="body2" sx={{ color: 'text.primary' }}>BTC/USDT</Typography>
-                            <Stack direction="row" spacing={1} alignItems='center'>
-                                <Iconify icon="mdi:users" sx={{ color: 'text.secondary' }} />
-                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>1</Typography>
-                            </Stack>
-                        </Stack>
-                        <Stack direction="row" spacing={1} alignItems='center' justifyContent="space-between">
-                            <Box>
-                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>ROI</Typography>
-                                <Typography variant="subtitle2" sx={{ color: 'primary.main' }}>4.68%</Typography>
-                            </Box>
-                        </Stack>
-                        <Stack direction="row" spacing={1} alignItems='center' justifyContent="space-between">
-                            <Stack direction='column'>
-                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>PNL (USD)</Typography>
-                                <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 600 }}>$7.03</Typography>
-                            </Stack>
-                            <Stack direction='column'>
-                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>Runtime</Typography>
-                                <Typography variant="caption" sx={{
-                                    color: 'text.primary', fontWeight: 600,
-                                    whiteSpace: 'nowrap',
-                                }}>6d 21h 11m</Typography>
-                            </Stack>
-                            <Stack direction='column'>
-                                <Typography variant="caption" sx={{ color: 'text.secondary', textAlign: 'right' }}>Min. Invetment</Typography>
-                                <Typography variant="caption" sx={{
-                                    color: 'text.primary', fontWeight: 600, textAlign: 'right',
-                                    whiteSpace: 'nowrap',
-                                }}>98.55 USDT</Typography>
-                            </Stack>
-                        </Stack>
-                        <Stack direction="row" spacing={1} alignItems='center' justifyContent="space-between">
-                            <Stack direction='column'>
-                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>24H/Total Matched Trades</Typography>
-                                <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 600 }}>1/5</Typography>
-                            </Stack>
-                            <Button variant="contained" color="primary" size="small">Copy</Button>
-                        </Stack>
-                    </Stack>
+                    {
+                        Array.from({ length: 10 }).map((_, i) => <DashboardTradeGridPopularStrategy key={`grid-popular-key-${i}`} />)
+                    }
                 </Box>
             </Stack>
         }
@@ -278,11 +316,11 @@ export function DashboardTradeGrid() {
                                 '& input': {
                                     borderRadius: 0.5,
                                     p: 1,
-                                    backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                                    backgroundColor: alpha(theme.palette.background.opposite, 0.1),
                                     border: '1px solid transparent',
                                     transition: 'all 0.25s',
                                     '&:focus': {
-                                        border: theme => `1px solid ${theme.palette.primary.main}`,
+                                        border: `1px solid ${theme.palette.primary.main}`,
                                         outline: '0',
                                     },
                                 },
@@ -296,11 +334,11 @@ export function DashboardTradeGrid() {
                                 '& input': {
                                     borderRadius: 0.5,
                                     p: 1,
-                                    backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                                    backgroundColor: alpha(theme.palette.background.opposite, 0.1),
                                     border: '1px solid transparent',
                                     transition: 'all 0.25s',
                                     '&:focus': {
-                                        border: theme => `1px solid ${theme.palette.primary.main}`,
+                                        border: `1px solid ${theme.palette.primary.main}`,
                                         outline: '0',
                                     },
                                 },
@@ -345,7 +383,7 @@ export function DashboardTradeGrid() {
                             <Box sx={{
                                 p: 2,
                                 borderRadius: 1,
-                                backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
+                                backgroundColor: alpha(theme.palette.background.default, 0.2),
                                 backdropFilter: 'blur(10px)',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -440,7 +478,7 @@ export function DashboardTradeGrid() {
                                 top: '32px',
                                 p: 0.5,
                                 borderRadius: 0.5,
-                                backgroundColor: theme => alpha(theme.palette.background.default, 0.3),
+                                backgroundColor: alpha(theme.palette.background.default, 0.3),
                                 backdropFilter: 'blur(10px)',
                                 display: investMentCurrencyMenuShow.value ? 'block' : 'none',
                             }}>
