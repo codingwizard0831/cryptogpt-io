@@ -17,7 +17,7 @@ export default memo(() => {
     // const { currentLang } = useLocales()
     const [isScriptReady, setIsScriptReady] = useState(false);
     const [defaultWidgetProps, setDefaultWidgetProps] = useState<Partial<ChartingLibraryWidgetOptions>>({
-        symbol: "AAPL",
+        symbol: "ETH/BTC",
         interval: "D" as ResolutionString,
         library_path: "/static/charting_library/",
         locale: "en",
