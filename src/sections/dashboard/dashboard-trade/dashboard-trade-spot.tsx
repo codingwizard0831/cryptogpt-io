@@ -6,88 +6,21 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { TradeInput } from 'src/components/trade-input';
 
+import DashboardTradeMethod from './dashboard-trade-method';
+
 
 export function DashboardTradeSpot() {
     const [currentSpotTab, setCurrentSpotTab] = useState('limit');
     const [spotMarket, setSpotMarket] = useState('Amount');
     const smUp = useResponsive('up', 'sm');
-    const [currentTradeType, setCurrentTradeType] = useState('BUY');
+    const [currentTradeType, setCurrentTradeType] = useState<"BUY" | "SELL">('BUY');
 
     const handleChangeSpotTab = (event: React.SyntheticEvent, newValue: string) => {
         setCurrentSpotTab(newValue);
     };
 
     return <Box>
-        <Stack direction="row" sx={{
-            width: '100%',
-            borderRadius: 1,
-            mt: 1,
-            mb: 2,
-        }}>
-            <Box sx={{
-                flex: 1,
-                textAlign: 'center',
-                fontSize: '12px',
-                borderRadius: '4px 0px 0px 4px',
-                p: 0.5,
-                position: 'relative',
-                ...(
-                    currentTradeType === 'BUY' ? {
-                        backgroundColor: theme => theme.palette.primary.main,
-                        color: 'text.primary',
-                    } : {
-                        borderColor: theme => alpha(theme.palette.text.secondary, 1),
-                        borderWidth: '1px 0px 1px 1px',
-                        color: 'text.secondary',
-                    }
-                ),
-            }} onClick={() => setCurrentTradeType("BUY")}>Buy
-                <Box sx={{
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: theme => theme.palette.primary.main,
-                    borderTopRightRadius: '4px',
-                    transform: 'rotate(45deg)',
-                    transformOrigin: 'center',
-                    position: 'absolute',
-                    right: '-11px',
-                    top: '4px',
-                    display: currentTradeType === 'BUY' ? 'block' : 'none',
-                }} />
-            </Box>
-
-            <Box sx={{
-                textAlign: 'center',
-                fontSize: '12px',
-                flex: 1,
-                p: 0.5,
-                borderRadius: '0px 4px 4px 0px',
-                position: 'relative',
-                ...(
-                    currentTradeType === 'SELL' ? {
-                        color: 'text.primary',
-                        backgroundColor: theme => theme.palette.primary.main,
-                    } : {
-                        borderColor: theme => alpha(theme.palette.text.secondary, 1),
-                        borderWidth: '1px 1px 1px 0px',
-                        color: 'text.secondary',
-                    }
-                ),
-            }} onClick={() => setCurrentTradeType("SELL")}>Sell
-                <Box sx={{
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: theme => theme.palette.primary.main,
-                    borderRadius: '0px 0px 0px 4px',
-                    transform: 'rotate(45deg)',
-                    transformOrigin: 'center',
-                    position: 'absolute',
-                    left: '-11px',
-                    top: '4px',
-                    display: currentTradeType === 'SELL' ? 'block' : 'none',
-                }} />
-            </Box>
-        </Stack>
+        <DashboardTradeMethod tradeType={currentTradeType} onChangeTradeType={(type) => setCurrentTradeType(type)} />
 
         <Box sx={{
             display: 'flex',

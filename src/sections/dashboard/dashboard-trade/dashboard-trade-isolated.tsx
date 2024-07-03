@@ -2,20 +2,27 @@ import { useState } from 'react';
 
 import { Box, Tab, Tabs, Stack, alpha, Button, Slider, BoxProps, Typography } from '@mui/material';
 
+import { useResponsive } from 'src/hooks/use-responsive';
+
 import { TradeInput } from 'src/components/trade-input';
+
+import DashboardTradeMethod from './dashboard-trade-method';
 
 
 export function DashboardTradeIsolated() {
     const [currentIsolatedTab, setCurrentIsolatedTab] = useState('limit');
     const [spotMarket, setSpotMarket] = useState('Amount');
     const [currentMode, setCurrentMode] = useState('normal');
-
+    const [currentTradeType, setCurrentTradeType] = useState<"BUY" | "SELL">('BUY');
+    const smUp = useResponsive('up', 'sm');
 
     const handleChangeIsolatedTab = (event: React.SyntheticEvent, newValue: string) => {
         setCurrentIsolatedTab(newValue);
     };
 
     return <Box>
+        <DashboardTradeMethod tradeType={currentTradeType} onChangeTradeType={(type) => setCurrentTradeType(type)} />
+
         <Box sx={{
             display: 'flex',
             flexDirection: 'row',
@@ -32,6 +39,7 @@ export function DashboardTradeIsolated() {
                     top: 0,
                 },
                 '.MuiTab-root': {
+                    mr: smUp ? 1 : 0,
                     px: 1,
                     color: 'text.secondary',
                     fontSize: '12px',
@@ -55,288 +63,312 @@ export function DashboardTradeIsolated() {
         </Box>
 
         <Stack direction="row" spacing={2}>
-            <TradeModeTabs currentMode={currentMode} onChangleCurrentMode={(v) => setCurrentMode(v)} sx={{
-                maxWidth: '300px',
-                width: '100%',
-            }} />
-            <TradeModeTabs currentMode={currentMode} onChangleCurrentMode={(v) => setCurrentMode(v)} sx={{
-                maxWidth: '300px',
-                width: '100%',
-            }} />
+            {
+                (smUp || currentTradeType === "BUY") && <TradeModeTabs currentMode={currentMode} onChangleCurrentMode={(v) => setCurrentMode(v)} sx={{
+                    maxWidth: smUp ? '300px' : '100%',
+                    width: '100%',
+                }} />
+            }
+            {
+                (smUp || currentTradeType === "SELL") && <TradeModeTabs currentMode={currentMode} onChangleCurrentMode={(v) => setCurrentMode(v)} sx={{
+                    maxWidth: smUp ? '300px' : '100%',
+                    width: '100%',
+                }} />
+            }
         </Stack>
         {
             currentIsolatedTab === 'limit' && <Stack direction="row" spacing={2}>
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
-                    <TradeInput label='Price' currentType='USDT' />
-                    <TradeInput label='Amount' currentType='BTC' />
+                {
+                    (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
+                        <TradeInput label='Price' currentType='USDT' />
+                        <TradeInput label='Amount' currentType='BTC' />
 
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
 
-                    <Button variant="contained" color="primary" fullWidth sx={{
-                        color: 'text.primary',
-                    }}>BUY</Button>
-                </Stack>
+                        <Button variant="contained" color="primary" fullWidth sx={{
+                            color: 'text.primary',
+                        }}>BUY</Button>
+                    </Stack>
+                }
 
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
+                {
+                    (smUp || currentTradeType === "SELL") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
 
-                    <TradeInput label='Price' currentType='USDT' />
-                    <TradeInput label='Amount' currentType='BTC' />
+                        <TradeInput label='Price' currentType='USDT' />
+                        <TradeInput label='Amount' currentType='BTC' />
 
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
 
-                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
-                </Stack>
+                        <Button variant='outlined' color="primary" fullWidth>SELL</Button>
+                    </Stack>
+                }
             </Stack>
         }
 
         {
             currentIsolatedTab === 'market' && <Stack direction="row" spacing={2}>
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
-                    <TradeInput label='Price' currentType='BTC' readOnly inputValue='Market' />
-                    <TradeInput label='Amount' currentType='BTC' multiOptions={['Amount', 'Total']} selectedMultiOption={spotMarket} onMultiOptionChange={(v) => setSpotMarket(v)} />
+                {
+                    (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
+                        <TradeInput label='Price' currentType='BTC' readOnly inputValue='Market' />
+                        <TradeInput label='Amount' currentType='BTC' multiOptions={['Amount', 'Total']} selectedMultiOption={spotMarket} onMultiOptionChange={(v) => setSpotMarket(v)} />
 
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
 
-                    <Button variant="contained" color="primary" fullWidth sx={{
-                        color: 'text.primary',
-                    }}>BUY</Button>
-                </Stack>
+                        <Button variant="contained" color="primary" fullWidth sx={{
+                            color: 'text.primary',
+                        }}>BUY</Button>
+                    </Stack>
+                }
 
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
-                    <TradeInput label='Amount' currentType='BTC' readOnly inputValue='Market' />
-                    <TradeInput label='Amount' currentType='BTC' multiOptions={['Amount', 'Total']} selectedMultiOption={spotMarket} onMultiOptionChange={(v) => setSpotMarket(v)} />
+                {
+                    (smUp || currentTradeType === "SELL") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
+                        <TradeInput label='Amount' currentType='BTC' readOnly inputValue='Market' />
+                        <TradeInput label='Amount' currentType='BTC' multiOptions={['Amount', 'Total']} selectedMultiOption={spotMarket} onMultiOptionChange={(v) => setSpotMarket(v)} />
 
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
 
-                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
-                </Stack>
+                        <Button variant='outlined' color="primary" fullWidth>SELL</Button>
+                    </Stack>
+                }
             </Stack>
         }
 
 
         {
             currentIsolatedTab === 'stop-limit' && <Stack direction="row" spacing={2}>
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
-                    <TradeInput label='Stop' currentType='USDT' />
-                    <TradeInput label='Limit' currentType='USDT' />
-                    <TradeInput label='Amount' currentType='BTC' />
+                {
+                    (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
+                        <TradeInput label='Stop' currentType='USDT' />
+                        <TradeInput label='Limit' currentType='USDT' />
+                        <TradeInput label='Amount' currentType='BTC' />
 
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
 
-                    <Button variant="contained" color="primary" fullWidth sx={{
-                        color: 'text.primary',
-                    }}>BUY</Button>
-                </Stack>
+                        <Button variant="contained" color="primary" fullWidth sx={{
+                            color: 'text.primary',
+                        }}>BUY</Button>
+                    </Stack>
+                }
 
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
-                    <TradeInput label='Stop' currentType='USDT' />
-                    <TradeInput label='Limit' currentType='USDT' />
-                    <TradeInput label='Amount' currentType='BTC' />
+                {
+                    (smUp || currentTradeType === "SELL") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
+                        <TradeInput label='Stop' currentType='USDT' />
+                        <TradeInput label='Limit' currentType='USDT' />
+                        <TradeInput label='Amount' currentType='BTC' />
 
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
 
-                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
-                </Stack>
+                        <Button variant='outlined' color="primary" fullWidth>SELL</Button>
+                    </Stack>
+                }
             </Stack>
         }
 
         {
             currentIsolatedTab === 'trailing-limit' && <Stack direction="row" spacing={2}>
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
-                    <Stack direction="row" spacing={1}>
-                        <TradeInput label='Trailing Delta' currentType='%' />
-                        <Button sx={{
-                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                {
+                    (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
+                        <Stack direction="row" spacing={1}>
+                            <TradeInput label='Trailing Delta' currentType='%' />
+                            <Button sx={{
+                                backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                                color: 'text.primary',
+                                borderRadius: '2px',
+                                px: 0.5,
+                                minWidth: '38px',
+                                height: '38px',
+                            }}>1%</Button>
+                            <Button sx={{
+                                backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                                color: 'text.primary',
+                                borderRadius: '2px',
+                                px: 0.5,
+                                minWidth: '38px',
+                                height: '38px',
+                            }}>2%</Button>
+                        </Stack>
+                        <TradeInput label='Limit' currentType='USDT' />
+                        <TradeInput label='Amount' currentType='BTC' />
+
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
+
+                        <Button variant="contained" color="primary" fullWidth sx={{
                             color: 'text.primary',
-                            borderRadius: '2px',
-                            px: 0.5,
-                            minWidth: '38px',
-                            height: '38px',
-                        }}>1%</Button>
-                        <Button sx={{
-                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
-                            color: 'text.primary',
-                            borderRadius: '2px',
-                            px: 0.5,
-                            minWidth: '38px',
-                            height: '38px',
-                        }}>2%</Button>
+                        }}>BUY</Button>
                     </Stack>
-                    <TradeInput label='Limit' currentType='USDT' />
-                    <TradeInput label='Amount' currentType='BTC' />
+                }
 
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
+                {
+                    (smUp || currentTradeType === "SELL") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
+                        <Stack direction="row" spacing={1}>
+                            <TradeInput label='Trailing Delta' currentType='%' />
+                            <Button sx={{
+                                backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                                color: 'text.primary',
+                                borderRadius: '2px',
+                                px: 0.5,
+                                minWidth: '38px',
+                                height: '38px',
+                            }}>1%</Button>
+                            <Button sx={{
+                                backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
+                                color: 'text.primary',
+                                borderRadius: '2px',
+                                px: 0.5,
+                                minWidth: '38px',
+                                height: '38px',
+                            }}>2%</Button>
+                        </Stack>
+                        <TradeInput label='Limit' currentType='USDT' />
+                        <TradeInput label='Amount' currentType='BTC' />
 
-                    <Button variant="contained" color="primary" fullWidth sx={{
-                        color: 'text.primary',
-                    }}>BUY</Button>
-                </Stack>
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
 
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
-                    <Stack direction="row" spacing={1}>
-                        <TradeInput label='Trailing Delta' currentType='%' />
-                        <Button sx={{
-                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
-                            color: 'text.primary',
-                            borderRadius: '2px',
-                            px: 0.5,
-                            minWidth: '38px',
-                            height: '38px',
-                        }}>1%</Button>
-                        <Button sx={{
-                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1),
-                            color: 'text.primary',
-                            borderRadius: '2px',
-                            px: 0.5,
-                            minWidth: '38px',
-                            height: '38px',
-                        }}>2%</Button>
+                        <Button variant='outlined' color="primary" fullWidth>SELL</Button>
                     </Stack>
-                    <TradeInput label='Limit' currentType='USDT' />
-                    <TradeInput label='Amount' currentType='BTC' />
-
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
-
-                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
-                </Stack>
+                }
             </Stack>
         }
 
         {
             currentIsolatedTab === 'oco' && <Stack direction="row" spacing={2}>
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
-                    <TradeInput label='Price' currentType='USDT' />
-                    <TradeInput label='Stop' currentType='USDT' />
-                    <TradeInput label='Limit' currentType='USDT' />
-                    <TradeInput label='Amount' currentType='BTC' />
+                {
+                    (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
+                        <TradeInput label='Price' currentType='USDT' />
+                        <TradeInput label='Stop' currentType='USDT' />
+                        <TradeInput label='Limit' currentType='USDT' />
+                        <TradeInput label='Amount' currentType='BTC' />
 
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
 
-                    <Button variant="contained" color="primary" fullWidth sx={{
-                        color: 'text.primary',
-                    }}>BUY</Button>
-                </Stack>
+                        <Button variant="contained" color="primary" fullWidth sx={{
+                            color: 'text.primary',
+                        }}>BUY</Button>
+                    </Stack>
+                }
 
-                <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
-                    width: '100%',
-                }}>
-                    <TradeInput label='Price' currentType='USDT' />
-                    <TradeInput label='Stop' currentType='USDT' />
-                    <TradeInput label='Limit' currentType='USDT' />
-                    <TradeInput label='Amount' currentType='BTC' />
+                {
+                    (smUp || currentTradeType === "SELL") && <Stack direction="column" spacing={1} sx={{
+                        maxWidth: smUp ? '300px' : '100%',
+                        width: '100%',
+                    }}>
+                        <TradeInput label='Price' currentType='USDT' />
+                        <TradeInput label='Stop' currentType='USDT' />
+                        <TradeInput label='Limit' currentType='USDT' />
+                        <TradeInput label='Amount' currentType='BTC' />
 
-                    <Slider
-                        size="medium"
-                        marks
-                        min={10}
-                        step={10}
-                        max={110}
-                        defaultValue={30}
-                        valueLabelDisplay="auto"
-                    />
+                        <Slider
+                            size="medium"
+                            marks
+                            min={10}
+                            step={10}
+                            max={110}
+                            defaultValue={30}
+                            valueLabelDisplay="auto"
+                        />
 
-                    <Button variant='outlined' color="primary" fullWidth>SELL</Button>
-                </Stack>
+                        <Button variant='outlined' color="primary" fullWidth>SELL</Button>
+                    </Stack>
+                }
             </Stack>
         }
     </Box>
