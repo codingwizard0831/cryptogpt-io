@@ -1,24 +1,28 @@
 import { useRef, useEffect } from "react";
 
 import styles from "./index.module.css";
+import TaapiDatafeedFunc from "./TaapiDatafeed";
 import { widget, LanguageCode, ResolutionString, ChartingLibraryWidgetOptions } from "../../../public/static/charting_library";
 
 export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) => {
     const chartContainerRef =
         useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
+    const TaapiAPIKey = process.env.NEXT_PUBLIC_TAAPI_API_KEY || '';
 
     useEffect(() => {
         const widgetOptions: ChartingLibraryWidgetOptions = {
             symbol: props?.symbol,
             // BEWARE: no trailing slash is expected in feed URL
-            datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
-                "https://demo_feed.tradingview.com",
-                undefined,
-                {
-                    maxResponseLength: 1000,
-                    expectedOrder: "latestFirst",
-                }
-            ),
+            // datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
+            //     "https://demo_feed.tradingview.com",
+            //     // `https://api.taapi.io/candles?secret=${TaapiAPIKey}&exchange=binance&symbol=BTC/USDT&interval=1h`,
+            //     undefined,
+            //     {
+            //         maxResponseLength: 1000,
+            //         expectedOrder: "latestFirst",
+            //     }
+            // ),
+            datafeed: TaapiDatafeedFunc(TaapiAPIKey),
             interval: props?.interval as ResolutionString,
             container: chartContainerRef.current,
             library_path: props?.library_path,
