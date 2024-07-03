@@ -13,6 +13,7 @@ import Carousel, { useCarousel } from 'src/components/carousel';
 
 import { DashboardNews } from './dashboard-news';
 import { DashboardAIChat } from './dashboard-ai-chat';
+import { DashboardTracker } from './dashboard-tracker';
 import DashboardLineChart from './dashboard-line-chart';
 import DashboardOrderBook from './dashboard-order-book';
 import { DashboardTopMover } from './dashboard-top-mover';
@@ -164,6 +165,13 @@ export default function DashboardView() {
                         <Card sx={{
                             p: 2,
                             height: '100%',
+                        }}>
+                            <DashboardTracker />
+                        </Card>
+
+                        <Card sx={{
+                            p: 2,
+                            height: '100%',
                             aspectRatio: '2/1',
                         }}>
                             <DashboardTopMover />
@@ -189,6 +197,13 @@ export default function DashboardView() {
                             height: '100%',
                         }}>
                             <DashboardTradeHome onBlockResize={() => isTradeWindowFull.onToggle()} />
+                        </Card>
+
+                        <Card sx={{
+                            p: 1,
+                            height: '100%',
+                        }}>
+                            <DashboardTracker />
                         </Card>
 
                         <Card sx={{
