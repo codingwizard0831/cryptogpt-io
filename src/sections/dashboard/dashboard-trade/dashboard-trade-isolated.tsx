@@ -21,7 +21,9 @@ export function DashboardTradeIsolated() {
     };
 
     return <Box>
-        <DashboardTradeMethod tradeType={currentTradeType} onChangeTradeType={(type) => setCurrentTradeType(type)} />
+        {
+            !smUp && <DashboardTradeMethod tradeType={currentTradeType} onChangeTradeType={(type) => setCurrentTradeType(type)} />
+        }
 
         <Box sx={{
             display: 'flex',

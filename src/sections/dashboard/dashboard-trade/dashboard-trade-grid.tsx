@@ -4,6 +4,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Box, Tab, Tabs, Stack, alpha, Input, Slider, Button, Divider, Checkbox, MenuItem, useTheme, TextField, Typography, IconButton, InputLabel, FormControl, FormControlLabel } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import Iconify from 'src/components/iconify';
 import { TradeInput } from 'src/components/trade-input';
@@ -24,6 +25,7 @@ export function DashboardTradeGrid() {
     const advancedPopover = usePopover();
     const popularGridStrategiesDialog = useBoolean(false);
     const [popularGridDataSort, setPopularGridDataSort] = useState('asc');
+    const smUp = useResponsive('up', 'sm');
 
     const handleChangePopularGridDataSort = (event: SelectChangeEvent) => {
         setPopularGridDataSort(event.target.value as string);
@@ -78,9 +80,9 @@ export function DashboardTradeGrid() {
             </Tabs>
         </Box>
         {
-            currentGridTab === 'ai' && <Stack direction="row" spacing={4}>
+            currentGridTab === 'ai' && <Stack direction={smUp ? "row" : "column"} spacing={4}>
                 <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
+                    maxWidth: smUp ? '300px' : '100%',
                     width: '100%',
                 }}>
                     <Typography variant="subtitle1" sx={{ mb: 1 }}>1. Parameters</Typography>
@@ -137,7 +139,7 @@ export function DashboardTradeGrid() {
                 </Stack>
 
                 <Stack direction="column" spacing={1} sx={{
-                    maxWidth: '300px',
+                    maxWidth: smUp ? '300px' : '100%',
                     width: '100%',
                 }}>
                     <Stack direction="row" spacing={2} justifyContent="space-between" alignItems='center' sx={{ mb: 1 }}>
@@ -179,6 +181,8 @@ export function DashboardTradeGrid() {
                         padding: 0,
                         minHeight: 0,
                         ".MuiTab-root": {
+                            mr: smUp ? 1 : 0.25,
+                            letterSpacing: smUp ? 'normal' : '-1px',
                             py: 0.25,
                             px: 0.5,
                             fontSize: '12px',
@@ -200,7 +204,12 @@ export function DashboardTradeGrid() {
                         <Tab label="Most Matched" value="most-matched" />
                     </Tabs>
 
-                    <Button color="primary" size="small" onClick={() => popularGridStrategiesDialog.onTrue()}>View More Grids</Button>
+                    {
+                        smUp ?
+                            <Button color="primary" size="small" onClick={() => popularGridStrategiesDialog.onTrue()}>View More Grids</Button>
+                            :
+                            <IconButton onClick={() => popularGridStrategiesDialog.onTrue()}><Iconify icon="mingcute:grid-line" sx={{ color: 'primary.main' }} /></IconButton>
+                    }
 
                     <StyledDialog maxWidth="lg" open={popularGridStrategiesDialog.value} onClose={() => popularGridStrategiesDialog.onFalse()}>
                         <Box sx={{
@@ -239,9 +248,11 @@ export function DashboardTradeGrid() {
                                 padding: 0,
                                 minHeight: 0,
                                 ".MuiTab-root": {
+                                    mr: smUp ? 1 : 0.5,
                                     py: 0.25,
                                     px: 0.5,
                                     fontSize: '12px',
+                                    letterSpacing: smUp ? 'normal' : '-1px',
                                     lineHeight: '12px',
                                     minHeight: '20px',
                                     height: '20px',
@@ -270,10 +281,14 @@ export function DashboardTradeGrid() {
                                 overflowY: 'auto',
                                 overflowX: 'hidden',
                                 maxHeight: '320px',
-                                width: '660px',
+                                width: smUp ? '660px' : '100%',
                             }}>
                                 {
-                                    Array.from({ length: 10 }).map((_, i) => <DashboardTradeGridPopularStrategy key={`grid-popular-key-${i}`} />)
+                                    Array.from({ length: 10 }).map((_, i) => <DashboardTradeGridPopularStrategy key={`grid-popular-key-${i}`} sx={{
+                                        ...(smUp ? {} : {
+                                            maxWidth: '100%',
+                                        })
+                                    }} />)
                                 }
                             </Box>
                         </Box>
@@ -291,13 +306,17 @@ export function DashboardTradeGrid() {
                     maxHeight: '204px',
                 }}>
                     {
-                        Array.from({ length: 10 }).map((_, i) => <DashboardTradeGridPopularStrategy key={`grid-popular-key-${i}`} />)
+                        Array.from({ length: 10 }).map((_, i) => <DashboardTradeGridPopularStrategy key={`grid-popular-key-${i}`} sx={{
+                            ...(smUp ? {} : {
+                                maxWidth: '100%',
+                            })
+                        }} />)
                     }
                 </Box>
             </Stack>
         }
         {
-            currentGridTab === 'manual' && <Stack direction="row" spacing={4}>
+            currentGridTab === 'manual' && <Stack direction={smUp ? "row" : "column"} spacing={4}>
                 <Stack direction="column" spacing={1} sx={{
                     maxWidth: '420px',
                     width: '100%',
