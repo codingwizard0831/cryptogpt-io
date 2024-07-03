@@ -188,7 +188,7 @@ export default function DashboardView() {
                         <Card sx={{
                             height: '100%',
                         }}>
-                            <DashboardTradeHome />
+                            <DashboardTradeHome onBlockResize={() => isTradeWindowFull.onToggle()} />
                         </Card>
 
                         <Card sx={{

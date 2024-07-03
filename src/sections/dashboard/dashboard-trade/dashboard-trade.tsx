@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import { Box, Tab, Tabs, alpha, Stack, BoxProps, Typography, IconButton } from '@mui/material';
 
+import { useResponsive } from 'src/hooks/use-responsive';
+
 import Iconify from 'src/components/iconify';
 
 import { DashboardTradeSpot } from './dashboard-trade-spot';
@@ -19,6 +21,7 @@ export default function DashboardTrade({
     ...other
 }: DashboardTradeProps) {
     const [currentTypeTab, setCurrentTypeTab] = useState('spot');
+    const smUp = useResponsive('up', 'sm');
 
     const handleChangeTypeTab = (event: React.SyntheticEvent, newValue: string) => {
         setCurrentTypeTab(newValue);
@@ -57,6 +60,7 @@ export default function DashboardTrade({
             '.MuiTab-root': {
                 py: 1,
                 px: 2,
+                mr: smUp ? 1 : 0,
                 color: 'text.secondary',
                 fontSize: '14px',
                 '&.Mui-selected': {
