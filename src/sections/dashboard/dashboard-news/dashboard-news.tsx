@@ -25,13 +25,13 @@ export default function DashboardNews({ sx, ...other }: DashboardLineChartProps)
     return (
         <Box sx={{
             height: `${MAIN_CHART_PANEL.W_DESKTOP}px`,
-            overflowX: 'hidden',
-            overflowY: 'auto',
+            // overflowX: 'hidden',
+            // overflowY: 'auto',
             ...sx,
         }} {...other}>
             {
                 smUp &&
-                <Stack direction="row" spacing={2} justifyContent="space-between">
+                <Stack direction="row" spacing={2} justifyContent="space-between" sx={{ height: '100%' }}>
                     <DashboardNewsContent />
                     <DashboardNewsTopic />
                 </Stack>

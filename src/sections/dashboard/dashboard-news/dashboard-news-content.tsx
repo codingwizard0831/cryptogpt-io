@@ -37,16 +37,17 @@ export default function DashboardNewsContent({ sx, onMoveRight, ...other }: Dash
         display: "flex",
         flexDirection: "column",
         gap: 2,
+        overflowX: 'hidden',
+        overflowY: 'auto',
     }}>
-        <Stack direction='row' spacing={smUp ? 2 : 1} justifyContent="space-between" sx={{
-            position: "sticky",
-            top: 0,
-            backgroundColor: "background.paper",
-            pt: 2,
+        <Stack direction='row' spacing={smUp ? 2 : 1} justifyContent="space-between" alignItems="center" sx={{
+            // position: "sticky",
+            // top: 0,
+            pt: 1,
             zIndex: 2,
         }}>
-            <Typography variant="h4" sx={{ flex: 1 }}>June 17 Tue</Typography>
-            <FormControlLabel control={<Switch />} label={smUp ? "Only display important news" : "Only news"} />
+            <Typography variant={smUp ? "h4" : "h6"} sx={{ flex: 1 }}>June 17 Tue</Typography>
+            <FormControlLabel control={<Switch />} label={smUp ? "Only display important news" : "News"} />
             <FormControl>
                 <InputLabel id="news-filter-option-label">Filter</InputLabel>
                 <Select
@@ -69,7 +70,12 @@ export default function DashboardNewsContent({ sx, onMoveRight, ...other }: Dash
             </IconButton>
         </Stack>
 
-        <Stack direction="column" spacing={2}>
+        <Stack direction="column" spacing={2} sx={{
+            height: 0,
+            flex: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+        }}>
             <Timeline
                 sx={{
                     [`& .${timelineItemClasses.root}:before`]: {
@@ -92,7 +98,7 @@ export default function DashboardNewsContent({ sx, onMoveRight, ...other }: Dash
                                     <Typography variant="body2" sx={{
                                         color: "text.secondary",
                                     }} >{item.date}</Typography>
-                                    <Typography variant="h6" sx={{
+                                    <Typography variant={smUp ? "h6" : 'subtitle1'} sx={{
                                         zIndex: 1,
                                     }}>{item.title}</Typography>
                                     <Box sx={{

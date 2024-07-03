@@ -25,6 +25,7 @@ export default function DashboardNewsTopic({ sx, onMoveLeft, ...other }: Dashboa
     return <Stack direction="column" spacing={2} sx={{
         minWidth: "356px",
         pt: 2,
+        height: "100%",
     }}>
         <Stack direction="row" justifyContent='space-between' alignItems='center' spacing={1}>
             {
@@ -39,7 +40,12 @@ export default function DashboardNewsTopic({ sx, onMoveLeft, ...other }: Dashboa
                 }} />
         </Stack>
 
-        <Stack direction="column" spacing={2}>
+        <Stack direction="column" spacing={2} sx={{
+            height: 0,
+            flexGrow: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+        }}>
             <Stack direction="column" spacing={1} sx={{
                 border: 1,
                 borderColor: "divider",
