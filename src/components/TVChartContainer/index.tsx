@@ -77,7 +77,7 @@ export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) =
         return () => {
             tvWidget.remove();
         };
-    }, [props]);
+    }, [props, TaapiAPIKey]);
 
     return (
         <div ref={chartContainerRef} className={styles.TVChartContainer} />
