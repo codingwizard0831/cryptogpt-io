@@ -1,7 +1,8 @@
 'use client';
 
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { Box, Stack, BoxProps, Typography } from '@mui/material';
+
+import { Calendar } from 'src/components/calendar';
 
 interface DashboardTrackerProps extends BoxProps {
 }
@@ -21,7 +22,7 @@ export function DashboardTracker({ sx, ...other }: DashboardTrackerProps) {
                 <Typography variant="h6">Tracker</Typography>
             </Stack>
 
-            <DateCalendar views={['day']} />
+            <Calendar />
         </Box>
     );
 }

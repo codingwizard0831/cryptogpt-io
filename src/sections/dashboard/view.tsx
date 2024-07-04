@@ -165,6 +165,7 @@ export default function DashboardView() {
                         <Card sx={{
                             p: 2,
                             height: '100%',
+                            aspectRatio: '1.2/1',
                         }}>
                             <DashboardTracker />
                         </Card>
