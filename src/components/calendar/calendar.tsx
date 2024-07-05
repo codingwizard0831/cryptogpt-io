@@ -9,21 +9,18 @@ const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 interface CalendarProps extends BoxProps {
     date?: Date;
-    selectedDate?: Date;
     handleDateChange?: (date: Date) => void;
     isShowWeekDay?: boolean;
 }
 
 export default function Calendar({
     date: currentDate = new Date(),
-    selectedDate: defaultSelectDate,
     handleDateChange,
     isShowWeekDay = false,
     sx,
     ...other
 }: CalendarProps) {
-    const [selectedDate, setDateChange] = useState(currentDate);
-    const [random, setRandom] = useState(Math.random());
+    const [selectedDate, setSelectedDateChange] = useState(currentDate);
 
     // for UI
     const [startRestPeriod, setStartRestPeriod] = useState(0);
@@ -31,9 +28,9 @@ export default function Calendar({
     const [numberOfDaysForMonth, setNumberOfDaysForMonth] = useState(30);
 
     useEffect(() => {
-        const firstDateOfMonth = startOfMonth(currentDate);
+        const firstDateOfMonth = startOfMonth(selectedDate);
 
-        const _numberOfDaysForMonth = getDaysInMonth(currentDate);
+        const _numberOfDaysForMonth = getDaysInMonth(selectedDate);
         setNumberOfDaysForMonth(_numberOfDaysForMonth);
 
         const dayOfFirstDateOfMonth = getDay(firstDateOfMonth);
@@ -42,12 +39,12 @@ export default function Calendar({
         const _endRestPeriod = 7 - (_numberOfDaysForMonth + dayOfFirstDateOfMonth) % 7;
         setEndRestPeriod(_endRestPeriod === 7 ? 0 : _endRestPeriod);
 
-        console.log('currentDate', currentDate);
+        console.log('selectedDate', selectedDate);
         console.log('dayOfFirstDateOfMonth', dayOfFirstDateOfMonth);
         console.log('_numberOfDaysForMonth', _numberOfDaysForMonth);
         console.log('startRestPeriod', startRestPeriod);
         console.log('endRestPeriod', endRestPeriod);
-    }, [currentDate, endRestPeriod, startRestPeriod, random]);
+    }, [selectedDate, endRestPeriod, startRestPeriod]);
 
     return (
         <Box sx={{
@@ -72,9 +69,13 @@ export default function Calendar({
                             <CalendarDateItem
                                 key={i}
                                 date={date}
-                                selected={date.getDate() === 25}
+                                selected={date.getDate() === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() && date.getFullYear() === selectedDate.getFullYear()}
                                 isActive={date.getDay() === 0 || date.getDay() === 6}
-                                isToday={date.getDate() === new Date().getDate()}
+                                isToday={date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear()}
+                                onClick={() => {
+                                    setSelectedDateChange(date);
+                                    handleDateChange?.(date);
+                                }}
                             />
                         );
                     })
