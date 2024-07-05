@@ -15,15 +15,14 @@ interface CalendarProps extends BoxProps {
 }
 
 export default function Calendar({
-    date: defaultDate = new Date(),
+    date: currentDate = new Date(),
     selectedDate: defaultSelectDate,
     handleDateChange,
     isShowWeekDay = false,
     sx,
     ...other
 }: CalendarProps) {
-    const [currentDate, setCurrentDate] = useState(defaultDate);
-    const [selectedDate, setDateChange] = useState(defaultDate);
+    const [selectedDate, setDateChange] = useState(currentDate);
     const [random, setRandom] = useState(Math.random());
 
     // for UI
