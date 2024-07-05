@@ -20,7 +20,7 @@ interface DashboardTrackerProps extends BoxProps {
 }
 
 export function DashboardTracker({ sx, ...other }: DashboardTrackerProps) {
-    const trackerDetailDrawer = useBoolean(true);
+    const trackerDetailDrawer = useBoolean(false);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [currentTab, setCurrentTab] = useState('book');
     const [dateStatus, setDateStatus] = useState<"today" | "old" | "future">('today');
