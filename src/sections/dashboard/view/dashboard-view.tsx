@@ -11,15 +11,15 @@ import { NAV, HEADER, SPACING, MAIN_CHART_PANEL } from 'src/layouts/config-layou
 
 import Carousel, { useCarousel } from 'src/components/carousel';
 
-import { DashboardNews } from './dashboard-news';
-import { DashboardAIChat } from './dashboard-ai-chat';
-import { DashboardTracker } from './dashboard-tracker';
-import DashboardLineChart from './dashboard-line-chart';
-import DashboardOrderBook from './dashboard-order-book';
-import { DashboardTopMover } from './dashboard-top-mover';
-import DashBoardTradingChart from './dashboard-trading-chart';
-import { DashboardTrade, DashboardTradeHome } from './dashboard-trade';
-import DashboardLatestTransaction from './dashboard-latest-transactiont';
+import { DashboardNews } from '../dashboard-news';
+import { DashboardAIChat } from '../dashboard-ai-chat';
+import { DashboardTracker } from '../dashboard-tracker';
+import DashboardLineChart from '../dashboard-line-chart';
+import DashboardOrderBook from '../dashboard-order-book';
+import { DashboardTopMover } from '../dashboard-top-mover';
+import DashBoardTradingChart from '../dashboard-trading-chart';
+import { DashboardTrade, DashboardTradeHome } from '../dashboard-trade';
+import DashboardLatestTransaction from '../dashboard-latest-transactiont';
 
 export default function DashboardView() {
     const [currentTab, setCurrentTab] = useState('candle');

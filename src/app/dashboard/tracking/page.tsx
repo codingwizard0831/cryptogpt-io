@@ -1,4 +1,4 @@
-import { DashboardView } from 'src/sections/dashboard/view';
+import { DashboardTrackingView } from 'src/sections/tracking/view';
 
 // ----------------------------------------------------------------------
 
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <DashboardView />;
+  return <DashboardTrackingView />;
 }
