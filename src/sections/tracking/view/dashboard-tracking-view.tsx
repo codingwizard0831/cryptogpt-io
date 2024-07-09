@@ -45,7 +45,15 @@ export default function DashboardTrackingView() {
     const handleChangleSelectedDate = (newDate: Date) => {
         console.log('newDate', newDate);
         setSelectedDate(newDate);
-        trackerDetailDrawer.onTrue();
+
+        if (
+            (newDate.getFullYear() === new Date().getFullYear() &&
+                newDate.getMonth() === new Date().getMonth() &&
+                newDate.getDate() === new Date().getDate()) ||
+            newDate.getTime() > new Date().getTime()
+        ) {
+            trackerDetailDrawer.onTrue();
+        }
     }
 
     return (
