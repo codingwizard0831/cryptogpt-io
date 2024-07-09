@@ -9,6 +9,8 @@ interface CalendarDateItemProps extends BoxProps {
     isActive?: boolean;
     isToday?: boolean;
     disabled?: boolean;
+    size?: 'small' | 'large';
+    displayAttribute?: "week" | "month" | "none";
 }
 
 export function CalendarDateItem({
@@ -17,11 +19,14 @@ export function CalendarDateItem({
     isActive,
     isToday,
     disabled,
+    size = 'small',
+    displayAttribute = "week",
     sx, ...other
 }: CalendarDateItemProps) {
 
     const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' }); // e.g., "Wednesday"
     const dateOfMonth = date.getDate(); // e.g., 17
+    const monthOfYear = date.toLocaleString('en-US', { month: 'long' }).substring(0, 3); // e.g., "September"
 
     const isHovered = useBoolean(false);
 
@@ -42,8 +47,8 @@ export function CalendarDateItem({
             {...other}
         >
             <Box sx={{
-                width: '24px',
-                height: '24px',
+                width: size === "small" ? '24px' : "32px",
+                height: size === "small" ? '24px' : "32px",
                 borderRadius: '50%',
                 borderWidth: '2px',
                 borderStyle: 'solid',
@@ -60,12 +65,12 @@ export function CalendarDateItem({
                     borderColor: 'primary.main',
                     borderStyle: 'dashed',
                 }),
-                ...(disabled && {
-                    borderColor: 'transparent',
-                }),
                 ...(isHovered.value && {
                     borderColor: 'primary.main',
                     borderStyle: 'dashed',
+                }),
+                ...(disabled && {
+                    borderColor: 'transparent',
                 }),
             }}>
                 <Box sx={{
@@ -80,18 +85,31 @@ export function CalendarDateItem({
                     ...(selected && {
                         backgroundColor: 'primary.main',
                     }),
-                    ...(disabled && {
-                        backgroundColor: theme => alpha(theme.palette.background.opposite, 0.2),
-                    }),
                     ...(isHovered.value && {
                         backgroundColor: 'primary.main',
+                    }),
+                    ...(disabled && {
+                        backgroundColor: theme => alpha(theme.palette.background.opposite, 0.2),
                     }),
                 }} />
             </Box>
             <Typography variant="caption" sx={{
-                fontSize: '8px',
+                fontSize: size === "small" ? '8px' : '10px',
                 mt: '2px',
-            }}>{!disabled && `${dayOfWeek.substring(0, 3)} ${dateOfMonth}`}</Typography>
-        </Box>
+                display: 'block',
+                whiteSpace: 'nowrap',
+            }}>{disabled ? <>&nbsp;</> : <>
+                {
+                    displayAttribute === "none" && ""
+                }
+                {
+                    displayAttribute === "week" && `${dayOfWeek.substring(0, 3)} ${dateOfMonth}`
+                }
+                {
+                    displayAttribute === "month" && `${monthOfYear} ${dateOfMonth}th`
+                }
+            </>
+                }</Typography>
+        </Box >
     );
 }

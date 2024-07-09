@@ -7,14 +7,15 @@ import { Box, Tab, Card, Tabs, Stack } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { NAV, SPACING, MAIN_CHART_PANEL } from 'src/layouts/config-layout';
+import { NAV, SPACING, MAIN_TRACKING_PANEL } from 'src/layouts/config-layout';
 
-import { Calendar } from 'src/components/calendar';
 import { useCarousel } from 'src/components/carousel';
+
+import DashboardTrackingOverviewCalendar from '../dashboard-tracking-overview-calendar';
 
 
 export default function DashboardTrackingView() {
-    const [currentTab, setCurrentTab] = useState('line');
+    const [currentTab, setCurrentTab] = useState('overview');
     const smUp = useResponsive('up', 'sm');
     const [currentWidth, setCurrentWidth] = useState(0);
     const isAIChatWindowFull = useBoolean(false);
@@ -62,7 +63,7 @@ export default function DashboardTrackingView() {
             <Stack direction="row" justifyContent="space-between" spacing={2} sx={{
                 flexGrow: 0,
                 flexShrink: 0,
-                minHeight: `${MAIN_CHART_PANEL.W_DESKTOP}px`,
+                minHeight: `${MAIN_TRACKING_PANEL.W_DESKTOP}px`,
             }}>
                 <Card sx={{
                     p: smUp ? 2 : 1,
@@ -73,32 +74,18 @@ export default function DashboardTrackingView() {
                 }}>
                     <Stack direction="column" spacing={1} sx={{ height: '100%' }}>
                         <Tabs value={currentTab} onChange={handleChangeTab}>
-                            <Tab value='line' label="Line" />
-                            <Tab value='news' label="News" />
+                            <Tab value='overview' label="Overview" />
+                            <Tab value='summary' label="Summary" />
                         </Tabs>
                         <Box sx={{
                             height: 0,
                             flex: 1,
                         }}>
                             {
-                                currentTab === 'line' && <Box>
-                                    <Stack direction='row' gap={2}>
-                                        <Calendar date={new Date()} />
-                                        <Calendar date={new Date()} />
-                                        <Calendar date={new Date()} />
-                                        <Calendar date={new Date()} />
-                                        <Calendar date={new Date()} />
-                                    </Stack>
-                                    <Stack direction='row' gap={2}>
-                                        <Calendar date={new Date()} />
-                                        <Calendar date={new Date()} />
-                                        <Calendar date={new Date()} />
-                                        <Calendar date={new Date()} />
-                                    </Stack>
-                                </Box>
+                                currentTab === 'overview' && <DashboardTrackingOverviewCalendar />
                             }
                             {
-                                currentTab === 'news' && <Box>
+                                currentTab === 'summary' && <Box>
                                     Content
                                 </Box>
                             }
