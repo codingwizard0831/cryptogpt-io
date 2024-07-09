@@ -14,14 +14,16 @@ const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 interface DashboardTrackingOverviewCalendarProps extends BoxProps {
     date?: Date;
     selectedDate?: Date;
-    handleDateChange?: (date: Date) => void;
+    handlechangeSelectedDate?: (date: Date) => void;
+    handleChangeDate?: (date: Date) => void;
     isShowWeekDay?: boolean;
 }
 
 export default function DashboardTrackingOverviewCalendar({
     date: defaultDate = new Date(),
     selectedDate: defaultSelectedDate = new Date(),
-    handleDateChange,
+    handleChangeDate,
+    handlechangeSelectedDate,
     isShowWeekDay = false,
     sx,
     ...other
@@ -181,7 +183,7 @@ export default function DashboardTrackingOverviewCalendar({
                                         isToday={date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear()}
                                         onClick={() => {
                                             setSelectedDate(date);
-                                            handleDateChange?.(date);
+                                            handlechangeSelectedDate?.(date);
                                         }}
                                     />
                                 );
@@ -211,7 +213,7 @@ export default function DashboardTrackingOverviewCalendar({
                                                 isToday={date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear()}
                                                 onClick={() => {
                                                     setSelectedDate(date);
-                                                    handleDateChange?.(date);
+                                                    handlechangeSelectedDate?.(date);
                                                 }}
                                             />
                                         );
@@ -243,7 +245,7 @@ export default function DashboardTrackingOverviewCalendar({
                                             isToday={date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear()}
                                             onClick={() => {
                                                 setSelectedDate(date);
-                                                handleDateChange?.(date);
+                                                handleChangeDate?.(date);
                                             }}
                                         />
                                     );

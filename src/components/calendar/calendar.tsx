@@ -11,12 +11,14 @@ interface CalendarProps extends BoxProps {
     date?: Date;
     handleDateChange?: (date: Date) => void;
     isShowWeekDay?: boolean;
+    isSelectable?: boolean;
 }
 
 export default function Calendar({
     date: currentDate = new Date(),
     handleDateChange,
     isShowWeekDay = false,
+    isSelectable = true,
     sx,
     ...other
 }: CalendarProps) {
@@ -73,6 +75,7 @@ export default function Calendar({
                                 isActive={date.getDay() === 0 || date.getDay() === 6}
                                 isToday={date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear()}
                                 onClick={() => {
+                                    if (!isSelectable) return;
                                     setSelectedDateChange(date);
                                     handleDateChange?.(date);
                                 }}

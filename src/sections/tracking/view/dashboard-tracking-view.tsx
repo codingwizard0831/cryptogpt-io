@@ -1,16 +1,15 @@
 'use client';
 
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { Box, Tab, Card, Tabs, Stack } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { NAV, SPACING, MAIN_TRACKING_PANEL } from 'src/layouts/config-layout';
+import { MAIN_TRACKING_PANEL } from 'src/layouts/config-layout';
 
-import { useCarousel } from 'src/components/carousel';
-
+import DashboardTrackingDetailDrawer from '../dashboard-tracking-detail-drawer';
 import DashboardTrackingOverviewCalendar from '../dashboard-tracking-overview-calendar';
 
 
@@ -18,8 +17,9 @@ export default function DashboardTrackingView() {
     const [currentTab, setCurrentTab] = useState('overview');
     const smUp = useResponsive('up', 'sm');
     const [currentWidth, setCurrentWidth] = useState(0);
-    const isAIChatWindowFull = useBoolean(false);
     const isTradeWindowFull = useBoolean(false);
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const trackerDetailDrawer = useBoolean(false);
 
     useEffect(() => {
         const handleResize = () => {
@@ -38,16 +38,15 @@ export default function DashboardTrackingView() {
         };
     }, []);
 
-    const chatAreaFullWidth = useMemo(() => {
-        if (smUp) return currentWidth - NAV.W_SIDE_BAR_MENU - SPACING.md * 2 - 11;
-        return currentWidth - SPACING.sm;
-    }, [currentWidth, smUp]);
-
     const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
         setCurrentTab(newValue);
     }, []);
 
-    const carousel = useCarousel({});
+    const handleChangleSelectedDate = (newDate: Date) => {
+        console.log('newDate', newDate);
+        setSelectedDate(newDate);
+        trackerDetailDrawer.onTrue();
+    }
 
     return (
         <Box sx={{
@@ -82,7 +81,7 @@ export default function DashboardTrackingView() {
                             flex: 1,
                         }}>
                             {
-                                currentTab === 'overview' && <DashboardTrackingOverviewCalendar />
+                                currentTab === 'overview' && <DashboardTrackingOverviewCalendar selectedDate={selectedDate} handlechangeSelectedDate={handleChangleSelectedDate} />
                             }
                             {
                                 currentTab === 'summary' && <Box>
@@ -118,27 +117,16 @@ export default function DashboardTrackingView() {
                             height: '100%',
                             aspectRatio: '1.2/1',
                         }} />
-
-                        <Card sx={{
-                            p: 2,
-                            height: '100%',
-                            aspectRatio: '1.2/1',
-                        }} />
-
-                        <Card sx={{
-                            p: 2,
-                            height: '100%',
-                            aspectRatio: '1.2/1',
-                        }} />
-
-                        <Card sx={{
-                            p: 2,
-                            height: '100%',
-                            aspectRatio: '2/1',
-                        }} />
                     </Stack>
                 }
             </Box>
+
+            <DashboardTrackingDetailDrawer
+                isShow={trackerDetailDrawer.value}
+                handleClose={() => trackerDetailDrawer.onFalse()}
+                selectedDate={selectedDate}
+                handleChangeSelectedDate={handleChangleSelectedDate}
+            />
         </Box>
     );
 }
