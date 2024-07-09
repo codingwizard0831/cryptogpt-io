@@ -7,8 +7,7 @@ import { Box, Tab, Card, Tabs, Stack } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { MAIN_TRACKING_PANEL } from 'src/layouts/config-layout';
-
+import DashboardTrackingHistory from '../dashboard-tracking-history';
 import DashboardTrackingDetailDrawer from '../dashboard-tracking-detail-drawer';
 import DashboardTrackingOverviewCalendar from '../dashboard-tracking-overview-calendar';
 
@@ -70,7 +69,6 @@ export default function DashboardTrackingView() {
             <Stack direction="row" justifyContent="space-between" spacing={2} sx={{
                 flexGrow: 0,
                 flexShrink: 0,
-                minHeight: `${MAIN_TRACKING_PANEL.W_DESKTOP}px`,
             }}>
                 <Card sx={{
                     p: smUp ? 2 : 1,
@@ -123,8 +121,10 @@ export default function DashboardTrackingView() {
                     }}>
                         <Card sx={{
                             height: '100%',
-                            aspectRatio: '1.2/1',
-                        }} />
+                            p: 2,
+                        }}>
+                            <DashboardTrackingHistory />
+                        </Card>
                     </Stack>
                 }
             </Box>
