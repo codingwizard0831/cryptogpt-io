@@ -1,11 +1,11 @@
-import { DashboardTrackingView } from 'src/sections/tracking/view';
+import { DashboardStrategyView } from 'src/sections/strategy/view';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Tracking',
+  title: 'Dashboard: Strategy',
 };
 
 export default function Page() {
-  return <DashboardTrackingView />;
+  return <DashboardStrategyView />;
 }

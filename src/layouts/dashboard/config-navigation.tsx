@@ -49,6 +49,7 @@ const ICONS = {
   wallet: <Iconify icon='lets-icons:wallet-fill' sx={{ width: "24px", height: "24px" }} />,
   reward: <Iconify icon='ri:hand-coin-fill' sx={{ width: "24px", height: "24px" }} />,
   crgpt: <Iconify icon='ri:coin-fill' sx={{ width: "24px", height: "24px" }} />,
+  strategy: <Iconify icon='et:strategy' sx={{ width: "24px", height: "24px" }} />,
 };
 
 // ----------------------------------------------------------------------
@@ -63,6 +64,7 @@ export function useNavData() {
         items: [
           { title: 'DASHBOARD', path: paths.dashboard.root, icon: ICONS.dashboard, tooltip: "" },
           { title: 'TRACKING', path: paths.dashboard.tracking, icon: ICONS.tracking, tooltip: "" },
+          { title: 'STRATEGY', path: paths.dashboard.strategy, icon: ICONS.strategy, tooltip: "" },
           { title: 'DISCOVER', path: paths.dashboard.user.root, icon: ICONS.discover, tooltip: "" },
           { title: 'AI TRADING', path: paths.dashboard.user.root, icon: ICONS.trading, tooltip: "" },
           { title: 'KNOWLEDGE BASE', path: paths.dashboard.user.root, icon: ICONS.knowledgebase, tooltip: '' },
