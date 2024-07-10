@@ -1,11 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { Box, Tab, Card, Tabs, Stack } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
+
+import { NAV, HEADER, SPACING } from 'src/layouts/config-layout';
+
+import Carousel, { useCarousel } from 'src/components/carousel';
+
+import { DashboardAIChat } from 'src/sections/dashboard/dashboard-ai-chat';
 
 import DashboardTrackingHistory from '../dashboard-tracking-history';
 import DashboardTrackingDetailDrawer from '../dashboard-tracking-detail-drawer';
@@ -19,6 +25,7 @@ export default function DashboardTrackingView() {
     const isTradeWindowFull = useBoolean(false);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const trackerDetailDrawer = useBoolean(false);
+    const isAIChatWindowFull = useBoolean(false);
 
     useEffect(() => {
         const handleResize = () => {
@@ -54,6 +61,12 @@ export default function DashboardTrackingView() {
             trackerDetailDrawer.onTrue();
         }
     }
+    const chatAreaFullWidth = useMemo(() => {
+        if (smUp) return currentWidth - NAV.W_SIDE_BAR_MENU - SPACING.md;
+        return currentWidth - SPACING.sm;
+    }, [currentWidth, smUp]);
+
+    const carousel = useCarousel({});
 
     return (
         <Box sx={{
@@ -125,8 +138,64 @@ export default function DashboardTrackingView() {
                         }}>
                             <DashboardTrackingHistory />
                         </Card>
+
+                        <Card sx={{
+                            height: '100%',
+                            backdropFilter: 'none',
+                            transition: 'aspect-ratio 0.5s',
+                            aspectRatio: isAIChatWindowFull.value ? `${chatAreaFullWidth}/309` : '2/1',
+                            p: 2,
+                        }}>
+                            <DashboardAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
+                        </Card>
                     </Stack>
                 }
+
+                {/* mobile, carousel */}
+                {
+                    !smUp &&
+                    <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
+                        <Card sx={{
+                            p: 1,
+                            height: '100%',
+                        }}>
+                            <DashboardTrackingHistory />
+                        </Card>
+
+                        <Card sx={{
+                            p: 1,
+                            height: '100%',
+                            transition: 'aspect-ratio 0.5s',
+                            aspectRatio: isAIChatWindowFull.value ? `${chatAreaFullWidth}/309` : '2/1',
+                            backdropFilter: 'none',
+                        }}>
+                            <DashboardAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
+                        </Card>
+                    </Carousel>
+                }
+            </Box>
+
+            <Box sx={{
+                display: 'none',
+                ...(
+                    (isAIChatWindowFull.value && !smUp) ? {
+                        display: 'block',
+                        height: `calc(100vh - ${HEADER.H_MOBILE + SPACING.sm * 2}px)`,
+                        position: 'fixed',
+                        bottom: 0,
+                        left: `${SPACING.sm}px`,
+                        right: `${SPACING.sm}px`,
+                        zIndex: 1000,
+                    } : {}),
+            }}>
+                <Card sx={{
+                    p: 1,
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 1,
+                }}>
+                    <DashboardAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
+                </Card>
             </Box>
 
             <DashboardTrackingDetailDrawer

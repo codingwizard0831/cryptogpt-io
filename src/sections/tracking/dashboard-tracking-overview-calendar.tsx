@@ -4,6 +4,8 @@ import { getDay, startOfMonth, getDaysInMonth } from "date-fns";
 
 import { Box, Stack, BoxProps, IconButton, Typography } from "@mui/material";
 
+import { useResponsive } from "src/hooks/use-responsive";
+
 import { NAV } from "src/layouts/config-layout";
 
 import Iconify from "src/components/iconify";
@@ -32,6 +34,7 @@ export default function DashboardTrackingOverviewCalendar({
     const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
 
     // for UI
+    const smUp = useResponsive('up', 'sm');
     const [startRestPeriod, setStartRestPeriod] = useState(0);
     const [endRestPeriod, setEndRestPeriod] = useState(0);
     const [numberOfDaysForMonths, setNumberOfDaysForMonths] = useState(30);
@@ -58,8 +61,9 @@ export default function DashboardTrackingOverviewCalendar({
 
     const numberofMonth = useMemo(() => {
         console.log('currentWidth', currentWidth);
-        return Math.round((currentWidth - (NAV.W_SIDE_BAR_MENU + 16) - 100) / 300);
-    }, [currentWidth]);
+        if (smUp) return Math.round((currentWidth - (NAV.W_SIDE_BAR_MENU + 16) - 100) / 300);
+        return Math.round((currentWidth - (NAV.W_SIDE_BAR_MENU + 8)) / 300);;
+    }, [currentWidth, smUp]);
 
     useEffect(() => {
         const firstDateOfMonth = startOfMonth(currentDate);

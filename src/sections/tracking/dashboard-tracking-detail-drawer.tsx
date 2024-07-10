@@ -404,6 +404,8 @@ export default function DashboardTrackingDetailDrawer({
                                 </Stack>
                             </Box>
                         </Box>
+
+                        <Button fullWidth variant="contained" size="small" color="primary" startIcon={<Iconify icon="et:strategy" />} sx={{ mt: 1 }}>Build Trading Strategy</Button>
                     </Stack>
                 </Box>
             }
