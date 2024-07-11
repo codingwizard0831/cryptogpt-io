@@ -1,8 +1,16 @@
 'use client';
 
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { Canvas } from "@react-three/fiber";
+import { degToRad } from "three/src/math/MathUtils";
+import { useMemo, Suspense, useState, useEffect, useCallback } from 'react';
+import {
+    Gltf,
+    Html,
+    Float,
+    Environment,
+} from "@react-three/drei";
 
-import { Box, Card } from '@mui/material';
+import { Card, Button, Box as MuiBox } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -10,6 +18,33 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { NAV, SPACING } from 'src/layouts/config-layout';
 
 import { useCarousel } from 'src/components/carousel';
+
+// import { DashboardStrategyTeacher } from "../dashboard-strategy-teacher";
+
+
+const itemPlacement = {
+    default: {
+        classroom: {
+            position: [0.2, -1.7, -2],
+        },
+        teacher: {
+            position: [-1, -1.7, -3],
+        },
+        board: {
+            position: [0.45, 0.382, -6],
+        },
+    },
+    alternative: {
+        classroom: {
+            position: [0.3, -1.7, -1.5],
+            rotation: [0, degToRad(-90), 0],
+            scale: 0.4,
+        },
+        teacher: { position: [-1, -1.7, -3] },
+        board: { position: [1.4, 0.84, -8] },
+    },
+};
+
 
 export default function DashboardTrackingView() {
     const [currentTab, setCurrentTab] = useState('overview');
@@ -63,7 +98,7 @@ export default function DashboardTrackingView() {
     const carousel = useCarousel({});
 
     return (
-        <Box sx={{
+        <MuiBox sx={{
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
@@ -80,8 +115,47 @@ export default function DashboardTrackingView() {
                 boxShadow: 2,
                 height: '100%',
             }}>
-                Dashboard Strategy View
+                <Canvas
+                    camera={{
+                        position: [0, 0, 0.0001],
+                    }}
+                >
+
+                    <Suspense>
+                        <Float speed={0.5} floatIntensity={0.2} rotationIntensity={0.1}>
+                            <Html
+                                transform
+                                {...itemPlacement.default.board}
+                                distanceFactor={1}
+                            >
+                                <MuiBox sx={{
+                                    width: '800px',
+                                    height: '800px',
+                                    backgroundColor: 'red',
+                                }}>
+                                    <Button variant="contained" color="primary">It's test button</Button>
+                                </MuiBox>
+                            </Html>
+                            <Environment preset="sunset" />
+                            <ambientLight intensity={0.8} color="pink" />
+
+                            <Gltf
+                                src="/models/classroom_default.glb"
+                                {...itemPlacement.default.classroom}
+                            />
+
+
+                            {/* <DashboardStrategyTeacher
+                                teacher="Nanami"
+                                key="Nanami"
+                                {...itemPlacement.default.teacher}
+                                scale={1.5}
+                                rotation-y={degToRad(20)}
+                            /> */}
+                        </Float>
+                    </Suspense>
+                </Canvas>
             </Card>
-        </Box>
+        </MuiBox>
     );
 }
