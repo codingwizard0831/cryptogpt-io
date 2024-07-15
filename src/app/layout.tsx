@@ -2,24 +2,22 @@
 import { headers } from 'next/headers'
 import { cookieToInitialState } from 'wagmi'
 
-/* eslint-disable perfectionist/sort-imports */
-import 'src/global.css';
+import 'src/styles.css';
+// import 'src/global.css';
 import 'src/converted-styles.css';
 
 // ----------------------------------------------------------------------
 
 import ThemeProvider from 'src/theme';
+import { config } from 'src/web3/config';
+import Web3ModalProvider from 'src/web3/context';
 import { LocalizationProvider } from 'src/locales';
-import { primaryFont } from 'src/theme/typography';
+import { AuthProvider } from 'src/auth/context/jwt';
 
 import ProgressBar from 'src/components/progress-bar';
 import { MotionLazy } from 'src/components/animate/motion-lazy';
 import SnackbarProvider from 'src/components/snackbar/snackbar-provider';
 import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
-
-import { AuthProvider } from 'src/auth/context/jwt';
-import Web3ModalProvider from 'src/web3/context';
-import { config } from 'src/web3/config';
 
 // ----------------------------------------------------------------------
 
@@ -52,7 +50,7 @@ export default function RootLayout({ children }: Props) {
   const initialState = cookieToInitialState(config, headers().get('cookie'))
 
   return (
-    <html lang="en" className={primaryFont.className}>
+    <html lang="en" className="">
       <body>
         <Web3ModalProvider initialState={initialState}>
           <AuthProvider>

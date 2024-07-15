@@ -15,6 +15,8 @@ import { Card, Box as MuiBox } from '@mui/material';
 import { useAITeacher } from 'src/store/strategy/useAITeacher';
 
 import DashboardStrategyTeacher from '../dashboard-strategy-teacher';
+import DashboardStrategyMessagesList from '../dashboard-strategy-messages-list';
+import DashboardStrategyBoardSettings from '../dashboard-strategy-board-settings';
 
 interface ItemPlacement {
   [key: string]: {
@@ -96,7 +98,10 @@ export default function DashboardStrategyView() {
           <CameraManager />
           <Suspense>
             <Float speed={0.5} floatIntensity={0.2} rotationIntensity={0.1}>
-              <Html transform {...itemPlacement[classroom].board} distanceFactor={1} />
+              <Html transform {...itemPlacement[classroom].board} distanceFactor={1}>
+                <DashboardStrategyBoardSettings />
+                <DashboardStrategyMessagesList />
+              </Html>
               <Environment preset="sunset" />
               <ambientLight color="pink" />
 
