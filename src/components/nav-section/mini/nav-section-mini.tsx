@@ -12,6 +12,10 @@ function NavSectionMini({ data, slotProps, sx, ...other }: NavProps) {
     <Stack component="nav" id="nav-section-mini" spacing={`${slotProps?.gap || 4}px`} sx={{
       p: '2px',
       width: '100%',
+      maxHeight: '340px',
+      overflowX: 'hidden',
+      overflowY: 'auto',
+      scrollbarWidth: 'none',
       ...sx,
     }} {...other}>
       {data.map((group, index) => (

@@ -22,10 +22,10 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 const OPTIONS = [
   {
     label: 'Profile',
-    linkTo: paths.dashboard.profile,
+    linkTo: paths.dashboard.user.profile,
   },
   {
-    label: 'Settings',
+    label: 'Account',
     linkTo: paths.dashboard.user.account,
   },
 ];

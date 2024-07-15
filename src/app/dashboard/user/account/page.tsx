@@ -1,11 +1,11 @@
-import { DashboardProfileView } from 'src/sections/profile/view';
+import { DashboardAccountView } from 'src/sections/users/account/view';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Profile',
+  title: 'Dashboard: Account',
 };
 
 export default function Page() {
-  return <DashboardProfileView />;
+  return <DashboardAccountView />;
 }
