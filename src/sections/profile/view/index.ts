@@ -1,0 +1,1 @@
+export { default as DashboardProfileView } from "./dashboard-profile-view";

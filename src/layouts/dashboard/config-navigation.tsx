@@ -50,6 +50,7 @@ const ICONS = {
   reward: <Iconify icon='ri:hand-coin-fill' sx={{ width: "24px", height: "24px" }} />,
   crgpt: <Iconify icon='ri:coin-fill' sx={{ width: "24px", height: "24px" }} />,
   strategy: <Iconify icon='et:strategy' sx={{ width: "24px", height: "24px" }} />,
+  profile: <Iconify icon='carbon:user-profile' sx={{ width: "24px", height: "24px" }} />,
 };
 
 // ----------------------------------------------------------------------
@@ -71,6 +72,7 @@ export function useNavData() {
           { title: 'MY WALLET', path: paths.dashboard.user.root, icon: ICONS.wallet, tooltip: "" },
           { title: 'REWARDS', path: paths.dashboard.user.root, icon: ICONS.reward, tooltip: "", },
           { title: 'BUY/SWAP CRGPT', path: paths.dashboard.user.root, icon: ICONS.crgpt, tooltip: "" },
+          { title: 'PROFILE', path: paths.dashboard.profile, icon: ICONS.profile, tooltip: "" },
         ],
       },
     ],

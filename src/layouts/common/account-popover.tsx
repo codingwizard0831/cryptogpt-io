@@ -22,7 +22,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 const OPTIONS = [
   {
     label: 'Profile',
-    linkTo: paths.dashboard.user.profile,
+    linkTo: paths.dashboard.profile,
   },
   {
     label: 'Settings',
@@ -78,7 +78,7 @@ export default function AccountPopover() {
           sx={{
             width: 36,
             height: 36,
-            border: (theme) => `solid 2px ${theme.palette.background.default}`,
+            border: (theme: any) => `solid 2px ${alpha(theme.palette.background.opposite, 0.2)}`,
           }}
         >
           {user?.username?.charAt(0).toUpperCase()}

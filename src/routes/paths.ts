@@ -26,6 +26,7 @@ export const paths = {
     root: ROOTS.DASHBOARD,
     tracking: `${ROOTS.DASHBOARD}/tracking`,
     strategy: `${ROOTS.DASHBOARD}/strategy`,
+    profile: `${ROOTS.DASHBOARD}/profile`,
     deliver: {
       me: {
         root: `${ROOTS.DASHBOARD}/deliver/me/favorite`,

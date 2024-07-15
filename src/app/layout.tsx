@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 import { cookieToInitialState } from 'wagmi'
 
 import 'src/styles.css';
-// import 'src/global.css';
+import 'src/global.css';
 import 'src/converted-styles.css';
 
 // ----------------------------------------------------------------------
