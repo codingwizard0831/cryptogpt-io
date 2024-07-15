@@ -1,24 +1,133 @@
 'use client';
 
-import { Box } from '@mui/material';
+import { useState, useCallback } from 'react';
+
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import { Box, Card } from '@mui/material';
+
+import { paths } from 'src/routes/paths';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-export default function DashboardAccountView() {
+import { _userAbout } from 'src/_mock';
+
+import Iconify from 'src/components/iconify';
+import { useSettingsContext } from 'src/components/settings';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import AccountCredit from '../account-credit';
+import AccountGeneral from '../account-general';
+import AccountMembership from '../account-membership';
+import AccountSocialLinks from '../account-social-links';
+import AccountNotifications from '../account-notifications';
+import AccountChangePassword from '../account-change-password';
+
+// ----------------------------------------------------------------------
+
+const TABS = [
+    {
+        value: 'general',
+        label: 'General',
+        icon: <Iconify icon="solar:user-id-bold" width={24} />,
+    },
+    {
+        value: 'membership',
+        label: 'Membership',
+        icon: <Iconify icon="solar:bill-list-bold" width={24} />,
+    },
+    {
+        value: 'credit',
+        label: 'Credit',
+        icon: <Iconify icon="mdi:bank" width={24} />,
+    },
+    {
+        value: 'notifications',
+        label: 'Notifications',
+        icon: <Iconify icon="solar:bell-bing-bold" width={24} />,
+    },
+    {
+        value: 'social',
+        label: 'Social links',
+        icon: <Iconify icon="solar:share-bold" width={24} />,
+    },
+    {
+        value: 'security',
+        label: 'Security',
+        icon: <Iconify icon="ic:round-vpn-key" width={24} />,
+    },
+];
+// ---------------------------------------------------------------------
+
+export default function DashboardProfileView() {
     const smUp = useResponsive('up', 'sm');
+    const settings = useSettingsContext();
+
+    const [currentTab, setCurrentTab] = useState('general');
+
+    const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+        setCurrentTab(newValue);
+    }, []);
 
     return (
         <Box sx={{
+            width: '100%',
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
+            alignItems: 'center',
             gap: 2,
             pb: 2,
             overflowX: 'hidden',
             overflowY: 'auto',
         }}>
-            Account View
+            <Card sx={{
+                width: '100%',
+                maxWidth: settings.themeStretch ? false : 'lg',
+                p: smUp ? 2 : 1,
+                flex: 1,
+                borderRadius: 1,
+                boxShadow: 2,
+                overflowX: "hidden",
+                overflowY: 'auto',
+            }}>
+                <CustomBreadcrumbs
+                    heading="Account"
+                    links={[
+                        { name: 'Dashboard', href: paths.dashboard.root },
+                        { name: 'User' },
+                        { name: 'Account' },
+                    ]}
+                    sx={{
+                        mb: { xs: 3, md: 5 },
+                    }}
+                />
+
+                <Tabs
+                    value={currentTab}
+                    onChange={handleChangeTab}
+                    sx={{
+                        mb: { xs: 3, md: 5 },
+                    }}
+                >
+                    {TABS.map((tab) => (
+                        <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
+                    ))}
+                </Tabs>
+
+                {currentTab === 'general' && <AccountGeneral />}
+
+                {currentTab === 'membership' && <AccountMembership />}
+
+                {currentTab === 'credit' && <AccountCredit />}
+
+                {currentTab === 'notifications' && <AccountNotifications />}
+
+                {currentTab === 'social' && <AccountSocialLinks socialLinks={_userAbout.socialLinks} />}
+
+                {currentTab === 'security' && <AccountChangePassword />}
+            </Card>
         </Box>
     );
 }

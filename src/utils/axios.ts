@@ -55,6 +55,14 @@ export const endpoints = {
 
     profileUpdate: '/auth/user/profile/update/',
   },
+  membership: {
+    plans: '/memberships/plans/',
+    userPlans: '/memberships/user_plans/',
+    createPaymentIntent: '/memberships/user_plans/payment_intent/create/',
+    confirmPaymentIntent: '/memberships/user_plans/payment_intent/confirm/',
+    cancelUserPlan: (id: string) => `/memberships/user_plans/${id}/cancel/`,
+    ugradeUserPlan: (id: string) => `/memberships/user_plans/${id}/update/`,
+  },
   mail: {
     list: '/api/mail/list',
     details: '/api/mail/details',

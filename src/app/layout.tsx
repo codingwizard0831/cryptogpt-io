@@ -13,6 +13,8 @@ import { config } from 'src/web3/config';
 import Web3ModalProvider from 'src/web3/context';
 import { LocalizationProvider } from 'src/locales';
 import { AuthProvider } from 'src/auth/context/jwt';
+import { MembershipPlansProvider } from 'src/provider/MembershipPlansProvider';
+import { UserMembershipPlansProvider } from 'src/provider/UserMembershipPlansProvider';
 
 import ProgressBar from 'src/components/progress-bar';
 import { MotionLazy } from 'src/components/animate/motion-lazy';
@@ -66,13 +68,17 @@ export default function RootLayout({ children }: Props) {
                 }}
               >
                 <ThemeProvider>
-                  <MotionLazy>
-                    <SnackbarProvider>
-                      <SettingsDrawer />
-                      <ProgressBar />
-                      {children}
-                    </SnackbarProvider>
-                  </MotionLazy>
+                  <MembershipPlansProvider>
+                    <UserMembershipPlansProvider>
+                      <MotionLazy>
+                        <SnackbarProvider>
+                          <SettingsDrawer />
+                          <ProgressBar />
+                          {children}
+                        </SnackbarProvider>
+                      </MotionLazy>
+                    </UserMembershipPlansProvider>
+                  </MembershipPlansProvider>
                 </ThemeProvider>
               </SettingsProvider>
             </LocalizationProvider>
