@@ -6,21 +6,18 @@ import Tab from '@mui/material/Tab';
 import { Box, Card } from '@mui/material';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 
-import { paths } from 'src/routes/paths';
-
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
+import { _userAbout, _userFeeds, _userFriends, _userFollowers } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import ProfileHome from '../profile-home';
 import ProfileCover from '../profile-cover';
+import ProfilePosts from '../profile-posts';
 import ProfileFriends from '../profile-friends';
-import ProfileGallery from '../profile-gallery';
 import ProfileFollowers from '../profile-followers';
 
 // ---------------------------------------------------------------------
@@ -34,7 +31,7 @@ const TABS = [
     {
         value: 'strategies',
         label: 'Strategies',
-        icon: <Iconify icon="ant-design:project-outlined" width={24} />,
+        icon: <Iconify icon="et:strategy" width={24} />,
     },
     {
         value: 'followers',
@@ -64,7 +61,12 @@ const TABS = [
     {
         value: 'rewards',
         label: 'Rewards',
-        icon: <Iconify icon="clarity:organization-line" width={24} />,
+        icon: <Iconify icon="material-symbols:rewarded-ads" width={24} />,
+    },
+    {
+        value: 'posts',
+        label: 'Posts',
+        icon: <Iconify icon="ic:baseline-post-add" width={24} />,
     },
 ];
 // ---------------------------------------------------------------------
@@ -111,18 +113,6 @@ export default function DashboardProfileView() {
                 overflowX: "hidden",
                 overflowY: 'auto',
             }}>
-                <CustomBreadcrumbs
-                    heading="Profile"
-                    links={[
-                        { name: 'Dashboard', href: paths.dashboard.root },
-                        { name: 'User' },
-                        { name: 'user1' },
-                    ]}
-                    sx={{
-                        mb: { xs: 3, md: 5 },
-                    }}
-                />
-
                 <Card
                     sx={{
                         mb: 3,
@@ -144,7 +134,6 @@ export default function DashboardProfileView() {
                             bottom: 0,
                             zIndex: 9,
                             position: 'absolute',
-                            bgcolor: 'background.paper',
                             [`& .${tabsClasses.flexContainer}`]: {
                                 pr: { md: 3 },
                                 justifyContent: {
@@ -152,11 +141,19 @@ export default function DashboardProfileView() {
                                     md: 'flex-end',
                                 },
                             },
+                            '& .MuiTab-root': {
+                                fontSize: '14px',
+                                ".MuiTab-iconWrapper": {
+                                    mr: 0.25,
+                                }
+                            }
                         }}
                     >
-                        {TABS.map((tab) => (
-                            <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
-                        ))}
+                        {
+                            TABS.map((tab) => (
+                                <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+                            ))
+                        }
                     </Tabs>
                 </Card>
 
@@ -172,8 +169,8 @@ export default function DashboardProfileView() {
                     />
                 )}
 
-                {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />}
+                {currentTab === 'posts' && <ProfilePosts />}
             </Card>
-        </Box>
+        </Box >
     );
 }

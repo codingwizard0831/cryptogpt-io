@@ -6,15 +6,12 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { Box, Card } from '@mui/material';
 
-import { paths } from 'src/routes/paths';
-
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { _userAbout } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import AccountCredit from '../account-credit';
 import AccountGeneral from '../account-general';
@@ -92,18 +89,6 @@ export default function DashboardProfileView() {
                 overflowX: "hidden",
                 overflowY: 'auto',
             }}>
-                <CustomBreadcrumbs
-                    heading="Account"
-                    links={[
-                        { name: 'Dashboard', href: paths.dashboard.root },
-                        { name: 'User' },
-                        { name: 'Account' },
-                    ]}
-                    sx={{
-                        mb: { xs: 3, md: 5 },
-                    }}
-                />
-
                 <Tabs
                     value={currentTab}
                     onChange={handleChangeTab}
