@@ -271,25 +271,25 @@ const UIComponents = () => {
   const isUpgradeButtonDisabled = (shouldEnterCardElement && (!!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete)) || !selectedPlan;
   const isCancelButtonDisabled = !current_user_plan || (!!current_user_plan?.expires_at || current_user_plan?.status === "past_due");
   const renderPlans = plansByTab.map((plan) => (
-    <Grid xs={12} md={4} key={plan._id}>
+    <Grid xs={12} md={4} key={plan.id}>
       <Stack
         component={Paper}
         variant="outlined"
-        onClick={() => handleSelectPlan(plan._id)}
+        onClick={() => handleSelectPlan(plan.id)}
         sx={{
           p: 2.5,
           position: 'relative',
           cursor: 'pointer',
-          ...((current_user_plan?.plan_id === plan._id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && {
+          ...((current_user_plan?.plan_id === plan.id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && {
             opacity: 0.48,
             cursor: 'default',
           }),
-          ...(plan._id === selectedPlan && {
+          ...(plan.id === selectedPlan && {
             boxShadow: (theme) => `0 0 0 2px ${theme.palette.text.primary}`,
           }),
         }}
       >
-        {(current_user_plan?.plan_id === plan._id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && (
+        {(current_user_plan?.plan_id === plan.id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && (
           <Label
             color="info"
             startIcon={<Iconify icon="eva:star-fill" />}
