@@ -16,6 +16,7 @@ import { useSettingsContext } from 'src/components/settings';
 import AccountCredit from '../account-credit';
 import AccountGeneral from '../account-general';
 import AccountMembership from '../account-membership';
+import AccountSubaccounts from '../account-subaccount';
 import AccountSocialLinks from '../account-social-links';
 import AccountNotifications from '../account-notifications';
 import AccountChangePassword from '../account-change-password';
@@ -52,6 +53,11 @@ const TABS = [
         value: 'security',
         label: 'Security',
         icon: <Iconify icon="ic:round-vpn-key" width={24} />,
+    },
+    {
+        value: 'subaccounts',
+        label: 'Subaccounts',
+        icon: <Iconify icon="material-symbols:account-child-invert" width={24} />,
     },
 ];
 // ---------------------------------------------------------------------
@@ -112,6 +118,8 @@ export default function DashboardProfileView() {
                 {currentTab === 'social' && <AccountSocialLinks socialLinks={_userAbout.socialLinks} />}
 
                 {currentTab === 'security' && <AccountChangePassword />}
+
+                {currentTab === 'subaccounts' && <AccountSubaccounts />}
             </Card>
         </Box>
     );
