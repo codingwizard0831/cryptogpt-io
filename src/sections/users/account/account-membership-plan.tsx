@@ -143,7 +143,7 @@ const UIComponents = () => {
         errorMessage: '',
       });
       if (!current_user_plan || shouldEnterCardElement) {
-        const { data } = await axios.post(endpoints.membership.createPaymentIntent,
+        const { data }: { success: boolean, data: any } = await axios.post(endpoints.membership.createPaymentIntent,
           {
             "plan_id": selectedPlan,
             "user_id": user?.id,
@@ -151,60 +151,61 @@ const UIComponents = () => {
           }
         );
 
-        const { success, result: paymentIntent } = data;
-        // console.log('success', success)
-        // console.log('paymentIntent', paymentIntent)
-        // if (success) {
-        //   const payResult = await payStripeCardPayment({
-        //     client_secret: paymentIntent.client_secret
-        //   }, {
-        //     name: ''
-        //   }
-        //   );
-        //   // console.log('payResult', payResult)
-        //   try {
-        //     if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
-        //       await axios.post(endpoints.membership.confirmPaymentIntent,
-        //         {
-        //           "payment_intent_id": payResult.paymentIntent.id
-        //         }
-        //       );
-        //       setLoadFlag(!loadFlag);
-        //       setSelectedPlan(0);
-        //       setUpgradingState({
-        //         submitting: false,
-        //         error: '',
-        //         success: '',
-        //       });
-        //     }
-        //   } catch (err) {
-        //     console.error(err)
-        //     setUpgradingState({
-        //       submitting: false,
-        //       error: err,
-        //       success: '',
-        //     });
-        //   }
+        const { success, data: paymentIntent } = data;
+        console.log('success', success)
+        console.log('paymentIntent', paymentIntent)
+        if (success) {
+          const payResult = await payStripeCardPayment({
+            client_secret: paymentIntent.client_secret
+          }, {
+            name: ''
+          }
+          );
+          console.log('payResult', payResult)
+          try {
+            if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
+              await axios.post(endpoints.membership.confirmPaymentIntent,
+                {
+                  "user_id": user?.id,
+                  "payment_intent_id": payResult.paymentIntent.id
+                }
+              );
+              setLoadFlag(!loadFlag);
+              setSelectedPlan(0);
+              setUpgradingState({
+                submitting: false,
+                error: '',
+                success: '',
+              });
+            }
+          } catch (err) {
+            console.error(err)
+            setUpgradingState({
+              submitting: false,
+              error: err,
+              success: '',
+            });
+          }
 
-        // } else if (paymentIntent && paymentIntent.error) {
-        //   setCardPaymentState({
-        //     errorMessage: paymentIntent.error
-        //   });
-        //   setUpgradingState({
-        //     submitting: false,
-        //     error: paymentIntent.error,
-        //     success: '',
-        //   });
-        // } else {
-        //   setCardPaymentState({
-        //     errorMessage: `The server responded`
-        //   });
-        //   setUpgradingState({
-        //     submitting: false,
-        //     error: `The server responded`,
-        //     success: '',
-        //   });
-        // }
+        } else if (paymentIntent && paymentIntent.error) {
+          setCardPaymentState({
+            errorMessage: paymentIntent.error
+          });
+          setUpgradingState({
+            submitting: false,
+            error: paymentIntent.error,
+            success: '',
+          });
+        } else {
+          setCardPaymentState({
+            errorMessage: `The server responded`
+          });
+          setUpgradingState({
+            submitting: false,
+            error: `The server responded`,
+            success: '',
+          });
+        }
       } else {
         const { data } = await axios.post(endpoints.membership.ugradeUserPlan(current_user_plan?.id),
           {
@@ -241,7 +242,7 @@ const UIComponents = () => {
         errorMessage: e.message
       });
     }
-  }, [payStripeCardPayment, setCardPaymentState, selectedPlan, current_user_plan, shouldEnterCardElement, setLoadFlag, loadFlag, setUpgradingState]);
+  }, [payStripeCardPayment, setCardPaymentState, selectedPlan, current_user_plan, shouldEnterCardElement, setLoadFlag, loadFlag, setUpgradingState, user]);
 
   const _OnCancel = useCallback(async () => {
     setCancelState({

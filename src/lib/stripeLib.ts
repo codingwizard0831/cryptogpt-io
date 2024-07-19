@@ -61,48 +61,14 @@ export async function createSubscription(customerId: string, productId: string, 
   }
 }
 
-export async function cancelSubscription(
-  subscriptionId: string
-): Promise<Stripe.Subscription> {
+export async function retrievePaymentIntent(paymentIntentId: string): Promise<Stripe.PaymentIntent> {
   try {
-    const canceledSubscription = await stripe.subscriptions.cancel(subscriptionId);
-    return canceledSubscription;
-  } catch (error) {
-    console.error('Error canceling Stripe subscription:', error);
-    throw error;
-  }
-}
-
-export async function retrieveCustomer(customerId: string): Promise<Stripe.Customer> {
-  try {
-    const customer = await stripe.customers.retrieve(customerId);
-    if (customer.deleted) {
-      throw new Error('Customer has been deleted');
-    }
-    return customer as Stripe.Customer;
-  } catch (error) {
-    console.error('Error retrieving Stripe customer:', error);
-    throw error;
-  }
-}
-
-export async function createPaymentIntent(
-  amount: number,
-  currency: string,
-  customerId: string
-): Promise<Stripe.PaymentIntent> {
-  try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency,
-      customer: customerId,
-    });
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     return paymentIntent;
   } catch (error) {
-    console.error('Error creating payment intent:', error);
+    console.error('Error retrieving PaymentIntent:', error);
     throw error;
   }
 }
-
 
 export default stripe;
