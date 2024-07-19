@@ -11,9 +11,9 @@ const fetchMembershipPlans = (() => {
     const fn = async (resolve: (value: any) => void, reject: (reason?: any) => void) => {
         try {
             const res = await axios.post(endpoints.membership.plans, {});
-            const { success, result }: MembershipPlanResult = res.data;
-            if (success) {
-                resolve(result.map(item => {
+            const { statusText, data }: MembershipPlanResult = res.data;
+            if (statusText === "OK") {
+                resolve(data.map(item => {
                     const {
                         type,
                         billing_period
@@ -53,10 +53,9 @@ const fetchMembershipPlans = (() => {
                     })();
 
                     const {
-                        _id,
-                        _creationTime,
+                        id,
+                        created_at,
                         price,
-                        discount,
                         storage,
                         token
                     } = item;
@@ -66,14 +65,13 @@ const fetchMembershipPlans = (() => {
 
                     return {
                         ...item,
-                        _id,
-                        _creationTime,
+                        id,
+                        created_at,
                         type,
                         periodUnit,
                         totalPrice,
                         storage,
                         token,
-                        savingPercent: discount,
                         isDisabled,
                     }
                 }));
@@ -89,7 +87,7 @@ const fetchMembershipPlans = (() => {
             }, 500);
         }
     }
-    return function () {
+    return function result() {
         return new Promise(fn);
     }
 })();

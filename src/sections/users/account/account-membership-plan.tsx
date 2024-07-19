@@ -17,6 +17,7 @@ import usePayStripeCardPayment from 'src/hooks/use-pay-stripe-card-payment';
 import axios, { endpoints } from 'src/utils/axios';
 
 import Stripe from 'src/provider/Stripe';
+import { useAuthContext } from 'src/auth/hooks';
 import { MembershipPlan } from 'src/provider/MembershipPlansProvider/types';
 import { PlanFreeIcon, PlanStarterIcon, PlanPremiumIcon } from 'src/assets/icons';
 import { useLoadMembershipPlans, useMembershipPlansContext } from 'src/provider/MembershipPlansProvider';
@@ -41,10 +42,15 @@ const TABS = [
   {
     value: 'Elite Annual Subscription',
     label: 'Elite Annual Subscription',
+  },
+  {
+    value: 'Enterprise Annual Subscription',
+    label: 'Enterprise Annual Subscription',
   }
 ];
 
 const UIComponents = () => {
+  const { user } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [cardPaymentState, setCardPaymentState] = useState({
     errorMessage: ''
@@ -84,7 +90,7 @@ const UIComponents = () => {
   const loadUserMembershipPlans = useLoadUserMembershipPlans();
   const loadMembershipPlans = useLoadMembershipPlans();
 
-  const [selectedPlan, setSelectedPlan] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState(0);
   const [currentTab, setCurrentTab] = useState('Premium Subscription');
   const { membershipPlanDict } = useMembershipPlansContext();
   const current_user_plan = useLastPossibleSubsriptionUserMembershipPlan();
@@ -116,7 +122,7 @@ const UIComponents = () => {
     setCurrentTab(newValue);
   }, []);
 
-  const handleSelectPlan = useCallback((newValue: string) => {
+  const handleSelectPlan = useCallback((newValue: number) => {
     if (current_user_plan?.plan_id !== newValue && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) {
       setSelectedPlan(newValue);
     } else if (!!current_user_plan?.expires_at || current_user_plan?.status === "past_due") {
@@ -137,15 +143,17 @@ const UIComponents = () => {
         errorMessage: '',
       });
       if (!current_user_plan || shouldEnterCardElement) {
-        const { data } = await axios.post(endpoints.membership.createPaymentIntent,
+        const { data }: { success: boolean, data: any } = await axios.post(endpoints.membership.createPaymentIntent,
           {
-            "plan_id": selectedPlan
+            "plan_id": selectedPlan,
+            "user_id": user?.id,
+            "email": user?.email
           }
         );
 
-        const { success, result: paymentIntent } = data;
-        // console.log('success', success)
-        // console.log('paymentIntent', paymentIntent)
+        const { success, data: paymentIntent } = data;
+        console.log('success', success)
+        console.log('paymentIntent', paymentIntent)
         if (success) {
           const payResult = await payStripeCardPayment({
             client_secret: paymentIntent.client_secret
@@ -153,16 +161,17 @@ const UIComponents = () => {
             name: ''
           }
           );
-          // console.log('payResult', payResult)
+          console.log('payResult', payResult)
           try {
             if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
               await axios.post(endpoints.membership.confirmPaymentIntent,
                 {
+                  "user_id": user?.id,
                   "payment_intent_id": payResult.paymentIntent.id
                 }
               );
               setLoadFlag(!loadFlag);
-              setSelectedPlan('');
+              setSelectedPlan(0);
               setUpgradingState({
                 submitting: false,
                 error: '',
@@ -198,7 +207,7 @@ const UIComponents = () => {
           });
         }
       } else {
-        const { data } = await axios.post(endpoints.membership.ugradeUserPlan(current_user_plan?._id),
+        const { data } = await axios.post(endpoints.membership.ugradeUserPlan(current_user_plan?.id),
           {
             "plan_id": selectedPlan
           }
@@ -206,7 +215,7 @@ const UIComponents = () => {
         const { success, result } = data;
         if (success) {
           setLoadFlag(!loadFlag);
-          setSelectedPlan('');
+          setSelectedPlan(0);
           setUpgradingState({
             submitting: false,
             error: '',
@@ -233,7 +242,7 @@ const UIComponents = () => {
         errorMessage: e.message
       });
     }
-  }, [payStripeCardPayment, setCardPaymentState, selectedPlan, current_user_plan, shouldEnterCardElement, setLoadFlag, loadFlag, setUpgradingState]);
+  }, [payStripeCardPayment, setCardPaymentState, selectedPlan, current_user_plan, shouldEnterCardElement, setLoadFlag, loadFlag, setUpgradingState, user]);
 
   const _OnCancel = useCallback(async () => {
     setCancelState({
@@ -241,7 +250,7 @@ const UIComponents = () => {
       success: '',
       submitting: true
     });
-    cancelUserMembershipPlan(current_user_plan?._id)
+    cancelUserMembershipPlan(current_user_plan?.id)
       .then(({ status, success, result }: any) => {
         if (success) {
           setCancelState({
@@ -271,25 +280,25 @@ const UIComponents = () => {
   const isUpgradeButtonDisabled = (shouldEnterCardElement && (!!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete)) || !selectedPlan;
   const isCancelButtonDisabled = !current_user_plan || (!!current_user_plan?.expires_at || current_user_plan?.status === "past_due");
   const renderPlans = plansByTab.map((plan) => (
-    <Grid xs={12} md={4} key={plan._id}>
+    <Grid xs={12} md={4} key={plan.id}>
       <Stack
         component={Paper}
         variant="outlined"
-        onClick={() => handleSelectPlan(plan._id)}
+        onClick={() => handleSelectPlan(plan.id)}
         sx={{
           p: 2.5,
           position: 'relative',
           cursor: 'pointer',
-          ...((current_user_plan?.plan_id === plan._id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && {
+          ...((current_user_plan?.plan_id === plan.id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && {
             opacity: 0.48,
             cursor: 'default',
           }),
-          ...(plan._id === selectedPlan && {
+          ...(plan.id === selectedPlan && {
             boxShadow: (theme) => `0 0 0 2px ${theme.palette.text.primary}`,
           }),
         }}
       >
-        {(current_user_plan?.plan_id === plan._id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && (
+        {(current_user_plan?.plan_id === plan.id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && (
           <Label
             color="info"
             startIcon={<Iconify icon="eva:star-fill" />}
@@ -303,6 +312,7 @@ const UIComponents = () => {
           {plan.type === 'Pro Pass' && <PlanFreeIcon />}
           {plan.type === 'Premium Subscription' && <PlanStarterIcon />}
           {plan.type === 'Elite Annual Subscription' && <PlanPremiumIcon />}
+          {plan.type === 'Enterprise Annual Subscription' && <PlanPremiumIcon />}
         </Box>
 
         <Box
@@ -380,7 +390,7 @@ const UIComponents = () => {
           </Tabs>
         </Stack>
 
-        <Grid container spacing={2} sx={{ p: 3 }}>
+        <Grid container spacing={2} sx={{ p: 3, justifyContent: 'center' }}>
           {plansByTab && renderPlans}
         </Grid>
 

@@ -4,32 +4,10 @@ import React, { useMemo, useState, useEffect, useReducer, useContext, useCallbac
 
 import axios, { endpoints } from 'src/utils/axios';
 
+import { useAuthContext } from 'src/auth/hooks';
+
 import UserMembershipPlansContext from './context';
 import { State, Action, UserMembershipPlan, UserMembershipPlanResult, CancelUserMembershipPlanResult } from './types';
-
-const fetchUserMembershipPlans = (() => {
-    const fn = async (resolve: (value: any) => void, reject: (reason?: any) => void) => {
-        try {
-            const res = await axios.post(endpoints.membership.userPlans, {});
-            const { status, success, result }: UserMembershipPlanResult = res.data;
-            if (success) {
-                resolve(result.map(item => item));
-            } else if (status === 401) {
-                reject({
-                    message: 'Unauthorized'
-                });
-            } else {
-                setTimeout(() => {
-                    fn(resolve, reject);
-                }, 500);
-            }
-        } catch (e) {
-            reject(e);
-
-        }
-    }
-    return () => new Promise(fn)
-})();
 
 const initState = () => ({
     userMembershipPlanList: [],
@@ -40,7 +18,7 @@ const initState = () => ({
     loadHandles: [],
     loadError: null,
     loaded: false,
-})
+});
 
 const handlers = {
     LOAD_REQUEST(state: State, action: Action): State {
@@ -83,7 +61,7 @@ const handlers = {
             const { userMembershipPlanList } = action.payload;
             const userMembershipPlanDict: { [key: string]: UserMembershipPlan } = {};
             userMembershipPlanList.forEach(item => {
-                userMembershipPlanDict[item._id] = item;
+                userMembershipPlanDict[item.id] = item;
             })
             return {
                 ...state,
@@ -105,9 +83,9 @@ const handlers = {
             const userMembershipPlanList = (() => {
                 let changed = false;
                 const filtered = state.userMembershipPlanList.map(item => {
-                    if (item._id === userMembershipPlan._id) {
+                    if (item.id === userMembershipPlan.id) {
                         changed = true;
-                        userMembershipPlanDict[item._id] = userMembershipPlan;
+                        userMembershipPlanDict[item.id] = userMembershipPlan;
                         return userMembershipPlan;
                     }
                     return item;
@@ -134,14 +112,14 @@ const handlers = {
             const userMembershipPlanList = (() => {
                 let changed = false;
                 const filtered = state.userMembershipPlanList.map(item => {
-                    if (item._id === user_plan_id) {
+                    if (item.id === user_plan_id) {
                         changed = true;
                         const changedItem = {
                             ...item,
                             is_active: false,
                             status: 'cancelled',
                         }
-                        userMembershipPlanDict[item._id] = changedItem;
+                        userMembershipPlanDict[item.id] = changedItem;
                         return changedItem;
                     }
                     return item;
@@ -173,10 +151,35 @@ interface Props {
 
 export function UserMembershipPlansProvider({ children }: Props) {
     const [state, dispatch] = useReducer(reducer, null, initState);
+    const { user } = useAuthContext();
 
     const {
         loadRequest, loadFailure, loadSuccess, loadHandles, loadError, userMembershipPlanList, userMembershipPlanDict, loaded
     } = state;
+
+    const fetchUserMembershipPlans = (() => {
+        const fn = async (resolve: (value: any) => void, reject: (reason?: any) => void) => {
+            try {
+                const res = await axios.post(endpoints.membership.userPlans, { user_id: user?.id });
+                const { statusText, data }: UserMembershipPlanResult = res.data;
+                if (statusText === "OK") {
+                    resolve(data.map(item => item));
+                } else if (res.status === 401) {
+                    reject({
+                        message: 'Unauthorized'
+                    });
+                } else {
+                    setTimeout(() => {
+                        fn(resolve, reject);
+                    }, 500);
+                }
+            } catch (e) {
+                reject(e);
+
+            }
+        }
+        return () => new Promise(fn)
+    })();
 
     const loadUserMembershipPlans = useCallback(() => new Promise((resolve, reject) => {
         dispatch({
@@ -188,7 +191,7 @@ export function UserMembershipPlansProvider({ children }: Props) {
         })
     }), [dispatch]);
 
-    const cancelUserMembershipPlan = useCallback((user_plan_id: string) => axios.post(endpoints.membership.cancelUserPlan(user_plan_id), {})
+    const cancelUserMembershipPlan = useCallback((user_plan_id: number) => axios.post(endpoints.membership.cancelUserPlan(user_plan_id), {})
         .then(({ status, data }) => {
             const { success, result }: CancelUserMembershipPlanResult = data;
             if (success) {
@@ -209,38 +212,29 @@ export function UserMembershipPlansProvider({ children }: Props) {
             return { status, success, result };
         })
         .catch((error) => {
-            // Optionally handle the error here before re-throwing
             console.error('Error cancelling user membership plan:', error);
             throw error;
         }), [dispatch]);
 
     useEffect(() => {
-        let timer: any = null;
         if (loadRequest) {
-            timer = setTimeout(() => {
-                fetchUserMembershipPlans().then((item) => {
-                    dispatch({
-                        type: 'LOAD_SUCCESS',
-                        payload: {
-                            userMembershipPlanList: item
-                        }
-                    })
-                }).catch(e => {
-                    dispatch({
-                        type: 'LOAD_FAILURE',
-                        payload: {
-                            error: e
-                        }
-                    })
-                }).finally(() => {
-                    timer = null;
-                });
-            }, 0);
+            fetchUserMembershipPlans().then((item) => {
+                dispatch({
+                    type: 'LOAD_SUCCESS',
+                    payload: {
+                        userMembershipPlanList: item
+                    }
+                })
+            }).catch(e => {
+                dispatch({
+                    type: 'LOAD_FAILURE',
+                    payload: {
+                        error: e
+                    }
+                })
+            });
         }
-        return () => {
-            clearTimeout(timer);
-        }
-    }, [loadRequest]);
+    }, [loadRequest, fetchUserMembershipPlans]);
 
     useEffect(() => {
         if (loadFailure) {
@@ -308,15 +302,9 @@ export function useUserMembershipPlanList() {
 export function useActiveUserMembershipPlanList(): UserMembershipPlan[] {
     const userMembershipPlanList: UserMembershipPlan[] = useUserMembershipPlanList();
 
-    console.log('test')
     const filter = useCallback((list: UserMembershipPlan[]): UserMembershipPlan[] => list
         .filter(item => item.is_active)
-        .sort((a, b) =>
-            // const a_created_at = new Date(a._creationTime);
-            // const b_created_at = new Date(b._creationTime);
-            // console.log('b_created_at', b_created_at)
-            b._creationTime - a._creationTime
-        ), []);
+        .sort((a, b) => b.created_at - a.created_at), []);
 
     const [list, setList] = useState<UserMembershipPlan[]>(() => filter(userMembershipPlanList));
 
@@ -334,13 +322,13 @@ export function usePossibleSubsriptionUserMembershipPlanList(): UserMembershipPl
             return true;
         }
         if (item.complete === false && item.status === 'open') {
-            const created_at = new Date(item._creationTime);
+            const created_at = new Date(item.created_at);
             if ((Date.now() - created_at.getTime()) < 5000) {
                 return true;
             }
         }
         return false;
-    }).sort((a, b) => b._creationTime - a._creationTime), []);
+    }).sort((a, b) => b.created_at - a.created_at), []);
     const [list, setList] = React.useState(() => filter(userMembershipPlanList));
     React.useEffect(() => {
         setList(filter(userMembershipPlanList));

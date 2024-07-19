@@ -1,17 +1,16 @@
 export type MembershipPlan = {
-    _id: string;
+    id: number;
     type: string;
     billing_period: 'WEEK' | 'MONTH' | 'YEAR';
-    _creationTime: string | number;
+    created_at: string | number;
     price: number;
     token: number;
     storage: number;
-    discount: number;
 };
 
 export type MembershipPlanResult = {
-    success: boolean;
-    result: MembershipPlan[];
+    statusText: string;
+    data: MembershipPlan[];
 };
 
 export type State = {
