@@ -60,8 +60,8 @@ export const endpoints = {
     userPlans: '/api/membership/user_plans/',
     createPaymentIntent: '/api/membership/user_plans/payment_intent/create/',
     confirmPaymentIntent: '/api/membership/user_plans/payment_intent/confirm/',
-    cancelUserPlan: (id: string) => `/api/membership/user_plans/${id}/cancel/`,
-    ugradeUserPlan: (id: string) => `/api/membership/user_plans/${id}/update/`,
+    cancelUserPlan: (id: number) => `/api/membership/user_plans/${id}/cancel/`,
+    ugradeUserPlan: (id: number) => `/api/membership/user_plans/${id}/update/`,
   },
   mail: {
     list: '/api/mail/list',

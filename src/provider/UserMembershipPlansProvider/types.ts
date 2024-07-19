@@ -1,19 +1,18 @@
 export type UserMembershipPlan = {
-    _id: string;
+    id: number;
     user_id: string;
     expires_at: string;
-    plan_id: string;
+    plan_id: number;
     status: string;
     provider_id: string;
-    _creationTime: number;
+    created_at: number;
     is_active: boolean;
     complete: boolean;
 };
 
 export type UserMembershipPlanResult = {
-    status: number;
-    success: boolean;
-    result: UserMembershipPlan[];
+    statusText: string;
+    data: UserMembershipPlan[];
 };
 
 export type CancelUserMembershipPlanResult = {
@@ -39,7 +38,7 @@ export type Action =
     | { type: 'LOAD_FAILURE'; payload: { error: Error } }
     | { type: 'LOAD_SUCCESS'; payload: { userMembershipPlanList: UserMembershipPlan[] } }
     | { type: 'CANCEL_SUBSCRIPTION_SUCCESS'; payload: { userMembershipPlan: UserMembershipPlan } }
-    | { type: 'REMOVE_SUBSCRIPTION_SUCCESS'; payload: { user_plan_id: string } };
+    | { type: 'REMOVE_SUBSCRIPTION_SUCCESS'; payload: { user_plan_id: number } };
 
 export type ContextType = {
     loadRequest: boolean;

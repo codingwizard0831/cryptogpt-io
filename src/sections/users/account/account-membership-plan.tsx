@@ -17,6 +17,7 @@ import usePayStripeCardPayment from 'src/hooks/use-pay-stripe-card-payment';
 import axios, { endpoints } from 'src/utils/axios';
 
 import Stripe from 'src/provider/Stripe';
+import { useAuthContext } from 'src/auth/hooks';
 import { MembershipPlan } from 'src/provider/MembershipPlansProvider/types';
 import { PlanFreeIcon, PlanStarterIcon, PlanPremiumIcon } from 'src/assets/icons';
 import { useLoadMembershipPlans, useMembershipPlansContext } from 'src/provider/MembershipPlansProvider';
@@ -41,10 +42,15 @@ const TABS = [
   {
     value: 'Elite Annual Subscription',
     label: 'Elite Annual Subscription',
+  },
+  {
+    value: 'Enterprise Annual Subscription',
+    label: 'Enterprise Annual Subscription',
   }
 ];
 
 const UIComponents = () => {
+  const { user } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [cardPaymentState, setCardPaymentState] = useState({
     errorMessage: ''
@@ -84,7 +90,7 @@ const UIComponents = () => {
   const loadUserMembershipPlans = useLoadUserMembershipPlans();
   const loadMembershipPlans = useLoadMembershipPlans();
 
-  const [selectedPlan, setSelectedPlan] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState(0);
   const [currentTab, setCurrentTab] = useState('Premium Subscription');
   const { membershipPlanDict } = useMembershipPlansContext();
   const current_user_plan = useLastPossibleSubsriptionUserMembershipPlan();
@@ -116,7 +122,7 @@ const UIComponents = () => {
     setCurrentTab(newValue);
   }, []);
 
-  const handleSelectPlan = useCallback((newValue: string) => {
+  const handleSelectPlan = useCallback((newValue: number) => {
     if (current_user_plan?.plan_id !== newValue && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) {
       setSelectedPlan(newValue);
     } else if (!!current_user_plan?.expires_at || current_user_plan?.status === "past_due") {
@@ -139,66 +145,68 @@ const UIComponents = () => {
       if (!current_user_plan || shouldEnterCardElement) {
         const { data } = await axios.post(endpoints.membership.createPaymentIntent,
           {
-            "plan_id": selectedPlan
+            "plan_id": selectedPlan,
+            "user_id": user?.id,
+            "email": user?.email
           }
         );
 
         const { success, result: paymentIntent } = data;
         // console.log('success', success)
         // console.log('paymentIntent', paymentIntent)
-        if (success) {
-          const payResult = await payStripeCardPayment({
-            client_secret: paymentIntent.client_secret
-          }, {
-            name: ''
-          }
-          );
-          // console.log('payResult', payResult)
-          try {
-            if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
-              await axios.post(endpoints.membership.confirmPaymentIntent,
-                {
-                  "payment_intent_id": payResult.paymentIntent.id
-                }
-              );
-              setLoadFlag(!loadFlag);
-              setSelectedPlan('');
-              setUpgradingState({
-                submitting: false,
-                error: '',
-                success: '',
-              });
-            }
-          } catch (err) {
-            console.error(err)
-            setUpgradingState({
-              submitting: false,
-              error: err,
-              success: '',
-            });
-          }
+        // if (success) {
+        //   const payResult = await payStripeCardPayment({
+        //     client_secret: paymentIntent.client_secret
+        //   }, {
+        //     name: ''
+        //   }
+        //   );
+        //   // console.log('payResult', payResult)
+        //   try {
+        //     if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
+        //       await axios.post(endpoints.membership.confirmPaymentIntent,
+        //         {
+        //           "payment_intent_id": payResult.paymentIntent.id
+        //         }
+        //       );
+        //       setLoadFlag(!loadFlag);
+        //       setSelectedPlan(0);
+        //       setUpgradingState({
+        //         submitting: false,
+        //         error: '',
+        //         success: '',
+        //       });
+        //     }
+        //   } catch (err) {
+        //     console.error(err)
+        //     setUpgradingState({
+        //       submitting: false,
+        //       error: err,
+        //       success: '',
+        //     });
+        //   }
 
-        } else if (paymentIntent && paymentIntent.error) {
-          setCardPaymentState({
-            errorMessage: paymentIntent.error
-          });
-          setUpgradingState({
-            submitting: false,
-            error: paymentIntent.error,
-            success: '',
-          });
-        } else {
-          setCardPaymentState({
-            errorMessage: `The server responded`
-          });
-          setUpgradingState({
-            submitting: false,
-            error: `The server responded`,
-            success: '',
-          });
-        }
+        // } else if (paymentIntent && paymentIntent.error) {
+        //   setCardPaymentState({
+        //     errorMessage: paymentIntent.error
+        //   });
+        //   setUpgradingState({
+        //     submitting: false,
+        //     error: paymentIntent.error,
+        //     success: '',
+        //   });
+        // } else {
+        //   setCardPaymentState({
+        //     errorMessage: `The server responded`
+        //   });
+        //   setUpgradingState({
+        //     submitting: false,
+        //     error: `The server responded`,
+        //     success: '',
+        //   });
+        // }
       } else {
-        const { data } = await axios.post(endpoints.membership.ugradeUserPlan(current_user_plan?._id),
+        const { data } = await axios.post(endpoints.membership.ugradeUserPlan(current_user_plan?.id),
           {
             "plan_id": selectedPlan
           }
@@ -206,7 +214,7 @@ const UIComponents = () => {
         const { success, result } = data;
         if (success) {
           setLoadFlag(!loadFlag);
-          setSelectedPlan('');
+          setSelectedPlan(0);
           setUpgradingState({
             submitting: false,
             error: '',
@@ -241,7 +249,7 @@ const UIComponents = () => {
       success: '',
       submitting: true
     });
-    cancelUserMembershipPlan(current_user_plan?._id)
+    cancelUserMembershipPlan(current_user_plan?.id)
       .then(({ status, success, result }: any) => {
         if (success) {
           setCancelState({
@@ -303,6 +311,7 @@ const UIComponents = () => {
           {plan.type === 'Pro Pass' && <PlanFreeIcon />}
           {plan.type === 'Premium Subscription' && <PlanStarterIcon />}
           {plan.type === 'Elite Annual Subscription' && <PlanPremiumIcon />}
+          {plan.type === 'Enterprise Annual Subscription' && <PlanPremiumIcon />}
         </Box>
 
         <Box
@@ -380,7 +389,7 @@ const UIComponents = () => {
           </Tabs>
         </Stack>
 
-        <Grid container spacing={2} sx={{ p: 3 }}>
+        <Grid container spacing={2} sx={{ p: 3, justifyContent: 'center' }}>
           {plansByTab && renderPlans}
         </Grid>
 
