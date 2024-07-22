@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
               const { error: expiresError } = await supabase
                 .from('user_plans')
                 .update({
-                  expires_at: ""
+                  expires_at: null
                 })
                 .eq('id', userPlans[0].id)
 
