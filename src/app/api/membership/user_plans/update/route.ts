@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       await modifySubscription(userPlan.provider_id, plan.product_id);
       const { error } = await supabase
         .from('user_plans')
-        .update({ plan_id: plan.id })
+        .update({ plan_id: plan.id, expires_at: null })
         .eq('id', user_plan_id)
 
       if (error) {
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       const { error: expiresError } = await supabase
         .from('user_plans')
         .update({
-          expires_at: ""
+          expires_at: null
         })
         .eq('id', user_plan_id)
 

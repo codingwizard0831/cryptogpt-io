@@ -133,9 +133,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, error: error.message }, { status: 400 });
           }
           if (userPlans[0].status !== 'past_due') {
-            console.log('userPlans[0].expires_at', userPlans[0].expires_at)
-            console.log('!result.expires_at', !result.expires_at)
-            console.log('userPlans[0].expires_at && !result.expires_at', userPlans[0].expires_at && !result.expires_at)
             if (userPlans[0].expires_at && !result.expires_at) {
               const { error: expiresError } = await supabase
                 .from('user_plans')
