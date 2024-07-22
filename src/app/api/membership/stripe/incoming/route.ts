@@ -27,8 +27,9 @@ async function getOrCreateUserPlanInvoice({
     .single()
 
   let result;
-
+  console.log('existUserPlanInvoice', existUserPlanInvoice)
   if (existUserPlanInvoice) {
+    console.log('test1')
     const { data: updatedInvoice } = await supabase
       .from('user_plan_invoice')
       .update({ user_plan_id })
@@ -37,6 +38,7 @@ async function getOrCreateUserPlanInvoice({
 
     result = updatedInvoice
   } else {
+    console.log('test2')
     const { data: newInvoice } = await supabase
       .from('user_plan_invoice')
       .insert({
