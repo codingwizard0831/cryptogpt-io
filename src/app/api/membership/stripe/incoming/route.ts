@@ -32,34 +32,44 @@ async function getOrCreateUserPlanInvoice({
   let result;
   console.log('existUserPlanInvoice', existUserPlanInvoice)
   if (existUserPlanInvoice?.length > 0) {
-    const res = await supabase
+    const { error: error1 } = await supabase
       .from('user_plan_invoice')
       .update({ user_plan_id })
-      .eq('id', existUserPlanInvoice[0].id)
-      .single();
+      .eq('id', existUserPlanInvoice[0].id);
 
-    // if (error1) {
-    //   return {};
-    // }
+    if (error1) {
+      return {};
+    }
 
-    // result = updatedInvoice;
-    console.log('updatedInvoice', res)
+    const { data: updatedInvoice } = await supabase
+    .from('user_plan_invoice')
+    .select('*')
+    .eq('id', existUserPlanInvoice[0].id).single();
+
+    console.log('updatedInvoice', updatedInvoice)
+    result = updatedInvoice;
   } else {
-    const res = await supabase
+    const { error: error2 } = await supabase
       .from('user_plan_invoice')
       .insert({
         invoice_id,
         provider_id,
         user_plan_id
-      })
-      .single();
+      });
+    if (error2) {
+      return {};
+    }
 
-    // if (error2) {
-    //   return {};
-    // }
+    const { data: newInvoice } = await supabase
+      .from('user_plan_invoice')
+      .select('*')
+      .eq('invoice_id', invoice_id)
+      .eq('provider_id', provider_id)
+      .eq('user_plan_id', user_plan_id).single();
 
-    // result = newInvoice;
-    console.log('newInvoice', res)
+    console.log('newInvoice', newInvoice)
+
+    result = newInvoice;
   }
   console.log('result', result)
   return result || {};
