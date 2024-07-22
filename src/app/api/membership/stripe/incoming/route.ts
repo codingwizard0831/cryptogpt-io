@@ -1,5 +1,7 @@
+import { format } from 'date-fns';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { supabase } from 'src/lib/supabase';
 import { constructWebhookEvent } from 'src/lib/stripeLib';
 
 export const config = {
@@ -7,6 +9,51 @@ export const config = {
     bodyParser: false,
   },
 };
+
+async function getOrCreateUserPlanInvoice({
+  invoice_id,
+  provider_id,
+  user_plan_id
+}: {
+  invoice_id: string;
+  provider_id: string;
+  user_plan_id: string;
+}) {
+  const { data: existUserPlanInvoice } = await supabase
+    .from('user_plan_invoice')
+    .select('*')
+    .eq('invoice_id', invoice_id)
+    .eq('provider_id', provider_id)
+    .single()
+
+  let result;
+
+  if (existUserPlanInvoice) {
+    const { data: updatedInvoice } = await supabase
+      .from('user_plan_invoice')
+      .update({ user_plan_id })
+      .eq('id', existUserPlanInvoice.id)
+      .single()
+
+    result = updatedInvoice
+  } else {
+    const { data: newInvoice } = await supabase
+      .from('user_plan_invoice')
+      .insert({
+        invoice_id,
+        provider_id,
+        user_plan_id
+      })
+      .single()
+
+    result = newInvoice
+  }
+
+  if (result) {
+    return [result]
+  }
+  return []
+}
 
 export async function POST(req: NextRequest) {
   const sig = req.headers.get('stripe-signature');
@@ -17,14 +64,89 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.text();
-    const result = constructWebhookEvent(body, sig);
+    const result: any = constructWebhookEvent(body, sig);
 
     if (result) {
       console.log('Webhook event processed:', result);
-      // Handle the event (e.g., update database, send notifications, etc.)
-      return NextResponse.json({ received: true, result });
+      const { data: userPlans, error: userPlansError } = await supabase
+        .from('user_plans')
+        .select()
+        .eq('provider_id', result.id);
+
+      if (userPlansError) {
+        return NextResponse.json({ success: false, error: 'Error fetching user plans' }, { status: 500 });
+      }
+
+      if (result.type.includes('invoice')) {
+        const [invoice]: any = await getOrCreateUserPlanInvoice({
+          invoice_id: result.invoice_id,
+          provider_id: result.id,
+          user_plan_id: userPlans[0]?._id
+        });
+        console.log('invoice', invoice)
+        const { status } = result;
+        const paid = result.paid ?? invoice.paid;
+        const amount = result.amount ?? invoice.amount;
+        const currency = result.currency ?? invoice.currency;
+        const { error } = await supabase
+          .from('user_plan_invoice')
+          .update({
+            status,
+            paid,
+            amount,
+            currency
+          })
+          .eq('id', invoice.id)
+
+        if (error) {
+          return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+        }
+      }
+      if (result.type.includes('customer.subscription') || result.type.includes('payment_intent')) {
+        const complete = result.complete ?? userPlans[0].complete;
+        const { status } = result;
+        const { error } = await supabase
+          .from('user_plans')
+          .update({
+            status,
+            complete
+          })
+          .eq('id', userPlans[0].id)
+
+        if (error) {
+          return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+        }
+        if (userPlans[0].status !== 'past_due') {
+          if (userPlans[0].expires_at && !result.expires_at) {
+            const { error: expiresError } = await supabase
+              .from('user_plans')
+              .update({
+                expires_at: ""
+              })
+              .eq('id', userPlans[0].id)
+
+            if (expiresError) {
+              return NextResponse.json({ success: false, error: expiresError.message }, { status: 400 });
+            }
+          } else if (result.expires_at) {
+            const expiresAtDate = new Date(result.expires_at * 1000);
+            const formattedExpiresAt = format(expiresAtDate, 'MM/dd/yyyy, hh:mm:ss a');
+            
+            const { error: expiresError } = await supabase
+              .from('user_plans')
+              .update({
+                expires_at: formattedExpiresAt
+              })
+              .eq('id', userPlans[0].id)
+
+            if (expiresError) {
+              return NextResponse.json({ success: false, error: expiresError.message }, { status: 400 });
+            }
+          }
+        }
+      }
     }
-    return NextResponse.json({ received: true });
+    return NextResponse.json({ success: true });
   } catch (err) {
     console.error('Error processing webhook:', err);
     return NextResponse.json(
