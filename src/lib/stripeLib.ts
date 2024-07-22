@@ -4,6 +4,10 @@ if (!process.env.NEXT_PUBLIC_STRIPE_SECRET_API_KEY) {
   throw new Error('NEXT_PUBLIC_STRIPE_SECRET_API_KEY is not set in the environment variables');
 }
 
+if (!process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET) {
+  throw new Error('NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET is not set in the environment variables');
+}
+
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_API_KEY, {
   apiVersion: '2024-06-20'
 });
@@ -69,6 +73,96 @@ export async function retrievePaymentIntent(paymentIntentId: string): Promise<St
     console.error('Error retrieving PaymentIntent:', error);
     throw error;
   }
+}
+
+export function constructWebhookEvent(payload:string, signature: any) {
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(payload, signature, (process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET || ""));
+  } catch (err) {
+    throw new Error(`Webhook Error: ${err.message}`);
+  }
+
+  const data: any = event.data.object;
+  const eventType = event.type;
+  let result = {};
+
+  if (eventType.includes('payment_intent') && !data.invoice) {
+    if (eventType === 'payment_intent.payment_failed') {
+      result = {
+        type: eventType,
+        id: data.id,
+        status: data.status,
+        complete: false,
+      };
+    } else if (eventType === 'payment_intent.succeeded') {
+      result = {
+        type: eventType,
+        id: data.id,
+        status: data.status,
+        complete: true,
+      };
+    }
+  } else if (eventType === 'invoice.created') {
+    result = {
+      type: eventType,
+      id: data.subscription,
+      invoice_id: data.id,
+      paid: data.paid,
+      status: data.status,
+      amount: data.amount_due / 100,
+      currency: data.currency,
+    };
+  } else if (eventType === 'invoice.paid') {
+    result = {
+      type: eventType,
+      complete: true,
+      id: data.subscription,
+      invoice_id: data.id,
+      paid: data.paid,
+      status: data.status,
+      amount: data.amount_due / 100,
+      currency: data.currency,
+    };
+  } else if (['invoice.payment_action_required', 'invoice.payment_failed', 'invoice.updated'].includes(eventType)) {
+    result = {
+      type: eventType,
+      id: data.subscription,
+      invoice_id: data.id,
+      paid: data.paid,
+      status: data.status,
+      amount: data.amount_due / 100,
+      currency: data.currency,
+    };
+  } else if (eventType === 'customer.subscription.deleted') {
+    result = {
+      type: eventType,
+      id: data.id,
+      status: data.status,
+    };
+  } else if (eventType === 'customer.subscription.created') {
+    result = {
+      complete: ['active', 'trialing'].includes(data.status),
+      type: eventType,
+      id: data.id,
+      status: data.status,
+      trial: !!data.trial_end,
+    };
+  } else if (eventType === 'customer.subscription.updated') {
+    result = {
+      complete: ['active', 'trialing', 'past_due'].includes(data.status),
+      type: eventType,
+      id: data.id,
+      status: data.status,
+      expires_at: data.cancel_at,
+      trial: !!data.trial_end,
+    };
+  } else {
+    console.log(`Unhandled event type ${eventType}`);
+    return null;
+  }
+
+  return result;
 }
 
 export default stripe;
