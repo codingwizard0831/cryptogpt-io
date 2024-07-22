@@ -201,4 +201,24 @@ export async function retrieveSubscription(subscriptionId: string) {
   }
 }
 
+export async function modifySubscription(subscriptionId: string, planProductId: string) {
+  try {
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: false,
+      proration_behavior: 'create_prorations',
+      items: [
+        {
+          id: subscription.items.data[0].id,
+          price: planProductId,
+        },
+      ],
+    });
+    return updatedSubscription;
+  } catch (error) {
+    console.error('Error modifying subscription:', error);
+    throw error;
+  }
+}
+
 export default stripe;
