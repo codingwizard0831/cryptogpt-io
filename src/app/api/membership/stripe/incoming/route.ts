@@ -27,7 +27,7 @@ async function getOrCreateUserPlanInvoice({
     .single()
 
   let result;
-  if (existUserPlanInvoice) {
+  if (existUserPlanInvoice?.id) {
     const { data: updatedInvoice } = await supabase
       .from('user_plan_invoice')
       .update({ user_plan_id })
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     const body = await req.text();
     const result: any = constructWebhookEvent(body, sig);
 
-    if (result) {
+    if (result?.id) {
       console.log('Webhook event processed:', result);
       const { data: userPlans, error: userPlansError } = await supabase
         .from('user_plans')
@@ -75,73 +75,75 @@ export async function POST(req: NextRequest) {
       if (userPlansError) {
         return NextResponse.json({ success: false, error: 'Error fetching user plans' }, { status: 500 });
       }
-
-      if (result.type.includes('invoice')) {
-        console.log('test', result.invoice_id, result.id, userPlans[0]?.id)
-        const invoice: any = await getOrCreateUserPlanInvoice({
-          invoice_id: result.invoice_id,
-          provider_id: result.id,
-          user_plan_id: userPlans[0]?.id
-        });
-        console.log('invoice', invoice)
-        const { status } = result;
-        const paid = result.paid ?? invoice.paid;
-        const amount = result.amount ?? invoice.amount;
-        const currency = result.currency ?? invoice.currency;
-        console.log('test1', paid, amount, amount, currency)
-        const { error } = await supabase
-          .from('user_plan_invoice')
-          .update({
-            status,
-            paid,
-            amount,
-            currency
-          })
-          .eq('id', invoice.id)
-
-        if (error) {
-          return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+      console.log('userPlans', userPlans)
+      if (userPlans.length) {
+        if (result.type.includes('invoice')) {
+          console.log('test', result.invoice_id, result.id, userPlans[0]?.id)
+          const invoice: any = await getOrCreateUserPlanInvoice({
+            invoice_id: result.invoice_id,
+            provider_id: result.id,
+            user_plan_id: userPlans[0]?.id
+          });
+          console.log('invoice', invoice)
+          const { status } = result;
+          const paid = result.paid ?? invoice.paid;
+          const amount = result.amount ?? invoice.amount;
+          const currency = result.currency ?? invoice.currency;
+          console.log('test1', paid, amount, amount, currency)
+          const { error } = await supabase
+            .from('user_plan_invoice')
+            .update({
+              status,
+              paid,
+              amount,
+              currency
+            })
+            .eq('id', invoice.id)
+  
+          if (error) {
+            return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+          }
         }
-      }
-      if (result.type.includes('customer.subscription') || result.type.includes('payment_intent')) {
-        const complete = result.complete ?? userPlans[0].complete;
-        const { status } = result;
-        const { error } = await supabase
-          .from('user_plans')
-          .update({
-            status,
-            complete
-          })
-          .eq('id', userPlans[0].id)
-
-        if (error) {
-          return NextResponse.json({ success: false, error: error.message }, { status: 400 });
-        }
-        if (userPlans[0].status !== 'past_due') {
-          if (userPlans[0].expires_at && !result.expires_at) {
-            const { error: expiresError } = await supabase
-              .from('user_plans')
-              .update({
-                expires_at: ""
-              })
-              .eq('id', userPlans[0].id)
-
-            if (expiresError) {
-              return NextResponse.json({ success: false, error: expiresError.message }, { status: 400 });
-            }
-          } else if (result.expires_at) {
-            const expiresAtDate = new Date(result.expires_at * 1000);
-            const formattedExpiresAt = format(expiresAtDate, 'MM/dd/yyyy, hh:mm:ss a');
-            
-            const { error: expiresError } = await supabase
-              .from('user_plans')
-              .update({
-                expires_at: formattedExpiresAt
-              })
-              .eq('id', userPlans[0].id)
-
-            if (expiresError) {
-              return NextResponse.json({ success: false, error: expiresError.message }, { status: 400 });
+        if (result.type.includes('customer.subscription') || result.type.includes('payment_intent')) {
+          const complete = result.complete ?? userPlans[0].complete;
+          const { status } = result;
+          const { error } = await supabase
+            .from('user_plans')
+            .update({
+              status,
+              complete
+            })
+            .eq('id', userPlans[0].id)
+  
+          if (error) {
+            return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+          }
+          if (userPlans[0].status !== 'past_due') {
+            if (userPlans[0].expires_at && !result.expires_at) {
+              const { error: expiresError } = await supabase
+                .from('user_plans')
+                .update({
+                  expires_at: ""
+                })
+                .eq('id', userPlans[0].id)
+  
+              if (expiresError) {
+                return NextResponse.json({ success: false, error: expiresError.message }, { status: 400 });
+              }
+            } else if (result.expires_at) {
+              const expiresAtDate = new Date(result.expires_at * 1000);
+              const formattedExpiresAt = format(expiresAtDate, 'MM/dd/yyyy, hh:mm:ss a');
+              
+              const { error: expiresError } = await supabase
+                .from('user_plans')
+                .update({
+                  expires_at: formattedExpiresAt
+                })
+                .eq('id', userPlans[0].id)
+  
+              if (expiresError) {
+                return NextResponse.json({ success: false, error: expiresError.message }, { status: 400 });
+              }
             }
           }
         }
