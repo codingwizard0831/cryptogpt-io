@@ -17,7 +17,7 @@ async function getOrCreateUserPlanInvoice({
 }: {
   invoice_id: string;
   provider_id: string;
-  user_plan_id: string;
+  user_plan_id: number;
 }) {
   const { data: existUserPlanInvoice } = await supabase
     .from('user_plan_invoice')
@@ -77,6 +77,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (result.type.includes('invoice')) {
+        console.log('test', result.invoice_id, result.id, userPlans[0]?.id)
         const invoice: any = await getOrCreateUserPlanInvoice({
           invoice_id: result.invoice_id,
           provider_id: result.id,
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
         const paid = result.paid ?? invoice.paid;
         const amount = result.amount ?? invoice.amount;
         const currency = result.currency ?? invoice.currency;
+        console.log('test1', paid, amount, amount, currency)
         const { error } = await supabase
           .from('user_plan_invoice')
           .update({
