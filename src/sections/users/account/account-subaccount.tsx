@@ -2,7 +2,8 @@
 
 
 
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 import { Box, alpha, Stack, Button, Dialog, Typography, ButtonBase } from '@mui/material';
 
@@ -26,6 +27,31 @@ export default function AccountSubaccounts() {
     ]);
     const [exchangeSelectedAccount, setExchangeSelectedAccount] = useState('');
     const [platformSelectedAccount, setPlatformSelectedAccount] = useState('');
+
+    useEffect(() => {
+        // axios.get("https://api.binance.com/api/v3/uiKlines?symbol=BNBUSDT&interval=3m", {
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        // }).then((response) => {
+        //     console.log(response.data);
+        // }).catch((error) => {
+        //     console.log(error);
+        // });
+
+        const timestamp = Date.now();
+        const signature = "1e4b14ed1cfff5b9630793865e786b8e00f3084f46e2afaa484f7e5faa1c0f9c";
+        axios.get(`https://api.binance.com/api/v3/allOrders?symbol=BNBUSDT&timestamp=${timestamp}&signature=${signature}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-MBX-APIKEY': '9HtTAEM6TFHUCkgbkviT5WZwCxlJtgs94NZyYH1lRdABmSN1I0SogiQz06MeQ0RF',
+            },
+        }).then((response) => {
+            console.log(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    })
 
     return (
         <Box>
