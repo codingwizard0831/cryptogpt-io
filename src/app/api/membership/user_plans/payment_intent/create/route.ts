@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { subHours, compareAsc } from 'date-fns';
 
 import { supabase } from 'src/lib/supabase';
-import { createCustomer, createSubscription } from 'src/lib/stripeLib';
+import { createCustomer, createSubscription, cancelSubscription, retrieveSubscription } from 'src/lib/stripeLib';
 
 export async function POST(req: Request) {
   try {
@@ -68,7 +69,7 @@ export async function POST(req: Request) {
     if (!userPlans.length) {
       const subscription: any = await createSubscription(customer_id, plan.product_id, email);
       const { subscription_id, status, is_trial, client_secret } = subscription;
-      const { data: userPlanData, error } = await supabase
+      const { error } = await supabase
         .from('user_plans')
         .insert([
           {
@@ -78,16 +79,48 @@ export async function POST(req: Request) {
             status
           }
         ])
-        .select()
-        .single()
 
       if (error) {
         console.error('Error creating user plan:', error)
         return { success: false, error: 'Failed to create new user plan.' }
       }
-      // console.log('userPlanData', userPlanData)
       isTrial = is_trial;
       clientSecret = client_secret;
+    } else {
+      const creationTime = new Date(userPlans[0].created_at);
+      const currentTimeMinusTwoHours = subHours(new Date(), 22);
+
+      const comparisonResult = compareAsc(creationTime, currentTimeMinusTwoHours) < 0;
+
+      if (comparisonResult) {
+        await cancelSubscription(userPlans[0].provider_id);
+        await supabase
+          .from('user_plans')
+          .delete()
+          .eq('id', userPlans[0].id);
+        const subscription: any = await createSubscription(customer_id, plan.product_id, email);
+        const { subscription_id, status, is_trial, client_secret } = subscription;
+        const { error } = await supabase
+          .from('user_plans')
+          .insert([
+            {
+              plan_id,
+              user_id,
+              provider_id: subscription_id,
+              status
+            }
+          ])
+
+        if (error) {
+          console.error('Error creating user plan:', error)
+          return { success: false, error: 'Failed to create new user plan.' }
+        }
+        isTrial = is_trial;
+        clientSecret = client_secret;
+      } else {
+        const subscription: any = await retrieveSubscription(userPlans[0].provider_id);
+        clientSecret = subscription.latest_invoice.payment_intent.client_secret;
+      }
     }
     // console.log('userPlans', !userPlans.length)
     return NextResponse.json({ success: true, data: { 'client_secret': clientSecret, 'is_trial': isTrial } });

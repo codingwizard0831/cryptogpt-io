@@ -178,4 +178,27 @@ export async function updateSubscriptionEndPeriod(subscriptionId: string, cancel
   }
 }
 
+export async function cancelSubscription(subscriptionId: string) {
+  try {
+    const subscription = await stripe.subscriptions.cancel(subscriptionId);
+
+    return subscription;
+  } catch (error) {
+    console.error('Error cancelling subscription:', error);
+    throw error;
+  }
+}
+
+export async function retrieveSubscription(subscriptionId: string) {
+  try {
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['latest_invoice.payment_intent'],
+    });
+    return subscription;
+  } catch (error) {
+    console.error('Error retrieving subscription:', error);
+    throw error;
+  }
+}
+
 export default stripe;
