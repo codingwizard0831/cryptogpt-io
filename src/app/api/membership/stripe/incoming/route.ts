@@ -19,39 +19,48 @@ async function getOrCreateUserPlanInvoice({
   provider_id: string;
   user_plan_id: number;
 }) {
-  const { data: existUserPlanInvoice } = await supabase
+  const { data: existUserPlanInvoice, error } = await supabase
     .from('user_plan_invoice')
     .select('*')
     .eq('invoice_id', invoice_id)
-    .eq('provider_id', provider_id)
-    .single()
+    .eq('provider_id', provider_id);
+
+  if (error) {
+    return {};
+  }
 
   let result;
-  if (existUserPlanInvoice?.id) {
-    const { data: updatedInvoice } = await supabase
+  console.log('existUserPlanInvoice', existUserPlanInvoice)
+  if (existUserPlanInvoice?.length > 0) {
+    const { data: updatedInvoice, error: error1 } = await supabase
       .from('user_plan_invoice')
       .update({ user_plan_id })
-      .eq('id', existUserPlanInvoice.id)
-      .single()
+      .eq('id', existUserPlanInvoice[0].id)
+      .single();
 
-    result = updatedInvoice
+    if (error1) {
+      return {};
+    }
+
+    result = updatedInvoice;
   } else {
-    const { data: newInvoice } = await supabase
+    const { data: newInvoice, error: error2 } = await supabase
       .from('user_plan_invoice')
       .insert({
         invoice_id,
         provider_id,
         user_plan_id
       })
-      .single()
+      .single();
 
-    result = newInvoice
-  }
+    if (error2) {
+      return {};
+    }
 
-  if (result) {
-    return result
+    result = newInvoice;
   }
-  return {}
+  console.log('result', result)
+  return result || {};
 }
 
 export async function POST(req: NextRequest) {
@@ -99,7 +108,7 @@ export async function POST(req: NextRequest) {
               currency
             })
             .eq('id', invoice.id)
-  
+
           if (error) {
             return NextResponse.json({ success: false, error: error.message }, { status: 400 });
           }
@@ -114,7 +123,7 @@ export async function POST(req: NextRequest) {
               complete
             })
             .eq('id', userPlans[0].id)
-  
+
           if (error) {
             return NextResponse.json({ success: false, error: error.message }, { status: 400 });
           }
@@ -126,21 +135,21 @@ export async function POST(req: NextRequest) {
                   expires_at: ""
                 })
                 .eq('id', userPlans[0].id)
-  
+
               if (expiresError) {
                 return NextResponse.json({ success: false, error: expiresError.message }, { status: 400 });
               }
             } else if (result.expires_at) {
               const expiresAtDate = new Date(result.expires_at * 1000);
               const formattedExpiresAt = format(expiresAtDate, 'MM/dd/yyyy, hh:mm:ss a');
-              
+
               const { error: expiresError } = await supabase
                 .from('user_plans')
                 .update({
                   expires_at: formattedExpiresAt
                 })
                 .eq('id', userPlans[0].id)
-  
+
               if (expiresError) {
                 return NextResponse.json({ success: false, error: expiresError.message }, { status: 400 });
               }
