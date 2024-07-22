@@ -1,32 +1,35 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 
-import { buffer } from 'micro';
-
-import { supabase } from 'src/lib/supabase';
 import { constructWebhookEvent } from 'src/lib/stripeLib';
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-  const buf: any = await buffer(req);
-  const sig = req.headers['stripe-signature'] as string | undefined;
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export async function POST(req: NextRequest) {
+  const sig = req.headers.get('stripe-signature');
 
   if (!sig) {
-    return res.status(400).send('No Stripe signature found');
+    return NextResponse.json({ error: 'No Stripe signature found' }, { status: 400 });
   }
 
   try {
-    const result: any = constructWebhookEvent(buf, sig);
+    const body = await req.text();
+    const result = constructWebhookEvent(body, sig);
+
     if (result) {
       console.log('Webhook event processed:', result);
       // Handle the event (e.g., update database, send notifications, etc.)
-      res.status(200).json({ received: true, result });
-    } else {
-      res.status(200).json({ received: true });
+      return NextResponse.json({ received: true, result });
     }
+    return NextResponse.json({ received: true });
   } catch (err) {
-    if (err instanceof Error) {
-      res.status(400).send(err.message);
-    } else {
-      res.status(400).send('An unknown error occurred');
-    }
+    console.error('Error processing webhook:', err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'An unknown error occurred' },
+      { status: 400 }
+    );
   }
 }
