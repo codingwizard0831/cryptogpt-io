@@ -31,6 +31,7 @@ async function getOrCreateUserPlanInvoice({
 
   let result;
   console.log('existUserPlanInvoice', existUserPlanInvoice)
+  console.log('length', existUserPlanInvoice?.length)
   if (existUserPlanInvoice?.length > 0) {
     const { error: error1 } = await supabase
       .from('user_plan_invoice')
@@ -44,10 +45,10 @@ async function getOrCreateUserPlanInvoice({
     const { data: updatedInvoice } = await supabase
     .from('user_plan_invoice')
     .select('*')
-    .eq('id', existUserPlanInvoice[0].id).single();
+    .eq('id', existUserPlanInvoice[0].id);
 
     console.log('updatedInvoice', updatedInvoice)
-    result = updatedInvoice;
+    result = updatedInvoice?.length? updatedInvoice[0]: {};
   } else {
     const { error: error2 } = await supabase
       .from('user_plan_invoice')
@@ -65,11 +66,11 @@ async function getOrCreateUserPlanInvoice({
       .select('*')
       .eq('invoice_id', invoice_id)
       .eq('provider_id', provider_id)
-      .eq('user_plan_id', user_plan_id).single();
+      .eq('user_plan_id', user_plan_id);
 
     console.log('newInvoice', newInvoice)
 
-    result = newInvoice;
+    result = newInvoice?.length? newInvoice[0]: {};
   }
   console.log('result', result)
   return result || {};
