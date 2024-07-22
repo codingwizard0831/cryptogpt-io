@@ -44,4 +44,6 @@ export const PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL
 export const BINANCE_API = {
   clientId: process.env.NEXT_PUBLIC_BINANCE_CLIENT_ID,
   clientSecret: process.env.NEXT_PUBLIC_BINANCE_SECRET_KEY,
+  apiKey: process.env.NEXT_PUBLIC_BINANCE_API_KEY,
+  secretKey: process.env.NEXT_PUBLIC_BINANCE_SECRET_KEY,
 }

@@ -9,6 +9,8 @@ import { Box, alpha, Stack, Button, Dialog, Typography, ButtonBase } from '@mui/
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { BINANCE_API } from 'src/config-global';
+
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 
@@ -40,11 +42,11 @@ export default function AccountSubaccounts() {
         // });
 
         const timestamp = Date.now();
-        const signature = "1e4b14ed1cfff5b9630793865e786b8e00f3084f46e2afaa484f7e5faa1c0f9c";
+        const signature = BINANCE_API.secretKey;
         axios.get(`https://api.binance.com/api/v3/allOrders?symbol=BNBUSDT&timestamp=${timestamp}&signature=${signature}`, {
             headers: {
                 'Content-Type': 'application/json',
-                'X-MBX-APIKEY': '9HtTAEM6TFHUCkgbkviT5WZwCxlJtgs94NZyYH1lRdABmSN1I0SogiQz06MeQ0RF',
+                'X-MBX-APIKEY': BINANCE_API.apiKey,
             },
         }).then((response) => {
             console.log(response.data);
