@@ -165,4 +165,17 @@ export function constructWebhookEvent(payload:string, signature: any) {
   return result;
 }
 
+export async function updateSubscriptionEndPeriod(subscriptionId: string, cancelAtPeriodEnd: boolean) {
+  try {
+    const subscription = await stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: cancelAtPeriodEnd,
+    });
+
+    return subscription;
+  } catch (error) {
+    console.error('Error updating subscription:', error);
+    throw error;
+  }
+}
+
 export default stripe;
