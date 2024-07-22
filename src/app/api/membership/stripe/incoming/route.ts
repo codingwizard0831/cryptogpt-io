@@ -35,8 +35,9 @@ async function getOrCreateUserPlanInvoice({
     const { data: updatedInvoice, error: error1 } = await supabase
       .from('user_plan_invoice')
       .update({ user_plan_id })
-      .eq('id', existUserPlanInvoice[0].id)
-      .single();
+      .eq('id', existUserPlanInvoice[0].id);
+
+    console.log('updatedInvoice', updatedInvoice)
 
     if (error1) {
       return {};
@@ -50,9 +51,9 @@ async function getOrCreateUserPlanInvoice({
         invoice_id,
         provider_id,
         user_plan_id
-      })
-      .single();
+      });
 
+    console.log('newInvoice', newInvoice)
     if (error2) {
       return {};
     }
