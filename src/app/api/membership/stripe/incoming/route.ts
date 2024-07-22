@@ -52,9 +52,9 @@ async function getOrCreateUserPlanInvoice({
   }
 
   if (result) {
-    return [result]
+    return result
   }
-  return []
+  return {}
 }
 
 export async function POST(req: NextRequest) {
@@ -80,10 +80,10 @@ export async function POST(req: NextRequest) {
       }
 
       if (result.type.includes('invoice')) {
-        const [invoice]: any = await getOrCreateUserPlanInvoice({
+        const invoice: any = await getOrCreateUserPlanInvoice({
           invoice_id: result.invoice_id,
           provider_id: result.id,
-          user_plan_id: userPlans[0]?._id
+          user_plan_id: userPlans[0]?.id
         });
         console.log('invoice', invoice)
         const { status } = result;
