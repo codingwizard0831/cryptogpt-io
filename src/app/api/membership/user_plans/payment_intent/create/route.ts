@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Missing user_id or plan_id' }, { status: 400 });
     }
 
-    console.log('user_id', user_id);
+    // console.log('user_id', user_id);
 
     const { data: plan, error: planError } = await supabase
       .from('plans')
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Invalid plan' }, { status: 400 });
     }
 
-    console.log('plan', plan);
+    // console.log('plan', plan);
 
     const { data: userPlans, error: userPlansError } = await supabase
       .from('user_plans')
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     }
 
     let customer_id: string = "";
-    console.log('stripeCustomer', stripeCustomer.length)
+    // console.log('stripeCustomer', stripeCustomer.length)
     if (!stripeCustomer.length) {
       const customer = await createCustomer(email);
       customer_id = customer.id;
@@ -85,11 +85,11 @@ export async function POST(req: Request) {
         console.error('Error creating user plan:', error)
         return { success: false, error: 'Failed to create new user plan.' }
       }
-      console.log('userPlanData', userPlanData)
+      // console.log('userPlanData', userPlanData)
       isTrial = is_trial;
       clientSecret = client_secret;
     }
-    console.log('userPlans', !userPlans.length)
+    // console.log('userPlans', !userPlans.length)
     return NextResponse.json({ success: true, data: { 'client_secret': clientSecret, 'is_trial': isTrial } });
   } catch (error) {
     console.error('Unexpected error:', error);
