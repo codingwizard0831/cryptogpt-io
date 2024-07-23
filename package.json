@@ -69,12 +69,8 @@
     "axios": "^1.6.2",
     "clsx": "^2.1.0",
     "convex": "^1.12.0",
-<<<<<<< Updated upstream
-    "date-fns": "^3.6.0",
-=======
     "crypto": "^1.0.1",
     "date-fns": "^2.30.0",
->>>>>>> Stashed changes
     "encoding": "^0.1.13",
     "ethers": "^6.13.0",
     "firebase": "^10.7.1",
