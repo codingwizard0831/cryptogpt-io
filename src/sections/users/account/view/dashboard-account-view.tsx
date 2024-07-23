@@ -55,8 +55,8 @@ const TABS = [
         icon: <Iconify icon="ic:round-vpn-key" width={24} />,
     },
     {
-        value: 'subaccounts',
-        label: 'Subaccounts',
+        value: 'network-api',
+        label: 'Network APIs',
         icon: <Iconify icon="material-symbols:account-child-invert" width={24} />,
     },
 ];
@@ -119,7 +119,7 @@ export default function DashboardProfileView() {
 
                 {currentTab === 'security' && <AccountChangePassword />}
 
-                {currentTab === 'subaccounts' && <AccountSubaccounts />}
+                {currentTab === 'network-api' && <AccountSubaccounts />}
             </Card>
         </Box>
     );

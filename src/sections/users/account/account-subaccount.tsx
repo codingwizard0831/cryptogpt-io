@@ -1,13 +1,11 @@
-
-
-
-
-import axios from 'axios';
+import crypto from "crypto";
 import { useState, useEffect } from 'react';
 
 import { Box, alpha, Stack, Button, Dialog, Typography, ButtonBase } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+
+import axios from 'src/utils/axios';
 
 import { BINANCE_API } from 'src/config-global';
 
@@ -41,13 +39,38 @@ export default function AccountSubaccounts() {
         //     console.log(error);
         // });
 
+        // const timestamp = Date.now();
+        // const signature = BINANCE_API.secretKey;
+        // console.log("apiKey", BINANCE_API.apiKey);
+        // console.log("signature", signature);
+        // axios.get(endpoints.binance, {
+        //     url: `https://api.binance.com/api/v3/allOrders?symbol=BNBUSDT&timestamp=${timestamp}&signature=${signature}`,
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'X-MBX-APIKEY': BINANCE_API.apiKey,
+        //     }
+        // }).then((response) => {
+        //     console.log(response.data);
+        // }).catch((error) => {
+        //     console.log(error);
+        // });
+
         const timestamp = Date.now();
-        const signature = BINANCE_API.secretKey;
-        axios.get(`https://api.binance.com/api/v3/allOrders?symbol=BNBUSDT&timestamp=${timestamp}&signature=${signature}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-MBX-APIKEY': BINANCE_API.apiKey,
-            },
+        const queryString = `symbol=BNBUSDT&timestamp=${timestamp}`;
+        const signature = crypto
+            .createHmac('sha256', BINANCE_API.secretKey as string)
+            .update(queryString)
+            .digest('hex');
+
+        console.log("signature", signature);
+
+        const url = `https://testnet.binance.vision/api/v3/allOrders?${queryString}&signature=${signature}`;
+
+        axios.get('/api/binance', {
+            params: {
+                url,
+                apiKey: BINANCE_API.apiKey
+            }
         }).then((response) => {
             console.log(response.data);
         }).catch((error) => {
