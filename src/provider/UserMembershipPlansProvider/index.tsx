@@ -191,7 +191,7 @@ export function UserMembershipPlansProvider({ children }: Props) {
         })
     }), [dispatch]);
 
-    const cancelUserMembershipPlan = useCallback((user_plan_id: number) => axios.post(endpoints.membership.cancelUserPlan(user_plan_id), {})
+    const cancelUserMembershipPlan = useCallback((user_plan_id: number) => axios.post(endpoints.membership.cancelUserPlan, { user_plan_id })
         .then(({ status, data }) => {
             const { success, result }: CancelUserMembershipPlanResult = data;
             if (success) {

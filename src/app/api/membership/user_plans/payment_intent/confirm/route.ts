@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     }
 
     const payment_intent = await retrievePaymentIntent(payment_intent_id);
-    console.log('payment_intent', payment_intent)
+    // console.log('payment_intent', payment_intent)
     const { data: userPlans, error: userPlansError } = await supabase
       .from('user_plans')
       .select()
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Error fetching user plan' }, { status: 500 });
     }
 
-    console.log('userPlans', userPlans)
+    // console.log('userPlans', userPlans)
     const { data: stripeCustomer, error: stripeCustomerError } = await supabase
       .from('stripe_customer')
       .select()

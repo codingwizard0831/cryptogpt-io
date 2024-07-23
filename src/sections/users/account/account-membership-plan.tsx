@@ -207,9 +207,10 @@ const UIComponents = () => {
           });
         }
       } else {
-        const { data } = await axios.post(endpoints.membership.ugradeUserPlan(current_user_plan?.id),
+        const { data } = await axios.post(endpoints.membership.ugradeUserPlan,
           {
-            "plan_id": selectedPlan
+            "plan_id": selectedPlan,
+            "user_plan_id": current_user_plan?.id
           }
         );
         const { success, result } = data;
