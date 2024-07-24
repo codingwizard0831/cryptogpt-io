@@ -184,7 +184,7 @@ export default function AccountSubaccounts() {
                                     }),
                                 }}>{_subaccount.link}</Typography>
 
-                                <Iconify icon="ep:select" className="remove-btn" sx={{
+                                <Iconify icon="ph:trash-bold" className="remove-btn" sx={{
                                     position: 'absolute',
                                     right: '6px',
                                     top: '6px',
