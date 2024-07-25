@@ -6,6 +6,10 @@ export type MembershipPlan = {
     price: number;
     token: number;
     storage: number;
+    discount: number;
+    description: string;
+    features: any;
+    goldie: any;
 };
 
 export type MembershipPlanResult = {

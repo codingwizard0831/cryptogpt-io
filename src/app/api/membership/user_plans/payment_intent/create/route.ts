@@ -33,7 +33,8 @@ export async function POST(req: Request) {
       .eq('plan_id', plan_id)
       .eq('complete', false)
       .order('id', { ascending: false });
-
+    console.log(userPlans)
+    console.log(userPlansError)
     if (userPlansError) {
       return NextResponse.json({ success: false, error: 'Error fetching user plans' }, { status: 500 });
     }
