@@ -112,8 +112,6 @@ export default function AccountGeneral() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backdropFilter: 'none',
-          backgroundColor: 'transparent',
         }}>
           <UploadAvatar
             maxSize={3145728}
@@ -227,8 +225,6 @@ export default function AccountGeneral() {
       <Grid xs={12} md={8}>
         <Card sx={{
           p: 3,
-          backdropFilter: 'none',
-          backgroundColor: 'transparent',
         }}>
           <Box
             rowGap={3}

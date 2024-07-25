@@ -66,7 +66,7 @@ export const signMessageWithMetamask = async (nonce: string) => {
       const message = {
         address: await signer.getAddress(),
         nonce,
-        expiration: Math.floor(Date.now() / 1000) + 3600, // Expires in 1 hour
+        expiration: Math.floor(Date.now() / 1000) + 360000, // Expires in 1 hour
       };
       const messageString = ethers.hashMessage(JSON.stringify(message));
       console.log('messageString:', messageString);

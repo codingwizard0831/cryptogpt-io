@@ -184,7 +184,7 @@ export default function AccountSubaccounts() {
                                     }),
                                 }}>{_subaccount.link}</Typography>
 
-                                <Iconify icon="ep:select" className="remove-btn" sx={{
+                                <Iconify icon="ph:trash-bold" className="remove-btn" sx={{
                                     position: 'absolute',
                                     right: '6px',
                                     top: '6px',
@@ -288,7 +288,7 @@ export default function AccountSubaccounts() {
                             <Button color="primary" size="small">Edit</Button>
                         </Stack>
                         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5}>
-                            <Typography variant='body2' sx={{ flex: 1 }}>SECREAT KEY:</Typography>
+                            <Typography variant='body2' sx={{ flex: 1 }}>SECRET KEY:</Typography>
                             <Typography variant='body2'>**********</Typography>
                             <Button color="primary" size="small">Edit</Button>
                         </Stack>
