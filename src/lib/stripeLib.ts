@@ -31,7 +31,7 @@ export async function createSubscription(customerId: string, productId: string, 
   const expand: string[] = ['latest_invoice.payment_intent'];
 
   try {
-    const subscription = await stripe.subscriptions.create({
+    const subscriptionParams: Stripe.SubscriptionCreateParams = {
       customer: customerId,
       items: [
         {
@@ -42,7 +42,10 @@ export async function createSubscription(customerId: string, productId: string, 
       payment_behavior: paymentBehavior,
       payment_settings: paymentSettings,
       metadata: { email },
-    });
+      coupon: "lNWcivga"
+    };
+
+    const subscription = await stripe.subscriptions.create(subscriptionParams);
 
     let clientSecret: any;
     if (subscription.pending_setup_intent) {

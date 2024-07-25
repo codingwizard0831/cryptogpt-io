@@ -57,7 +57,11 @@ const fetchMembershipPlans = (() => {
                         created_at,
                         price,
                         storage,
-                        token
+                        token,
+                        discount,
+                        description,
+                        features,
+                        goldie
                     } = item;
 
                     const totalPrice = price;
@@ -73,6 +77,10 @@ const fetchMembershipPlans = (() => {
                         storage,
                         token,
                         isDisabled,
+                        discount,
+                        description,
+                        features,
+                        goldie
                     }
                 }));
             } else {
@@ -94,11 +102,7 @@ const fetchMembershipPlans = (() => {
 
 const initState = () => ({
     membershipPlanList: [],
-    membershipPlanDict: {
-        "Pro Pass": [],
-        "Premium Subscription": [],
-        "Elite Annual Subscription": [],
-    },
+    membershipPlanDict: {},
     loadRequest: false,
     loadFailure: false,
     loadSuccess: false,
