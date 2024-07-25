@@ -440,7 +440,7 @@ const UIComponents = () => {
           </Stack>
         )}
 
-        {(!currentPlanTab[plan.id] || currentPlanTab[plan.id] === "AI Functions") && (
+        {currentPlanTab[plan.id] === "AI Functions" && (
           <Stack direction="column" alignItems="left" sx={{ typography: 'p' }}>
             {plan.goldie?.map((item: any, index: number) => (
               <Stack key={index} sx={{ marginTop: "10px" }} direction="row" alignItems="center">
