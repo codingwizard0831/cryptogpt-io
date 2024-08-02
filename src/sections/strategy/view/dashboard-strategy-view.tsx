@@ -1,22 +1,25 @@
 'use client';
 
-import { Canvas } from '@react-three/fiber';
 import { Leva, button, useControls } from 'leva';
 import { degToRad } from 'three/src/math/MathUtils';
+import { Canvas, useThree } from '@react-three/fiber';
 import { useRef, Suspense, useEffect, FunctionComponent } from 'react';
 import { Gltf, Html, Float, Loader, useGLTF, Environment, CameraControls } from '@react-three/drei';
 
-import { Card, Box as MuiBox } from '@mui/material';
+import { Box, Card, Button } from '@mui/material';
 // import { BoardSettings } from "./BoardSettings";
 // import { MessagesList } from "./MessagesList";
 // import { Teacher } from "./Teacher";
 // import { TypingBox } from "./TypingBox";
 
+import { AmbientLight, DirectionalLight } from 'three';
+
+import CanvasLayout from 'src/layouts/common/canvas-layout';
 import { useAITeacher } from 'src/store/strategy/useAITeacher';
 
+import StrategyCoinModel from '../dashboard-strategy-coin';
 import DashboardStrategyTeacher from '../dashboard-strategy-teacher';
-import DashboardStrategyMessagesList from '../dashboard-strategy-messages-list';
-import DashboardStrategyBoardSettings from '../dashboard-strategy-board-settings';
+import DashboardStrategyContent from '../dashboard-strategy-content';
 
 interface ItemPlacement {
   [key: string]: {
@@ -33,6 +36,16 @@ interface ItemPlacement {
     board: {
       position: [number, number, number];
     };
+    coin1: {
+      position: [number, number, number];
+      scale?: number;
+      rotation?: [number, number, number];
+    },
+    coin2: {
+      position: [number, number, number];
+      scale?: number;
+      rotation?: [number, number, number];
+    },
   };
 }
 
@@ -47,6 +60,16 @@ const itemPlacement: ItemPlacement = {
     board: {
       position: [0.45, 0.382, -6],
     },
+    coin1: {
+      position: [-0.2, 0.25, -4],
+      scale: 0.007,
+      rotation: [degToRad(90), degToRad(0), degToRad(-30)],
+    },
+    coin2: {
+      position: [0.8, 0.25, -4],
+      scale: 0.007,
+      rotation: [degToRad(90), degToRad(0), degToRad(30)],
+    },
   },
   alternative: {
     classroom: {
@@ -56,6 +79,14 @@ const itemPlacement: ItemPlacement = {
     },
     teacher: { position: [-1, -1.7, -3] },
     board: { position: [1.4, 0.84, -8] },
+    coin1: {
+      position: [0.45, 0.382, -6],
+      scale: 0.5,
+      rotation: [degToRad(70), degToRad(0), degToRad(-20)],
+    },
+    coin2: {
+      position: [0.45, 0.3082, -6],
+    },
   },
 };
 
@@ -64,7 +95,7 @@ export default function DashboardStrategyView() {
   const classroom = useAITeacher((state) => state.classroom);
 
   return (
-    <MuiBox
+    <Box
       sx={{
         minHeight: '100%',
         display: 'flex',
@@ -83,14 +114,17 @@ export default function DashboardStrategyView() {
           borderRadius: 1,
           boxShadow: 2,
           height: '100%',
+          // display: 'none',
         }}
       >
         <div className="z-10 md:justify-center fixed bottom-4 left-4 right-4 flex gap-3 flex-wrap justify-stretch">
           {/* <TypingBox /> */}
+          <Button>TEST</Button>
         </div>
         <Leva hidden />
         <Loader />
         <Canvas
+          shadows
           camera={{
             position: [0, 0, 0.0001],
           }}
@@ -99,28 +133,50 @@ export default function DashboardStrategyView() {
           <Suspense>
             <Float speed={0.5} floatIntensity={0.2} rotationIntensity={0.1}>
               <Html transform {...itemPlacement[classroom].board} distanceFactor={1}>
-                <DashboardStrategyBoardSettings />
-                <DashboardStrategyMessagesList />
+                <CanvasLayout>
+                  <DashboardStrategyContent />
+                </CanvasLayout>
               </Html>
-              <Environment preset="sunset" />
-              <ambientLight color="pink" />
+
+              <Environment preset="sunset" background blur={1} />
 
               <Gltf
                 src={`/models/classroom_${classroom}.glb`}
                 {...itemPlacement[classroom].classroom}
               />
+
               <DashboardStrategyTeacher
                 teacher={teacher}
                 key={teacher}
                 {...itemPlacement[classroom].teacher}
                 scale={1.5}
                 rotation-y={degToRad(20)}
+                castShadow
+                receiveShadow
               />
+
+              <StrategyCoinModel
+                key="Bitcon-coin"
+                name="Bitcon"
+                {...itemPlacement[classroom].coin1}
+                castShadow
+                receiveShadow
+              />
+
+              <StrategyCoinModel
+                key="Tether-coin"
+                name="Tether"
+                {...itemPlacement[classroom].coin2}
+                castShadow
+                receiveShadow
+              />
+
+              <LightsManager />
             </Float>
           </Suspense>
         </Canvas>
       </Card>
-    </MuiBox>
+    </Box>
   );
 }
 
@@ -189,6 +245,40 @@ const CameraManager: FunctionComponent = () => {
     />
   );
 };
+
+function LightsManager() {
+  const { scene } = useThree();
+
+  useEffect(() => {
+    const ambientLight = new AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    const directionalLight = new DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(0, 2, 4);
+    // directionalLight.castShadow = true;
+    // directionalLight.shadow.mapSize.width = 10240;
+    // directionalLight.shadow.mapSize.height = 10240;
+    // directionalLight.shadow.camera.far = 500;
+    // directionalLight.shadow.camera.left = -10;
+    // directionalLight.shadow.camera.right = 10;
+    // directionalLight.shadow.camera.top = 10;
+    // directionalLight.shadow.camera.bottom = -10;
+    scene.add(directionalLight);
+
+    // const pointLight = new PointLight(0xffffff, 1, 12);
+    // pointLight.castShadow = true;
+    // pointLight.position.set(2, 2, 4);
+    // scene.add(pointLight);
+
+    return () => {
+      scene.remove(ambientLight);
+      scene.remove(directionalLight);
+      // scene.remove(pointLight);
+    }
+  }, [scene]);
+
+  return <></>;
+}
 
 useGLTF.preload('/models/classroom_default.glb');
 useGLTF.preload('/models/classroom_alternative.glb');

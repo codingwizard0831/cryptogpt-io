@@ -124,6 +124,8 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "^3.4.1",
     "three": "^0.166.1",
+    "tiff.js": "^1.0.0",
+    "utif": "^3.1.0",
     "viem": "2.x",
     "wagmi": "^2.9.11",
     "wavesurfer.js": "^7.7.4",

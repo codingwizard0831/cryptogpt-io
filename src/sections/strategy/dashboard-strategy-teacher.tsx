@@ -1,9 +1,9 @@
 "use client";
 
+import { Group } from 'three';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { randInt } from 'three/src/math/MathUtils';
-import { Group, MeshStandardMaterial } from 'three';
 import { useRef, useState, useEffect } from 'react';
 import { Html, useGLTF, useAnimations } from '@react-three/drei';
 
@@ -22,13 +22,13 @@ export default function DashboardStrategyTeacher({ teacher, ...props }: TeacherP
     // const { scene } = useGLTF(`/models/Teacher_${teacher}.glb`);
     const { scene } = useGLTF(`/models/crgptgirl.glb`);
     useEffect(() => {
-        scene.traverse((child: any) => {
-            if (child.material) {
-                child.material = new MeshStandardMaterial({
-                    map: child.material.map,
-                });
-            }
-        });
+        // scene.traverse((child: any) => {
+        //     if (child.material) {
+        //         child.material = new MeshStandardMaterial({
+        //             map: child.material.map,
+        //         });
+        //     }
+        // });
     }, [scene]);
 
     const currentMessage = useAITeacher((state) => state.currentMessage);
