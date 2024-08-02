@@ -61,12 +61,12 @@ const itemPlacement: ItemPlacement = {
       position: [0.45, 0.382, -6],
     },
     coin1: {
-      position: [-0.2, 0.25, -4],
+      position: [-0.24, 0.2, -4],
       scale: 0.007,
       rotation: [degToRad(90), degToRad(0), degToRad(-30)],
     },
     coin2: {
-      position: [0.8, 0.25, -4],
+      position: [0.84, 0.2, -4],
       scale: 0.007,
       rotation: [degToRad(90), degToRad(0), degToRad(30)],
     },
