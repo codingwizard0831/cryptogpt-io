@@ -1,8 +1,8 @@
 // Desc: This file contains the content of the strategy dashboard.
 
-import { Box, Stack, BoxProps } from '@mui/material';
+import { Box, BoxProps } from '@mui/material';
 
-import Image from 'src/components/image/image';
+import MobileMenu from 'src/components/mobile-tab/mobile-tab';
 
 import DashboardStrategyStep1 from './steps/strategy-1';
 
@@ -24,21 +24,14 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
     }} {...other}>
         <DashboardStrategyStep1 />
 
-        <Stack direction='row' justifyContent="space-between">
-            {/* <Button variant="contained" size="large" color="warning" sx={{
-                color: 'white',
-            }}>Prev</Button>
-            <Button variant="contained" size="large" color="primary" sx={{
-                color: 'white',
-            }}>Next</Button> */}
-            <Image src="/assets/icons/project/backward.png" alt='prev' sx={{
-                width: '56px',
-                height: '56px',
-            }} />
-            <Image src="/assets/icons/project/forward.png" alt='next' sx={{
-                width: '56px',
-                height: '56px',
-            }} />
-        </Stack>
+
+        <Box sx={{
+            mt: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+        }}>
+            <MobileMenu />
+        </Box>
     </Box>
 }

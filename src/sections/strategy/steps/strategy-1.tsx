@@ -190,6 +190,5 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                 }} />
             </Box>
         </Box>
-
     </Box>
 }
