@@ -20,6 +20,7 @@ import AccountSubaccounts from '../account-subaccount';
 import AccountSocialLinks from '../account-social-links';
 import AccountNotifications from '../account-notifications';
 import AccountChangePassword from '../account-change-password';
+import QRCodeGenerator from '../account-qr-code';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +58,11 @@ const TABS = [
     {
         value: 'network-api',
         label: 'Network APIs',
+        icon: <Iconify icon="material-symbols:account-child-invert" width={24} />,
+    },
+    {
+        value: 'qr_code',
+        label: 'QR Code',
         icon: <Iconify icon="material-symbols:account-child-invert" width={24} />,
     },
 ];
@@ -120,6 +126,8 @@ export default function DashboardProfileView() {
                 {currentTab === 'security' && <AccountChangePassword />}
 
                 {currentTab === 'network-api' && <AccountSubaccounts />}
+
+                {currentTab === 'qr_code' && <QRCodeGenerator />}
             </Card>
         </Box>
     );
