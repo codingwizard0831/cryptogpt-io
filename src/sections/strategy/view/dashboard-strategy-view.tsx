@@ -240,7 +240,7 @@ const CameraManager: FunctionComponent = () => {
     <CameraControls
       ref={controls}
       minZoom={1}
-      maxZoom={3}
+      maxZoom={4.2}
       polarRotateSpeed={-0.3} // REVERSE FOR NATURAL EFFECT
       azimuthRotateSpeed={-0.3} // REVERSE FOR NATURAL EFFECT
       mouseButtons={{

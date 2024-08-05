@@ -15,9 +15,7 @@ export default function StrategyCoinModel({ rotationSpeed = 0.005, name = "Tethe
 
     const coinMesh = useMemo(() => {
         if (fbx) {
-            console.log(fbx);
             const coinObject = fbx.children.find((child: Object3D) => child.name === name);
-            console.log('here', name, coinObject)
             if (coinObject && coinObject instanceof Mesh) {
                 const clonedCoin = coinObject.clone();
                 clonedCoin.position.set(0, 0, 0); // Reset the position

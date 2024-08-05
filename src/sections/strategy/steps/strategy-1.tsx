@@ -37,9 +37,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
     ];
 
     const handleSwapCoin = () => {
-        console.log("hereddd")
         const [temp1, temp2] = [coin1, coin2];
-        console.log('test', coin1, coin2);
         setCoin1(temp2);
         setCoin2(temp1);
     }

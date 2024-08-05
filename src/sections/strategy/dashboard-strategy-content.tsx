@@ -7,6 +7,7 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 import MobileMenu from 'src/components/mobile-tab/mobile-tab';
 
 import DashboardStrategyStep1 from './steps/strategy-1';
+import DashboardStrategyStep2 from './steps/strategy-2';
 
 interface DashboardStrategyContentProps extends BoxProps {
 
@@ -30,6 +31,10 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
         {
             step === "1.choose-pair" &&
             <DashboardStrategyStep1 />
+        }
+        {
+            step === "2.detail" &&
+            <DashboardStrategyStep2 />
         }
 
 
