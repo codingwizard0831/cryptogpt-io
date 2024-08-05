@@ -33,7 +33,8 @@ export async function POST(req: Request) {
       .eq('plan_id', plan_id)
       .eq('complete', false)
       .order('id', { ascending: false });
-
+    console.log(userPlans)
+    console.log(userPlansError)
     if (userPlansError) {
       return NextResponse.json({ success: false, error: 'Error fetching user plans' }, { status: 500 });
     }
@@ -82,7 +83,7 @@ export async function POST(req: Request) {
 
       if (error) {
         console.error('Error creating user plan:', error)
-        return { success: false, error: 'Failed to create new user plan.' }
+          return NextResponse.json({ success: false, error: 'Failed to create new user plan.' }, { status: 500 });
       }
       isTrial = is_trial;
       clientSecret = client_secret;
@@ -113,7 +114,7 @@ export async function POST(req: Request) {
 
         if (error) {
           console.error('Error creating user plan:', error)
-          return { success: false, error: 'Failed to create new user plan.' }
+          return NextResponse.json({ success: false, error: 'Failed to create new user plan.' }, { status: 500 });
         }
         isTrial = is_trial;
         clientSecret = client_secret;

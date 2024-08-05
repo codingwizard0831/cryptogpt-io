@@ -32,20 +32,39 @@ import LoadingCubeScreen from 'src/components/loading-screen/loading-cube-screen
 
 const TABS = [
   {
-    value: 'Pro Pass',
-    label: 'Pro Pass',
+    value: 'Starter Pass',
+    label: 'Starter Pass',
   },
   {
-    value: 'Premium Subscription',
-    label: 'Premium Subscription',
+    value: 'Basic Plan',
+    label: 'Basic Plan',
   },
   {
-    value: 'Elite Annual Subscription',
-    label: 'Elite Annual Subscription',
+    value: 'Standard Plan',
+    label: 'Standard Plan',
   },
   {
-    value: 'Enterprise Annual Subscription',
-    label: 'Enterprise Annual Subscription',
+    value: 'Premium Plan',
+    label: 'Premium Plan',
+  },
+  {
+    value: 'Pro Plan',
+    label: 'Pro Plan',
+  },
+  {
+    value: 'Elite Plan',
+    label: 'Elite Plan',
+  }
+];
+
+const PlanTABS = [
+  {
+    value: 'Features',
+    label: 'Features',
+  },
+  {
+    value: 'AI Functions',
+    label: 'AI Functions',
   }
 ];
 
@@ -91,7 +110,8 @@ const UIComponents = () => {
   const loadMembershipPlans = useLoadMembershipPlans();
 
   const [selectedPlan, setSelectedPlan] = useState(0);
-  const [currentTab, setCurrentTab] = useState('Premium Subscription');
+  const [currentTab, setCurrentTab] = useState('Premium Plan');
+  const [currentPlanTab, setCurrentPlanTab] = useState<Any>({});
   const { membershipPlanDict } = useMembershipPlansContext();
   const current_user_plan = useLastPossibleSubsriptionUserMembershipPlan();
 
@@ -120,6 +140,13 @@ const UIComponents = () => {
 
   const handleChangeTab = useCallback((event: SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
+  }, []);
+
+  const handleChangePlanTab = useCallback((newValue: string, planType: number) => {
+    setCurrentPlanTab((prev: any) => ({
+      ...prev,
+      [planType]: newValue
+    }));
   }, []);
 
   const handleSelectPlan = useCallback((newValue: number) => {
@@ -280,7 +307,8 @@ const UIComponents = () => {
 
   const isUpgradeButtonDisabled = (shouldEnterCardElement && (!!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete)) || !selectedPlan;
   const isCancelButtonDisabled = !current_user_plan || (!!current_user_plan?.expires_at || current_user_plan?.status === "past_due");
-  const renderPlans = plansByTab.map((plan) => (
+  console.log('plansByTab', plansByTab)
+  const renderPlans = plansByTab?.map((plan) => (
     <Grid xs={12} md={4} key={plan.id}>
       <Stack
         component={Paper}
@@ -308,12 +336,10 @@ const UIComponents = () => {
             Current
           </Label>
         )}
-
         <Box sx={{ width: 48, height: 48 }}>
-          {plan.type === 'Pro Pass' && <PlanFreeIcon />}
-          {plan.type === 'Premium Subscription' && <PlanStarterIcon />}
-          {plan.type === 'Elite Annual Subscription' && <PlanPremiumIcon />}
-          {plan.type === 'Enterprise Annual Subscription' && <PlanPremiumIcon />}
+          {(plan.type === 'Starter Pass' || plan.type === 'Basic Plan') && <PlanFreeIcon />}
+          {(plan.type === 'Standard Plan' || plan.type === 'Premium Plan') && <PlanStarterIcon />}
+          {(plan.type === 'Pro Plan' || plan.type === 'Elite Plan') && <PlanPremiumIcon />}
         </Box>
 
         <Box
@@ -328,16 +354,108 @@ const UIComponents = () => {
         </Box>
 
         <Stack direction="row" alignItems="center" sx={{ typography: 'h4' }}>
-          {plan.price || 'Free'}
+          <Box component="span" sx={{ textDecoration: 'line-through' }}>
+            €{plan.price}
+          </Box>
+
+          {plan.discount && <Box component="span" sx={{ backgroundColor: theme => theme.palette.primary.main, padding: "0px 5px", borderRadius: "5px", marginLeft: "7px" }}>
+            €{plan.price * (100 - plan.discount) / 100}
+          </Box>}
 
           {!!plan.price && (
             <Box component="span" sx={{ typography: 'body2', color: 'text.disabled', ml: 0.5 }}>
               /{plan.billing_period}
             </Box>
           )}
+
+          {plan.discount && <Box component="span" sx={{ backgroundColor: "gray", textWrap: 'nowrap', fontSize: "14px", padding: "2px 7px", borderRadius: "5px", marginLeft: "7px" }}>
+            Saved {plan.discount}%
+          </Box>}
         </Stack>
+        <Stack direction="column" alignItems="left" sx={{ typography: 'p' }}>
+          <Box component="span" sx={{ marginTop: '10px' }}>
+            Description:
+          </Box>
+          <Box component="span" sx={{ fontSize: "12px" }}>
+            {plan.description}
+          </Box>
+        </Stack>
+        <Stack direction="row" justifyContent="center">
+          <Tabs
+            value={currentPlanTab[plan.id] || "Features"}
+            onChange={(event: SyntheticEvent, newValue: string) => handleChangePlanTab(newValue, plan.id)}
+            sx={{
+              mt: 2,
+              backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
+              border: theme => `1px solid ${alpha(theme.palette.primary.main, 1)}`,
+              marginBottom: 3,
+              borderRadius: 30,
+              '.MuiTabs-indicator': {
+                backgroundColor: 'transparent',
+                top: 0,
+              },
+              '.MuiTab-root': {
+                fontSize: { xs: '12px', md: '14px' },
+                lineHeight: '12px',
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                paddingTop: "10px",
+                paddingBottom: "10px",
+                marginRight: "0px !important",
+                borderLeft: theme => `1px solid ${theme.palette.primary.main}`,
+                borderRight: theme => `1px solid ${theme.palette.primary.main}`,
+                '&:first-of-type': {
+                  border: 0,
+                },
+                '&:last-of-type': {
+                  border: 0,
+                },
+                '&.Mui-selected': {
+                  color: theme => theme.palette.common.white,
+                },
+              },
+              ".Mui-selected": {
+                backgroundColor: theme => theme.palette.primary.main,
+              },
+            }}
+          >
+            {PlanTABS.map((tab) => (
+              <Tab key={tab.value} label={tab.label} value={tab.value} />
+            ))}
+          </Tabs>
+        </Stack>
+
+        {(!currentPlanTab[plan.id] || currentPlanTab[plan.id] === "Features") && (
+          <Stack direction="column" alignItems="left" sx={{ typography: 'p' }}>
+            {plan.features?.map((item: any, index: number) => (
+              <Stack key={index} direction="row" alignItems="center">
+                <Box sx={{ width: "13px", height: "13px" }}>
+                  <Iconify icon="game-icons:check-mark" width={13} color={theme => theme.palette.primary.main} />
+                </Box>
+                <Box component="span" sx={{ fontSize: "12px", marginLeft: '8px' }}>
+                  {item}
+                </Box>
+              </Stack>
+            ))}
+          </Stack>
+        )}
+
+        {currentPlanTab[plan.id] === "AI Functions" && (
+          <Stack direction="column" alignItems="left" sx={{ typography: 'p' }}>
+            {plan.goldie?.map((item: any, index: number) => (
+              <Stack key={index} sx={{ marginTop: "10px" }} direction="row" alignItems="center">
+                <Box sx={{ width: "13px", height: "13px" }}>
+                  <Iconify icon="game-icons:check-mark" width={13} color={theme => theme.palette.primary.main} />
+                </Box>
+                <Box component="span" sx={{ fontSize: "12px", marginLeft: '8px' }}>
+                  {item}
+                </Box>
+              </Stack>
+            ))}
+          </Stack>
+        )}
       </Stack>
-    </Grid>
+    </Grid >
   ));
 
   return (
