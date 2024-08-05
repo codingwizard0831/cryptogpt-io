@@ -10,15 +10,21 @@ import {
     markElementClasses,
 } from '@mui/x-charts/LineChart';
 
+import { useStrategy } from "src/store/strategy/useStrategy";
+
 import Image from 'src/components/image';
 
 import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
 
 interface DashboardStrategyStep1Props extends BoxProps {
 
-}
+};
 
 export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrategyStep1Props) {
+    const coin1 = useStrategy((state) => state.coin1);
+    const setCoin1 = useStrategy((state) => state.setCoin1);
+    const coin2 = useStrategy((state) => state.coin2);
+    const setCoin2 = useStrategy((state) => state.setCoin2);
 
     const xLabels = [
         'Page A',
@@ -29,6 +35,14 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
         'Page F',
         'Page G',
     ];
+
+    const handleSwapCoin = () => {
+        console.log("hereddd")
+        const [temp1, temp2] = [coin1, coin2];
+        console.log('test', coin1, coin2);
+        setCoin1(temp2);
+        setCoin2(temp1);
+    }
 
     return <Box sx={{
         flex: 1,
@@ -41,14 +55,14 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
             <Typography variant="h4" sx={{
                 whitespace: 'nowrap',
             }}>1. Start, Select Pair</Typography>
-            <DashboardStrategyCoinSelector currency="Bitcon" />
+            <DashboardStrategyCoinSelector currency={coin1} handleChange={setCoin1} />
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
             }}>
                 <ButtonBase sx={{
-                }}>
+                }} onClick={() => handleSwapCoin()}>
                     <Image src="/assets/icons/project/ethereum-to-dollar-swap.png" alt="swap" sx={{
                         width: '96px',
                         height: '96px',
@@ -56,7 +70,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                 </ButtonBase>
             </Box>
 
-            <DashboardStrategyCoinSelector currency="USDT" />
+            <DashboardStrategyCoinSelector currency={coin2} handleChange={setCoin2} />
         </Stack>
 
 

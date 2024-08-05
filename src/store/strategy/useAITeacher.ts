@@ -85,6 +85,7 @@ export const useAITeacher = create<AITeacherState>((set, get) => ({
       loading: true,
     }));
 
+    // eslint-disable-next-line prefer-destructuring
     const speech = get().speech;
 
     // Ask AI

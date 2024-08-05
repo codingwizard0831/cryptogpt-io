@@ -2,6 +2,8 @@
 
 import { Box, BoxProps } from '@mui/material';
 
+import { useStrategy } from 'src/store/strategy/useStrategy';
+
 import MobileMenu from 'src/components/mobile-tab/mobile-tab';
 
 import DashboardStrategyStep1 from './steps/strategy-1';
@@ -11,6 +13,9 @@ interface DashboardStrategyContentProps extends BoxProps {
 }
 
 export default function DashboardStrategyContent({ sx, ...other }: DashboardStrategyContentProps) {
+    const step = useStrategy(state => state.step);
+    const setStep = useStrategy(state => state.setStep);
+
     return <Box sx={{
         width: '1280px',
         height: '680px',
@@ -22,7 +27,10 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
         justifyContent: 'space-between',
         gap: 2,
     }} {...other}>
-        <DashboardStrategyStep1 />
+        {
+            step === "1.choose-pair" &&
+            <DashboardStrategyStep1 />
+        }
 
 
         <Box sx={{
@@ -31,7 +39,7 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
             alignItems: 'center',
             justifyContent: 'space-around',
         }}>
-            <MobileMenu />
+            <MobileMenu value={step} handleChange={setStep} />
         </Box>
     </Box>
 }

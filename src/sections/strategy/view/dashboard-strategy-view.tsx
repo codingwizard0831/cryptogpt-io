@@ -15,6 +15,7 @@ import { Box, Card, Button } from '@mui/material';
 import { AmbientLight, DirectionalLight } from 'three';
 
 import CanvasLayout from 'src/layouts/common/canvas-layout';
+import { useStrategy } from 'src/store/strategy/useStrategy';
 import { useAITeacher } from 'src/store/strategy/useAITeacher';
 
 import StrategyCoinModel from '../dashboard-strategy-coin';
@@ -93,6 +94,9 @@ const itemPlacement: ItemPlacement = {
 export default function DashboardStrategyView() {
   const teacher = useAITeacher((state) => state.teacher);
   const classroom = useAITeacher((state) => state.classroom);
+  const step = useStrategy((state) => state.step);
+  const coin1 = useStrategy((state) => state.coin1);
+  const coin2 = useStrategy((state) => state.coin2);
 
   return (
     <Box
@@ -155,21 +159,28 @@ export default function DashboardStrategyView() {
                 receiveShadow
               />
 
-              <StrategyCoinModel
-                key="Bitcon-coin"
-                name="Bitcon"
-                {...itemPlacement[classroom].coin1}
-                castShadow
-                receiveShadow
-              />
 
-              <StrategyCoinModel
-                key="Tether-coin"
-                name="Tether"
-                {...itemPlacement[classroom].coin2}
-                castShadow
-                receiveShadow
-              />
+              {
+                step === '1.choose-pair' && (
+                  <>
+                    <StrategyCoinModel
+                      key="pair-coin1"
+                      name={coin1.symbol}
+                      {...itemPlacement[classroom].coin1}
+                      castShadow
+                      receiveShadow
+                    />
+
+                    <StrategyCoinModel
+                      key="pair-coin2"
+                      name={coin2.symbol}
+                      {...itemPlacement[classroom].coin2}
+                      castShadow
+                      receiveShadow
+                    />
+                  </>
+                )
+              }
 
               <LightsManager />
             </Float>
@@ -217,6 +228,7 @@ const CameraManager: FunctionComponent = () => {
 
   useControls('Helper', {
     getCameraPosition: button(() => {
+      // @ts-ignore
       const position = controls.current?.getPosition();
       const zoom = controls.current?.camera.zoom;
       // Assuming you want to do something with position and zoom, like returning them
@@ -277,7 +289,7 @@ function LightsManager() {
     }
   }, [scene]);
 
-  return <></>;
+  return null;
 }
 
 useGLTF.preload('/models/classroom_default.glb');

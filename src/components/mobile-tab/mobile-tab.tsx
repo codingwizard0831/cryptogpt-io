@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Box, styled, BoxProps, IconButton } from '@mui/material';
 
@@ -86,27 +86,34 @@ const StyledIconButton = styled(IconButton, {
 
 
 const menuButtons: MenuButton[] = [
-    { icon: <Iconify icon="solar:chart-bold" />, id: 'area-chart' },
-    { icon: <Iconify icon="gravity-ui:chart-line" />, id: 'line-chart' },
-    { icon: <Iconify icon="mage:chart-50-fill" />, id: 'bar-chart' },
-    { icon: <Iconify icon="vaadin:chart-3d" />, id: 'pie-chart' },
-    { icon: <Iconify icon="vaadin:chart-3d" />, id: 'pie-chart' },
-    { icon: <Iconify icon="vaadin:chart-3d" />, id: 'pie-chart' },
+    { icon: <Iconify icon="solar:chart-bold" />, id: '1.choose-pair' },
+    { icon: <Iconify icon="gravity-ui:chart-line" />, id: '2' },
+    { icon: <Iconify icon="mage:chart-50-fill" />, id: '3' },
+    { icon: <Iconify icon="vaadin:chart-3d" />, id: '4' },
+    { icon: <Iconify icon="vaadin:chart-3d" />, id: '5' },
+    { icon: <Iconify icon="vaadin:chart-3d" />, id: '6' },
 ];
 
 interface MobileMenuTabProps extends BoxProps {
     data?: MenuButton[],
+    value?: string,
+    handleChange?: (v: string) => void,
 }
 
 const MobileMenuTab: React.FC<MobileMenuTabProps> = ({
     data = menuButtons,
+    value = '1.choose-pair',
+    handleChange,
     sx,
     ...other
 }) => {
-    const [selectedButton, setSelectedButton] = useState<string>('area-chart');
+    // const [selectedButton, setSelectedButton] = useState<string>(value);
 
     const handleButtonClick = (id: string) => {
-        setSelectedButton(id);
+        if (handleChange) {
+            handleChange(id);
+        }
+        // setSelectedButton(id);
     };
 
     return (
@@ -117,7 +124,7 @@ const MobileMenuTab: React.FC<MobileMenuTabProps> = ({
                 {data.map((button) => (
                     <StyledIconButton
                         key={button.id}
-                        isSelected={selectedButton === button.id}
+                        isSelected={value === button.id}
                         onClick={() => handleButtonClick(button.id)}
                         aria-label={`Select ${button.id}`}
                         color="primary"

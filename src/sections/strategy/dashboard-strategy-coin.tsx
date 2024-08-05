@@ -13,7 +13,6 @@ export default function StrategyCoinModel({ rotationSpeed = 0.005, name = "Tethe
     const meshRef = useRef<Mesh>(null);
     const fbx = useLoader(FBXLoader, '/models/Crypto-coins.fbx');
 
-
     const coinMesh = useMemo(() => {
         if (fbx) {
             console.log(fbx);
@@ -35,11 +34,12 @@ export default function StrategyCoinModel({ rotationSpeed = 0.005, name = "Tethe
         }
 
         return () => {
-            if (meshRef && meshRef.current && coinMesh) {
+            if (coinMesh && meshRef.current) {
+                // eslint-disable-next-line react-hooks/exhaustive-deps
                 meshRef.current.remove(coinMesh);
             }
         };
-    }, [coinMesh]);
+    }, [coinMesh, meshRef]);
 
     useFrame(() => {
         if (meshRef.current) {

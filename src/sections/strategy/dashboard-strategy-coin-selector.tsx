@@ -2,27 +2,78 @@
 
 import { Box, alpha, BoxProps, MenuItem, TextField, ButtonBase, Typography } from '@mui/material';
 
+import { CoinType } from "src/store/strategy/useStrategy";
+
 import Image from 'src/components/image/image';
 import Iconify from 'src/components/iconify/iconify';
 import { usePopover } from 'src/components/custom-popover';
 import StyledPopover from 'src/components/styled-component/styled-popover';
 
+const coinsData: CoinType[] = [
+    {
+        name: "Bitcoin",
+        symbol: "Bitcon",
+        icon: 'assets/images/bitcoin.png',
+    },
+    {
+        name: "ETH",
+        symbol: "ETH",
+        icon: 'assets/images/bitcoin.png',
+    },
+    {
+        name: "BNB",
+        symbol: "BNB",
+        icon: 'assets/images/bitcoin.png',
+    },
+    {
+        name: "USDT",
+        symbol: "Tether",
+        icon: 'assets/images/bitcoin.png',
+    },
+    {
+        name: "USDC",
+        symbol: "USD_Coin",
+        icon: 'assets/images/bitcoin.png',
+    },
+    {
+        name: "Polkadot",
+        symbol: "Polkadot",
+        icon: 'assets/images/bitcoin.png',
+    },
+    {
+        name: "Solan",
+        symbol: "Solan",
+        icon: 'assets/images/bitcoin.png',
+    },
+    {
+        name: "XRP",
+        symbol: "XRP",
+        icon: 'assets/images/bitcoin.png',
+    },
+    {
+        name: "Dogecoin",
+        symbol: "Dogecoin",
+        icon: 'assets/images/bitcoin.png',
+    },
+]
+
 interface DashboardStrategyCoinSelectorProps extends BoxProps {
-    currency: string,
-    handleChange?: (v: string) => void,
+    currency: CoinType,
+    handleChange?: (v: CoinType) => void,
 }
 
 export default function DashboardStrategyCoinSelector({
-    currency = "BNB",
+    currency = { name: "BNB", symbol: "BNB" },
     handleChange,
     sx,
     ...other }: DashboardStrategyCoinSelectorProps) {
     const coinListPopover = usePopover();
 
-    const handleChangeCurrency = (v: string) => {
+    const handleChangeCurrency = (v: CoinType) => {
         if (handleChange) {
             handleChange(v);
         }
+        coinListPopover.onClose();
     }
 
     return <Box sx={{
@@ -37,7 +88,7 @@ export default function DashboardStrategyCoinSelector({
             borderRadius: 1,
             border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
         }} onClick={coinListPopover.onOpen}>
-            <Typography>{currency}</Typography>
+            <Typography>{currency.name}</Typography>
             <Iconify icon="mingcute:down-fill" />
         </ButtonBase>
 
@@ -70,18 +121,18 @@ export default function DashboardStrategyCoinSelector({
                     maxHeight: '200px',
                 }}>
                     {
-                        ["BNB", "Bitcoin", "USDT", "USDC", "BNB", "BEBE", "TETE", "BEBE", "TETE"].map((item: any, index: number) =>
-                            <MenuItem key={`key-${index}`} sx={{
+                        coinsData.map((item: CoinType, index: number) =>
+                            <MenuItem key={`coin-${index}`} sx={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
                                 transition: 'all 0.2s',
                                 backgroundColor: 'transparent',
-                                ...(item === currency && {
+                                ...(item.symbol === currency.symbol && {
                                     backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.2),
                                 })
                             }} onClick={() => handleChangeCurrency(item)}>
-                                <Typography>{item}</Typography>
+                                <Typography>{item.name}</Typography>
                                 <Image src="/assets/images/bitcoin.png" alt="coin" sx={{
                                     width: '24px',
                                     height: '24px',
