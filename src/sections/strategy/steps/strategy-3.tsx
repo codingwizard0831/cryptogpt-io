@@ -3,14 +3,14 @@
 
 
 
-import { useState } from 'react';
+
 
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, Stack, Select, styled, BoxProps, MenuItem, TextField, Typography, InputLabel, FormControl } from '@mui/material';
-
-import { useBoolean } from 'src/hooks/use-boolean';
+import { Box, Stack, styled, Select, BoxProps, MenuItem, TextField, Typography, InputLabel, IconButton, FormControl } from '@mui/material';
 
 import { useStrategy } from "src/store/strategy/useStrategy";
+
+import Iconify from 'src/components/iconify';
 
 import DashboardStrategyImaganize from '../dashboard-strategy-imagazine';
 
@@ -39,25 +39,6 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
     const setCoin2 = useStrategy((state) => state.setCoin2);
-    const [value, setValue] = useState("Please input the message here");
-    const isFocus = useBoolean();
-
-
-    const xLabels = [
-        'Page A',
-        'Page B',
-        'Page C',
-        'Page D',
-        'Page E',
-        'Page F',
-        'Page G',
-    ];
-
-    const handleSwapCoin = () => {
-        const [temp1, temp2] = [coin1, coin2];
-        setCoin1(temp2);
-        setCoin2(temp1);
-    }
 
     return <Box sx={{
         flex: 1,
@@ -91,21 +72,33 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
                 overflowY: 'auto',
                 overflowX: 'hidden',
             }}>
-
-                <FormControl variant="outlined" sx={{ width: '100%' }}>
-                    <InputLabel htmlFor="indicator-label">indicators</InputLabel>
-                    <Select labelId="indicator-label" id="indicator" label="Time frame" value="5m" sx={{
-                        border: (theme: any) => `1px solid ${theme.palette.primary.main}`
-                    }}>
-                        <MenuItem value="SMA">SMA</MenuItem>
-                        <MenuItem value="EMA">EMA</MenuItem>
-                        <MenuItem value="RSI">RSI</MenuItem>
-                    </Select>
-                </FormControl>
-
-                <TextField label="Conditions" />
-
-
+                <Stack direction="row" alignItems='center' spacing={2}>
+                    <FormControl variant="outlined" sx={{ width: '100%' }}>
+                        <InputLabel htmlFor="indicator-label">indicators</InputLabel>
+                        <Select labelId="indicator-label" id="indicator" label="Time frame" value="5m" sx={{
+                            border: (theme: any) => `1px solid ${theme.palette.primary.main}`
+                        }}>
+                            <MenuItem value="SMA">SMA</MenuItem>
+                            <MenuItem value="EMA">EMA</MenuItem>
+                            <MenuItem value="RSI">RSI</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <TextField />
+                    <Stack direction="row" alignItems='center' spacing={2}>
+                        <FormControl variant="outlined" sx={{ width: '100%' }}>
+                            <InputLabel htmlFor="add-indicator-label">Operator</InputLabel>
+                            <Select labelId="add-indicator-label" id="add-indicator" label="Operator" value="5m" sx={{
+                                border: (theme: any) => `1px solid ${theme.palette.primary.main}`
+                            }}>
+                                <MenuItem value="plus">plus</MenuItem>
+                                <MenuItem value="minus">minus</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Stack>
+                    <IconButton>
+                        <Iconify icon="fa:trash" />
+                    </IconButton>
+                </Stack>
             </Box>
 
             <DashboardStrategyImaganize />
