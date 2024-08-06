@@ -36,8 +36,7 @@ export async function POST(req: Request) {
       customer_id = stripeCustomer[0]?.customer_id;
     }
 
-    const payment_intent: any = createPaymentIntent(Math.round(amount * 100), customer_id, email)
-    console.log('payment_intent', payment_intent)
+    const payment_intent: any = await createPaymentIntent(Math.round(amount * 100), customer_id, email)
     return NextResponse.json({ success: true, data: { 'client_secret': payment_intent?.client_secret } });
   } catch (error) {
     console.error('Unexpected error:', error);

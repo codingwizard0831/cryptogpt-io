@@ -63,6 +63,8 @@ export const endpoints = {
   },
   credits: {
     credits: '/api/credits/',
+    createPaymentIntent: '/api/credits/payment_intent/create/',
+    confirmPaymentIntent: '/api/credits/payment_intent/confirm/',
   },
   binance: "/api/binance",
 

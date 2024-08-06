@@ -11,13 +11,15 @@ import usePayStripeCardPayment from 'src/hooks/use-pay-stripe-card-payment';
 import axios, { endpoints } from 'src/utils/axios';
 
 import Stripe from 'src/provider/Stripe';
+import { useAuthContext } from 'src/auth/hooks';
 
 import Label from 'src/components/label';
 import CardElement from 'src/components/stripe-card';
 
 // ----------------------------------------------------------------------
 
-const UIComponents = () => {
+const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLoading: any }) => {
+  const { user } = useAuthContext();
   const [cardPaymentState, setCardPaymentState] = useState({
     errorMessage: ''
   });
@@ -57,15 +59,17 @@ const UIComponents = () => {
       setCardPaymentState({
         errorMessage: '',
       });
-      const { data } = await axios.post(endpoints.membership.createPaymentIntent,
+      const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
         {
-          "plan_id": amount
+          "amount": amount,
+          "user_id": user?.id,
+          "email": user?.email
         }
       );
 
-      const { success, result: paymentIntent } = data;
-      // console.log('success', success)
-      // console.log('paymentIntent', paymentIntent)
+      const { success, data: paymentIntent } = data;
+      console.log('success', success)
+      console.log('paymentIntent', paymentIntent)
       if (success) {
         const payResult: any = await payStripeCardPayment({
           client_secret: paymentIntent.client_secret
@@ -76,11 +80,12 @@ const UIComponents = () => {
         // console.log('payResult', payResult)
         try {
           if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
-            await axios.post(endpoints.membership.confirmPaymentIntent,
+            await axios.post(endpoints.credits.confirmPaymentIntent,
               {
                 "payment_intent_id": payResult.paymentIntent.id
               }
             );
+            setIsLoading(!isLoading);
             setAmount(0);
             setDepositState({
               submitting: false,
@@ -127,7 +132,7 @@ const UIComponents = () => {
         errorMessage: e.message
       });
     }
-  }, [payStripeCardPayment, setCardPaymentState, amount, setDepositState]);
+  }, [payStripeCardPayment, setCardPaymentState, amount, setDepositState, setIsLoading, isLoading, user]);
 
   const isDepositButtonDisabled = !!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete;
 
@@ -141,10 +146,18 @@ const UIComponents = () => {
           fullWidth
           type="number"
           label="Number"
-          defaultValue={0}
+          value={amount}
           InputLabelProps={{ shrink: true }}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            const value = parseFloat(event.target.value);
+            if (Number.isNaN(value) || value < 0) {
+              setAmount(0);
+            } else {
+              setAmount(value);
+            }
+          }}
         />
-        {(cardElementState.errorMessage || cardPaymentState.errorMessage) && <Label
+        {/* {(cardElementState.errorMessage || cardPaymentState.errorMessage) && <Label
           color="error"
           sx={{
             background: 'transparent',
@@ -154,7 +167,7 @@ const UIComponents = () => {
           }}
         >
           {cardElementState.errorMessage || cardPaymentState.errorMessage || <>&nbsp;</>}
-        </Label>}
+        </Label>} */}
       </Stack>
 
       <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' } }}>
@@ -190,9 +203,9 @@ const UIComponents = () => {
   );
 }
 
-const AccountCreditDeposit: any = () => (
+const AccountCreditDeposit: any = (props: any) => (
   <Stripe>
-    <UIComponents />
+    <UIComponents {...props} />
   </Stripe>
 );
 
