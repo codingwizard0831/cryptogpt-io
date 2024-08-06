@@ -68,6 +68,26 @@ export async function createSubscription(customerId: string, productId: string, 
   }
 }
 
+export async function createPaymentIntent(amount: number, customerId: string, email: string) {
+  try {
+    return await stripe.paymentIntents.create({
+      customer: customerId,
+      setup_future_usage: 'off_session',
+      amount,
+      currency: 'usd',
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      metadata: {
+        email,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating subscription:', error);
+    throw error;
+  }
+}
+
 export async function retrievePaymentIntent(paymentIntentId: string): Promise<Stripe.PaymentIntent> {
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);

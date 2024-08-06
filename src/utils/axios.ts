@@ -61,6 +61,9 @@ export const endpoints = {
     cancelUserPlan: '/api/membership/user_plans/cancel/',
     ugradeUserPlan: '/api/membership/user_plans/update/',
   },
+  credits: {
+    credits: '/api/credits/',
+  },
   binance: "/api/binance",
 
   kanban: '/api/kanban',
