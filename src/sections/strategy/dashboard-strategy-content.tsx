@@ -8,6 +8,7 @@ import MobileMenu from 'src/components/mobile-tab/mobile-tab';
 
 import DashboardStrategyStep1 from './steps/strategy-1';
 import DashboardStrategyStep2 from './steps/strategy-2';
+import DashboardStrategyStep3 from './steps/strategy-3';
 
 interface DashboardStrategyContentProps extends BoxProps {
 
@@ -35,6 +36,10 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
         {
             step === "2.detail" &&
             <DashboardStrategyStep2 />
+        }
+        {
+            step === "3.configure-indicators" &&
+            <DashboardStrategyStep3 />
         }
 
 

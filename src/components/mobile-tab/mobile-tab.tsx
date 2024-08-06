@@ -88,8 +88,8 @@ const StyledIconButton = styled(IconButton, {
 const menuButtons: MenuButton[] = [
     { icon: <Iconify icon="solar:chart-bold" />, id: '1.choose-pair' },
     { icon: <Iconify icon="gravity-ui:chart-line" />, id: '2.detail' },
-    { icon: <Iconify icon="mage:chart-50-fill" />, id: '3' },
-    { icon: <Iconify icon="vaadin:chart-3d" />, id: '4' },
+    { icon: <Iconify icon="mage:chart-50-fill" />, id: '3.configure-indicators' },
+    { icon: <Iconify icon="vaadin:chart-3d" />, id: '4.backtesting' },
     { icon: <Iconify icon="vaadin:chart-3d" />, id: '5' },
     { icon: <Iconify icon="vaadin:chart-3d" />, id: '6' },
 ];
