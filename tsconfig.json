@@ -30,6 +30,7 @@
         "name": "next"
       }
     ],
+    "types": ["openai"]
   },
   "include": [
     "next-env.d.ts",
