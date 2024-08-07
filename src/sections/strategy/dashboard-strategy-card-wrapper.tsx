@@ -21,7 +21,7 @@ export default function DashboardStrategyCardWrapper({ sx, ...other }: Dashboard
 
     return <Box sx={{
         width: '1280px',
-        height: '680px',
+        height: '400px',
         border: "1px solid white",
         backdropFilter: "blur(10px)",
         p: 2,

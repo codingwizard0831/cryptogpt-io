@@ -66,7 +66,7 @@ const itemPlacement: ItemPlacement = {
       position: [0.45, 0.382, -6],
     },
     card: {
-      position: [0.45, 0.2, -6],
+      position: [0.45, 0.1, -6],
     },
     coin1: {
       position: [-0.24, 0.2, -4],
