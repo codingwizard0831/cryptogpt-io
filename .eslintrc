@@ -26,6 +26,7 @@
     "project": "./tsconfig.json"
   },
   "settings": {
+    "import/core-modules": ["openai"],
     "import/resolver": {
       "typescript": {
         "alwaysTryTypes": true
