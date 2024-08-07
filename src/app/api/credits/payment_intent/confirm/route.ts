@@ -5,25 +5,14 @@ import { retrievePaymentIntent } from 'src/lib/stripeLib';
 
 export async function POST(req: Request) {
   try {
-    const { user_id, payment_intent_id } = await req.json();
+    const { user_id, payment_intent_id, amount } = await req.json();
 
-    if (!user_id || !payment_intent_id) {
-      return NextResponse.json({ success: false, error: 'Missing user_id or payment_intent_id' }, { status: 400 });
+    if (!user_id || !payment_intent_id || !amount) {
+      return NextResponse.json({ success: false, error: 'Missing user_id or payment_intent_id or amount' }, { status: 400 });
     }
 
     const payment_intent = await retrievePaymentIntent(payment_intent_id);
-    // console.log('payment_intent', payment_intent)
-    const { data: userPlans, error: userPlansError } = await supabase
-      .from('user_plans')
-      .select()
-      .eq('user_id', user_id)
-      .order('id', { ascending: false }).single();
 
-    if (userPlansError) {
-      return NextResponse.json({ success: false, error: 'Error fetching user plan' }, { status: 500 });
-    }
-
-    // console.log('userPlans', userPlans)
     const { data: stripeCustomer, error: stripeCustomerError } = await supabase
       .from('stripe_customer')
       .select()
@@ -35,14 +24,28 @@ export async function POST(req: Request) {
 
     const customer_id = stripeCustomer[0]?.customer_id;
 
-    if (userPlans && payment_intent.customer === customer_id && payment_intent.status === 'succeeded') {
-      const { error } = await supabase
-        .from('user_plans')
-        .update({ is_active: true })
-        .eq('id', userPlans.id)
+    if (payment_intent.customer === customer_id && payment_intent.status === 'succeeded') {
+      const { data: existingUserCredit, error: fetchError } = await supabase
+        .from('user_credits')
+        .select('*')
+        .eq('user_id', user_id)
+        .single();
 
-      if (error) {
-        return NextResponse.json({ success: false, error: 'Error activating user plan' }, { status: 500 });
+      if (fetchError) {
+        return NextResponse.json({ success: false, error: fetchError }, { status: 400 });
+      }
+
+      if (existingUserCredit) {
+        const { error } = await supabase
+          .from('user_credits')
+          .update({ amount })
+          .eq('user_id', user_id);
+        if (error) return NextResponse.json({ success: false, error }, { status: 400 });
+      } else {
+        const { error } = await supabase
+          .from('user_credits')
+          .insert([{ user_id, amount }]);
+        if (error) return NextResponse.json({ success: false, error }, { status: 400 });
       }
       return NextResponse.json({ success: true });
     }
