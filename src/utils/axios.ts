@@ -27,8 +27,6 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 
 export const endpoints = {
   chat: '/api/chat',
-  kanban: '/api/kanban',
-  calendar: '/api/calendar',
   auth: {
     me: '/api/check-auth/',
     register: '/api/auth/signup/',
@@ -55,6 +53,18 @@ export const endpoints = {
 
     profileUpdate: '/auth/user/profile/update/',
   },
+  membership: {
+    plans: '/api/membership/plans/',
+    userPlans: '/api/membership/user_plans/',
+    createPaymentIntent: '/api/membership/user_plans/payment_intent/create/',
+    confirmPaymentIntent: '/api/membership/user_plans/payment_intent/confirm/',
+    cancelUserPlan: '/api/membership/user_plans/cancel/',
+    ugradeUserPlan: '/api/membership/user_plans/update/',
+  },
+  binance: "/api/binance",
+
+  kanban: '/api/kanban',
+  calendar: '/api/calendar',
   mail: {
     list: '/api/mail/list',
     details: '/api/mail/details',

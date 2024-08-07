@@ -13,7 +13,7 @@ export default function OAuthPage() {
     if (accessToken && refreshToken) {
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      window.location.href = '/dashboard';
+      window.location.href = `${window.location.origin}/dashboard`;
     }
   }, []);
   return <GuestGuard><h1>Authenticating...</h1></GuestGuard>;

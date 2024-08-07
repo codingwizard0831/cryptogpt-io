@@ -5,6 +5,7 @@ import { paths } from 'src/routes/paths';
 
 export const HOST_API = process.env.NEXT_PUBLIC_HOST_API;
 export const ASSETS_API = process.env.NEXT_PUBLIC_ASSETS_API;
+export const STRIPE_API_KEY = process.env.NEXT_PUBLIC_STRIPE_API_KEY || "";
 
 export const FIREBASE_API = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -43,4 +44,6 @@ export const PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL
 export const BINANCE_API = {
   clientId: process.env.NEXT_PUBLIC_BINANCE_CLIENT_ID,
   clientSecret: process.env.NEXT_PUBLIC_BINANCE_SECRET_KEY,
+  apiKey: process.env.NEXT_PUBLIC_BINANCE_TEST_API_KEY,
+  secretKey: process.env.NEXT_PUBLIC_BINANCE_TEST_SECRET_KEY,
 }

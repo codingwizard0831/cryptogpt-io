@@ -1,4 +1,4 @@
-import DashboardView from 'src/sections/dashboard/view';
+import { DashboardView } from 'src/sections/dashboard/view';
 
 // ----------------------------------------------------------------------
 

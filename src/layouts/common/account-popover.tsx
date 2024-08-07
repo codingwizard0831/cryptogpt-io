@@ -25,7 +25,7 @@ const OPTIONS = [
     linkTo: paths.dashboard.user.profile,
   },
   {
-    label: 'Settings',
+    label: 'Account',
     linkTo: paths.dashboard.user.account,
   },
 ];
@@ -78,7 +78,7 @@ export default function AccountPopover() {
           sx={{
             width: 36,
             height: 36,
-            border: (theme) => `solid 2px ${theme.palette.background.default}`,
+            border: (theme: any) => `solid 2px ${alpha(theme.palette.background.opposite, 0.2)}`,
           }}
         >
           {user?.username?.charAt(0).toUpperCase()}

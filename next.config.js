@@ -37,6 +37,15 @@ module.exports = {
           },
         ],
       },
+      {
+        source: '/.well-known/apple-developer-merchantid-domain-association',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/plain',
+          },
+        ],
+      },
     ];
   },
 };

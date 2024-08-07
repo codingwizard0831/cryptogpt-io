@@ -114,3 +114,31 @@ export function fData(inputValue: InputValue) {
 
   return fm;
 }
+
+// ----------------------------------------------------------------------
+export function fNumberPrice(inputValue: number, floatNumber: number = 5): string {
+  // First, round the number to the desired number of decimal places
+  const roundedValue = Number(inputValue.toFixed(floatNumber));
+
+  // Then, format the number with commas and the specified number of decimal places
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: floatNumber,
+    maximumFractionDigits: floatNumber,
+  }).format(roundedValue);
+}
+
+export function fTextNumber(inputValue: string): boolean {
+  // Regular expression to match a number (including integers, floats, or numbers starting/ending with a dot)
+  const regex = /^\d*\.?\d*$/;
+  // Special case to allow numbers ending with a dot
+  const endsWithDotRegex = /^\d+\.$/;
+
+  // Check if the input matches the number pattern or is a special case of number ending with a dot
+  if (regex.test(inputValue) || endsWithDotRegex.test(inputValue)) {
+    // If it's a valid number format or a special case, return the input as is
+    return true;
+  }
+
+  // If the input is not a valid number format, return an empty string or any other default value you prefer
+  return false;
+}
