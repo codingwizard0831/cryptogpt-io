@@ -21,6 +21,7 @@ import { useAITeacher } from 'src/store/strategy/useAITeacher';
 import StrategyCoinModel from '../dashboard-strategy-coin';
 import DashboardStrategyTeacher from '../dashboard-strategy-teacher';
 import DashboardStrategyContent from '../dashboard-strategy-content';
+import DashboardStrategyCardWrapper from '../dashboard-strategy-card-wrapper';
 
 interface ItemPlacement {
   [key: string]: {
@@ -35,6 +36,9 @@ interface ItemPlacement {
       rotation?: [number, number, number];
     };
     board: {
+      position: [number, number, number];
+    };
+    card: {
       position: [number, number, number];
     };
     coin1: {
@@ -61,6 +65,9 @@ const itemPlacement: ItemPlacement = {
     board: {
       position: [0.45, 0.382, -6],
     },
+    card: {
+      position: [0.45, 0.2, -6],
+    },
     coin1: {
       position: [-0.24, 0.2, -4],
       scale: 0.007,
@@ -80,6 +87,7 @@ const itemPlacement: ItemPlacement = {
     },
     teacher: { position: [-1, -1.7, -3] },
     board: { position: [1.4, 0.84, -8] },
+    card: { position: [1.4, 0.84, -8] },
     coin1: {
       position: [0.45, 0.382, -6],
       scale: 0.5,
@@ -139,6 +147,11 @@ export default function DashboardStrategyView() {
               <Html transform {...itemPlacement[classroom].board} distanceFactor={1}>
                 <CanvasLayout>
                   <DashboardStrategyContent />
+                </CanvasLayout>
+              </Html>
+              <Html transform {...itemPlacement[classroom].card} distanceFactor={1}>
+                <CanvasLayout>
+                  <DashboardStrategyCardWrapper />
                 </CanvasLayout>
               </Html>
 

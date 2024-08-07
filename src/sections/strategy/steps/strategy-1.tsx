@@ -2,13 +2,15 @@
 
 
 import { ChartContainer } from '@mui/x-charts/ChartContainer';
-import { Box, Stack, Select, BoxProps, MenuItem, Typography, ButtonBase } from '@mui/material';
 import {
     LinePlot,
     MarkPlot,
     lineElementClasses,
     markElementClasses,
 } from '@mui/x-charts/LineChart';
+import { Box, Stack, Select, BoxProps, MenuItem, TextField, Typography, ButtonBase, InputLabel, FormControl } from '@mui/material';
+
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useStrategy } from "src/store/strategy/useStrategy";
 
@@ -25,6 +27,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
     const setCoin2 = useStrategy((state) => state.setCoin2);
+    const isHover = useBoolean(false);
 
     const xLabels = [
         'Page A',
@@ -52,6 +55,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
         <Stack direction='row' alignItems="center" spacing={2} sx={{ width: '90%', mb: 2 }}>
             <Typography variant="h4" sx={{
                 whitespace: 'nowrap',
+                mr: 11,
             }}>1. Start, Select Pair</Typography>
             <DashboardStrategyCoinSelector currency={coin1} handleChange={setCoin1} />
             <Box sx={{
@@ -80,40 +84,19 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
             alignItems: 'center',
             justifyContent: 'center',
         }}>
-            <ChartContainer
-                width={320}
-                height={260}
-                series={[
-                    { type: 'line', data: [2400, 1398, 9800, 3908, 4800, 3800, 4300], color: '#FFAB00' },
-                    { type: 'line', data: [0, 2000, 1398, 9800, 3908, 4800, 3800], color: '#00C853' },
-                ]}
-                xAxis={[{ scaleType: 'point', data: xLabels }]}
+            <Box
                 sx={{
-                    backdropFilter: 'blur(10px)',
-                    backgroundColor: '#ffffff11',
-                    [`& .${lineElementClasses.root}`]: {
-                        strokeWidth: 6,
-                    },
-                    [`& .${markElementClasses.root}`]: {
-                        scale: '0.6',
-                        fill: '#fff',
-                        strokeWidth: 8,
-                    },
+                    position: 'relative',
                 }}
-                disableAxisListener
+                onMouseEnter={() => isHover.onTrue()}
+                onMouseLeave={() => isHover.onFalse()}
             >
-                <LinePlot />
-                <MarkPlot />
-            </ChartContainer>
-
-            <Box sx={{
-                width: '320px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-            }}>
                 <Select size="small" value="5m" sx={{
-                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`
+                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                    position: 'absolute',
+                    left: '5px',
+                    top: '5px',
+                    zIndex: '1000',
                 }}>
                     <MenuItem value="5m">5m</MenuItem>
                     <MenuItem value="10m">10m</MenuItem>
@@ -123,6 +106,42 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                     <MenuItem value="4h">4h</MenuItem>
                 </Select>
 
+                <ChartContainer
+                    width={320}
+                    height={220}
+                    series={[
+                        { type: 'line', data: [2400, 1398, 9800, 3908, 4800, 3800, 4300], color: '#FFAB00' },
+                        { type: 'line', data: [0, 2000, 1398, 9800, 3908, 4800, 3800], color: '#00C853' },
+                    ]}
+                    xAxis={[{ scaleType: 'point', data: xLabels }]}
+                    sx={{
+                        backdropFilter: 'blur(10px)',
+                        backgroundColor: '#ffffff11',
+                        border: (theme: any) => `1px solid ${isHover.value ? theme.palette.primary.main : 'transparent'}`,
+                        transition: 'all 0.3s',
+                        [`& .${lineElementClasses.root}`]: {
+                            strokeWidth: isHover.value ? 8 : 6,
+                        },
+                        [`& .${markElementClasses.root}`]: {
+                            scale: '0.6',
+                            fill: '#fff',
+                            strokeWidth: isHover.value ? 8 : 6,
+                        },
+                    }}
+                    disableAxisListener
+                >
+                    <LinePlot />
+                    <MarkPlot />
+                </ChartContainer>
+            </Box>
+
+            <Box sx={{
+                width: '320px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                mt: 1,
+            }}>
                 <Box sx={{
                     height: '38px',
                     position: 'relative',
@@ -173,7 +192,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                 height: '40px',
                 position: 'relative',
                 flex: 1,
-                mt: 0.25,
+                mt: 0.5,
             }}>
                 <Box sx={{
                     position: 'absolute',
@@ -202,5 +221,50 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                 }} />
             </Box>
         </Box>
+
+        <Stack direction='row' alignItems="center" spacing={2} sx={{ width: '90%', mb: 2 }}>
+            <Typography variant="h4" sx={{
+                whitespace: 'nowrap',
+            }}>2. Strategy:</Typography>
+
+            <TextField sx={{
+                width: '300px',
+            }} />
+
+            <FormControl sx={{
+                width: '200px',
+                '.MuiInputBase-root': {
+                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                },
+            }}>
+                <InputLabel htmlFor="time-frame-label">Time frame</InputLabel>
+                <Select labelId="time-frame-label" id="time-frame" label="Time frame" value="5m" sx={{
+                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`
+                }}>
+                    <MenuItem value="5m">5m</MenuItem>
+                    <MenuItem value="10m">10m</MenuItem>
+                    <MenuItem value="15m">15m</MenuItem>
+                    <MenuItem value="30m">30m</MenuItem>
+                    <MenuItem value="1h">1h</MenuItem>
+                    <MenuItem value="4h">4h</MenuItem>
+                </Select>
+            </FormControl>
+
+            <FormControl sx={{
+                width: '200px',
+                '.MuiInputBase-root': {
+                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                },
+            }}>
+                <InputLabel htmlFor="time-frame-label">Your Strategies</InputLabel>
+                <Select labelId="time-frame-label" id="time-frame" label="Time frame" value="5m" sx={{
+                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`
+                }}>
+                    <MenuItem value="5m">5m</MenuItem>
+                    <MenuItem value="10m">10m</MenuItem>
+                    <MenuItem value="15m">15m</MenuItem>
+                </Select>
+            </FormControl>
+        </Stack>
     </Box>
 }
