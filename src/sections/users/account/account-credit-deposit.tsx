@@ -82,7 +82,9 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
           if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
             await axios.post(endpoints.credits.confirmPaymentIntent,
               {
-                "payment_intent_id": payResult.paymentIntent.id
+                "payment_intent_id": payResult.paymentIntent.id,
+                "amount": amount,
+                "user_id": user?.id,
               }
             );
             setIsLoading(!isLoading);
@@ -134,7 +136,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     }
   }, [payStripeCardPayment, setCardPaymentState, amount, setDepositState, setIsLoading, isLoading, user]);
 
-  const isDepositButtonDisabled = !!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete;
+  const isDepositButtonDisabled = !!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete || !amount;
 
   return (
     <Card sx={{ marginTop: 3 }}>

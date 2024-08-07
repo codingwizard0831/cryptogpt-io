@@ -36,9 +36,10 @@ export async function POST(req: Request) {
       }
 
       if (existingUserCredit) {
+        const totalAmount = existingUserCredit.amount + amount;
         const { error } = await supabase
           .from('user_credits')
-          .update({ amount })
+          .update({ amount: totalAmount })
           .eq('user_id', user_id);
         if (error) return NextResponse.json({ success: false, error }, { status: 400 });
       } else {
