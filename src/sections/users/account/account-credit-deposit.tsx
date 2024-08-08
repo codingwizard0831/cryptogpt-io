@@ -65,9 +65,8 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     confirmCardPayment,
   } = useStripe();
 
-  const confirmPaymentMethod = React.useCallback(async (e: any, paymentIntent: any) => (
-    // eslint-disable-next-line @typescript-eslint/return-await
-    await confirmCardPayment(
+  const confirmPaymentMethod = React.useCallback(async (e: any, paymentIntent: any) => {
+    const payResult: any = await confirmCardPayment(
       paymentIntent.client_secret,
       {
         payment_method: e.paymentMethod.id,
@@ -76,7 +75,16 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
         handleActions: false
       }
     )
-  ), [confirmCardPayment]);
+    
+    // eslint-disable-next-line @typescript-eslint/return-await
+    return await axios.post(endpoints.credits.confirmPaymentIntent,
+      {
+        "payment_intent_id": payResult.paymentIntent.id,
+        "amount": amount,
+        "user_id": user?.id,
+      }
+    );
+  }, [amount, confirmCardPayment, user]);
 
   const [paymentRequest, email, { createPaymentRequest }] = usePayStripeApplePayment(
     async () => {
@@ -258,7 +266,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
       </Stack>
 
       <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3, paddingTop: 0 }}>
-        <ApplePayButton variant="contained" startIcon={<ApplePayIcon />} disabled={!amount} onClick={() => paymentRequest.show() } />
+        <ApplePayButton variant="contained" startIcon={<ApplePayIcon />} disabled={!amount} onClick={() => paymentRequest.show()} />
         <LoadingButton
           size="medium"
           sx={{ paddingLeft: 5, paddingRight: 5 }}

@@ -1,14 +1,14 @@
 // ----------------------------------------------------------------------
 
 const ROOTS = {
-  AUTH: '/auth',
-  DASHBOARD: '/dashboard',
+  AUTH: "/auth",
+  DASHBOARD: "/dashboard",
 };
 
 // ----------------------------------------------------------------------
 
 export const paths = {
-  minimalUI: 'https://mui.com/store/items/minimal-dashboard/',
+  minimalUI: "https://mui.com/store/items/minimal-dashboard/",
   // AUTH
   auth: {
     jwt: {
@@ -24,6 +24,7 @@ export const paths = {
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
+    overview: `${ROOTS.DASHBOARD}/overview`,
     tracking: `${ROOTS.DASHBOARD}/tracking`,
     strategy: `${ROOTS.DASHBOARD}/strategy`,
     profile: `${ROOTS.DASHBOARD}/profile`,
@@ -52,6 +53,6 @@ export const paths = {
   },
 
   error: {
-    somethingWrong: '/something-wrong',
+    somethingWrong: "/something-wrong",
   },
 };
