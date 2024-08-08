@@ -94,16 +94,15 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     confirmPaymentMethod,
     () => {
       // router.replace("/");
+      setIsLoading(!isLoading);
     }
   );
 
   useEffect(() => {
-    if (amount) {
-      createPaymentRequest(
-        'credits',
-        amount,
-      )
-    }
+    createPaymentRequest(
+      'credits',
+      amount,
+    )
   }, [createPaymentRequest, amount]);
 
   const payStripeCardPayment = usePayStripeCardPayment();
@@ -259,7 +258,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
       </Stack>
 
       <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3, paddingTop: 0 }}>
-        {paymentRequest && <ApplePayButton variant="contained" startIcon={<ApplePayIcon />} onClick={() => paymentRequest.show() } />}
+        <ApplePayButton variant="contained" startIcon={<ApplePayIcon />} disabled={!amount} onClick={() => paymentRequest.show() } />
         <LoadingButton
           size="medium"
           sx={{ paddingLeft: 5, paddingRight: 5 }}
