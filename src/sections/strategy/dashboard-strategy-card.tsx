@@ -1,7 +1,7 @@
 // Desc: This file contains the content of the strategy dashboard.
 
 import { ChartContainer } from '@mui/x-charts/ChartContainer';
-import { Box, Stack, alpha, BoxProps, Typography } from '@mui/material';
+import { Box, Stack, Button, BoxProps, Typography } from '@mui/material';
 import {
     LinePlot,
     MarkPlot,
@@ -37,14 +37,14 @@ export default function DashboardStrategyCard({ sx, ...other }: DashboardStrateg
         frontContent={
             <Box sx={{
                 height: '100%',
-                border: "1px solid white",
+                border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
                 p: 2,
                 borderRadius: 2,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 gap: 2,
-                backgroundColor: (theme: any) => alpha(theme.palette.primary.dark, 0.2),
+                backgroundColor: '#674b2e',
                 backdropFilter: 'blur(10px)',
                 ...sx,
             }} {...other}>
@@ -99,8 +99,8 @@ export default function DashboardStrategyCard({ sx, ...other }: DashboardStrateg
                             <MarkPlot />
                         </ChartContainer>
 
-                        <Typography variant="h4">MAX DRAWDOWN</Typography>
-                        <Typography variant="h4">PER % WEEK</Typography>
+                        <Typography variant="h6" sx={{ lineHeight: '100%', mb: 1 }}>MAX DRAWDOWN</Typography>
+                        <Typography variant="h6" sx={{ lineHeight: '100%', mb: 1 }}>PER % WEEK</Typography>
                     </Box>
 
                     <Stack direction="row" justifyContent="space-between" sx={{
@@ -108,23 +108,29 @@ export default function DashboardStrategyCard({ sx, ...other }: DashboardStrateg
                         borderTop: (theme: any) => `4px solid ${theme.palette.primary.main}`,
                         p: 1,
                     }}>
-                        <Typography variant="h4">25%</Typography>
-                        <Typography variant="h4">PER</Typography>
-                        <Typography variant="h4">Week</Typography>
+                        <Typography variant="h6">25%</Typography>
+                        <Typography variant="h6">PER</Typography>
+                        <Typography variant="h6">Week</Typography>
+                    </Stack>
+                    <Stack direction="row" justifyContent="space-between" sx={{
+                        width: '100%',
+                    }}>
+                        <Button variant="contained" color="primary" size="small">+ Plugin Ai</Button>
+                        <Button variant="contained" color="primary" size="small">Analytics</Button>
                     </Stack>
                 </Box>
             </Box>
         }
         backContent={
             <Box sx={{
-                border: "1px solid white",
+                border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
                 p: 2,
                 borderRadius: 2,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 gap: 2,
-                backgroundColor: (theme: any) => alpha(theme.palette.primary.dark, 0.2),
+                backgroundColor: '#674b2e',
                 backdropFilter: 'blur(10px)',
                 height: '100%',
                 ...sx,

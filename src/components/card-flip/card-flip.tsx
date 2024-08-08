@@ -77,7 +77,7 @@ const CardFlip: React.FC<ICardFlipProps> = ({
                     top: 0,
                     left: 0,
                     backfaceVisibility: "hidden",
-                    zIndex: 2,
+                    zIndex: isFlipped ? 0 : 1,
                     transform: "rotateY(0deg)",
                 }}>
                     {
@@ -91,7 +91,7 @@ const CardFlip: React.FC<ICardFlipProps> = ({
                     top: 0,
                     left: 0,
                     backfaceVisibility: "hidden",
-                    zIndex: 1,
+                    zIndex: isFlipped ? 1 : 0,
                     transform: "rotateY(180deg)",
                 }}>
                     {

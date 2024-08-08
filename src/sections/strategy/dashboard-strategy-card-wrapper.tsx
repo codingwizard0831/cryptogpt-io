@@ -27,7 +27,6 @@ export default function DashboardStrategyCardWrapper({ sx, ...other }: Dashboard
         width: '1280px',
         height: '480px',
         border: "1px solid white",
-        backdropFilter: "blur(10px)",
         p: 2,
         display: 'flex',
         flexDirection: 'column',
