@@ -119,7 +119,12 @@ export default function DashboardStrategyStep2({ sx, ...other }: DashboardStrate
                     <TextField fullWidth label="Take profit" />
                 </Stack>
 
-                <FormControl variant="outlined" sx={{ width: '100%' }}>
+                <FormControl sx={{
+                    width: '100%',
+                    '.MuiInputBase-root': {
+                        border: 'none',
+                    },
+                }}>
                     <InputLabel htmlFor="time-frame-label">Time frame</InputLabel>
                     <Select labelId="time-frame-label" id="time-frame" label="Time frame" value="5m" sx={{
                         border: (theme: any) => `1px solid ${theme.palette.primary.main}`

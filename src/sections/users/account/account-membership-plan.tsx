@@ -111,7 +111,7 @@ const UIComponents = () => {
 
   const [selectedPlan, setSelectedPlan] = useState(0);
   const [currentTab, setCurrentTab] = useState('Premium Plan');
-  const [currentPlanTab, setCurrentPlanTab] = useState<Any>({});
+  const [currentPlanTab, setCurrentPlanTab] = useState<any>({});
   const { membershipPlanDict } = useMembershipPlansContext();
   const current_user_plan = useLastPossibleSubsriptionUserMembershipPlan();
 
