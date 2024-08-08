@@ -106,7 +106,7 @@ const NavItem = forwardRef<HTMLDivElement, NavItemProps>(
         color="inherit"
         underline="none"
         sx={{
-          width: 1,
+          width: '50px',
           ...(disabled && {
             cursor: 'default',
           }),
@@ -184,7 +184,7 @@ const StyledNavItem = styled(ListItemButton, {
       },
       '& .label': {
         ...baseStyles.label,
-        marginTop: theme.spacing(0.5),
+        marginTop: theme.spacing(0.25),
       },
       '& .caption': {
         ...baseStyles.caption,
