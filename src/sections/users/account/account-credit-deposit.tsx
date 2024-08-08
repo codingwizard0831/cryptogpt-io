@@ -109,7 +109,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
   useEffect(() => {
     createPaymentRequest(
       'credits',
-      amount,
+      amount * 100,
     )
   }, [createPaymentRequest, amount]);
 
