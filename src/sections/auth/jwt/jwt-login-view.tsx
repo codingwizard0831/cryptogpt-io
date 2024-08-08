@@ -155,7 +155,7 @@ export default function JwtLoginView() {
     } catch (error) {
       console.error(error);
       isSubmitting.onFalse();
-      enqueueSnackbar(error.message, { variant: 'error' });
+      enqueueSnackbar("Something wrong!", { variant: 'error' });
     }
   }
 
