@@ -7,6 +7,8 @@ export async function POST(req: Request) {
   try {
     const { user_id, payment_intent_id, amount } = await req.json();
 
+    console.log(user_id, payment_intent_id, amount)
+
     if (!user_id || !payment_intent_id || !amount) {
       return NextResponse.json({ success: false, error: 'Missing user_id or payment_intent_id or amount' }, { status: 400 });
     }
