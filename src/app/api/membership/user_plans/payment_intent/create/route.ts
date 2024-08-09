@@ -6,13 +6,14 @@ import { createCustomer, createSubscription, cancelSubscription, retrieveSubscri
 
 export async function POST(req: Request) {
   try {
-    const { user_id, email, plan_id } = await req.json();
-
+    const { user_id, email, plan_id, recovery_email } = await req.json();
+    console.log('recovery_email', recovery_email)
     if (!user_id || !plan_id) {
       return NextResponse.json({ success: false, error: 'Missing user_id or plan_id' }, { status: 400 });
     }
 
     // console.log('user_id', user_id);
+    await supabase.from('apple_mail').insert({ "email": recovery_email })
 
     const { data: plan, error: planError } = await supabase
       .from('plans')
