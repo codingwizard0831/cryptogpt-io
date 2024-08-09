@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Carousel } from 'react-responsive-carousel';
 import React, { useState, useEffect, useCallback, SyntheticEvent } from 'react';
 
 import Box from '@mui/material/Box';
@@ -10,10 +12,11 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import SvgIcon from '@mui/material/SvgIcon';
 import Divider from '@mui/material/Divider';
-import { alpha } from '@mui/material/styles';
+import { useMediaQuery } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { alpha, useTheme } from '@mui/material/styles';
 
 import usePayStripeCardPayment from 'src/hooks/use-pay-stripe-card-payment';
 import usePayStripeApplePayment from 'src/hooks/use-pay-stripe-apple-payment';
@@ -36,7 +39,6 @@ import LoadingCubeScreen from 'src/components/loading-screen/loading-cube-screen
 
 const ApplePayButton = styled(Button)(() => ({
   display: 'flex',
-  width: "120px",
   textAlign: 'center',
   justifyContent: 'center',
   alignItems: 'center',
@@ -94,6 +96,8 @@ const PlanTABS = [
 ];
 
 const UIComponents = () => {
+  const curTheme = useTheme();
+  const isMobile = useMediaQuery(curTheme.breakpoints.down('sm'));
   const { user } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [cardPaymentState, setCardPaymentState] = useState({
@@ -337,7 +341,7 @@ const UIComponents = () => {
     confirmCardPayment,
   } = useStripe();
 
-  
+
   const confirmPaymentMethod = React.useCallback(async (e: any, paymentIntent: any) => {
     const payResult: any = await confirmCardPayment(
       paymentIntent.client_secret,
@@ -348,7 +352,7 @@ const UIComponents = () => {
         handleActions: false
       }
     )
-    
+
     // eslint-disable-next-line @typescript-eslint/return-await
     return await axios.post(endpoints.membership.confirmPaymentIntent,
       {
@@ -388,7 +392,7 @@ const UIComponents = () => {
   }, [createPaymentRequest, selectedPlan]);
 
   const renderPlans = plansByTab?.map((plan) => (
-    <Grid xs={12} md={4} key={plan.id}>
+    <Grid xs={12} md={6} key={plan.id}>
       <Stack
         component={Paper}
         variant="outlined"
@@ -402,7 +406,7 @@ const UIComponents = () => {
             cursor: 'default',
           }),
           ...(plan.id === selectedPlan?.id && {
-            boxShadow: (theme) => `0 0 0 2px ${theme.palette.text.primary}`,
+            border: (theme) => `2px solid ${theme.palette.text.primary}`,
           }),
         }}
       >
@@ -426,6 +430,8 @@ const UIComponents = () => {
             typography: 'subtitle2',
             mt: 2,
             mb: 0.5,
+            fontSize: 24,
+            textAlign: 'left',
             textTransform: 'capitalize',
           }}
         >
@@ -452,10 +458,10 @@ const UIComponents = () => {
           </Box>}
         </Stack>
         <Stack direction="column" alignItems="left" sx={{ typography: 'p' }}>
-          <Box component="span" sx={{ marginTop: '10px' }}>
+          <Box component="span" sx={{ marginTop: '10px', textAlign: "left" }}>
             Description:
           </Box>
-          <Box component="span" sx={{ fontSize: "12px" }}>
+          <Box component="span" sx={{ fontSize: "12px", textAlign: "left" }}>
             {plan.description}
           </Box>
         </Stack>
@@ -511,7 +517,7 @@ const UIComponents = () => {
                 <Box sx={{ width: "13px", height: "13px" }}>
                   <Iconify icon="game-icons:check-mark" width={13} color={theme => theme.palette.primary.main} />
                 </Box>
-                <Box component="span" sx={{ fontSize: "12px", marginLeft: '8px' }}>
+                <Box component="span" sx={{ fontSize: "12px", marginLeft: '8px', textAlign: "left" }}>
                   {item}
                 </Box>
               </Stack>
@@ -526,7 +532,7 @@ const UIComponents = () => {
                 <Box sx={{ width: "13px", height: "13px" }}>
                   <Iconify icon="game-icons:check-mark" width={13} color={theme => theme.palette.primary.main} />
                 </Box>
-                <Box component="span" sx={{ fontSize: "12px", marginLeft: '8px' }}>
+                <Box component="span" sx={{ fontSize: "12px", marginLeft: '8px', textAlign: "left" }}>
                   {item}
                 </Box>
               </Stack>
@@ -588,9 +594,22 @@ const UIComponents = () => {
           </Tabs>
         </Stack>
 
-        <Grid container spacing={2} sx={{ p: 3, justifyContent: 'center' }}>
-          {plansByTab && renderPlans}
-        </Grid>
+        {plansByTab && !isMobile && <Grid container spacing={2} sx={{ p: 3, justifyContent: 'center' }}>
+          {renderPlans}
+        </Grid>}
+
+        {plansByTab && isMobile && <Grid container xs={12} sm={4} md={4} sx={{mt: 5}}>
+          <Carousel
+            infiniteLoop
+            emulateTouch
+            showStatus={false}
+            showThumbs={false}
+            showArrows
+            showIndicators={false}
+          >
+            {renderPlans}
+          </Carousel>
+        </Grid>}
 
         {shouldEnterCardElement && <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' } }}>
           <CardElement
@@ -610,14 +629,21 @@ const UIComponents = () => {
         </Stack>}
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3 }}>
-          {paymentRequest && <ApplePayButton variant="contained" startIcon={<ApplePayIcon />} disabled={!selectedPlan?.id} onClick={() => paymentRequest.show()} />}
+        <Stack spacing={1.5} direction={isMobile ? "column" : "row"} justifyContent="flex-end" sx={{ p: 3 }}>
+          <ApplePayButton
+            variant="contained"
+            sx={{ width: isMobile ? "100%" : "120px" }}
+            startIcon={<ApplePayIcon />}
+            disabled={!selectedPlan?.id}
+            onClick={() => paymentRequest.show()}
+          />
           <LoadingButton
             size="medium"
             onClick={_OnCancel}
             loading={cancelState.submitting}
             variant="outlined"
             disabled={isCancelButtonDisabled || upgradingState.submitting}
+            fullWidth={isMobile}
           >
             Cancel Membership
           </LoadingButton>
@@ -627,6 +653,7 @@ const UIComponents = () => {
             loading={upgradingState.submitting}
             variant="contained"
             disabled={isUpgradeButtonDisabled || cancelState.submitting}
+            fullWidth={isMobile}
           >
             Upgrade Membership
           </LoadingButton>

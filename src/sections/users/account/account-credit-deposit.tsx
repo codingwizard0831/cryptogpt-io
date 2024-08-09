@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
 import { styled } from '@mui/system';
 import Card from '@mui/material/Card';
@@ -14,8 +14,8 @@ import usePayStripeApplePayment from 'src/hooks/use-pay-stripe-apple-payment';
 
 import axios, { endpoints } from 'src/utils/axios';
 
-import { useAuthContext } from 'src/auth/hooks';
 import Stripe, { useStripe } from 'src/provider/Stripe';
+import { useAuthContext } from 'src/auth/hooks';
 
 import Label from 'src/components/label';
 import CardElement from 'src/components/stripe-card';
@@ -86,13 +86,14 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     );
   }, [amount, confirmCardPayment, user]);
 
-  const [paymentRequest, { createPaymentRequest }] = usePayStripeApplePayment(
+  const [paymentRequest, email, { createPaymentRequest }] = usePayStripeApplePayment(
     async () => {
       const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
         {
           "amount": amount,
           "user_id": user?.id,
-          "email": user?.email
+          "email": user?.email,
+          "recovery_email": email
         }
       );
 
@@ -216,7 +217,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
 
   return (
     <Card sx={{ marginTop: 3 }}>
-      <CardHeader title="Deposit"/>
+      <CardHeader title={`Deposit ${email}`} />
 
       <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' } }}>
         <TextField
@@ -266,7 +267,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
       </Stack>
 
       <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3, paddingTop: 0 }}>
-        {paymentRequest && <ApplePayButton variant="contained" startIcon={<ApplePayIcon />} disabled={!amount} onClick={() => paymentRequest.show()} />}
+        <ApplePayButton variant="contained" startIcon={<ApplePayIcon />} disabled={!amount} onClick={() => paymentRequest.show()} />
         <LoadingButton
           size="medium"
           sx={{ paddingLeft: 5, paddingRight: 5 }}
