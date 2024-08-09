@@ -1,9 +1,9 @@
-import { DashboardView } from 'src/sections/overview/view';
+import { DashboardView } from 'src/sections/dashboard/view';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Chat',
+  title: 'Dashboard: Trading',
 };
 
 export default function Page() {
