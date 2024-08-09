@@ -1,11 +1,11 @@
-import { DashboardView } from 'src/sections/overview/view';
+import { ModelsView } from 'src/sections/overview/overview-models';
 
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Dashboard: Chat',
+  title: 'Dashboard: Models',
 };
 
 export default function Page() {
-  return <DashboardView />;
+  return <ModelsView />;
 }

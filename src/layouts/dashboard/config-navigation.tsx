@@ -65,6 +65,7 @@ export function useNavData() {
         subheader: ' ',
         items: [
           { title: 'DASHBOARD', path: paths.dashboard.root, icon: ICONS.dashboard, tooltip: "" },
+          { title: 'TRADING', path: paths.dashboard.trading, icon: ICONS.dashboard, tooltip: "" },
           { title: 'TRACKING', path: paths.dashboard.tracking, icon: ICONS.tracking, tooltip: "" },
           { title: 'STRATEGY', path: paths.dashboard.strategy, icon: ICONS.strategy, tooltip: "" },
           { title: 'DISCOVER', path: paths.dashboard.user.root, icon: ICONS.discover, tooltip: "" },
