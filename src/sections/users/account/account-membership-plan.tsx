@@ -601,7 +601,7 @@ const UIComponents = () => {
         {plansByTab && isMobile && <Grid container xs={12} sm={4} md={4} sx={{mt: 5}}>
           <Carousel
             infiniteLoop
-            emulateTouch
+            emulateTouch={false}
             showStatus={false}
             showThumbs={false}
             showArrows
@@ -630,13 +630,13 @@ const UIComponents = () => {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack spacing={1.5} direction={isMobile ? "column" : "row"} justifyContent="flex-end" sx={{ p: 3 }}>
-          <ApplePayButton
+          {paymentRequest && <ApplePayButton
             variant="contained"
             sx={{ width: isMobile ? "100%" : "120px" }}
             startIcon={<ApplePayIcon />}
             disabled={!selectedPlan?.id}
             onClick={() => paymentRequest.show()}
-          />
+          />}
           <LoadingButton
             size="medium"
             onClick={_OnCancel}
