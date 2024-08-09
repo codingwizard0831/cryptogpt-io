@@ -18,7 +18,6 @@ export default function usePayStripeApplePayment(getPaymentIntent: any, confirmP
     confirmPaymentMethodRef.current = confirmPaymentMethod;
 
     const [paymentRequest, _SetPaymentRequest] = useState<any>(null);
-    const [email, setEmail] = useState("test");
     const paymentRequestRef = useRef<any>(paymentRequest);
     const setPaymentRequest = useCallback((value: any) => {
         paymentRequestRef.current = value;
@@ -128,8 +127,6 @@ export default function usePayStripeApplePayment(getPaymentIntent: any, confirmP
         }
         // Check the availability of the Payment Request API.
         pr.on('paymentmethod', (e: any) => {
-            const { payerEmail } = e;
-            setEmail(payerEmail);
             _OnPaymentMethodRef.current(e);
         });
         const result = await pr.canMakePayment();
@@ -141,7 +138,7 @@ export default function usePayStripeApplePayment(getPaymentIntent: any, confirmP
             setPaymentRequest(null);
         }
         return paymentRequestRef.current;
-    }, [paymentRequestRef, _OnPaymentMethodRef, setPaymentRequest, setEmail, _CreatePaymentRequest]);
+    }, [paymentRequestRef, _OnPaymentMethodRef, setPaymentRequest, _CreatePaymentRequest]);
 
     const actions = useMemo(() => (
         {
@@ -150,5 +147,5 @@ export default function usePayStripeApplePayment(getPaymentIntent: any, confirmP
         }
     ), [createPaymentRequest, setPaymentRequest]);
 
-    return [paymentRequest, email, actions];
+    return [paymentRequest, actions];
 }
