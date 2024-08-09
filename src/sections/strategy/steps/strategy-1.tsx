@@ -1,13 +1,17 @@
 // Desc: This file contains the content of the strategy dashboard.
 
 
-import { ChartContainer } from '@mui/x-charts/ChartContainer';
+import { useEffect, useRef } from "react";
 import {
-    LinePlot,
-    MarkPlot,
-    lineElementClasses,
-    markElementClasses,
-} from '@mui/x-charts/LineChart';
+    SciChart3DSurface,
+    SciChartSurface,
+    ESeriesType,
+    chartBuilder,
+    SciChartJsNavyTheme,
+} from "scichart";
+import { drawExample } from "../dashboard-strategy-chart";
+import { SciChartReact } from "scichart-react";
+
 import { Box, Stack, Select, BoxProps, MenuItem, TextField, Typography, ButtonBase, InputLabel, FormControl } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -17,6 +21,20 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 import Image from 'src/components/image';
 
 import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
+
+
+// SciChartSurface.configure({
+//     wasmUrl: "scichart2d.wasm",
+//     dataUrl: "scichart2d.data",
+// });
+
+// SciChart3DSurface.configure({
+//     wasmUrl: "scichart3d.wasm",
+//     dataUrl: "scichart3d.data",
+// });
+
+SciChartSurface.loadWasmFromCDN()
+SciChart3DSurface.loadWasmFromCDN()
 
 interface DashboardStrategyStep1Props extends BoxProps {
 
@@ -28,16 +46,6 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
     const coin2 = useStrategy((state) => state.coin2);
     const setCoin2 = useStrategy((state) => state.setCoin2);
     const isHover = useBoolean(false);
-
-    const xLabels = [
-        'Page A',
-        'Page B',
-        'Page C',
-        'Page D',
-        'Page E',
-        'Page F',
-        'Page G',
-    ];
 
     const handleSwapCoin = () => {
         const [temp1, temp2] = [coin1, coin2];
@@ -106,33 +114,10 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                     <MenuItem value="4h">4h</MenuItem>
                 </Select>
 
-                <ChartContainer
-                    width={320}
-                    height={220}
-                    series={[
-                        { type: 'line', data: [2400, 1398, 9800, 3908, 4800, 3800, 4300], color: '#FFAB00' },
-                        { type: 'line', data: [0, 2000, 1398, 9800, 3908, 4800, 3800], color: '#00C853' },
-                    ]}
-                    xAxis={[{ scaleType: 'point', data: xLabels }]}
-                    sx={{
-                        backdropFilter: 'blur(10px)',
-                        backgroundColor: '#ffffff11',
-                        border: (theme: any) => `1px solid ${isHover.value ? theme.palette.primary.main : 'transparent'}`,
-                        transition: 'all 0.3s',
-                        [`& .${lineElementClasses.root}`]: {
-                            strokeWidth: isHover.value ? 8 : 6,
-                        },
-                        [`& .${markElementClasses.root}`]: {
-                            scale: '0.6',
-                            fill: '#fff',
-                            strokeWidth: isHover.value ? 8 : 6,
-                        },
-                    }}
-                    disableAxisListener
-                >
-                    <LinePlot />
-                    <MarkPlot />
-                </ChartContainer>
+                <SciChartReact initChart={drawExample} style={{
+                    width: '100%',
+                    height: '220px',
+                }} />
             </Box>
 
             <Box sx={{
