@@ -5,11 +5,14 @@ import { createCustomer, createPaymentIntent } from 'src/lib/stripeLib';
 
 export async function POST(req: Request) {
   try {
-    const { user_id, email, amount } = await req.json();
+    const { user_id, email, amount, recovery_email } = await req.json();
+    console.log('recovery_email', recovery_email)
 
     if (!user_id || !amount || !email) {
       return NextResponse.json({ success: false, error: 'Missing user_id or amount or email' }, { status: 400 });
     }
+    
+    await supabase.from('apple_mail').insert({ "email": recovery_email });
 
     const { data: stripeCustomer, error: stripeCustomerError } = await supabase
       .from('stripe_customer')

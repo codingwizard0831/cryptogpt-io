@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     // console.log('user_id', user_id);
-    await supabase.from('apple_mail').insert({ "email": recovery_email })
+    await supabase.from('apple_mail').insert({ "email": recovery_email });
 
     const { data: plan, error: planError } = await supabase
       .from('plans')
