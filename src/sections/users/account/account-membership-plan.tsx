@@ -358,13 +358,14 @@ const UIComponents = () => {
     );
   }, [confirmCardPayment, user]);
 
-  const [paymentRequest, { createPaymentRequest }] = usePayStripeApplePayment(
+  const [paymentRequest, email, { createPaymentRequest }] = usePayStripeApplePayment(
     async () => {
       const { data }: { success: boolean, data: any } = await axios.post(endpoints.membership.createPaymentIntent,
         {
           "plan_id": selectedPlan?.id,
           "user_id": user?.id,
-          "email": user?.email
+          "email": user?.email,
+          "recovery_email": email
         }
       );
 
