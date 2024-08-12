@@ -3,16 +3,19 @@
 import { Leva, button, useControls } from 'leva';
 import { degToRad } from 'three/src/math/MathUtils';
 import { Canvas, useThree } from '@react-three/fiber';
-import { useRef, Suspense, useEffect, FunctionComponent } from 'react';
+import { useRef, Suspense, useState, useEffect, FunctionComponent } from 'react';
 import { Gltf, Html, Float, Loader, useGLTF, Environment, CameraControls } from '@react-three/drei';
 
-import { Box, Card, Button } from '@mui/material';
+import { Box, Card, alpha, Stack, styled, Button, Typography } from '@mui/material';
+import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
 // import { BoardSettings } from "./BoardSettings";
 // import { MessagesList } from "./MessagesList";
 // import { Teacher } from "./Teacher";
 // import { TypingBox } from "./TypingBox";
 
 import { AmbientLight, DirectionalLight } from 'three';
+
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import CanvasLayout from 'src/layouts/common/canvas-layout';
 import { useStrategy } from 'src/store/strategy/useStrategy';
@@ -22,6 +25,22 @@ import StrategyCoinModel from '../dashboard-strategy-coin';
 import DashboardStrategyTeacher from '../dashboard-strategy-teacher';
 import DashboardStrategyContent from '../dashboard-strategy-content';
 import DashboardStrategyCardWrapper from '../dashboard-strategy-card-wrapper';
+
+
+const Textarea = styled(BaseTextareaAutosize)(
+  ({ theme }) => `
+box-sizing: border-box;
+width: 100%;
+font-size: 0.875rem;
+font-weight: 400;
+line-height: 1.5;
+border: none;
+outline: none;
+resize: none;
+color: ${theme.palette.mode === 'dark' ? theme.palette.grey[300] : theme.palette.grey[900]};
+background: transparent;
+`,
+);
 
 interface ItemPlacement {
   [key: string]: {
@@ -105,6 +124,8 @@ export default function DashboardStrategyView() {
   const step = useStrategy((state) => state.step);
   const coin1 = useStrategy((state) => state.coin1);
   const coin2 = useStrategy((state) => state.coin2);
+  const [text, setText] = useState('');
+  const isFocus = useBoolean();
 
   return (
     <Box
@@ -127,18 +148,60 @@ export default function DashboardStrategyView() {
           boxShadow: 2,
           height: '100%',
           // display: 'none',
+          position: 'relative',
         }}
       >
-        <div className="z-10 md:justify-center fixed bottom-4 left-4 right-4 flex gap-3 flex-wrap justify-stretch">
-          {/* <TypingBox /> */}
-          <Button>TEST</Button>
-        </div>
+        <Box sx={{
+          width: 'calc(100vw - 48px)',
+          maxWidth: '800px',
+          position: 'absolute',
+          bottom: '50px',
+          left: '50%',
+          transform: 'translate(-50%, 0)',
+          zIndex: 100,
+          backdropFilter: 'blur(10px)',
+          border: (theme: any) => `2px solid ${theme.palette.primary.main}`,
+          backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.1),
+          borderRadius: 1,
+          p: 1,
+        }}>
+          <Typography variant="h6">How to say xxxx?</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondry', mb: 2 }}>Type a sentecnes you want to say?</Typography>
+
+          <Stack direction="row" alignItems="end" justifyContent="space-between" spacing={1}>
+            <Box sx={{
+              transition: 'all 0.3s',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 1,
+              p: 1,
+              flex: 1,
+              border: (theme: any) => `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
+              ...(
+                isFocus.value && {
+                  backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.05),
+                }
+              )
+            }}>
+              <Textarea value={text} onChange={(e: any) => setText(e.target.value)} placeholder="Message" onFocus={() => isFocus.onTrue()} onBlur={() => isFocus.onFalse()} sx={{
+                width: '100%',
+                height: '100%',
+              }} />
+            </Box>
+            <Button variant="contained" size="small" color="primary">Ask</Button>
+          </Stack>
+        </Box>
+
         <Leva hidden />
         <Loader />
         <Canvas
           shadows
           camera={{
             position: [0, 0, 0.0001],
+          }}
+          style={{
+            zIndex: 1,
           }}
         >
           <CameraManager />

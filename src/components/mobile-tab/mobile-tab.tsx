@@ -89,7 +89,7 @@ const menuButtons: MenuButton[] = [
     { icon: <Iconify icon="pepicons-pop:coins" />, id: '1.choose-pair' },
     { icon: <Iconify icon="hugeicons:bitcoin-invoice" />, id: '2.detail' },
     { icon: <Iconify icon="tdesign:indicator" />, id: '3.configure-indicators' },
-    { icon: <Iconify icon="vaadin:chart-3d" />, id: '4.backtesting' },
+    { icon: <Iconify icon="carbon:chart-multitype" />, id: '4.backtesting' },
     { icon: <Iconify icon="vaadin:chart-3d" />, id: '5' },
     { icon: <Iconify icon="vaadin:chart-3d" />, id: '6' },
 ];

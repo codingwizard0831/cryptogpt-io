@@ -1,16 +1,11 @@
 // Desc: This file contains the content of the strategy dashboard.
 
 
-import { useEffect, useRef } from "react";
-import {
-    SciChart3DSurface,
-    SciChartSurface,
-    ESeriesType,
-    chartBuilder,
-    SciChartJsNavyTheme,
-} from "scichart";
-import { drawExample } from "../dashboard-strategy-chart";
 import { SciChartReact } from "scichart-react";
+import {
+    SciChartSurface,
+    SciChart3DSurface,
+} from "scichart";
 
 import { Box, Stack, Select, BoxProps, MenuItem, TextField, Typography, ButtonBase, InputLabel, FormControl } from '@mui/material';
 
@@ -20,6 +15,7 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Image from 'src/components/image';
 
+import { drawExample } from "../dashboard-strategy-chart";
 import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
 
 
@@ -73,7 +69,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
             }}>
                 <ButtonBase sx={{
                 }} onClick={() => handleSwapCoin()}>
-                    <Image src="/assets/icons/project/ethereum-to-dollar-swap.png" alt="swap" sx={{
+                    <Image src="/assets/images/ethereum-to-dollar-swap.png" alt="swap" sx={{
                         width: '96px',
                         height: '96px',
                     }} />
