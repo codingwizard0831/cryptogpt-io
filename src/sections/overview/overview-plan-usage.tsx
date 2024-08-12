@@ -4,7 +4,7 @@ import React from 'react';
 
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, Card } from '@mui/material';
 
 import PlanUsageModal from './PlanUsageModal';
 import PlanUsageModalChart from './PlanUsageModalChart';
@@ -42,7 +42,7 @@ const OverviewPlanUsage: React.FC = () => {
 	}, [currentIndex]);
 
 	return (
-		<Box sx={{ bgcolor: 'grey.900', color: 'text.primary', p: 3, borderRadius: 2, maxWidth: 450, height: '100%' }}>
+		<Card sx={{ color: 'text.primary', p: 3, borderRadius: 2, height: '100%' }}>
 			<Box Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
 				<ArrowBackIosIcon sx={{ color: 'grey.500', cursor: 'pointer' }} />
 				<Box sx={{ textAlign: 'center' }}>
@@ -61,7 +61,7 @@ const OverviewPlanUsage: React.FC = () => {
 			<Button
 				variant="contained"
 				fullWidth
-				sx={{ mt: 2, bgcolor: 'grey.800', '&:hover': { bgcolor: 'grey.700' }, color: "text.primary" }}
+				sx={{ mt: 2, bgcolor: theme => theme.palette.primary.main, color: "text.primary" }}
 				onClick={() => setOpen(true)}
 			>
 				View Usage
@@ -71,7 +71,7 @@ const OverviewPlanUsage: React.FC = () => {
 				onClose={() => setOpen(false)}
 				usageData={usageData}
 			/>
-		</Box >
+		</Card >
 	);
 };
 

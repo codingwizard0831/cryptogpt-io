@@ -9,16 +9,15 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Paper,
   IconButton,
   InputAdornment,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Card
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
@@ -88,7 +87,7 @@ const ManageAgents: React.FC = () => {
   }, [agents, searchTerm, filter]);
 
   return (
-    <Box sx={{ bgcolor: 'background.default', color: 'text.primary', p: 3 }}>
+    <Card sx={{ color: 'text.primary', p: 3 }}>
       <Typography variant="h6" gutterBottom>
         Manage agents to access knowledge bases and facilitate OnDemand model interaction with external services.
       </Typography>
@@ -106,7 +105,7 @@ const ManageAgents: React.FC = () => {
               </InputAdornment>
             ),
           }}
-          sx={{ width: '50%', bgcolor: 'background.paper' }}
+          sx={{ width: '50%', bgcolor: 'rgba(249, 250, 251, 0.08)' }}
         />
         <Box>
           {['All Agents', 'Chat Agents', 'File Agents'].map((text) => (
@@ -114,7 +113,8 @@ const ManageAgents: React.FC = () => {
               key={text}
               variant={filter === text ? "contained" : "outlined"}
               onClick={() => setFilter(text)}
-              sx={{ mx: 1 }}
+              color="primary"
+              sx={{ mx: 1, color: "text.primary" }}
             >
               {text}
             </Button>
@@ -122,42 +122,55 @@ const ManageAgents: React.FC = () => {
         </Box>
       </Box>
 
-      <TableContainer component={Paper} sx={{ bgcolor: 'background.paper' }}>
-        <Table sx={{ minWidth: 650 }} aria-label="agents table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Icon</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Agent ID</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Action</TableCell>
+      <Table sx={{
+        "& tr": {
+          px: 1,
+        },
+        "& td,th": {
+          py: 0.5,
+          px: 2,
+        },
+        "& tbody tr": {
+          py: 0.5,
+          transition: 'background-color 0.3s',
+          "&:hover": {
+            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+          },
+        },
+      }} aria-label="agents table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Icon</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Agent ID</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell>Category</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {filteredAgents.map((agent) => (
+            <TableRow key={agent.agentId}>
+              <TableCell>{agent.icon}</TableCell>
+              <TableCell>
+                <Typography variant="body1">{agent.name}</Typography>
+                <Typography variant="caption" color="text.secondary">Last modified on: {agent.lastModified}</Typography>
+              </TableCell>
+              <TableCell>{agent.agentId}</TableCell>
+              <TableCell>{agent.type}</TableCell>
+              <TableCell>{agent.category}</TableCell>
+              <TableCell>
+                <Typography color="success.main">{agent.status}</Typography>
+              </TableCell>
+              <TableCell>
+                <Button variant="outlined" startIcon={<EditIcon />} sx={{ mr: 1 }} onClick={() => handleEdit(agent)}>Edit</Button>
+                <Button variant="outlined" color="error" onClick={() => handleUnsubscribe(agent.agentId)}>Unsubscribe</Button>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredAgents.map((agent) => (
-              <TableRow key={agent.agentId}>
-                <TableCell>{agent.icon}</TableCell>
-                <TableCell>
-                  <Typography variant="body1">{agent.name}</Typography>
-                  <Typography variant="caption" color="text.secondary">Last modified on: {agent.lastModified}</Typography>
-                </TableCell>
-                <TableCell>{agent.agentId}</TableCell>
-                <TableCell>{agent.type}</TableCell>
-                <TableCell>{agent.category}</TableCell>
-                <TableCell>
-                  <Typography color="success.main">{agent.status}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Button variant="outlined" startIcon={<EditIcon />} sx={{ mr: 1 }} onClick={() => handleEdit(agent)}>Edit</Button>
-                  <Button variant="outlined" color="error" onClick={() => handleUnsubscribe(agent.agentId)}>Unsubscribe</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          ))}
+        </TableBody>
+      </Table>
 
       <IconButton sx={{ position: 'fixed', bottom: 16, right: 16 }}>
         <HelpOutlineIcon />
@@ -205,7 +218,7 @@ const ManageAgents: React.FC = () => {
           <Button onClick={handleSaveEdit}>Save</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Card>
   );
 };
 

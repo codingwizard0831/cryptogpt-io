@@ -2,7 +2,7 @@ import React from 'react';
 import {
     Box,
     Typography,
-    Paper
+    Card
 } from '@mui/material';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
@@ -24,7 +24,7 @@ const OverviewFilesStats: React.FC<FilesStatsOverviewProps> = ({ filesUploaded, 
     };
 
     return (
-        <Paper sx={{ bgcolor: 'grey.900', color: 'text.primary', p: 3, borderRadius: 2 }}>
+        <Card sx={{ color: 'text.primary', p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom>
                 Files Stats Overview
             </Typography>
@@ -56,7 +56,7 @@ const OverviewFilesStats: React.FC<FilesStatsOverviewProps> = ({ filesUploaded, 
                     </AreaChart>
                 </ResponsiveContainer>
             </Box>
-        </Paper>
+        </Card>
     );
 };
 

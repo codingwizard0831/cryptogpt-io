@@ -26,8 +26,8 @@ const CircularProgressChart: React.FC<CircularProgressChartProps> = ({ percentag
                         endAngle={-270}
                         dataKey="value"
                     >
-                        <Cell fill="#333333" /> {/* Progress color */}
-                        <Cell fill="#1e1e1e" /> {/* Background color */}
+                        <Cell fill="#fda92d" /> {/* Progress color */}
+                        <Cell fill="rgba(249, 250, 251, 0.08)" /> {/* Background color */}
                     </Pie>
                 </PieChart>
             </ResponsiveContainer>

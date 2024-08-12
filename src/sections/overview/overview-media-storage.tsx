@@ -5,13 +5,13 @@ import {
     Table,
     TableBody,
     TableCell,
-    TableContainer,
     TableHead,
     TableRow,
-    Paper,
     Typography,
     Box,
-    Button
+    Button,
+    Card,
+    alpha
 } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
@@ -35,7 +35,7 @@ const OverviewMediaStorage: React.FC = () => {
     const router = useRouter();
 
     return (
-        <Box sx={{ bgcolor: 'grey.900', color: 'text.primary', p: 3, borderRadius: 2, maxWidth: 450, height: '100%' }}>
+        <Card sx={{ color: 'text.primary', p: 3, borderRadius: 2, height: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6" component="h2">
                     Media storage
@@ -45,36 +45,49 @@ const OverviewMediaStorage: React.FC = () => {
                 </Button>
             </Box>
 
-            <TableContainer component={Paper} sx={{ bgcolor: 'background.paper' }}>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ color: 'text.secondary' }}>File type</TableCell>
-                            <TableCell align="right" sx={{ color: 'text.secondary' }}>Number of files</TableCell>
-                            <TableCell align="right" sx={{ color: 'text.secondary' }}>Size</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {mediaItems.map((item) => (
-                            <TableRow key={item.type} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                <TableCell component="th" scope="row" sx={{ color: 'text.primary' }}>
-                                    {item.type}
-                                </TableCell>
-                                <TableCell align="right" sx={{ color: 'text.primary' }}>{item.numberOfFiles}</TableCell>
-                                <TableCell align="right" sx={{ color: 'text.primary' }}>{item.size}</TableCell>
-                            </TableRow>
-                        ))}
-                        <TableRow>
-                            <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
-                                Total size
+            <Table sx={{
+                "& tr": {
+                    px: 1,
+                },
+                "& td,th": {
+                    py: 0.5,
+                    px: 2,
+                },
+                "& tbody tr": {
+                    py: 0.5,
+                    transition: 'background-color 0.3s',
+                    "&:hover": {
+                        backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+                    },
+                },
+            }}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell sx={{ color: 'text.secondary' }}>File type</TableCell>
+                        <TableCell align="right" sx={{ color: 'text.secondary' }}>Number of files</TableCell>
+                        <TableCell align="right" sx={{ color: 'text.secondary' }}>Size</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {mediaItems.map((item) => (
+                        <TableRow key={item.type} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                            <TableCell component="th" scope="row" sx={{ color: 'text.primary' }}>
+                                {item.type}
                             </TableCell>
-                            <TableCell align="right" />
-                            <TableCell align="right" sx={{ fontWeight: 'bold', color: 'text.primary' }}>{totalSize}</TableCell>
+                            <TableCell align="right" sx={{ color: 'text.primary' }}>{item.numberOfFiles}</TableCell>
+                            <TableCell align="right" sx={{ color: 'text.primary' }}>{item.size}</TableCell>
                         </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
+                    ))}
+                    <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+                            Total size
+                        </TableCell>
+                        <TableCell align="right" />
+                        <TableCell align="right" sx={{ fontWeight: 'bold', color: 'text.primary' }}>{totalSize}</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </Card>
     );
 };
 

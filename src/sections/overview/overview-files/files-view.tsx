@@ -7,15 +7,15 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Select,
   MenuItem,
   Grid,
   IconButton,
   SelectChangeEvent,
+  Card,
+  alpha
 } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -45,7 +45,7 @@ const FilesView: React.FC = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: 'background.default', color: 'text.primary', p: 3 }}>
+    <Card sx={{ color: 'text.primary', p: 3 }}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, mb: 2 }}>
@@ -53,7 +53,7 @@ const FilesView: React.FC = () => {
               value={sortBy}
               onChange={handleSortChange}
               displayEmpty
-              sx={{ mr: 1, bgcolor: 'background.paper' }}
+              sx={{ mr: 1, bgcolor: 'rgba(249, 250, 251, 0.08)' }}
             >
               <MenuItem value="" disabled>
                 Sort by:
@@ -64,57 +64,70 @@ const FilesView: React.FC = () => {
             <Select
               value={sortOrder}
               onChange={handleOrderChange}
-              sx={{ bgcolor: 'background.paper' }}
+              sx={{ bgcolor: 'rgba(249, 250, 251, 0.08)' }}
             >
               <MenuItem value="Ascending">Ascending</MenuItem>
               <MenuItem value="Descending">Descending</MenuItem>
             </Select>
           </Box>
 
-          <TableContainer component={Paper} sx={{ bgcolor: 'background.paper' }}>
-            <Table>
-              <TableHead>
+          <Table sx={{
+            "& tr": {
+              px: 1,
+            },
+            "& td,th": {
+              py: 0.5,
+              px: 2,
+            },
+            "& tbody tr": {
+              py: 0.5,
+              transition: 'background-color 0.3s',
+              "&:hover": {
+                backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+              },
+            },
+          }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  Name
+                  <ArrowDownwardIcon fontSize="small" />
+                </TableCell>
+                <TableCell>ID</TableCell>
+                <TableCell>Size</TableCell>
+                <TableCell>Extension</TableCell>
+                <TableCell>Processing Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {files.length === 0 ? (
                 <TableRow>
-                  <TableCell>
-                    Name
-                    <ArrowDownwardIcon fontSize="small" />
+                  <TableCell colSpan={5} align="center">
+                    There are no uploaded files with OD API
                   </TableCell>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Size</TableCell>
-                  <TableCell>Extension</TableCell>
-                  <TableCell>Processing Status</TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {files.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      There are no uploaded files with OD API
-                    </TableCell>
+              ) : (
+                files.map((file) => (
+                  <TableRow key={file.id}>
+                    <TableCell>{file.name}</TableCell>
+                    <TableCell>{file.id}</TableCell>
+                    <TableCell>{file.size}</TableCell>
+                    <TableCell>{file.extension}</TableCell>
+                    <TableCell>{file.processingStatus}</TableCell>
                   </TableRow>
-                ) : (
-                  files.map((file) => (
-                    <TableRow key={file.id}>
-                      <TableCell>{file.name}</TableCell>
-                      <TableCell>{file.id}</TableCell>
-                      <TableCell>{file.size}</TableCell>
-                      <TableCell>{file.extension}</TableCell>
-                      <TableCell>{file.processingStatus}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.paper', color: 'text.primary' }}>
+          <Card sx={{ p: 2, mb: 2, color: 'text.primary' }}>
             <Typography variant="body2">Select a file to view details.</Typography>
-          </Paper>
-          <Paper sx={{ p: 2, bgcolor: 'background.paper', color: 'text.primary' }}>
+          </Card>
+          <Card sx={{ p: 2, color: 'text.primary' }}>
             <Typography variant="body2">List of file plugins</Typography>
-          </Paper>
+          </Card>
         </Grid>
       </Grid>
 
@@ -124,7 +137,7 @@ const FilesView: React.FC = () => {
       >
         <HelpOutlineIcon />
       </IconButton>
-    </Box>
+    </Card>
   );
 };
 

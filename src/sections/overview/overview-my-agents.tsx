@@ -7,7 +7,8 @@ import {
     ListItemText,
     ListItemIcon,
     Divider,
-    Button
+    Button,
+    Card
 } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
@@ -40,7 +41,7 @@ const OverviewMyAgents: React.FC = () => {
     const router = useRouter();
 
     return (
-        <Box sx={{ bgcolor: 'grey.900', color: 'text.primary', p: 2, borderRadius: 2, maxWidth: 450, height: '100%' }}>
+        <Card sx={{ color: 'text.primary', p: 2, borderRadius: 2, height: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6" component="h2">
                     My Agents
@@ -50,7 +51,7 @@ const OverviewMyAgents: React.FC = () => {
                 </Button>
             </Box>
 
-            <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            <List sx={{ width: '100%', bgcolor: 'rgba(249, 250, 251, 0.08)' }}>
                 {agents.map((agent, index) => (
                     <React.Fragment key={agent.agentId}>
                         {index > 0 && <Divider variant="fullWidth" component="li" />}
@@ -85,7 +86,7 @@ const OverviewMyAgents: React.FC = () => {
                     </React.Fragment>
                 ))}
             </List>
-        </Box>
+        </Card>
     );
 };
 
