@@ -4,8 +4,6 @@ import React, { useMemo, useState, useEffect, useReducer, useContext, useCallbac
 
 import axios, { endpoints } from 'src/utils/axios';
 
-import { useAuthContext } from 'src/auth/hooks';
-
 import UserMembershipPlansContext from './context';
 import { State, Action, UserMembershipPlan, UserMembershipPlanResult, CancelUserMembershipPlanResult } from './types';
 
@@ -151,7 +149,6 @@ interface Props {
 
 export function UserMembershipPlansProvider({ children }: Props) {
     const [state, dispatch] = useReducer(reducer, null, initState);
-    const { user } = useAuthContext();
 
     const {
         loadRequest, loadFailure, loadSuccess, loadHandles, loadError, userMembershipPlanList, userMembershipPlanDict, loaded
@@ -160,7 +157,7 @@ export function UserMembershipPlansProvider({ children }: Props) {
     const fetchUserMembershipPlans = (() => {
         const fn = async (resolve: (value: any) => void, reject: (reason?: any) => void) => {
             try {
-                const res = await axios.post(endpoints.membership.userPlans, { user_id: user?.id });
+                const res = await axios.post(endpoints.membership.userPlans);
                 const { statusText, data }: UserMembershipPlanResult = res.data;
                 if (statusText === "OK") {
                     resolve(data.map(item => item));
