@@ -161,6 +161,7 @@ export default function DashboardStrategyView() {
           zIndex: 100,
           backdropFilter: 'blur(10px)',
           border: (theme: any) => `2px solid ${theme.palette.primary.main}`,
+          backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.1),
           borderRadius: 1,
           p: 1,
         }}>
