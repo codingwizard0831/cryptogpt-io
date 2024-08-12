@@ -13,6 +13,8 @@ import {
     Box,
     Button
 } from '@mui/material';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 interface MediaItem {
     type: string;
@@ -30,6 +32,7 @@ const mediaItems: MediaItem[] = [
 
 const OverviewMediaStorage: React.FC = () => {
     const totalSize = mediaItems.reduce((sum, item) => sum + item.size, 0);
+    const router = useRouter();
 
     return (
         <Box sx={{ bgcolor: 'grey.900', color: 'text.primary', p: 3, borderRadius: 2, maxWidth: 450, height: '100%' }}>
@@ -37,7 +40,7 @@ const OverviewMediaStorage: React.FC = () => {
                 <Typography variant="h6" component="h2">
                     Media storage
                 </Typography>
-                <Button variant="text" color="primary">
+                <Button variant="text" color="primary" onClick={() => router.replace(paths.dashboard.files)}>
                     View Files
                 </Button>
             </Box>

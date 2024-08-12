@@ -9,6 +9,9 @@ import {
     Divider,
     Button
 } from '@mui/material';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 interface Agent {
@@ -34,13 +37,15 @@ const agents: Agent[] = [
 ];
 
 const OverviewMyAgents: React.FC = () => {
+    const router = useRouter();
+
     return (
         <Box sx={{ bgcolor: 'grey.900', color: 'text.primary', p: 2, borderRadius: 2, maxWidth: 450, height: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6" component="h2">
                     My Agents
                 </Typography>
-                <Button variant="text" color="primary" size="small">
+                <Button variant="text" color="primary" size="small" onClick={() => router.replace(paths.dashboard.agents)}>
                     View All
                 </Button>
             </Box>

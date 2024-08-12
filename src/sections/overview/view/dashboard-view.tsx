@@ -11,36 +11,9 @@ import OverviewCredit from '../overview-credit';
 import OverviewFilesStats from '../overview-chart-files-stats';
 import OverviewInterfaceStats from '../overview-chart-interface-stats';
 
-interface PlanUsageItem {
-    type: string;
-    limit: string;
-    value: number;
-}
+
 
 export default function DashboardView() {
-
-    const planUsageData: PlanUsageItem[] = [
-        { type: 'Storage', limit: '512.00 MB', value: 0 },
-        { type: 'RAG Calls', limit: '500', value: 0 },
-        { type: 'Vectors', limit: '10k', value: 0 },
-        { type: 'Transcription Hours', limit: '10', value: 0 },
-        { type: 'Tokens', limit: '500k', value: 0 },
-    ];
-
-    const [pUsageData, setPUsageData] = useState<PlanUsageItem>(planUsageData[0]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentIndex((prevIndex) => (prevIndex + 1) % planUsageData.length);
-        }, 2500);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() => {
-        setPUsageData(planUsageData[currentIndex]);
-    }, [currentIndex]);
 
     const models: Array<any> = []
     const grants: Array<any> = []
@@ -82,7 +55,7 @@ export default function DashboardView() {
         }}>
             <Grid container spacing={2} maxWidth={"50%"}>
                 <Grid item xs={12} md={6}>
-                    <OverviewPlanUsage type={pUsageData.type} limit={pUsageData.limit} value={pUsageData.value} />
+                    <OverviewPlanUsage />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <OverviewMediaStorage />
