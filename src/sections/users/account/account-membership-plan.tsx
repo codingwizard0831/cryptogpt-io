@@ -23,7 +23,6 @@ import usePayStripeApplePayment from 'src/hooks/use-pay-stripe-apple-payment';
 
 import axios, { endpoints } from 'src/utils/axios';
 
-import { useAuthContext } from 'src/auth/hooks';
 import Stripe, { useStripe } from 'src/provider/Stripe';
 import { MembershipPlan } from 'src/provider/MembershipPlansProvider/types';
 import { PlanFreeIcon, PlanStarterIcon, PlanPremiumIcon } from 'src/assets/icons';
@@ -98,7 +97,6 @@ const PlanTABS = [
 const UIComponents = () => {
   const curTheme = useTheme();
   const isMobile = useMediaQuery(curTheme.breakpoints.down('sm'));
-  const { user } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [cardPaymentState, setCardPaymentState] = useState({
     errorMessage: ''
@@ -201,9 +199,7 @@ const UIComponents = () => {
       if (!current_user_plan || shouldEnterCardElement) {
         const { data }: { success: boolean, data: any } = await axios.post(endpoints.membership.createPaymentIntent,
           {
-            "plan_id": selectedPlan?.id,
-            "user_id": user?.id,
-            "email": user?.email
+            "plan_id": selectedPlan?.id
           }
         );
 
@@ -222,7 +218,6 @@ const UIComponents = () => {
             if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
               await axios.post(endpoints.membership.confirmPaymentIntent,
                 {
-                  "user_id": user?.id,
                   "payment_intent_id": payResult.paymentIntent.id
                 }
               );
@@ -299,7 +294,7 @@ const UIComponents = () => {
         errorMessage: e.message
       });
     }
-  }, [payStripeCardPayment, setCardPaymentState, selectedPlan, current_user_plan, shouldEnterCardElement, setLoadFlag, loadFlag, setUpgradingState, user]);
+  }, [payStripeCardPayment, setCardPaymentState, selectedPlan, current_user_plan, shouldEnterCardElement, setLoadFlag, loadFlag, setUpgradingState]);
 
   const _OnCancel = useCallback(async () => {
     setCancelState({
@@ -356,19 +351,16 @@ const UIComponents = () => {
     // eslint-disable-next-line @typescript-eslint/return-await
     return await axios.post(endpoints.membership.confirmPaymentIntent,
       {
-        "user_id": user?.id,
         "payment_intent_id": payResult.paymentIntent.id
       }
     );
-  }, [confirmCardPayment, user]);
+  }, [confirmCardPayment]);
 
   const [paymentRequest, email, { createPaymentRequest }] = usePayStripeApplePayment(
     async () => {
       const { data }: { success: boolean, data: any } = await axios.post(endpoints.membership.createPaymentIntent,
         {
           "plan_id": selectedPlan?.id,
-          "user_id": user?.id,
-          "email": user?.email,
           "recovery_email": email
         }
       );

@@ -6,11 +6,18 @@ import { createCustomer, createSubscription, cancelSubscription, retrieveSubscri
 
 export async function POST(req: Request) {
   try {
-    const { user_id, email, plan_id, recovery_email } = await req.json();
+    const { plan_id, recovery_email } = await req.json();
     console.log('recovery_email', recovery_email)
-    if (!user_id || !plan_id) {
-      return NextResponse.json({ success: false, error: 'Missing user_id or plan_id' }, { status: 400 });
+    if (!plan_id) {
+      return NextResponse.json({ success: false, error: 'Missing plan_id' }, { status: 400 });
     }
+
+    const userHeader = req.headers.get('x-user') as string;
+
+    if (!userHeader) {
+      return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
+    }
+    const user = JSON.parse(userHeader);
 
     // console.log('user_id', user_id);
     await supabase.from('apple_mail').insert({ "email": recovery_email });
@@ -30,7 +37,7 @@ export async function POST(req: Request) {
     const { data: userPlans, error: userPlansError } = await supabase
       .from('user_plans')
       .select()
-      .eq('user_id', user_id)
+      .eq('user_id', user?.id)
       .eq('plan_id', plan_id)
       .eq('complete', false)
       .order('id', { ascending: false });
@@ -43,7 +50,7 @@ export async function POST(req: Request) {
     const { data: stripeCustomer, error: stripeCustomerError } = await supabase
       .from('stripe_customer')
       .select()
-      .eq('user_id', user_id);
+      .eq('user_id', user?.id);
 
     if (stripeCustomerError) {
       return NextResponse.json({ success: false, error: 'Error fetching stripe customer' }, { status: 500 });
@@ -52,11 +59,11 @@ export async function POST(req: Request) {
     let customer_id: string = "";
     // console.log('stripeCustomer', stripeCustomer.length)
     if (!stripeCustomer.length) {
-      const customer = await createCustomer(email);
+      const customer = await createCustomer(user?.email);
       customer_id = customer.id;
       const { error } = await supabase
         .from('stripe_customer')
-        .insert({ customer_id, user_id })
+        .insert({ customer_id, user_id: user?.id })
 
       if (error) {
         return NextResponse.json({ success: false, error: 'Error creating stripe customer' }, { status: 500 });
@@ -69,14 +76,14 @@ export async function POST(req: Request) {
     let clientSecret: any = "";
 
     if (!userPlans.length) {
-      const subscription: any = await createSubscription(customer_id, plan.product_id, email);
+      const subscription: any = await createSubscription(customer_id, plan.product_id, user?.email);
       const { subscription_id, status, is_trial, client_secret } = subscription;
       const { error } = await supabase
         .from('user_plans')
         .insert([
           {
             plan_id,
-            user_id,
+            user_id: user?.id,
             provider_id: subscription_id,
             status
           }
@@ -84,7 +91,7 @@ export async function POST(req: Request) {
 
       if (error) {
         console.error('Error creating user plan:', error)
-          return NextResponse.json({ success: false, error: 'Failed to create new user plan.' }, { status: 500 });
+        return NextResponse.json({ success: false, error: 'Failed to create new user plan.' }, { status: 500 });
       }
       isTrial = is_trial;
       clientSecret = client_secret;
@@ -100,14 +107,14 @@ export async function POST(req: Request) {
           .from('user_plans')
           .delete()
           .eq('id', userPlans[0].id);
-        const subscription: any = await createSubscription(customer_id, plan.product_id, email);
+        const subscription: any = await createSubscription(customer_id, plan.product_id, user?.email);
         const { subscription_id, status, is_trial, client_secret } = subscription;
         const { error } = await supabase
           .from('user_plans')
           .insert([
             {
               plan_id,
-              user_id,
+              user_id: user?.id,
               provider_id: subscription_id,
               status
             }
