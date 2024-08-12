@@ -9,9 +9,13 @@ import { NavProps, NavGroupProps } from '../types';
 
 function NavSectionMini({ data, slotProps, sx, ...other }: NavProps) {
   return (
-    <Stack component="nav" id="nav-section-mini" spacing={`${slotProps?.gap || 4}px`} sx={{
+    <Stack component="nav" id="nav-section-mini" alignItems="center" spacing={`${slotProps?.gap || 4}px`} sx={{
       p: '2px',
-      width: '100%',
+      width: '400px',
+      maxHeight: '340px',
+      overflowX: 'hidden',
+      overflowY: 'auto',
+      scrollbarWidth: 'none',
       ...sx,
     }} {...other}>
       {data.map((group, index) => (

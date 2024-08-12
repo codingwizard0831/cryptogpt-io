@@ -36,8 +36,20 @@ import {
 
 // PLEASE REMOVE `LOCAL STORAGE` WHEN YOU CHANGE SETTINGS.
 // ----------------------------------------------------------------------
+type LanguageCode = "ar" | "zh" | "ca_ES" | "en" | "fr" | "de" | "he_IL" | "id_ID" | "it" | "ja" | "ko" | "pl" | "pt" | "ru" | "es" | "sv" | "th" | "tr" | "vi" | "ms_MY" | "zh_TW";
 
-export const allLangs = [
+type LangProps = {
+  label: string;
+  value: LanguageCode;
+  systemValue: any;
+  adapterLocale: any;
+  icon: string;
+  numberFormat: {
+    code: string;
+    currency: string;
+  };
+}
+export const allLangs: LangProps[] = [ // Fix: Change the type to an array of LangProps objects
   {
     label: 'English',
     value: 'en',

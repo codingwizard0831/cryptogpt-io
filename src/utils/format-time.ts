@@ -65,3 +65,7 @@ export function formatTimeFromSeconds(seconds: number) {
   }
   return [minutes, remainingSeconds].map(v => `0${v}`.slice(-2)).join(':');
 }
+
+export function getDaysInMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}

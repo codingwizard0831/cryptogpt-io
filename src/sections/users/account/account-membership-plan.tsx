@@ -1,0 +1,664 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Carousel } from 'react-responsive-carousel';
+import React, { useState, useEffect, useCallback, SyntheticEvent } from 'react';
+
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import { styled } from '@mui/system';
+import Card from '@mui/material/Card';
+import Tabs from '@mui/material/Tabs';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import SvgIcon from '@mui/material/SvgIcon';
+import Divider from '@mui/material/Divider';
+import { useMediaQuery } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import CardHeader from '@mui/material/CardHeader';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { alpha, useTheme } from '@mui/material/styles';
+
+import usePayStripeCardPayment from 'src/hooks/use-pay-stripe-card-payment';
+import usePayStripeApplePayment from 'src/hooks/use-pay-stripe-apple-payment';
+
+import axios, { endpoints } from 'src/utils/axios';
+
+import Stripe, { useStripe } from 'src/provider/Stripe';
+import { MembershipPlan } from 'src/provider/MembershipPlansProvider/types';
+import { PlanFreeIcon, PlanStarterIcon, PlanPremiumIcon } from 'src/assets/icons';
+import { useLoadMembershipPlans, useMembershipPlansContext } from 'src/provider/MembershipPlansProvider';
+import { useLoadUserMembershipPlans, useCancelUserMembershipPlan, useLastPossibleSubsriptionUserMembershipPlan } from 'src/provider/UserMembershipPlansProvider';
+
+import Label from 'src/components/label';
+import Iconify from 'src/components/iconify';
+import CardElement from 'src/components/stripe-card';
+import LoadingCubeScreen from 'src/components/loading-screen/loading-cube-screen';
+
+// ----------------------------------------------------------------------
+
+const ApplePayButton = styled(Button)(() => ({
+  display: 'flex',
+  textAlign: 'center',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '#000',
+  color: 'white',
+  '&:disabled ': {
+    backgroundColor: 'gray',
+  },
+  height: "50px",
+  borderRadius: '8px',
+}));
+
+const ApplePayIcon: React.FC = () => (
+  <SvgIcon viewBox="0 0 55 23" sx={{ width: 55, height: 23 }}>
+    <path d="M10.7479 4.82745C9.41143 4.82745 8.33331 5.63605 7.63702 5.63605C6.90704 5.63605 5.92999 4.87238 4.77325 4.87238C2.57207 4.87238 0.337212 6.70294 0.337212 10.1282C0.337212 12.2733 1.16827 14.5306 2.19024 16.0018C3.05499 17.2259 3.82989 18.2366 4.93047 18.2366C6.01983 18.2366 6.50274 17.5179 7.86163 17.5179C9.23174 17.5179 9.5462 18.2142 10.7479 18.2142C11.9495 18.2142 12.7469 17.1248 13.4993 16.0467C14.3304 14.8001 14.6898 13.5872 14.701 13.5311C14.6336 13.5086 12.3426 12.5765 12.3426 9.94855C12.3426 7.67999 14.1395 6.66925 14.2405 6.59064C13.0613 4.87238 11.2532 4.82745 10.7479 4.82745ZM10.1302 3.37872C10.6692 2.71613 11.0511 1.81769 11.0511 0.90802C11.0511 0.784485 11.0398 0.66095 11.0174 0.559875C10.1414 0.593567 9.06329 1.14386 8.42315 1.8963C7.92901 2.46906 7.45733 3.37872 7.45733 4.28839C7.45733 4.42316 7.47979 4.56915 7.49102 4.61407C7.54717 4.62531 7.63702 4.63654 7.72686 4.63654C8.52422 4.63654 9.53497 4.09747 10.1302 3.37872ZM19.1155 1.82892V18.0345H22.013V12.7225H25.5281C28.8074 12.7225 31.0984 10.5213 31.0984 7.30939C31.0984 4.04132 28.886 1.82892 25.6516 1.82892H19.1155ZM22.013 4.2547H24.888C26.9768 4.2547 28.156 5.32159 28.156 7.30939C28.156 9.24103 26.9431 10.3192 24.8767 10.3192H22.013V4.2547ZM36.5349 16.0467C35.2995 16.0467 34.4123 15.429 34.4123 14.3958C34.4123 13.3963 35.1423 12.8348 36.7033 12.7337L39.4773 12.554V13.5311C39.4773 14.9573 38.2195 16.0467 36.5349 16.0467ZM35.7151 18.2366C37.321 18.2366 38.6687 17.5403 39.3537 16.3499H39.5447V18.0345H42.2287V9.64532C42.2287 7.03986 40.4543 5.50128 37.2986 5.50128C34.3786 5.50128 32.3459 6.88263 32.1213 9.05011H34.7492C35.0075 8.21906 35.8835 7.76984 37.1638 7.76984C38.6687 7.76984 39.4773 8.44366 39.4773 9.64532V10.6785L36.3103 10.8694C33.323 11.0491 31.6496 12.3294 31.6496 14.553C31.6496 16.7991 33.3454 18.2366 35.7151 18.2366ZM45.3293 22.493C48.0808 22.493 49.3947 21.4822 50.4392 18.4276L54.8752 5.74835H51.9328L49.069 15.3392H48.8781L46.0031 5.74835H42.9484L47.3395 18.0906L47.1935 18.6297C46.8342 19.764 46.1716 20.2132 44.9924 20.2132C44.8015 20.2132 44.3859 20.202 44.2287 20.1683V22.4481C44.4084 22.4818 45.1608 22.493 45.3293 22.493Z" fill="currentColor" />
+  </SvgIcon>
+);
+
+const TABS = [
+  {
+    value: 'Starter Pass',
+    label: 'Starter Pass',
+  },
+  {
+    value: 'Basic Plan',
+    label: 'Basic Plan',
+  },
+  {
+    value: 'Standard Plan',
+    label: 'Standard Plan',
+  },
+  {
+    value: 'Premium Plan',
+    label: 'Premium Plan',
+  },
+  {
+    value: 'Pro Plan',
+    label: 'Pro Plan',
+  },
+  {
+    value: 'Elite Plan',
+    label: 'Elite Plan',
+  }
+];
+
+const PlanTABS = [
+  {
+    value: 'Features',
+    label: 'Features',
+  },
+  {
+    value: 'AI Functions',
+    label: 'AI Functions',
+  }
+];
+
+const UIComponents = () => {
+  const curTheme = useTheme();
+  const isMobile = useMediaQuery(curTheme.breakpoints.down('sm'));
+  const [loading, setLoading] = useState(true);
+  const [cardPaymentState, setCardPaymentState] = useState({
+    errorMessage: ''
+  });
+
+  const [cardElementState, setCardElementState] = useState({
+    errorMessage: '',
+    complete: false,
+  });
+
+  const [cancelState, setCancelState] = useState({
+    submitting: false,
+    error: '',
+    success: '',
+  })
+
+  const [upgradingState, setUpgradingState] = useState({
+    submitting: false,
+    error: '',
+    success: '',
+  })
+
+  const payStripeCardPayment = usePayStripeCardPayment();
+
+  const cancelUserMembershipPlan = useCancelUserMembershipPlan();
+
+  const _OnCardElementChange = useCallback(({ error, complete }: { error: any, complete: any }) => {
+    setCardPaymentState({
+      errorMessage: ''
+    });
+    setCardElementState({
+      errorMessage: !error ? undefined : error.message,
+      complete
+    });
+  }, [setCardElementState]);
+
+  const loadUserMembershipPlans = useLoadUserMembershipPlans();
+  const loadMembershipPlans = useLoadMembershipPlans();
+
+  const [selectedPlan, setSelectedPlan] = useState<any>({});
+  const [currentTab, setCurrentTab] = useState('Premium Plan');
+  const [currentPlanTab, setCurrentPlanTab] = useState<any>({});
+  const { membershipPlanDict } = useMembershipPlansContext();
+  const current_user_plan = useLastPossibleSubsriptionUserMembershipPlan();
+
+  const [plansByTab, setPlansByTab] = useState<MembershipPlan[]>(membershipPlanDict[currentTab]);
+
+  const [loadFlag, setLoadFlag] = useState<Boolean>(true);
+  useEffect(() => {
+    const loadMembershipPlansPromise = loadMembershipPlans();
+    loadUserMembershipPlans()
+      .then(() => {
+        loadMembershipPlansPromise.then(() => {
+          setLoading(false);
+        });
+      })
+      .catch((e: any) => {
+        setLoading(false);
+        if (e.message === 'Unauthorized') {
+          console.log(e)
+        }
+      });
+  }, [loadFlag, loadMembershipPlans, loadUserMembershipPlans]);
+
+  useEffect(() => {
+    setPlansByTab(membershipPlanDict[currentTab]);
+  }, [currentTab, membershipPlanDict]);
+
+  const handleChangeTab = useCallback((event: SyntheticEvent, newValue: string) => {
+    setCurrentTab(newValue);
+  }, []);
+
+  const handleChangePlanTab = useCallback((newValue: string, planType: number) => {
+    setCurrentPlanTab((prev: any) => ({
+      ...prev,
+      [planType]: newValue
+    }));
+  }, []);
+
+  const handleSelectPlan = useCallback((plan: any) => {
+    if (current_user_plan?.plan_id !== plan?.id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) {
+      setSelectedPlan(plan);
+    } else if (!!current_user_plan?.expires_at || current_user_plan?.status === "past_due") {
+      setSelectedPlan(plan);
+    }
+  }, [current_user_plan]);
+
+  const shouldEnterCardElement = !current_user_plan || (!!current_user_plan?.expires_at && current_user_plan?.status === "past_due");
+
+  const _OnContinue = useCallback(async () => {
+    setUpgradingState({
+      error: '',
+      success: '',
+      submitting: true
+    });
+    try {
+      setCardPaymentState({
+        errorMessage: '',
+      });
+      if (!current_user_plan || shouldEnterCardElement) {
+        const { data }: { success: boolean, data: any } = await axios.post(endpoints.membership.createPaymentIntent,
+          {
+            "plan_id": selectedPlan?.id
+          }
+        );
+
+        const { success, data: paymentIntent } = data;
+        console.log('success', success)
+        console.log('paymentIntent', paymentIntent)
+        if (success) {
+          const payResult = await payStripeCardPayment({
+            client_secret: paymentIntent.client_secret
+          }, {
+            name: ''
+          }
+          );
+          console.log('payResult', payResult)
+          try {
+            if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
+              await axios.post(endpoints.membership.confirmPaymentIntent,
+                {
+                  "payment_intent_id": payResult.paymentIntent.id
+                }
+              );
+              setLoadFlag(!loadFlag);
+              setSelectedPlan({});
+              setUpgradingState({
+                submitting: false,
+                error: '',
+                success: '',
+              });
+            }
+          } catch (err) {
+            console.error(err)
+            setUpgradingState({
+              submitting: false,
+              error: err,
+              success: '',
+            });
+          }
+
+        } else if (paymentIntent && paymentIntent.error) {
+          setCardPaymentState({
+            errorMessage: paymentIntent.error
+          });
+          setUpgradingState({
+            submitting: false,
+            error: paymentIntent.error,
+            success: '',
+          });
+        } else {
+          setCardPaymentState({
+            errorMessage: `The server responded`
+          });
+          setUpgradingState({
+            submitting: false,
+            error: `The server responded`,
+            success: '',
+          });
+        }
+      } else {
+        const { data } = await axios.post(endpoints.membership.ugradeUserPlan,
+          {
+            "plan_id": selectedPlan?.id,
+            "user_plan_id": current_user_plan?.id
+          }
+        );
+        const { success, result } = data;
+        if (success) {
+          setLoadFlag(!loadFlag);
+          setSelectedPlan({});
+          setUpgradingState({
+            submitting: false,
+            error: '',
+            success: '',
+          });
+        } else {
+          setCardPaymentState({
+            errorMessage: result.error
+          });
+          setUpgradingState({
+            success: '',
+            submitting: false,
+            error: result.error
+          });
+        }
+      }
+    } catch (e: any) {
+      setUpgradingState({
+        success: '',
+        submitting: false,
+        error: e?.message
+      });
+      setCardPaymentState({
+        errorMessage: e.message
+      });
+    }
+  }, [payStripeCardPayment, setCardPaymentState, selectedPlan, current_user_plan, shouldEnterCardElement, setLoadFlag, loadFlag, setUpgradingState]);
+
+  const _OnCancel = useCallback(async () => {
+    setCancelState({
+      error: '',
+      success: '',
+      submitting: true
+    });
+    cancelUserMembershipPlan(current_user_plan?.id)
+      .then(({ status, success, result }: any) => {
+        if (success) {
+          setCancelState({
+            submitting: false,
+            error: '',
+            success: '',
+          });
+          setLoadFlag(!loadFlag);
+        } else if (status === 401) {
+          // router.replace('/login');
+        } else {
+          setCancelState({
+            submitting: false,
+            error: result.error,
+            success: '',
+          });
+        }
+      }).catch((e: any) => {
+        setCancelState({
+          submitting: false,
+          error: e.message,
+          success: '',
+        });
+      });
+  }, [cancelUserMembershipPlan, setCancelState, current_user_plan, setLoadFlag, loadFlag])
+
+  const isUpgradeButtonDisabled = (shouldEnterCardElement && (!!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete)) || !selectedPlan?.id;
+  const isCancelButtonDisabled = !current_user_plan || (!!current_user_plan?.expires_at || current_user_plan?.status === "past_due");
+
+  const {
+    confirmCardPayment,
+  } = useStripe();
+
+
+  const confirmPaymentMethod = React.useCallback(async (e: any, paymentIntent: any) => {
+    const payResult: any = await confirmCardPayment(
+      paymentIntent.client_secret,
+      {
+        payment_method: e.paymentMethod.id,
+      },
+      {
+        handleActions: false
+      }
+    )
+
+    // eslint-disable-next-line @typescript-eslint/return-await
+    return await axios.post(endpoints.membership.confirmPaymentIntent,
+      {
+        "payment_intent_id": payResult.paymentIntent.id
+      }
+    );
+  }, [confirmCardPayment]);
+
+  const [paymentRequest, email, { createPaymentRequest }] = usePayStripeApplePayment(
+    async () => {
+      const { data }: { success: boolean, data: any } = await axios.post(endpoints.membership.createPaymentIntent,
+        {
+          "plan_id": selectedPlan?.id,
+          "recovery_email": email
+        }
+      );
+
+      const { success, data: paymentIntent } = data;
+      return success ? paymentIntent : null;
+    },
+    confirmPaymentMethod,
+    () => {
+      // router.replace("/");
+    }
+  );
+
+  useEffect(() => {
+    const price = selectedPlan?.price ? (selectedPlan.price * (100 - selectedPlan.discount)) : 0;
+    const label = selectedPlan?.type ? selectedPlan.type : "membership";
+    createPaymentRequest(
+      label,
+      price,
+    )
+  }, [createPaymentRequest, selectedPlan]);
+
+  const renderPlans = plansByTab?.map((plan) => (
+    <Grid xs={12} md={6} key={plan.id}>
+      <Stack
+        component={Paper}
+        variant="outlined"
+        onClick={() => handleSelectPlan(plan)}
+        sx={{
+          p: 2.5,
+          position: 'relative',
+          cursor: 'pointer',
+          ...((current_user_plan?.plan_id === plan.id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && {
+            opacity: 0.48,
+            cursor: 'default',
+          }),
+          ...(plan.id === selectedPlan?.id && {
+            border: (theme) => `2px solid ${theme.palette.text.primary}`,
+          }),
+        }}
+      >
+        {(current_user_plan?.plan_id === plan.id && (!current_user_plan?.expires_at && current_user_plan?.status !== "past_due")) && (
+          <Label
+            color="info"
+            startIcon={<Iconify icon="eva:star-fill" />}
+            sx={{ position: 'absolute', top: 8, right: 8 }}
+          >
+            Current
+          </Label>
+        )}
+        <Box sx={{ width: 48, height: 48 }}>
+          {(plan.type === 'Starter Pass' || plan.type === 'Basic Plan') && <PlanFreeIcon />}
+          {(plan.type === 'Standard Plan' || plan.type === 'Premium Plan') && <PlanStarterIcon />}
+          {(plan.type === 'Pro Plan' || plan.type === 'Elite Plan') && <PlanPremiumIcon />}
+        </Box>
+
+        <Box
+          sx={{
+            typography: 'subtitle2',
+            mt: 2,
+            mb: 0.5,
+            fontSize: 24,
+            textAlign: 'left',
+            textTransform: 'capitalize',
+          }}
+        >
+          {plan.type}
+        </Box>
+
+        <Stack direction="row" alignItems="center" sx={{ typography: 'h4' }}>
+          <Box component="span" sx={{ textDecoration: 'line-through' }}>
+            €{plan.price}
+          </Box>
+
+          {plan.discount && <Box component="span" sx={{ backgroundColor: theme => theme.palette.primary.main, padding: "0px 5px", borderRadius: "5px", marginLeft: "7px" }}>
+            €{plan.price * (100 - plan.discount) / 100}
+          </Box>}
+
+          {!!plan.price && (
+            <Box component="span" sx={{ typography: 'body2', color: 'text.disabled', ml: 0.5 }}>
+              /{plan.billing_period}
+            </Box>
+          )}
+
+          {plan.discount && <Box component="span" sx={{ backgroundColor: "gray", textWrap: 'nowrap', fontSize: "14px", padding: "2px 7px", borderRadius: "5px", marginLeft: "7px" }}>
+            Saved {plan.discount}%
+          </Box>}
+        </Stack>
+        <Stack direction="column" alignItems="left" sx={{ typography: 'p' }}>
+          <Box component="span" sx={{ marginTop: '10px', textAlign: "left" }}>
+            Description:
+          </Box>
+          <Box component="span" sx={{ fontSize: "12px", textAlign: "left" }}>
+            {plan.description}
+          </Box>
+        </Stack>
+        <Stack direction="row" justifyContent="center">
+          <Tabs
+            value={currentPlanTab[plan.id] || "Features"}
+            onChange={(event: SyntheticEvent, newValue: string) => handleChangePlanTab(newValue, plan.id)}
+            sx={{
+              mt: 2,
+              backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
+              border: theme => `1px solid ${alpha(theme.palette.primary.main, 1)}`,
+              marginBottom: 3,
+              borderRadius: 30,
+              '.MuiTabs-indicator': {
+                backgroundColor: 'transparent',
+                top: 0,
+              },
+              '.MuiTab-root': {
+                fontSize: { xs: '12px', md: '14px' },
+                lineHeight: '12px',
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                paddingTop: "10px",
+                paddingBottom: "10px",
+                marginRight: "0px !important",
+                borderLeft: theme => `1px solid ${theme.palette.primary.main}`,
+                borderRight: theme => `1px solid ${theme.palette.primary.main}`,
+                '&:first-of-type': {
+                  border: 0,
+                },
+                '&:last-of-type': {
+                  border: 0,
+                },
+                '&.Mui-selected': {
+                  color: theme => theme.palette.common.white,
+                },
+              },
+              ".Mui-selected": {
+                backgroundColor: theme => theme.palette.primary.main,
+              },
+            }}
+          >
+            {PlanTABS.map((tab) => (
+              <Tab key={tab.value} label={tab.label} value={tab.value} />
+            ))}
+          </Tabs>
+        </Stack>
+
+        {(!currentPlanTab[plan.id] || currentPlanTab[plan.id] === "Features") && (
+          <Stack direction="column" alignItems="left" sx={{ typography: 'p' }}>
+            {plan.features?.map((item: any, index: number) => (
+              <Stack key={index} direction="row" alignItems="center">
+                <Box sx={{ width: "13px", height: "13px" }}>
+                  <Iconify icon="game-icons:check-mark" width={13} color={theme => theme.palette.primary.main} />
+                </Box>
+                <Box component="span" sx={{ fontSize: "12px", marginLeft: '8px', textAlign: "left" }}>
+                  {item}
+                </Box>
+              </Stack>
+            ))}
+          </Stack>
+        )}
+
+        {currentPlanTab[plan.id] === "AI Functions" && (
+          <Stack direction="column" alignItems="left" sx={{ typography: 'p' }}>
+            {plan.goldie?.map((item: any, index: number) => (
+              <Stack key={index} sx={{ marginTop: "10px" }} direction="row" alignItems="center">
+                <Box sx={{ width: "13px", height: "13px" }}>
+                  <Iconify icon="game-icons:check-mark" width={13} color={theme => theme.palette.primary.main} />
+                </Box>
+                <Box component="span" sx={{ fontSize: "12px", marginLeft: '8px', textAlign: "left" }}>
+                  {item}
+                </Box>
+              </Stack>
+            ))}
+          </Stack>
+        )}
+      </Stack>
+    </Grid >
+  ));
+
+  return (
+    <>
+      {loading && <LoadingCubeScreen />}
+      <Card sx={{ visibility: loading ? 'hidden' : 'visible' }}>
+        <CardHeader title="Membership" />
+        <Stack direction="row" justifyContent="center">
+          <Tabs
+            value={currentTab}
+            onChange={handleChangeTab}
+            sx={{
+              mt: { xs: 3, md: 5 },
+              backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
+              border: theme => `1px solid ${alpha(theme.palette.primary.main, 1)}`,
+              marginBottom: 0,
+              borderRadius: 30,
+              '.MuiTabs-indicator': {
+                backgroundColor: 'transparent',
+                top: 0,
+              },
+              '.MuiTab-root': {
+                color: theme => theme.palette.primary.main,
+                fontSize: { xs: '12px', md: '14px' },
+                lineHeight: '12px',
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                paddingTop: "10px",
+                paddingBottom: "10px",
+                marginRight: "0px !important",
+                borderLeft: theme => `1px solid ${theme.palette.primary.main}`,
+                borderRight: theme => `1px solid ${theme.palette.primary.main}`,
+                '&:first-of-type': {
+                  border: 0,
+                },
+                '&:last-of-type': {
+                  border: 0,
+                },
+                '&.Mui-selected': {
+                  color: theme => theme.palette.common.white,
+                },
+              },
+              ".Mui-selected": {
+                backgroundColor: theme => theme.palette.primary.main,
+              },
+            }}
+          >
+            {TABS.map((tab) => (
+              <Tab key={tab.value} label={tab.label} value={tab.value} />
+            ))}
+          </Tabs>
+        </Stack>
+
+        {plansByTab && !isMobile && <Grid container spacing={2} sx={{ p: 3, justifyContent: 'center' }}>
+          {renderPlans}
+        </Grid>}
+
+        {plansByTab && isMobile && <Grid container xs={12} sm={4} md={4} sx={{mt: 5}}>
+          <Carousel
+            infiniteLoop
+            emulateTouch={false}
+            showStatus={false}
+            showThumbs={false}
+            showArrows
+            showIndicators={false}
+          >
+            {renderPlans}
+          </Carousel>
+        </Grid>}
+
+        {shouldEnterCardElement && <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' } }}>
+          <CardElement
+            onChange={_OnCardElementChange}
+          />
+          {(cardElementState.errorMessage || cardPaymentState.errorMessage) && <Label
+            color="error"
+            sx={{
+              background: 'transparent',
+              justifyContent: 'left',
+              padding: 0,
+              marginTop: 1
+            }}
+          >
+            {cardElementState.errorMessage || cardPaymentState.errorMessage || <>&nbsp;</>}
+          </Label>}
+        </Stack>}
+        <Divider sx={{ borderStyle: 'dashed' }} />
+
+        <Stack spacing={1.5} direction={isMobile ? "column" : "row"} justifyContent="flex-end" sx={{ p: 3 }}>
+          {paymentRequest && <ApplePayButton
+            variant="contained"
+            sx={{ width: isMobile ? "100%" : "120px" }}
+            startIcon={<ApplePayIcon />}
+            disabled={!selectedPlan?.id}
+            onClick={() => paymentRequest.show()}
+          />}
+          <LoadingButton
+            size="medium"
+            onClick={_OnCancel}
+            loading={cancelState.submitting}
+            variant="outlined"
+            disabled={isCancelButtonDisabled || upgradingState.submitting}
+            fullWidth={isMobile}
+          >
+            Cancel Membership
+          </LoadingButton>
+          <LoadingButton
+            size="medium"
+            onClick={_OnContinue}
+            loading={upgradingState.submitting}
+            variant="contained"
+            disabled={isUpgradeButtonDisabled || cancelState.submitting}
+            fullWidth={isMobile}
+          >
+            Upgrade Membership
+          </LoadingButton>
+        </Stack>
+      </Card >
+    </>
+  );
+}
+
+const AccountMembershipPlan: any = () => (
+  <Stripe>
+    <UIComponents />
+  </Stripe>
+);
+
+export default AccountMembershipPlan;

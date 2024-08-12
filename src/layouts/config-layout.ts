@@ -19,6 +19,16 @@ export const SPACING = {
   xl: 24,
 };
 
+export const MAIN_CHART_PANEL = {
+  W_DESKTOP: 568,
+  W_MOBILE: '100%',
+}
+
+export const MAIN_TRACKING_PANEL = {
+  W_DESKTOP: 360,
+  W_MOBILE: '100%',
+}
+
 export const MESSAGE_RIGHT_PANEL = {
   W_DESKTOP: 360,
   W_MOBILE: '100%',

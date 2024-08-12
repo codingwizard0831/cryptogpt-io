@@ -1,22 +1,99 @@
 @font-face {
-  font-family: 'CircularStd';
+  font-family: 'IBMPlexMono';
+  font-weight: 100;
+  font-style: normal;
+  src: local('IBMPlexMono'), url('IBMPlexMono-Thin.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'IBMPlexMono';
+  font-weight: 200;
+  font-style: normal;
+  src: local('IBMPlexMono'), url('IBMPlexMono-ExtraLight.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'IBMPlexMono';
+  font-weight: 300;
+  font-style: normal;
+  src: local('IBMPlexMono'), url('IBMPlexMono-Light.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'IBMPlexMono';
   font-weight: 400;
   font-style: normal;
-  src: local('CircularStd'), url('CircularStd-Book.otf') format('opentype');
+  src: local('IBMPlexMono'), url('IBMPlexMono-Regular.ttf') format('opentype');
 }
 
 @font-face {
-  font-family: 'CircularStd';
+  font-family: 'IBMPlexMono';
   font-weight: 500;
   font-style: normal;
-  src: local('CircularStd'), url('CircularStd-Medium.otf') format('opentype');
+  src: local('IBMPlexMono'), url('IBMPlexMono-Medium.ttf') format('opentype');
 }
 
 @font-face {
-  font-family: 'CircularStd';
-  font-weight: 700;
+  font-family: 'IBMPlexMono';
+  font-weight: 600;
   font-style: normal;
-  src: local('CircularStd'), url('CircularStd-Bold.otf') format('opentype');
+  src: local('IBMPlexMono'), url('IBMPlexMono-SemiBold.ttf') format('opentype');
 }
 
- 
+@font-face {
+  font-family: 'IBMPlexMono';
+  font-weight: 700;
+  font-style: normal;
+  src: local('IBMPlexMono'), url('IBMPlexMono-Bold.ttf') format('opentype');
+}
+
+/* RobotoMono */
+
+@font-face {
+  font-family: 'RobotoMono';
+  font-weight: 100;
+  font-style: normal;
+  src: local('RobotoMono'), url('RobotoMono-Thin.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'RobotoMono';
+  font-weight: 200;
+  font-style: normal;
+  src: local('RobotoMono'), url('RobotoMono-ExtraLight.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'RobotoMono';
+  font-weight: 300;
+  font-style: normal;
+  src: local('RobotoMono'), url('RobotoMono-Light.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'RobotoMono';
+  font-weight: 400;
+  font-style: normal;
+  src: local('RobotoMono'), url('RobotoMono-Regular.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'RobotoMono';
+  font-weight: 500;
+  font-style: normal;
+  src: local('RobotoMono'), url('RobotoMono-Medium.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'RobotoMono';
+  font-weight: 600;
+  font-style: normal;
+  src: local('RobotoMono'), url('RobotoMono-SemiBold.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'RobotoMono';
+  font-weight: 700;
+  font-style: normal;
+  src: local('RobotoMono'), url('RobotoMono-Bold.ttf') format('opentype');
+}

@@ -114,8 +114,8 @@ export default function JwtLoginView() {
       return true;
     } catch (error) {
       console.error(error);
-      setErrorMsg(typeof error === 'string' ? error : error.message);
-      enqueueSnackbar(typeof error === 'string' ? error : error.message, { variant: 'error' });
+      setErrorMsg(typeof error === 'string' ? error : (error.message ? error.message : error.error));
+      enqueueSnackbar(typeof error === 'string' ? error : (error.message ? error.message : error.error), { variant: 'error' });
       isSubmitting.onFalse();
       return false;
     }
@@ -131,8 +131,8 @@ export default function JwtLoginView() {
     } catch (error) {
       console.error(error);
       setCode('');
-      setErrorMsg(typeof error === 'string' ? error : error.message);
-      enqueueSnackbar(typeof error === 'string' ? error : error.message, { variant: 'error' });
+      setErrorMsg(typeof error === 'string' ? error : (error.message ? error.message : error.error));
+      enqueueSnackbar(typeof error === 'string' ? error : (error.message ? error.message : error.error), { variant: 'error' });
       isSubmitting.onFalse();
     }
   }
@@ -155,7 +155,7 @@ export default function JwtLoginView() {
     } catch (error) {
       console.error(error);
       isSubmitting.onFalse();
-      enqueueSnackbar(error.message, { variant: 'error' });
+      enqueueSnackbar("Something wrong!", { variant: 'error' });
     }
   }
 
@@ -194,7 +194,7 @@ export default function JwtLoginView() {
     const response = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${PROJECT_URL}/auth/jwt/supabase-oauth-callback?`,
+        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback?`,
       },
     });
   }

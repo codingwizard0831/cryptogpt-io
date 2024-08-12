@@ -21,6 +21,7 @@ export async function POST(req: Request) {
         const { data: newUser, error: newUserError } =
           await supabaseServiceRole.auth.admin.createUser({
             email: `${userId}@cryptogpt.io`,
+            user_metadata: { binanceUserId: userId },
             email_confirm: true,
           });
 
@@ -48,6 +49,11 @@ export async function POST(req: Request) {
               lastAuth: new Date().toISOString(),
               lastAuthStatus: "success",
             },
+            auth: {
+              lastLoggedinTime: new Date().toISOString(),
+              lastAuthStatus: "success",
+              lastLoggedinProvider: "binance"
+            }
           },
         ])
         .eq("email", `${userId}@cryptogpt.io`)

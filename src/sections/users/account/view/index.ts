@@ -1,0 +1,1 @@
+export { default as DashboardAccountView } from "./dashboard-account-view";

@@ -1,14 +1,14 @@
 // ----------------------------------------------------------------------
 
 const ROOTS = {
-  AUTH: '/auth',
-  DASHBOARD: '/dashboard',
+  AUTH: "/auth",
+  DASHBOARD: "/dashboard",
 };
 
 // ----------------------------------------------------------------------
 
 export const paths = {
-  minimalUI: 'https://mui.com/store/items/minimal-dashboard/',
+  minimalUI: "https://mui.com/store/items/minimal-dashboard/",
   // AUTH
   auth: {
     jwt: {
@@ -24,22 +24,15 @@ export const paths = {
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
-    chat: `${ROOTS.DASHBOARD}/chat`,
-    solar: `${ROOTS.DASHBOARD}/solar`,
-    discover: `${ROOTS.DASHBOARD}/discover`,
-    balance: `${ROOTS.DASHBOARD}/balance`,
-    travel: {
-      root: `${ROOTS.DASHBOARD}/travel`,
-      newOrder: `${ROOTS.DASHBOARD}/travel/order/new`,
-      order: `${ROOTS.DASHBOARD}/travel/order`,
-      airline: `${ROOTS.DASHBOARD}/travel/airline`,
-    },
+    models: `${ROOTS.DASHBOARD}/model`,
+    agents: `${ROOTS.DASHBOARD}/agents`,
+    files: `${ROOTS.DASHBOARD}/files`,
+    modelCreate: `${ROOTS.DASHBOARD}/model/create`,
+    trading: `${ROOTS.DASHBOARD}/trading`,
+    tracking: `${ROOTS.DASHBOARD}/tracking`,
+    strategy: `${ROOTS.DASHBOARD}/strategy`,
+    profile: `${ROOTS.DASHBOARD}/profile`,
     deliver: {
-      root: `${ROOTS.DASHBOARD}/deliver`,
-      restaurant: `${ROOTS.DASHBOARD}/deliver/restaurants`,
-      store: `${ROOTS.DASHBOARD}/deliver/stores`,
-      order: `${ROOTS.DASHBOARD}/deliver/orders`,
-      // me: `${ROOTS.DASHBOARD}/deliver/me`,
       me: {
         root: `${ROOTS.DASHBOARD}/deliver/me/favorite`,
         favorite: `${ROOTS.DASHBOARD}/deliver/me/favorite`,
@@ -53,35 +46,17 @@ export const paths = {
         order: (id: string) => `${ROOTS.DASHBOARD}/deliver/group/${id}/order`,
       },
     },
-    createproject: `${ROOTS.DASHBOARD}/createproject`,
-    knowledge: {
-      private: `${ROOTS.DASHBOARD}/knowledge/private`,
-      public: `${ROOTS.DASHBOARD}/knowledge/public`,
-      other: `${ROOTS.DASHBOARD}/knowledge/other`,
-      graph: `${ROOTS.DASHBOARD}/knowledge/graph`,
-      settings: `${ROOTS.DASHBOARD}/knowledge/settings`,
-    },
-    wallet: `${ROOTS.DASHBOARD}/wallet`,
-    community: `${ROOTS.DASHBOARD}/community`,
-    settings: `${ROOTS.DASHBOARD}/settings`,
-    help: `${ROOTS.DASHBOARD}/help`,
     user: {
+      root: `${ROOTS.DASHBOARD}/user`,
+      profile: `${ROOTS.DASHBOARD}/user/profile`,
       account: `${ROOTS.DASHBOARD}/user/account`,
-      profile: `${ROOTS.DASHBOARD}/user/profile`
-    },
-    agents: `${ROOTS.DASHBOARD}/agents`,
-
-    one: `${ROOTS.DASHBOARD}/one`,
-    two: `${ROOTS.DASHBOARD}/two`,
-    three: `${ROOTS.DASHBOARD}/three`,
-    group: {
-      root: `${ROOTS.DASHBOARD}/group`,
-      five: `${ROOTS.DASHBOARD}/group/five`,
-      six: `${ROOTS.DASHBOARD}/group/six`,
+      billing: `${ROOTS.DASHBOARD}/user/billing`,
+      connection: `${ROOTS.DASHBOARD}/user/connection`,
+      security: `${ROOTS.DASHBOARD}/user/security`,
     },
   },
 
   error: {
-    somethingWrong: '/something-wrong',
+    somethingWrong: "/something-wrong",
   },
 };
