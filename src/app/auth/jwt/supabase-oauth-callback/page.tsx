@@ -25,7 +25,7 @@ export default function OAuthPage() {
         const refreshToken = searchParams.get('refresh_token');
 
         if (!accessToken) {
-          window.location.href = `${window.location.origin}/dashboard`;
+          window.location.href = `${window.location.origin}/auth/jwt/supabase-oauth-callback`;
           return;
         }
 
