@@ -1,47 +1,58 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+
+import EditIcon from '@mui/icons-material/Edit';
 import {
-  Typography,
+  Card,
   Table,
+  alpha,
+  Alert,
+  Button,
+  TableRow,
+  Snackbar,
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
-  alpha,
-  Card,
-  CircularProgress,
-  Button
+  Typography,
+  CircularProgress
 } from '@mui/material';
-import axios from 'src/utils/axios';
-import { endpoints } from 'src/utils/axios';
+
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
+import axios, { endpoints } from 'src/utils/axios';
 
 interface Model {
-  name: string;
-  repoId: string;
-  size: string;
-  repoToken: string;
+  id: string; // Make sure your model has an id field
+  model_name: string;
+  hugging_face_repo_id: string;
+  model_size: string;
+  hugging_face_repo_token: string;
   status: string;
 }
 
 const ModelsView: React.FC = () => {
+  const router = useRouter();
+
   const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const [unsubscribingModelId, setUnsubscribingModelId] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   useEffect(() => {
     const fetchModels = async () => {
       try {
         setLoading(true);
         const response = await axios.get(endpoints.dashboard.models);
-        const fetchedModels: Model[] = response.data.map((model: any) => ({
-          name: model.name,
-          repoId: model.repo_id,
-          size: model.size,
-          repoToken: model.repo_token,
-          status: model.status
-        }));
-        setModels(fetchedModels);
+        setModels(response.data);
         setError(null);
       } catch (err) {
         console.error('Error fetching models:', err);
@@ -53,6 +64,45 @@ const ModelsView: React.FC = () => {
 
     fetchModels();
   }, []);
+
+  const handleEdit = async (modelId: string) => {
+    try {
+      setIsEditLoading(true);
+      // Navigate to the edit page with the model ID
+      router.replace(`${paths.dashboard.modelCreate}/${modelId}`)
+    } catch (err) {
+      console.error('Error navigating to edit page:', err);
+      setSnackbar({
+        open: true,
+        message: 'Failed to open edit page',
+        severity: 'error'
+      });
+    } finally {
+      setIsEditLoading(false);
+    }
+  };
+
+  const handleUnsubscribe = async (modelId: string) => {
+    try {
+      setUnsubscribingModelId(modelId);
+      await axios.delete(`${endpoints.dashboard.models}/${modelId}`);
+      setModels(models.filter(model => model.id !== modelId));
+      setSnackbar({
+        open: true,
+        message: 'Model unsubscribed successfully',
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Error unsubscribing model:', err);
+      setSnackbar({
+        open: true,
+        message: 'Failed to unsubscribe model',
+        severity: 'error'
+      });
+    } finally {
+      setUnsubscribingModelId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -77,13 +127,8 @@ const ModelsView: React.FC = () => {
       </Typography>
 
       <Table sx={{
-        "& tr": {
-          px: 1,
-        },
-        "& td,th": {
-          py: 0.5,
-          px: 2,
-        },
+        "& tr": { px: 1 },
+        "& td,th": { py: 0.5, px: 2 },
         "& tbody tr": {
           py: 0.5,
           transition: 'background-color 0.3s',
@@ -110,23 +155,49 @@ const ModelsView: React.FC = () => {
               </TableCell>
             </TableRow>
           ) : (
-            models.map((model, index) => (
-              <TableRow key={model.name || index}>
+            models.map((model) => (
+              <TableRow key={model.id}>
                 <TableCell component="th" scope='row' sx={{ color: 'text.primary' }}>
-                  {model.name}
+                  {model.model_name}
                 </TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{model.repoId}</TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{model.size}</TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{model.repoToken}</TableCell>
+                <TableCell sx={{ color: 'text.primary' }}>{model.hugging_face_repo_id}</TableCell>
+                <TableCell sx={{ color: 'text.primary' }}>{model.model_size}</TableCell>
+                <TableCell sx={{ color: 'text.primary' }}>{model.hugging_face_repo_token}</TableCell>
                 <TableCell sx={{ color: 'text.primary' }}>{model.status}</TableCell>
                 <TableCell sx={{ color: 'text.primary' }}>
-                  <Button variant="outlined" size="small">Edit</Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<EditIcon />}
+                    sx={{ mr: 1 }}
+                    disabled={isEditLoading}
+                    onClick={() => handleEdit(model.id)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => handleUnsubscribe(model.id)}
+                    disabled={unsubscribingModelId === model.id}
+                  >
+                    {unsubscribingModelId === model.id ? <CircularProgress size={24} /> : 'Unsubscribe'}
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
           )}
         </TableBody>
       </Table>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Card>
   );
 }

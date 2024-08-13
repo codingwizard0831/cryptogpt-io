@@ -1,42 +1,42 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+
+import EditIcon from '@mui/icons-material/Edit';
+import SearchIcon from '@mui/icons-material/Search';
+import AudiotrackIcon from '@mui/icons-material/Audiotrack';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import {
   Box,
-  Typography,
-  TextField,
-  Button,
+  Card,
   Table,
+  alpha,
+  Alert,
+  Button,
+  Dialog,
+  TableRow,
+  Snackbar,
+  TextField,
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
+  Typography,
   IconButton,
-  InputAdornment,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Card,
-  alpha,
-  CircularProgress,
-  Snackbar,
-  Alert
+  InputAdornment,
+  CircularProgress
 } from '@mui/material';
 
-import { paths } from 'src/routes/paths';
 import axios, { endpoints } from 'src/utils/axios';
-import { useAuthContext } from 'src/auth/hooks';
 
-import SearchIcon from '@mui/icons-material/Search';
-import EditIcon from '@mui/icons-material/Edit';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
-import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import DescriptionIcon from '@mui/icons-material/Description';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { useAuthContext } from 'src/auth/hooks';
 
 interface Agent {
   icon: React.ReactNode;
@@ -66,9 +66,7 @@ const iconMap: { [key: string]: React.ReactNode } = {
   'error': <ErrorOutlineIcon />,
 };
 
-const getIconForAgent = (iconType: string): React.ReactNode => {
-  return iconMap[iconType] || <ErrorOutlineIcon />;
-};
+const getIconForAgent = (iconType: string): React.ReactNode => iconMap[iconType] || <ErrorOutlineIcon />;
 
 const ManageAgents: React.FC = () => {
   const { user } = useAuthContext();
@@ -122,11 +120,11 @@ const ManageAgents: React.FC = () => {
 
   const handleEdit = async (agent: Agent) => {
     try {
-      console.log(agent)
       setIsEditLoading(true);
       const response = await axios.get(`${endpoints.dashboard.agents}/${agent.agent_id}`);
       setEditingAgent(response.data);
       setIsEditDialogOpen(true);
+      setIsEditLoading(false);
     } catch (error) {
       console.error('Error fetching agent details:', error);
       setSnackbar({ open: true, message: 'Failed to fetch agent details', severity: 'error' });
@@ -167,6 +165,7 @@ const ManageAgents: React.FC = () => {
       await axios.delete(`${endpoints.dashboard.agents}/${agent_id}`);
       setAgents(agents.filter(agent => agent.agent_id !== agent_id));
       setSnackbar({ open: true, message: 'Agent unsubscribed successfully', severity: 'success' });
+      setIsDeleteLoading(false);
     } catch (error) {
       console.error('Error unsubscribing agent:', error);
       setSnackbar({ open: true, message: 'Failed to unsubscribe agent', severity: 'error' });
@@ -175,20 +174,18 @@ const ManageAgents: React.FC = () => {
     }
   };
 
-  const filteredAgents = React.useMemo(() => {
-    return agents.filter(agent => {
-      const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        agent.agent_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        agent.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        agent.category.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredAgents = React.useMemo(() => agents.filter(agent => {
+    const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agent.agent_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agent.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agent.category.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesFilter = filter === 'All Agents' ||
-        (filter === 'Chat Agents' && agent.type.toLowerCase().includes('chat')) ||
-        (filter === 'File Agents' && agent.type.toLowerCase().includes('file'));
+    const matchesFilter = filter === 'All Agents' ||
+      (filter === 'Chat Agents' && agent.type.toLowerCase().includes('chat')) ||
+      (filter === 'File Agents' && agent.type.toLowerCase().includes('file'));
 
-      return matchesSearch && matchesFilter;
-    });
-  }, [agents, searchTerm, filter]);
+    return matchesSearch && matchesFilter;
+  }), [agents, searchTerm, filter]);
 
   if (loading) {
     return (

@@ -91,6 +91,7 @@ export const endpoints = {
     'media_storage': '/api/overview/media_storage',
     'agents': '/api/overview/agents',
     'models': '/api/overview/models',
+    'hugging_face': '/api/overview/hugging_face',
   }
 };
 
