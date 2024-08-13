@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -17,8 +17,17 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Card
+  Card,
+  alpha,
+  CircularProgress,
+  Snackbar,
+  Alert
 } from '@mui/material';
+
+import { paths } from 'src/routes/paths';
+import axios, { endpoints } from 'src/utils/axios';
+import { useAuthContext } from 'src/auth/hooks';
+
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
@@ -26,55 +35,150 @@ import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import DescriptionIcon from '@mui/icons-material/Description';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 interface Agent {
   icon: React.ReactNode;
   name: string;
-  lastModified: string;
-  agentId: string;
+  last_modified: string;
+  agent_id: string;
   type: string;
   category: string;
   status: string;
 }
 
 const initialAgents: Agent[] = [
-  { icon: <PlayCircleOutlineIcon />, name: 'Youtube Plugin', lastModified: '07/15/2024 , 09:28 AM', agentId: 'plugin-1713961903', type: 'File / Youtube', category: 'Education', status: 'Public' },
-  { icon: <HelpOutlineIcon />, name: 'Media Knowledge Plugin', lastModified: '04/24/2024 , 05:31 AM', agentId: 'plugin-1713962163', type: 'Chat / Media Knowle...', category: 'Education', status: 'Public' },
-  { icon: <VideoLibraryIcon />, name: 'Video Plugin', lastModified: '04/24/2024 , 05:31 AM', agentId: 'plugin-1713967141', type: 'File / Video', category: 'Education', status: 'Public' },
-  { icon: <AudiotrackIcon />, name: 'Audio Plugin', lastModified: '04/24/2024 , 04:40 AM', agentId: 'plugin-1713958830', type: 'File / Audio', category: 'Education', status: 'Public' },
-  { icon: <DescriptionIcon />, name: 'Document Plugin', lastModified: '04/24/2024 , 03:28 AM', agentId: 'plugin-1713954536', type: 'File / Document', category: 'Finance', status: 'Public' },
+  { icon: <PlayCircleOutlineIcon />, name: 'Youtube Plugin', last_modified: '07/15/2024 , 09:28 AM', agent_id: 'plugin-1713961903', type: 'File / Youtube', category: 'Education', status: 'Public' },
+  { icon: <HelpOutlineIcon />, name: 'Media Knowledge Plugin', last_modified: '04/24/2024 , 05:31 AM', agent_id: 'plugin-1713962163', type: 'Chat / Media Knowle...', category: 'Education', status: 'Public' },
+  { icon: <VideoLibraryIcon />, name: 'Video Plugin', last_modified: '04/24/2024 , 05:31 AM', agent_id: 'plugin-1713967141', type: 'File / Video', category: 'Education', status: 'Public' },
+  { icon: <AudiotrackIcon />, name: 'Audio Plugin', last_modified: '04/24/2024 , 04:40 AM', agent_id: 'plugin-1713958830', type: 'File / Audio', category: 'Education', status: 'Public' },
+  { icon: <DescriptionIcon />, name: 'Document Plugin', last_modified: '04/24/2024 , 03:28 AM', agent_id: 'plugin-1713954536', type: 'File / Document', category: 'Finance', status: 'Public' },
 ];
 
+const iconMap: { [key: string]: React.ReactNode } = {
+  'youtube': <PlayCircleOutlineIcon />,
+  'audio': <AudiotrackIcon />,
+  'video': <VideoLibraryIcon />,
+  'document': <DescriptionIcon />,
+  'help': <HelpOutlineIcon />,
+  'knowledge': <TipsAndUpdatesIcon />,
+  'error': <ErrorOutlineIcon />,
+};
+
+const getIconForAgent = (iconType: string): React.ReactNode => {
+  return iconMap[iconType] || <ErrorOutlineIcon />;
+};
+
 const ManageAgents: React.FC = () => {
-  const [agents, setAgents] = useState<Agent[]>(initialAgents);
+  const { user } = useAuthContext();
+  const [agents, setAgents] = useState<Agent[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('All Agents');
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleEdit = (agent: Agent) => {
-    setEditingAgent(agent);
-    setIsEditDialogOpen(true);
-  };
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
-  const handleSaveEdit = () => {
-    if (editingAgent) {
-      setAgents(agents.map(agent =>
-        agent.agentId === editingAgent.agentId ? editingAgent : agent
-      ));
-      setIsEditDialogOpen(false);
-      setEditingAgent(null);
+  useEffect(() => {
+    const fetchAgents = async () => {
+      if (!user?.id) {
+        setError('User ID not available');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${endpoints.dashboard.agents}?user_id=${user.id}`);
+        const fetchedAgents = response.data.map((agent: any) => ({
+          name: agent.name,
+          last_modified: new Date(agent.last_modified).toLocaleString(),
+          agent_id: agent.agent_id,
+          icon: getIconForAgent(agent.icon),
+          type: agent.type,
+          category: agent.category,
+          status: agent.status,
+        }));
+        setAgents(fetchedAgents);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching agents:', err);
+        setError('Failed to fetch agents. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAgents();
+  }, [user?.id]);
+
+  const handleEdit = async (agent: Agent) => {
+    try {
+      console.log(agent)
+      setIsEditLoading(true);
+      const response = await axios.get(`${endpoints.dashboard.agents}/${agent.agent_id}`);
+      setEditingAgent(response.data);
+      setIsEditDialogOpen(true);
+    } catch (error) {
+      console.error('Error fetching agent details:', error);
+      setSnackbar({ open: true, message: 'Failed to fetch agent details', severity: 'error' });
+    } finally {
+      setIsEditLoading(false);
     }
   };
 
-  const handleUnsubscribe = (agentId: string) => {
-    setAgents(agents.filter(agent => agent.agentId !== agentId));
+  const handleSaveEdit = async () => {
+    if (editingAgent) {
+      try {
+        setIsEditLoading(true);
+        const response = await axios.put(`${endpoints.dashboard.agents}/${editingAgent.agent_id}`, {
+          name: editingAgent.name,
+          category: editingAgent.category,
+          status: editingAgent.status,
+          icon: editingAgent.icon,
+        });
+
+        setAgents(agents.map(agent =>
+          agent.agent_id === editingAgent.agent_id ? { ...response.data, icon: getIconForAgent(response.data.icon) } : agent
+        ));
+        setIsEditDialogOpen(false);
+        setEditingAgent(null);
+        setSnackbar({ open: true, message: 'Agent updated successfully', severity: 'success' });
+      } catch (error) {
+        console.error('Error updating agent:', error);
+        setSnackbar({ open: true, message: 'Failed to update agent', severity: 'error' });
+      } finally {
+        setIsEditLoading(false);
+      }
+    }
+  };
+
+  const handleUnsubscribe = async (agent_id: string) => {
+    try {
+      setIsDeleteLoading(true);
+      await axios.delete(`${endpoints.dashboard.agents}/${agent_id}`);
+      setAgents(agents.filter(agent => agent.agent_id !== agent_id));
+      setSnackbar({ open: true, message: 'Agent unsubscribed successfully', severity: 'success' });
+    } catch (error) {
+      console.error('Error unsubscribing agent:', error);
+      setSnackbar({ open: true, message: 'Failed to unsubscribe agent', severity: 'error' });
+    } finally {
+      setIsDeleteLoading(false);
+    }
   };
 
   const filteredAgents = React.useMemo(() => {
     return agents.filter(agent => {
       const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        agent.agentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        agent.agent_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         agent.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
         agent.category.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -85,6 +189,22 @@ const ManageAgents: React.FC = () => {
       return matchesSearch && matchesFilter;
     });
   }, [agents, searchTerm, filter]);
+
+  if (loading) {
+    return (
+      <Card sx={{ color: 'text.primary', p: 2, borderRadius: 2, height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <CircularProgress />
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card sx={{ color: 'text.primary', p: 2, borderRadius: 2, height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography color="error">{error}</Typography>
+      </Card>
+    );
+  }
 
   return (
     <Card sx={{ color: 'text.primary', p: 3 }}>
@@ -151,21 +271,36 @@ const ManageAgents: React.FC = () => {
         </TableHead>
         <TableBody>
           {filteredAgents.map((agent) => (
-            <TableRow key={agent.agentId}>
+            <TableRow key={agent.agent_id}>
               <TableCell>{agent.icon}</TableCell>
               <TableCell>
                 <Typography variant="body1">{agent.name}</Typography>
-                <Typography variant="caption" color="text.secondary">Last modified on: {agent.lastModified}</Typography>
+                <Typography variant="caption" color="text.secondary">Last modified on: {agent.last_modified}</Typography>
               </TableCell>
-              <TableCell>{agent.agentId}</TableCell>
+              <TableCell>{agent.agent_id}</TableCell>
               <TableCell>{agent.type}</TableCell>
               <TableCell>{agent.category}</TableCell>
               <TableCell>
                 <Typography color="success.main">{agent.status}</Typography>
               </TableCell>
               <TableCell>
-                <Button variant="outlined" startIcon={<EditIcon />} sx={{ mr: 1 }} onClick={() => handleEdit(agent)}>Edit</Button>
-                <Button variant="outlined" color="error" onClick={() => handleUnsubscribe(agent.agentId)}>Unsubscribe</Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<EditIcon />}
+                  sx={{ mr: 1 }}
+                  onClick={() => handleEdit(agent)}
+                  disabled={isEditLoading}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleUnsubscribe(agent.agent_id)}
+                  disabled={isDeleteLoading}
+                >
+                  Unsubscribe
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -176,7 +311,6 @@ const ManageAgents: React.FC = () => {
         <HelpOutlineIcon />
       </IconButton>
 
-      {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onClose={() => setIsEditDialogOpen(false)}>
         <DialogTitle>Edit Agent</DialogTitle>
         <DialogContent>
@@ -214,10 +348,26 @@ const ManageAgents: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSaveEdit}>Save</Button>
+          <Button onClick={() => setIsEditDialogOpen(false)} disabled={isEditLoading}>Cancel</Button>
+          <Button onClick={handleSaveEdit} disabled={isEditLoading}>
+            {isEditLoading ? <CircularProgress size={24} /> : 'Save'}
+          </Button>
         </DialogActions>
       </Dialog>
+
+      <IconButton sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+        <HelpOutlineIcon />
+      </IconButton>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Card>
   );
 };

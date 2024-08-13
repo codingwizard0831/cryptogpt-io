@@ -15,7 +15,7 @@ import PlanUsageModalChart from './PlanUsageModalChart';
 interface UsageItem {
     type: string;
     value: number;
-    limit: string;
+    limit_value: string;
     unit?: string;
     percentage: number;
 }
@@ -26,12 +26,12 @@ interface PlanUsageModalProps {
     usageData: UsageItem[];
 }
 
-const UsageCard: React.FC<UsageItem> = ({ type, value, limit, unit, percentage }) => (
+const UsageCard: React.FC<UsageItem> = ({ type, value, limit_value, unit, percentage }) => (
     <Card sx={{ p: 3, borderRadius: 2, textAlign: 'center' }}>
         <Typography variant={"h6"} gutterBottom> {type} </Typography>
-        <PlanUsageModalChart value={value} limit={limit} percentage={percentage} />
+        <PlanUsageModalChart value={value} limit_value={limit_value} percentage={percentage} />
         <Typography variant={"h6"} sx={{ mt: 1 }}> {value} {unit} </Typography>
-        <Typography variant="body2" color="text.secondary"> {limit} limit </Typography>
+        <Typography variant="body2" color="text.secondary"> {limit_value} limit </Typography>
         <Button variant="outlined" sx={{ mt: 2 }}>Increase limit</Button>
     </Card>
 )

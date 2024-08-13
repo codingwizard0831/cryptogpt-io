@@ -8,11 +8,11 @@ import CircularProgressChart from './circle-progress-chart';
 
 interface ChartItem {
     value: number;
-    limit: string;
+    limit_value: string;
     percentage: number;
 }
 
-const PlanUsageModalChart: React.FC<ChartItem> = ({ value, limit, percentage }) => (
+const PlanUsageModalChart: React.FC<ChartItem> = ({ value, limit_value, percentage }) => (
     <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center', gap: 2, mb: 2 }}>
         <CircularProgressChart percentage={percentage} />
 
@@ -21,7 +21,7 @@ const PlanUsageModalChart: React.FC<ChartItem> = ({ value, limit, percentage }) 
                 {value}
             </Typography>
             <Typography variant="h6" component="div" fontWeight="bold">
-                {`${limit} limit`}
+                {`${limit_value} limit`}
             </Typography>
         </Box>
     </Box>

@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Typography,
   Table,
@@ -9,8 +9,12 @@ import {
   TableHead,
   TableRow,
   alpha,
-  Card
+  Card,
+  CircularProgress,
+  Button
 } from '@mui/material';
+import axios from 'src/utils/axios';
+import { endpoints } from 'src/utils/axios';
 
 interface Model {
   name: string;
@@ -20,11 +24,52 @@ interface Model {
   status: string;
 }
 
-interface ModelsViewProps {
-  models?: Model[];
-}
+const ModelsView: React.FC = () => {
+  const [models, setModels] = useState<Model[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const ModelsView: React.FC<ModelsViewProps> = ({ models = [] }) => {
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(endpoints.dashboard.models);
+        const fetchedModels: Model[] = response.data.map((model: any) => ({
+          name: model.name,
+          repoId: model.repo_id,
+          size: model.size,
+          repoToken: model.repo_token,
+          status: model.status
+        }));
+        setModels(fetchedModels);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching models:', err);
+        setError('Failed to fetch models. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchModels();
+  }, []);
+
+  if (loading) {
+    return (
+      <Card sx={{ color: "text.primary", p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
+        <CircularProgress />
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card sx={{ color: "text.primary", p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
+        <Typography color="error">{error}</Typography>
+      </Card>
+    );
+  }
+
   return (
     <Card sx={{ color: "text.primary", p: 3 }}>
       <Typography variant="h6" gutterBottom>
@@ -65,23 +110,25 @@ const ModelsView: React.FC<ModelsViewProps> = ({ models = [] }) => {
               </TableCell>
             </TableRow>
           ) : (
-            models.map((model, index) => {
+            models.map((model, index) => (
               <TableRow key={model.name || index}>
-                <TableCell component={"th"} scope='row' sx={{ color: 'text.primary' }}>
+                <TableCell component="th" scope='row' sx={{ color: 'text.primary' }}>
                   {model.name}
                 </TableCell>
                 <TableCell sx={{ color: 'text.primary' }}>{model.repoId}</TableCell>
                 <TableCell sx={{ color: 'text.primary' }}>{model.size}</TableCell>
                 <TableCell sx={{ color: 'text.primary' }}>{model.repoToken}</TableCell>
                 <TableCell sx={{ color: 'text.primary' }}>{model.status}</TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{ }</TableCell>
+                <TableCell sx={{ color: 'text.primary' }}>
+                  <Button variant="outlined" size="small">Edit</Button>
+                </TableCell>
               </TableRow>
-            })
+            ))
           )}
         </TableBody>
       </Table>
     </Card>
-  )
+  );
 }
 
 export default ModelsView;

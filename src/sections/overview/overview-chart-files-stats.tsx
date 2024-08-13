@@ -38,7 +38,7 @@ const OverviewFilesStats: React.FC<FilesStatsOverviewProps> = ({ filesUploaded, 
                         <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                         <XAxis dataKey="time" stroke="#888" />
                         <YAxis stroke="#888" />
-                        <Area type="monotone" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.2} />
+                        <Area type="monotone" dataKey="value" stroke="#FFD700" fill="#FFD700" fillOpacity={0.1} />
                     </AreaChart>
                 </ResponsiveContainer>
             </Box>
@@ -52,7 +52,7 @@ const OverviewFilesStats: React.FC<FilesStatsOverviewProps> = ({ filesUploaded, 
                         <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                         <XAxis dataKey="time" stroke="#888" />
                         <YAxis stroke="#888" />
-                        <Area type="monotone" dataKey="value" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.2} />
+                        <Area type="monotone" dataKey="value" stroke="#4CAF50" fill="#4CAF50" fillOpacity={0.1} />
                     </AreaChart>
                 </ResponsiveContainer>
             </Box>
