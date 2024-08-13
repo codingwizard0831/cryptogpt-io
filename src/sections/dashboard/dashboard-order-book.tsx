@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import { webSocketClient } from 'src/utils/websocket';
 import { fNumberPrice } from 'src/utils/format-number';
-import { requestOrderBookData } from 'src/utils/websocket';
 
 import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
@@ -35,10 +35,13 @@ export default function DashboardOrderBook() {
   const [topOfInfoModal, setTopOfInfoModal] = useState('calc(50% - 47px)');
   const [buySellLayout, setBuySellLayout] = useState<'SELL' | 'BUY' | 'BOTH'>('BOTH');
 
+  // Get real-time price updates
+  const [currentSelectedPair, setCurrentSelectedPair] = useState('BTC/USDT');
+  const [currentSelectedExchange, setCurrentSelectedExchange] = useState('Binance');
+
   useEffect(() => {
-    console.log('request order book data...');
-    requestOrderBookData('BTC/USDT');
-  }, []);
+    webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
+  }, [currentSelectedPair, currentSelectedExchange]);
 
   useEffect(() => {
     let _averagePrice = 0;
