@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Box, Grid } from '@mui/material';
 
 import OverviewPlanUsage from '../overview-plan-usage';
@@ -53,7 +52,7 @@ export default function DashboardView() {
             overflowX: 'hidden',
             overflowY: 'auto',
         }}>
-            <Grid container spacing={2} maxWidth={"50%"}>
+            <Grid container spacing={2} maxWidth={"60%"}>
                 <Grid item xs={12} md={6}>
                     <OverviewPlanUsage />
                 </Grid>

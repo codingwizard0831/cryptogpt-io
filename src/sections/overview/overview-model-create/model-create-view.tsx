@@ -7,13 +7,16 @@ import {
   TextField,
   Button,
   Grid,
-  Paper,
   InputAdornment,
   IconButton,
   Autocomplete,
+  Card
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 const ModelCreateView: React.FC = () => {
   const [repoId, setRepoId] = useState('');
@@ -21,22 +24,28 @@ const ModelCreateView: React.FC = () => {
   const [modelName, setModelName] = useState('');
   const [contextLength, setContextLength] = useState('4096');
 
+  const router = useRouter();
+
   return (
-    <Box sx={{ bgcolor: 'background.default', color: 'text.primary', p: 3 }}>
+    <Card sx={{ color: 'text.primary', p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5">Deploy a new Model</Typography>
         <Box>
-          <Button variant="contained" color="primary" sx={{ mr: 1 }}>
+          <Button variant="contained" color="primary" sx={{ mr: 1, color: "text.primary" }}>
             Deploy
           </Button>
-          <Button variant="outlined" color="primary">
+          <Button variant="outlined" color="primary" sx={{ color: "text.primary" }} onClick={() => router.replace(paths.dashboard.root)}>
             Cancel
           </Button>
         </Box>
       </Box>
 
-      <Paper sx={{ p: 3, mb: 3, bgcolor: 'background.paper' }}>
-        <Button variant="contained" color="success" sx={{ mb: 2 }}>
+      <Card sx={{ p: 3, mb: 3, }}>
+        <Button
+          variant="contained"
+          sx={{ mt: 2, bgcolor: theme => theme.palette.primary.main, color: "text.primary", mb: 2 }}
+          onClick={() => setOpen(true)}
+        >
           Connected with Hugging Face
         </Button>
 
@@ -96,7 +105,7 @@ const ModelCreateView: React.FC = () => {
             />
           </Grid>
         </Grid>
-      </Paper>
+      </Card>
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
@@ -143,7 +152,7 @@ const ModelCreateView: React.FC = () => {
       >
         <HelpOutlineIcon />
       </IconButton>
-    </Box>
+    </Card>
   );
 };
 

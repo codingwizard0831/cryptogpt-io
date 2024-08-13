@@ -5,7 +5,8 @@ import {
     Box,
     Typography,
     Button,
-    Divider
+    Divider,
+    Card
 } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
@@ -18,12 +19,10 @@ const OverviewMyModels: React.FC<MyModelsProps> = ({ models }) => {
     const router = useRouter();
 
     return (
-        <Box sx={{
-            bgcolor: 'grey.900',
+        <Card sx={{
             color: 'text.primary',
             p: 2,
             borderRadius: 2,
-            maxWidth: 450,
             height: '100%',
             display: 'flex',
             flexDirection: 'column'
@@ -56,7 +55,7 @@ const OverviewMyModels: React.FC<MyModelsProps> = ({ models }) => {
                     </Typography>
                 )}
             </Box>
-        </Box>
+        </Card>
     );
 };
 

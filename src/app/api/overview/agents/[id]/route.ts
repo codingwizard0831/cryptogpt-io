@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         const { data, error } = await supabase
             .from('agents')
             .select('*')
-            .eq('id', id)
+            .eq('agent_id', id)
             .single();
         if (error) {
             return NextResponse.json({ error: error.message }, { status: 500 });
@@ -27,13 +27,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         const { id } = params;
+        console.log(id)
         const body = await req.json();
         const { name, type, category, status, icon } = body;
 
         const { data, error } = await supabase
             .from('agents')
             .update({ name, type, category, status, icon })
-            .eq('id', id)
+            .eq('agent_id', id)
             .select();
 
         if (error) {
@@ -58,7 +59,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         const { error } = await supabase
             .from('agents')
             .delete()
-            .eq('id', id);
+            .eq('agent_id', id);
 
         if (error) {
             return NextResponse.json({ error: error.message }, { status: 500 });
