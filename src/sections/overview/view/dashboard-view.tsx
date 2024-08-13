@@ -1,7 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
 import { Box, Grid } from '@mui/material';
 
 import OverviewCredit from '../overview-credit';
@@ -12,11 +10,7 @@ import OverviewMediaStorage from '../overview-media-storage';
 import OverviewFilesStats from '../overview-chart-files-stats';
 import OverviewInterfaceStats from '../overview-chart-interface-stats';
 
-interface PlanUsageItem {
-    type: string;
-    limit: string;
-    value: number;
-}
+
 
 const planUsageData: PlanUsageItem[] = [
     { type: 'Storage', limit: '512.00 MB', value: 0 },
@@ -27,22 +21,6 @@ const planUsageData: PlanUsageItem[] = [
 ];
 
 export default function DashboardView() {
-
-
-    const [pUsageData, setPUsageData] = useState<PlanUsageItem>(planUsageData[0]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentIndex((prevIndex) => (prevIndex + 1) % planUsageData.length);
-        }, 2500);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() => {
-        setPUsageData(planUsageData[currentIndex]);
-    }, [setPUsageData, currentIndex]);
 
     const models: Array<any> = []
     const grants: Array<any> = []
@@ -82,9 +60,9 @@ export default function DashboardView() {
             overflowX: 'hidden',
             overflowY: 'auto',
         }}>
-            <Grid container spacing={2} maxWidth="50%">
+            <Grid container spacing={2} maxWidth="60%">
                 <Grid item xs={12} md={6}>
-                    <OverviewPlanUsage type={pUsageData.type} limit={pUsageData.limit} value={pUsageData.value} />
+                    <OverviewPlanUsage />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <OverviewMediaStorage />

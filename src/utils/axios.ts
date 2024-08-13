@@ -86,4 +86,11 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+  dashboard: {
+    'plan_usage': '/api/overview/plan_usage',
+    'media_storage': '/api/overview/media_storage',
+    'agents': '/api/overview/agents',
+    'models': '/api/overview/models',
+  }
 };
+

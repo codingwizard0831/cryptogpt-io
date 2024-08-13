@@ -5,18 +5,25 @@ import { retrievePaymentIntent } from 'src/lib/stripeLib';
 
 export async function POST(req: Request) {
   try {
-    const { user_id, payment_intent_id } = await req.json();
+    const { payment_intent_id } = await req.json();
 
-    if (!user_id || !payment_intent_id) {
-      return NextResponse.json({ success: false, error: 'Missing user_id or payment_intent_id' }, { status: 400 });
+    if (!payment_intent_id) {
+      return NextResponse.json({ success: false, error: 'Missing payment_intent_id' }, { status: 400 });
     }
+
+    const userHeader = req.headers.get('x-user') as string;
+
+    if (!userHeader) {
+      return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
+    }
+    const user = JSON.parse(userHeader);
 
     const payment_intent = await retrievePaymentIntent(payment_intent_id);
     // console.log('payment_intent', payment_intent)
     const { data: userPlans, error: userPlansError } = await supabase
       .from('user_plans')
       .select()
-      .eq('user_id', user_id)
+      .eq('user_id', user?.id)
       .order('id', { ascending: false }).single();
 
     if (userPlansError) {
@@ -27,7 +34,7 @@ export async function POST(req: Request) {
     const { data: stripeCustomer, error: stripeCustomerError } = await supabase
       .from('stripe_customer')
       .select()
-      .eq('user_id', user_id);
+      .eq('user_id', user?.id);
 
     if (stripeCustomerError) {
       return NextResponse.json({ success: false, error: 'Error fetching stripe customer' }, { status: 500 });

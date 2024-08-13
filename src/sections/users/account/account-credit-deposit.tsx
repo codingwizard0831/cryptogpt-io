@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { styled } from '@mui/system';
 import Card from '@mui/material/Card';
@@ -15,7 +15,6 @@ import usePayStripeApplePayment from 'src/hooks/use-pay-stripe-apple-payment';
 import axios, { endpoints } from 'src/utils/axios';
 
 import Stripe, { useStripe } from 'src/provider/Stripe';
-import { useAuthContext } from 'src/auth/hooks';
 
 import Label from 'src/components/label';
 import CardElement from 'src/components/stripe-card';
@@ -44,7 +43,6 @@ const ApplePayIcon: React.FC = () => (
 );
 
 const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLoading: any }) => {
-  const { user } = useAuthContext();
   const [amount, setAmount] = useState(0);
   const [cardPaymentState, setCardPaymentState] = useState({
     errorMessage: ''
@@ -80,19 +78,16 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     return await axios.post(endpoints.credits.confirmPaymentIntent,
       {
         "payment_intent_id": payResult.paymentIntent.id,
-        "amount": amount,
-        "user_id": user?.id,
+        "amount": amount
       }
     );
-  }, [amount, confirmCardPayment, user]);
+  }, [amount, confirmCardPayment]);
 
   const [paymentRequest, email, { createPaymentRequest }] = usePayStripeApplePayment(
     async () => {
       const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
         {
           "amount": amount,
-          "user_id": user?.id,
-          "email": user?.email,
           "recovery_email": email
         }
       );
@@ -138,9 +133,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
       });
       const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
         {
-          "amount": amount,
-          "user_id": user?.id,
-          "email": user?.email
+          "amount": amount
         }
       );
 
@@ -160,8 +153,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
             await axios.post(endpoints.credits.confirmPaymentIntent,
               {
                 "payment_intent_id": payResult.paymentIntent.id,
-                "amount": amount,
-                "user_id": user?.id,
+                "amount": amount
               }
             );
             setIsLoading(!isLoading);
@@ -211,7 +203,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
         errorMessage: e.message
       });
     }
-  }, [payStripeCardPayment, setCardPaymentState, amount, setDepositState, setIsLoading, isLoading, user]);
+  }, [payStripeCardPayment, setCardPaymentState, amount, setDepositState, setIsLoading, isLoading]);
 
   const isDepositButtonDisabled = !!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete || !amount;
 

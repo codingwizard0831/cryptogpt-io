@@ -212,10 +212,10 @@ export default function JwtLoginView() {
 
   const handleLoginWithGoogle = async () => {
     console.log('Login with Google');
-    const response = await supabase.auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback?`,
+        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
       },
     });
   }

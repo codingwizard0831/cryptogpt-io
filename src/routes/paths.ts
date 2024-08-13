@@ -25,6 +25,8 @@ export const paths = {
   dashboard: {
     root: ROOTS.DASHBOARD,
     models: `${ROOTS.DASHBOARD}/model`,
+    agents: `${ROOTS.DASHBOARD}/agents`,
+    files: `${ROOTS.DASHBOARD}/files`,
     modelCreate: `${ROOTS.DASHBOARD}/model/create`,
     trading: `${ROOTS.DASHBOARD}/trading`,
     tracking: `${ROOTS.DASHBOARD}/tracking`,
