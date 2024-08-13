@@ -10,16 +10,6 @@ import OverviewMediaStorage from '../overview-media-storage';
 import OverviewFilesStats from '../overview-chart-files-stats';
 import OverviewInterfaceStats from '../overview-chart-interface-stats';
 
-
-
-const planUsageData: PlanUsageItem[] = [
-    { type: 'Storage', limit: '512.00 MB', value: 0 },
-    { type: 'RAG Calls', limit: '500', value: 0 },
-    { type: 'Vectors', limit: '10k', value: 0 },
-    { type: 'Transcription Hours', limit: '10', value: 0 },
-    { type: 'Tokens', limit: '500k', value: 0 },
-];
-
 export default function DashboardView() {
 
     const models: Array<any> = []
@@ -71,7 +61,7 @@ export default function DashboardView() {
                     <OverviewMyAgents />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <OverviewMyModels models={models} />
+                    <OverviewMyModels />
                 </Grid>
                 <Grid item xs={12}>
                     <OverviewCredit grants={grants} />

@@ -125,8 +125,8 @@ const ManageAgents: React.FC = () => {
       setEditingAgent(response.data);
       setIsEditDialogOpen(true);
       setIsEditLoading(false);
-    } catch (error) {
-      console.error('Error fetching agent details:', error);
+    } catch (e) {
+      console.error('Error fetching agent details:', e);
       setSnackbar({ open: true, message: 'Failed to fetch agent details', severity: 'error' });
     } finally {
       setIsEditLoading(false);
@@ -150,8 +150,8 @@ const ManageAgents: React.FC = () => {
         setIsEditDialogOpen(false);
         setEditingAgent(null);
         setSnackbar({ open: true, message: 'Agent updated successfully', severity: 'success' });
-      } catch (error) {
-        console.error('Error updating agent:', error);
+      } catch (e) {
+        console.error('Error updating agent:', e);
         setSnackbar({ open: true, message: 'Failed to update agent', severity: 'error' });
       } finally {
         setIsEditLoading(false);
@@ -166,8 +166,8 @@ const ManageAgents: React.FC = () => {
       setAgents(agents.filter(agent => agent.agent_id !== agent_id));
       setSnackbar({ open: true, message: 'Agent unsubscribed successfully', severity: 'success' });
       setIsDeleteLoading(false);
-    } catch (error) {
-      console.error('Error unsubscribing agent:', error);
+    } catch (e) {
+      console.error('Error unsubscribing agent:', e);
       setSnackbar({ open: true, message: 'Failed to unsubscribe agent', severity: 'error' });
     } finally {
       setIsDeleteLoading(false);
