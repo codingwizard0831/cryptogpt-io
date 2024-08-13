@@ -194,7 +194,7 @@ export default function JwtLoginView() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1`
+        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
       },
     });
   }
