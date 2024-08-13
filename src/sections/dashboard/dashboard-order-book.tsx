@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { webSocketClient } from 'src/utils/websocket';
+import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
 import { fNumberPrice } from 'src/utils/format-number';
 
 import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
@@ -24,8 +24,8 @@ import Iconify from 'src/components/iconify';
 const fixedOrderBookNumber = 11;
 
 export default function DashboardOrderBook() {
-  const [sellOrders, setSellOrders] = useState([...dummySellOrders]);
-  const [buyOrders, setBuyOrders] = useState([...dummyBuyOrders]);
+  const [sellOrders, setSellOrders] = useState<OrderBookEntry[] | []>([]);
+  const [buyOrders, setBuyOrders] = useState<OrderBookEntry[] | []>([]);
   const orderBookContainer = useRef<HTMLDivElement>(null);
   const [currentSelectedSellOrder, setCurrentSelectedSellOrder] = useState(sellOrders.length - 1);
   const [currentSelectedBuyOrder, setCurrentSelectedBuyOrder] = useState(0);
@@ -41,6 +41,16 @@ export default function DashboardOrderBook() {
 
   useEffect(() => {
     webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
+
+    const interval = setInterval(() => {
+      const { priceData } = webSocketClient;
+      if (priceData) {
+        setSellOrders(priceData.asks);
+        setBuyOrders(priceData.bids);
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
   }, [currentSelectedPair, currentSelectedExchange]);
 
   useEffect(() => {
@@ -55,10 +65,10 @@ export default function DashboardOrderBook() {
         (sellOrders.length - currentSelectedSellOrder);
       _sumBTC = sellOrders
         .filter((_order, _index) => _index >= currentSelectedSellOrder)
-        .reduce((_sum, _order) => _sum + _order.amount, 0);
+        .reduce((_sum, _order) => _sum + _order.quantity, 0);
       _sumUSDT = sellOrders
         .filter((_order, _index) => _index >= currentSelectedSellOrder)
-        .reduce((_sum, _order) => _sum + _order.price * _order.amount, 0);
+        .reduce((_sum, _order) => _sum + _order.price * _order.quantity, 0);
     } else {
       _averagePrice = 0;
       _sumBTC = 0;
@@ -72,10 +82,10 @@ export default function DashboardOrderBook() {
         (currentSelectedBuyOrder + 1);
       _sumBTC = buyOrders
         .filter((_order, _index) => _index <= currentSelectedBuyOrder)
-        .reduce((_sum, _order) => _sum + _order.amount, 0);
+        .reduce((_sum, _order) => _sum + _order.quantity, 0);
       _sumUSDT = buyOrders
         .filter((_order, _index) => _index <= currentSelectedBuyOrder)
-        .reduce((_sum, _order) => _sum + _order.price * _order.amount, 0);
+        .reduce((_sum, _order) => _sum + _order.price * _order.quantity, 0);
     } else {
       _averagePrice = 0;
       _sumBTC = 0;
@@ -155,7 +165,7 @@ export default function DashboardOrderBook() {
               <Typography variant="caption">Price(USDT)</Typography>
             </TableCell>
             <TableCell align="right" width="35%">
-              <Typography variant="caption">Amount(BTC)</Typography>
+              <Typography variant="caption">Quantity(BTC)</Typography>
             </TableCell>
             <TableCell align="right" width="35%">
               <Typography variant="caption">Total</Typography>
@@ -222,12 +232,12 @@ export default function DashboardOrderBook() {
                   </TableCell>
                   <TableCell align="right" width="35%">
                     <Typography variant="caption" align="right">
-                      {fNumberPrice(_sellOrder.amount)}
+                      {fNumberPrice(_sellOrder.quantity)}
                     </Typography>
                   </TableCell>
                   <TableCell align="right" width="35%">
                     <Typography variant="caption" align="right">
-                      {fNumberPrice(_sellOrder.price * _sellOrder.amount)}
+                      {fNumberPrice(_sellOrder.price * _sellOrder.quantity)}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -311,12 +321,12 @@ export default function DashboardOrderBook() {
                   </TableCell>
                   <TableCell align="right" width="35%">
                     <Typography variant="caption" align="right">
-                      {fNumberPrice(_buyOrder.amount)}
+                      {fNumberPrice(_buyOrder.quantity)}
                     </Typography>
                   </TableCell>
                   <TableCell align="right" width="35%">
                     <Typography variant="caption" align="right">
-                      {fNumberPrice(_buyOrder.price * _buyOrder.amount)}
+                      {fNumberPrice(_buyOrder.price * _buyOrder.quantity)}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -477,89 +487,3 @@ export default function DashboardOrderBook() {
     </Box>
   );
 }
-
-const dummySellOrders = [
-  {
-    price: 61096.88,
-    amount: 0.07743,
-  },
-  {
-    price: 61086.88,
-    amount: 0.07743,
-  },
-  {
-    price: 61076.88,
-    amount: 0.07743,
-  },
-  {
-    price: 61066.88,
-    amount: 0.07743,
-  },
-  {
-    price: 61056.88,
-    amount: 0.07743,
-  },
-  {
-    price: 61046.88,
-    amount: 0.07743,
-  },
-  {
-    price: 61036.88,
-    amount: 0.07743,
-  },
-  {
-    price: 61026.88,
-    amount: 0.07743,
-  },
-  {
-    price: 61016.88,
-    amount: 0.07743,
-  },
-  {
-    price: 61006.88,
-    amount: 0.07743,
-  },
-];
-
-const dummyBuyOrders = [
-  {
-    price: 60096.88,
-    amount: 0.07743,
-  },
-  {
-    price: 60086.88,
-    amount: 0.07743,
-  },
-  {
-    price: 60076.88,
-    amount: 0.07743,
-  },
-  {
-    price: 60066.88,
-    amount: 0.07743,
-  },
-  {
-    price: 60056.88,
-    amount: 0.07743,
-  },
-  {
-    price: 60046.88,
-    amount: 0.07743,
-  },
-  {
-    price: 60036.88,
-    amount: 0.07743,
-  },
-  {
-    price: 60026.88,
-    amount: 0.07743,
-  },
-  {
-    price: 60016.88,
-    amount: 0.07743,
-  },
-  {
-    price: 60006.88,
-    amount: 0.07743,
-  },
-];

@@ -6,10 +6,23 @@ type OrderBookRequest = {
   pair: string;
 };
 
+export type OrderBookEntry = {
+  price: number;
+  quantity: number;
+};
+
+type OrderBookUpdateResponse = {
+  eventTime: number;
+  bids: OrderBookEntry[];
+  asks: OrderBookEntry[];
+};
+
 export class WebSocketClient {
   _connected: boolean = false;
 
   _socket: WebSocket | null = null;
+
+  _priceData: OrderBookUpdateResponse | null = null;
 
   constructor() {
     // Bind functions
@@ -49,9 +62,27 @@ export class WebSocketClient {
         this._connected = false;
       };
 
-      socket.onmessage = (message) => {
-        // TODO: handle
-        console.log(message);
+      socket.onmessage = ({ data }) => {
+        try {
+          const response = JSON.parse(data);
+
+          const orderBookUpdate: OrderBookUpdateResponse = {
+            eventTime: response.E,
+            bids: response.b.map((entry: { price: string; quantity: string }) => ({
+              price: parseFloat(entry.price),
+              quantity: parseFloat(entry.quantity),
+            })),
+            asks: response.a.map((entry: { price: string; quantity: string }) => ({
+              price: parseFloat(entry.price),
+              quantity: parseFloat(entry.quantity),
+            })),
+          };
+
+          this._priceData = orderBookUpdate;
+        } catch (ex) {
+          console.error('[WS] Failed to parse OrderBookUpdateResponse: ', ex);
+          this._priceData = null;
+        }
       };
     }
   }
@@ -80,6 +111,10 @@ export class WebSocketClient {
 
   get isConnected() {
     return this._connected;
+  }
+
+  get priceData() {
+    return this._priceData;
   }
 }
 
