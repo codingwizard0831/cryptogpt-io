@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const HUGGING_FACE_API_KEY = process.env.HUGGING_FACE_API_KEY;
-const HUGGING_FACE_API_URL = process.env.HUGGING_FACE_API_URL
+const { HUGGING_FACE_API_KEY } = process.env;
+const { HUGGING_FACE_API_URL } = process.env
 
 export async function GET(req: NextRequest) {
     if (!HUGGING_FACE_API_KEY) {
@@ -55,6 +55,6 @@ export async function GET(req: NextRequest) {
 
     } catch (error) {
         console.log('Error fetching models: ', error);
-        return NextResponse.json({ error: "Failed to fetch models" }, { status: 500 })
+        return NextResponse.json({ error }, { status: 500 })
     }
 }
