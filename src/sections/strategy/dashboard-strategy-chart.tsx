@@ -1,21 +1,22 @@
-import { appTheme } from "./chart-theme";
 import {
+    Point,
+    Thickness,
     NumericAxis,
-    FastColumnRenderableSeries,
-    XyDataSeries,
-    ZoomPanModifier,
-    ZoomExtentsModifier,
-    MouseWheelZoomModifier,
-    SciChartSurface,
     NumberRange,
+    XyDataSeries,
     WaveAnimation,
     GradientParams,
-    Point,
-    EHorizontalTextPosition,
-    EVerticalTextPosition,
     PaletteFactory,
-    Thickness,
+    ZoomPanModifier,
+    SciChartSurface,
+    ZoomExtentsModifier,
+    EVerticalTextPosition,
+    MouseWheelZoomModifier,
+    EHorizontalTextPosition,
+    FastColumnRenderableSeries,
 } from "scichart";
+
+import { appTheme } from "./chart-theme";
 
 export const drawExample = async (rootElement: string | HTMLDivElement) => {
     // Create a SciChartSurface
@@ -35,7 +36,7 @@ export const drawExample = async (rootElement: string | HTMLDivElement) => {
         new FastColumnRenderableSeries(wasmContext, {
             dataSeries: new XyDataSeries(wasmContext, { xValues, yValues }),
             // Fill & stroke support Hex strings and rgba()
-            fill: appTheme.VividOrange + "77",
+            fill: `${appTheme.VividOrange}77`,
             stroke: appTheme.VividOrange,
             strokeThickness: 3,
             dataPointWidth: 0.7,

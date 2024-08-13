@@ -1,15 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { Box, Button, Typography, Card, CircularProgress } from '@mui/material';
+import { Box, Card, Button, Typography, CircularProgress } from '@mui/material';
+
+import axios, { endpoints } from 'src/utils/axios';
+
+import { useAuthContext } from 'src/auth/hooks';
 
 import PlanUsageModal from './PlanUsageModal';
 import PlanUsageModalChart from './PlanUsageModalChart';
-
-import axios, { endpoints } from 'src/utils/axios';
-import { useAuthContext } from 'src/auth/hooks';
 
 interface PlanUsageItem {
 	type: string;

@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from 'react';
+
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import {
   Box,
-  Typography,
   List,
+  Card,
+  Button,
+  Divider,
   ListItem,
+  Typography,
   ListItemText,
   ListItemIcon,
-  Divider,
-  Button,
-  Card,
   CircularProgress
 } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { paths } from 'src/routes/paths';
 import axios, { endpoints } from 'src/utils/axios';
-import { useAuthContext } from 'src/auth/hooks';
 
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { useAuthContext } from 'src/auth/hooks';
 
 interface Agent {
   name: string;
@@ -32,7 +33,7 @@ interface Agent {
 const getIconForAgent = (name: string): React.ReactNode => {
   if (name.toLowerCase().includes('youtube')) {
     return <PlayCircleOutlineIcon />;
-  } else if (name.toLowerCase().includes('knowledge')) {
+  } if (name.toLowerCase().includes('knowledge')) {
     return <TipsAndUpdatesIcon />;
   }
   return <ErrorOutlineIcon />;
@@ -117,7 +118,7 @@ const OverviewMyAgents: React.FC = () => {
                 <ListItemText
                   primary={agent.name}
                   secondary={
-                    <React.Fragment>
+                    <>
                       <Typography
                         sx={{ display: 'block' }}
                         component="span"
@@ -134,7 +135,7 @@ const OverviewMyAgents: React.FC = () => {
                       >
                         Agent ID: {agent.agent_id}
                       </Typography>
-                    </React.Fragment>
+                    </>
                   }
                 />
               </ListItem>

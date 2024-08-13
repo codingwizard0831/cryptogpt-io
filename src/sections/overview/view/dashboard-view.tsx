@@ -2,15 +2,23 @@
 
 import { Box, Grid } from '@mui/material';
 
-import OverviewPlanUsage from '../overview-plan-usage';
-import OverviewMediaStorage from '../overview-media-storage';
+import OverviewCredit from '../overview-credit';
 import OverviewMyAgents from '../overview-my-agents';
 import OverviewMyModels from '../overview-my-models';
-import OverviewCredit from '../overview-credit';
+import OverviewPlanUsage from '../overview-plan-usage';
+import OverviewMediaStorage from '../overview-media-storage';
 import OverviewFilesStats from '../overview-chart-files-stats';
 import OverviewInterfaceStats from '../overview-chart-interface-stats';
 
 
+
+const planUsageData: PlanUsageItem[] = [
+    { type: 'Storage', limit: '512.00 MB', value: 0 },
+    { type: 'RAG Calls', limit: '500', value: 0 },
+    { type: 'Vectors', limit: '10k', value: 0 },
+    { type: 'Transcription Hours', limit: '10', value: 0 },
+    { type: 'Tokens', limit: '500k', value: 0 },
+];
 
 export default function DashboardView() {
 
@@ -52,7 +60,7 @@ export default function DashboardView() {
             overflowX: 'hidden',
             overflowY: 'auto',
         }}>
-            <Grid container spacing={2} maxWidth={"60%"}>
+            <Grid container spacing={2} maxWidth="60%">
                 <Grid item xs={12} md={6}>
                     <OverviewPlanUsage />
                 </Grid>
@@ -69,7 +77,7 @@ export default function DashboardView() {
                     <OverviewCredit grants={grants} />
                 </Grid>
             </Grid>
-            <Grid container spacing={2} maxWidth={"40%"}>
+            <Grid container spacing={2} maxWidth="40%">
                 <Grid item xs={12} md={12}>
                     <OverviewFilesStats filesUploaded={filesUploaded} storageBytes={storageBytes} />
                 </Grid>
