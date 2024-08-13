@@ -1,17 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Box, Grid } from '@mui/material';
 
-import OverviewPlanUsage from '../overview-plan-usage';
-import OverviewMediaStorage from '../overview-media-storage';
+import OverviewCredit from '../overview-credit';
 import OverviewMyAgents from '../overview-my-agents';
 import OverviewMyModels from '../overview-my-models';
-import OverviewCredit from '../overview-credit';
+import OverviewPlanUsage from '../overview-plan-usage';
+import OverviewMediaStorage from '../overview-media-storage';
 import OverviewFilesStats from '../overview-chart-files-stats';
 import OverviewInterfaceStats from '../overview-chart-interface-stats';
-
-
 
 export default function DashboardView() {
 
@@ -53,7 +50,7 @@ export default function DashboardView() {
             overflowX: 'hidden',
             overflowY: 'auto',
         }}>
-            <Grid container spacing={2} maxWidth={"50%"}>
+            <Grid container spacing={2} maxWidth="60%">
                 <Grid item xs={12} md={6}>
                     <OverviewPlanUsage />
                 </Grid>
@@ -64,13 +61,13 @@ export default function DashboardView() {
                     <OverviewMyAgents />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <OverviewMyModels models={models} />
+                    <OverviewMyModels />
                 </Grid>
                 <Grid item xs={12}>
                     <OverviewCredit grants={grants} />
                 </Grid>
             </Grid>
-            <Grid container spacing={2} maxWidth={"40%"}>
+            <Grid container spacing={2} maxWidth="40%">
                 <Grid item xs={12} md={12}>
                     <OverviewFilesStats filesUploaded={filesUploaded} storageBytes={storageBytes} />
                 </Grid>

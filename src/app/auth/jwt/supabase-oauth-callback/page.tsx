@@ -24,7 +24,10 @@ export default function OAuthPage() {
         const accessToken = searchParams.get('access_token');
         const refreshToken = searchParams.get('refresh_token');
 
-        if (!accessToken) throw new Error('No access token found');
+        if (!accessToken) {
+          window.location.href = `${window.location.origin}/auth/jwt/supabase-oauth-callback`;
+          return;
+        }
 
         const { error } = await supabase.auth.setSession({
           access_token: accessToken,

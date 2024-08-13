@@ -46,6 +46,7 @@ export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) =
             // debug: true,
         };
 
+        // eslint-disable-next-line new-cap
         const tvWidget = new widget(widgetOptions);
 
         tvWidget.onChartReady(() => {

@@ -134,7 +134,7 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-export async function DELETE(req: NextResponse) {
+export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const strategyId = searchParams.get("strategyId");

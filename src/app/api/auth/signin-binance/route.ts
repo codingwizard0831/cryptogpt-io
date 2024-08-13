@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { userId } = res;
 
     try {
-      let finalAuthUser = null;
+      let finalAuthUser: any = null;
       // 2. Select * from public.auth_users view where email matches
       const { data: authUser, error: authUserError } = await supabase
         .from("auth_users")
@@ -45,10 +45,6 @@ export async function POST(req: Request) {
         .update([
           {
             id: finalAuthUser?.id,
-            auth: {
-              lastAuth: new Date().toISOString(),
-              lastAuthStatus: "success",
-            },
             auth: {
               lastLoggedinTime: new Date().toISOString(),
               lastAuthStatus: "success",

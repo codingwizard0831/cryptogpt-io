@@ -114,8 +114,18 @@ export default function JwtLoginView() {
       return true;
     } catch (error) {
       console.error(error);
-      setErrorMsg(typeof error === 'string' ? error : (error.message ? error.message : error.error));
-      enqueueSnackbar(typeof error === 'string' ? error : (error.message ? error.message : error.error), { variant: 'error' });
+
+      let errorMessage = 'An unknown error occurred';
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else if (error.error) {
+        errorMessage = error.error;
+      }
+
+      setErrorMsg(errorMessage);
+      enqueueSnackbar(errorMessage, { variant: 'error' });
       isSubmitting.onFalse();
       return false;
     }
@@ -131,8 +141,19 @@ export default function JwtLoginView() {
     } catch (error) {
       console.error(error);
       setCode('');
-      setErrorMsg(typeof error === 'string' ? error : (error.message ? error.message : error.error));
-      enqueueSnackbar(typeof error === 'string' ? error : (error.message ? error.message : error.error), { variant: 'error' });
+
+      let errorMessage = 'An unknown error occurred';
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else if (error.error) {
+        errorMessage = error.error;
+      }
+
+      setErrorMsg(errorMessage);
+      enqueueSnackbar(errorMessage, { variant: 'error' });
+    } finally {
       isSubmitting.onFalse();
     }
   }
@@ -191,10 +212,10 @@ export default function JwtLoginView() {
 
   const handleLoginWithGoogle = async () => {
     console.log('Login with Google');
-    const response = await supabase.auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback?`,
+        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
       },
     });
   }
