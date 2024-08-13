@@ -1,28 +1,30 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import {
   Box,
-  Typography,
+  Grid,
+  Card,
   Table,
+  alpha,
+  Select,
+  TableRow,
+  MenuItem,
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
-  Select,
-  MenuItem,
-  Grid,
+  Typography,
   IconButton,
-  SelectChangeEvent,
-  Card,
-  alpha,
-  CircularProgress
+  CircularProgress,
+  SelectChangeEvent
 } from '@mui/material';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import axios from 'src/utils/axios';
-import { endpoints } from 'src/utils/axios';
+
+import axios, { endpoints } from 'src/utils/axios';
+
 import { useAuthContext } from 'src/auth/hooks';
 
 interface File {
@@ -50,7 +52,7 @@ const FilesView: React.FC = () => {
   // const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     if (!user?.id) {
       setError('User ID not available');
       setLoading(false);
@@ -62,7 +64,7 @@ const FilesView: React.FC = () => {
       const response = await axios.get(`${endpoints.dashboard.media_storage}?user_id=${user.id}`);
       if (response.data && response.data.files) {
         setFiles(response.data.files);
-        setLoading(true);
+        setLoading(false);
       } else {
         console.error('Unexpected data structure:', response.data);
         setFiles([]);
@@ -74,11 +76,12 @@ const FilesView: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, setFiles, setLoading, setError]);
+
 
   useEffect(() => {
     fetchFiles();
-  }, [user?.id]);
+  }, [user?.id, fetchFiles]);
 
   useEffect(() => {
     if (files.length > 0) {
@@ -87,15 +90,15 @@ const FilesView: React.FC = () => {
           return sortOrder === 'asc'
             ? a.name.localeCompare(b.name)
             : b.name.localeCompare(a.name);
-        } else {
-          return sortOrder === 'asc'
-            ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-            : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         }
+        return sortOrder === 'asc'
+          ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+
       });
       setFiles(sortedFiles);
     }
-  }, [sortBy, sortOrder]);
+  }, [sortBy, sortOrder, setFiles, files]);
 
   const handleSortChange = (event: SelectChangeEvent) => {
     setSortBy(event.target.value as 'name' | 'date');

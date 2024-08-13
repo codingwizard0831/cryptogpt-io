@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
         let hasMore = true;
 
         while (hasMore) {
+            // eslint-disable-next-line no-await-in-loop
             const response = await fetch(
                 `${HUGGING_FACE_API_URL}?filter='text-generation&limit=${limit}&offset=${offset}`,
                 {
@@ -29,6 +30,7 @@ export async function GET(req: NextRequest) {
                 throw new Error("Failed to fetch models from Hugging Face");
             }
 
+            // eslint-disable-next-line no-await-in-loop
             const data = await response.json();
             allModels = [...allModels, ...data];
 
@@ -38,6 +40,7 @@ export async function GET(req: NextRequest) {
                 offset += limit;
             }
 
+            // eslint-disable-next-line no-await-in-loop
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
