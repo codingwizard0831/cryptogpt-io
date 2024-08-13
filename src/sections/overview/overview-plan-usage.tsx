@@ -2,9 +2,9 @@
 
 import React from 'react';
 
+import { Box, Button, Typography } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { Box, Button, Typography, CircularProgress } from '@mui/material';
 
 import CircularProgressChart from './circle-progress-chart';
 
@@ -14,7 +14,7 @@ interface PlanUsageProps {
 	value: number;
 }
 
-const OverviewPlanUsage: React.FC<PlanUsageProps> = ({ type, limit, value }) => {
+function OverviewPlanUsage({ type, limit, value }: PlanUsageProps) {
 	return (
 		<Box sx={{ bgcolor: 'grey.900', color: 'text.primary', p: 3, borderRadius: 2, maxWidth: 450, height: '100%' }}>
 			<Box Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

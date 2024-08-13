@@ -227,19 +227,29 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
                                                 <Typography sx={{ color: 'primary.main' }}>{`Time: ${label}`}</Typography>
                                                 <Typography sx={{ color: 'primary.main' }}>{`Price: ${data.price.toFixed(2)}`}</Typography>
                                                 <Typography sx={{ color: data.change > 0 ? "success.main" : "error.main" }}>{`Change: ${data.change >= 0 ? '+' : ''}${data.change.toFixed(2)} (${changePercent}%)`}</Typography>
+                                                {
+                                                    data.action &&
+                                                    <Typography sx={{ color: data.action === 'Buy' ? "success.main" : "error.main" }}>{`Action: ${data.action}`}</Typography>
+                                                }
                                             </Box>
                                         );
                                     }
                                     return null;
                                 }}
                             />
+                            <defs>
+                                <linearGradient id="neonGradient-FFD700" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#FFD700" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#FFD700" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
                             <Area
                                 type="monotone"
                                 dataKey="price"
                                 stroke="#ffd700"
                                 strokeWidth={6}
-                                fill='#ffd700'
-                                fillOpacity={0.1}
+                                fill="url(#neonGradient-FFD700)"
+                                filter="url(#neonGlow)"
                                 dot={(props) => {
                                     const { cx, cy, payload } = props;
                                     if (payload.action) {
@@ -270,6 +280,16 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
                                     return <circle cx={cx} cy={cy} r={8} fill="#ffd700" />;
                                 }}
                             />
+
+                            <defs>
+                                <filter id="neonGlow" height="300%" width="300%" x="-75%" y="-75%">
+                                    <feGaussianBlur stdDeviation="5" result="coloredBlur" />
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur" />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
 
                             {data.map((entry: DataPoint, index) => {
                                 if (entry.change !== 0) {

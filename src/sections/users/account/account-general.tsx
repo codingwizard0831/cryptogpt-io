@@ -267,7 +267,7 @@ export default function AccountGeneral() {
               autoHighlight
               getOptionLabel={(option) => option.label}
               renderOption={(props, option) => (
-                <Box key={option.code} component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                   <img
                     loading="lazy"
                     width="20"

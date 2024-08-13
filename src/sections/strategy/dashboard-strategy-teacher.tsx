@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unknown-property */
+
 "use client";
 
 import { Group } from 'three';

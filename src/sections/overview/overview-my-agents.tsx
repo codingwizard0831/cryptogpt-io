@@ -1,16 +1,18 @@
 import React from 'react';
+
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import {
     Box,
-    Typography,
     List,
-    ListItem,
-    ListItemText,
-    ListItemIcon,
+    Button,
     Divider,
-    Button
+    ListItem,
+    Typography,
+    ListItemText,
+    ListItemIcon
 } from '@mui/material';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+
 interface Agent {
     name: string;
     lastModified: string;
@@ -33,7 +35,7 @@ const agents: Agent[] = [
     }
 ];
 
-const OverviewMyAgents: React.FC = () => {
+export default function OverviewMyAgents() {
     return (
         <Box sx={{ bgcolor: 'grey.900', color: 'text.primary', p: 2, borderRadius: 2, maxWidth: 450, height: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -56,7 +58,7 @@ const OverviewMyAgents: React.FC = () => {
                             <ListItemText
                                 primary={agent.name}
                                 secondary={
-                                    <React.Fragment>
+                                    <>
                                         <Typography
                                             sx={{ display: 'block' }}
                                             component="span"
@@ -73,7 +75,7 @@ const OverviewMyAgents: React.FC = () => {
                                         >
                                             Agent ID: {agent.agentId}
                                         </Typography>
-                                    </React.Fragment>
+                                    </>
                                 }
                             />
                         </ListItem>
@@ -83,5 +85,3 @@ const OverviewMyAgents: React.FC = () => {
         </Box>
     );
 };
-
-export default OverviewMyAgents;
