@@ -8,6 +8,7 @@ import {
   Table,
   alpha,
   Alert,
+  Stack,
   Button,
   TableRow,
   Snackbar,
@@ -69,7 +70,8 @@ const ModelsView: React.FC = () => {
     try {
       setIsEditLoading(true);
       // Navigate to the edit page with the model ID
-      router.replace(`${paths.dashboard.modelCreate}/${modelId}`)
+      const updatePath = paths.dashboard.modelUpdate(modelId);
+      router.replace(updatePath);
     } catch (err) {
       console.error('Error navigating to edit page:', err);
       setSnackbar({
@@ -122,9 +124,19 @@ const ModelsView: React.FC = () => {
 
   return (
     <Card sx={{ color: "text.primary", p: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Manage available models to deploy and seamlessly integrate into the OnDemand ecosystem.
-      </Typography>
+      <Stack flexDirection="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Typography variant="h6" gutterBottom>
+          Manage available models to deploy and seamlessly integrate into the OnDemand ecosystem.
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mr: 1, color: "text.primary" }}
+          onClick={() => router.replace(paths.dashboard.modelCreate)}
+        >
+          Create New Model
+        </Button>
+      </Stack>
 
       <Table sx={{
         "& tr": { px: 1 },

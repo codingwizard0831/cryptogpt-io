@@ -15,31 +15,6 @@ export default function DashboardView() {
     const models: Array<any> = []
     const grants: Array<any> = []
 
-    const filesUploaded = [
-        { time: 1, value: 0 },
-        { time: 3, value: 1 },
-        { time: 23, value: 1 }
-    ];
-
-    const storageBytes = [
-        { time: 1, value: 0 },
-        { time: 3, value: 3 },
-        { time: 23, value: 1 }
-    ];
-    const apiCalls = [
-        { time: 1, value: 0 },
-        { time: 3, value: 5 },
-        { time: 20, value: 5 },
-        { time: 23, value: 1 }
-    ];
-
-    const tokensConsumed = [
-        { time: 1, value: 0 },
-        { time: 3, value: 3 },
-        { time: 20, value: 4 },
-        { time: 23, value: 1 }
-    ];
-
     return (
         <Box sx={{
             minHeight: '100%',
@@ -69,10 +44,10 @@ export default function DashboardView() {
             </Grid>
             <Grid container spacing={2} maxWidth="40%">
                 <Grid item xs={12} md={12}>
-                    <OverviewFilesStats filesUploaded={filesUploaded} storageBytes={storageBytes} />
+                    <OverviewFilesStats />
                 </Grid>
                 <Grid item xs={12} md={12}>
-                    <OverviewInterfaceStats apiCalls={apiCalls} tokensConsumed={tokensConsumed} />
+                    <OverviewInterfaceStats />
                 </Grid>
             </Grid>
 

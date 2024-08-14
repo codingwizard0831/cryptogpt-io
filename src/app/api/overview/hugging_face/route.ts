@@ -7,7 +7,6 @@ export async function GET(req: NextRequest) {
     if (!HUGGING_FACE_API_KEY) {
         return NextResponse.json({ error: "Hugging Face API key is not set" }, { status: 500 });
     }
-
     try {
         let allModels: any[] = [];
         let offset = 0;
@@ -17,7 +16,7 @@ export async function GET(req: NextRequest) {
         while (hasMore) {
             // eslint-disable-next-line no-await-in-loop
             const response = await fetch(
-                `${HUGGING_FACE_API_URL}?filter='text-generation&limit=${limit}&offset=${offset}`,
+                `${HUGGING_FACE_API_URL}/models?filter='text-generation&limit=${limit}&offset=${offset}`,
                 {
                     headers: {
                         Authorization: `Bearer ${HUGGING_FACE_API_KEY}`,
@@ -25,6 +24,7 @@ export async function GET(req: NextRequest) {
                     },
                 }
             )
+            console.log(response)
 
             if (!response.ok) {
                 throw new Error("Failed to fetch models from Hugging Face");

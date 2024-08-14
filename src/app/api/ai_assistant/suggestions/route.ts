@@ -1,5 +1,5 @@
-import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
+
 import { supabase } from "src/lib/supabase";
 
 export async function GET(req: NextRequest) {
