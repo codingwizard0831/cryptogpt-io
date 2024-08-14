@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import Scene from 'src/components/background-graphic/background-graphic';
+// import Scene from 'src/components/background-graphic/background-graphic';
 
 import Main from './main';
 import Header from './header';
@@ -27,12 +27,12 @@ export default function DashboardLayout({ children }: Props) {
         width: '100%',
         height: '100%',
         objectFit: 'cover',
-        // backgroundImage: 'url(/assets/background/bg-2.jpg)',
+        backgroundImage: 'url(/images/bg.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }} />
 
-      <Scene />
+      {/* <Scene /> */}
 
       <Header onOpenNav={nav.onTrue} />
 
