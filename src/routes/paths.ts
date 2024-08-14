@@ -28,6 +28,7 @@ export const paths = {
     agents: `${ROOTS.DASHBOARD}/agents`,
     files: `${ROOTS.DASHBOARD}/files`,
     modelCreate: `${ROOTS.DASHBOARD}/model/create`,
+    modelUpdate: (id: string) => `${ROOTS.DASHBOARD}/model/update/${id}`,
     trading: `${ROOTS.DASHBOARD}/trading`,
     tracking: `${ROOTS.DASHBOARD}/tracking`,
     strategy: `${ROOTS.DASHBOARD}/strategy`,

@@ -92,6 +92,7 @@ export const endpoints = {
     'agents': '/api/overview/agents',
     'models': '/api/overview/models',
     'hugging_face': '/api/overview/hugging_face',
+    'stats': '/api/overview/stats',
   }
 };
 
