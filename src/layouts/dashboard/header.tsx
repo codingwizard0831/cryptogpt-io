@@ -7,12 +7,12 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import SearchAgentBar from '../common/searchAgentBar';
 import SettingsButton from '../common/settings-button';
 import AccountPopover from '../common/account-popover';
 import { NAV, HEADER, SPACING } from '../config-layout';
 import ContactsPopover from '../common/contacts-popover';
 import LanguagePopover from '../common/language-popover';
+import SearchBarGoldie from '../common/searchbar-goldie';
 import NotificationsPopover from '../common/notifications-popover';
 
 // ----------------------------------------------------------------------
@@ -29,7 +29,7 @@ export default function Header({ onOpenNav }: Props) {
 
   const renderContent = (
     <>
-      <SearchAgentBar />
+      <SearchBarGoldie />
 
       <Stack
         flexGrow={1}
