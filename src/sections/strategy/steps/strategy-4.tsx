@@ -24,7 +24,7 @@ interface DashboardStrategyStep1Props extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrategyStep1Props) {
+export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrategyStep1Props) {
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
@@ -50,7 +50,7 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
         <Stack direction='row' alignItems="center" spacing={2} sx={{ width: '90%', mb: 2 }}>
             <Typography variant="h4" sx={{
                 whitespace: 'nowrap',
-            }}>4. Backtesting for {coin1.name}/{coin2.name}</Typography>
+            }}>5. Review for {coin1.name}/{coin2.name}</Typography>
         </Stack>
 
 
@@ -65,7 +65,7 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
             <Box sx={{
                 width: '100%',
                 height: '100%',
-                maxHeight: '400px',
+                maxHeight: '450px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'start',
@@ -189,6 +189,11 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
                         </TableBody>
                     </Table>
                 </Box>
+
+                <Stack direction="row" alignItems='center' spacing={2} sx={{ width: '100%', mb: 2 }}>
+                    <Button fullWidth variant="contained" color="primary" startIcon={<Iconify icon="et:strategy" sx={{
+                    }} />}>Submit</Button>
+                </Stack>
             </Box>
 
             <Box sx={{
@@ -196,7 +201,7 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
             }}>
                 <Box sx={{
                     width: '100%',
-                    height: '400px',
+                    height: '450px',
                     border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
                 }}>
                     <ResponsiveContainer width="100%" height="100%">

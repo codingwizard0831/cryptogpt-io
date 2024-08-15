@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }: Props) {
         width: '100%',
         height: '100%',
         objectFit: 'cover',
-        backgroundImage: 'url(/images/bg.png)',
+        backgroundImage: 'url(/images/bg-1.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }} />

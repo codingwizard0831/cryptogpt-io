@@ -37,8 +37,6 @@ export default function ChatbotBubble() {
     const [text, setText] = useState('');
     const smUp = useResponsive("up", 'sm');
 
-    console.log("isShow", isShow);
-
     return <Card sx={{
         display: 'flex',
         flexDirection: 'column',
