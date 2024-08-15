@@ -49,6 +49,7 @@ export const paths = {
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       profile: `${ROOTS.DASHBOARD}/user/profile`,
+      profileSetup: `${ROOTS.DASHBOARD}/user/profile-setup`,
       account: `${ROOTS.DASHBOARD}/user/account`,
       billing: `${ROOTS.DASHBOARD}/user/billing`,
       connection: `${ROOTS.DASHBOARD}/user/connection`,
