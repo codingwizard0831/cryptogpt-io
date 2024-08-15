@@ -35,7 +35,12 @@ export default function DashboardOrderBook() {
   const [topOfInfoModal, setTopOfInfoModal] = useState('calc(50% - 47px)');
   const [buySellLayout, setBuySellLayout] = useState<'SELL' | 'BUY' | 'BOTH'>('BOTH');
 
-  // Get real-time price updates
+  const [buyPercentage, setBuyPercentage] = useState(50);
+  const [sellPercentage, setSellPercentage] = useState(50);
+  const [marketPrice, setMarketPrice] = useState(0);
+  const [marketPriceDirection, setMarketPriceDirection] = useState('down');
+
+  // Get real-time price updates from trading system
   const [currentSelectedPair, setCurrentSelectedPair] = useState('BTC/USDT');
   const [currentSelectedExchange, setCurrentSelectedExchange] = useState('Binance');
 
@@ -54,47 +59,77 @@ export default function DashboardOrderBook() {
   }, [currentSelectedPair, currentSelectedExchange]);
 
   useEffect(() => {
-    let _averagePrice = 0;
-    let _sumBTC = 0;
-    let _sumUSDT = 0;
-    if (currentSelectedSellOrder < sellOrders.length - 1) {
-      _averagePrice =
-        sellOrders
-          .filter((_order, _index) => _index >= currentSelectedSellOrder)
-          .reduce((_sum, _order) => _sum + _order.price, 0) /
-        (sellOrders.length - currentSelectedSellOrder);
-      _sumBTC = sellOrders
-        .filter((_order, _index) => _index >= currentSelectedSellOrder)
-        .reduce((_sum, _order) => _sum + _order.quantity, 0);
-      _sumUSDT = sellOrders
-        .filter((_order, _index) => _index >= currentSelectedSellOrder)
-        .reduce((_sum, _order) => _sum + _order.price * _order.quantity, 0);
-    } else {
-      _averagePrice = 0;
-      _sumBTC = 0;
-      _sumUSDT = 0;
+    let totalSellPrice = 0;
+    let totalBuyPrice = 0;
+    let totalSellBTC = 0;
+    let totalBuyBTC = 0;
+    let totalSellUSDT = 0;
+    let totalBuyUSDT = 0;
+
+    const selectedSellOrders = sellOrders.slice(currentSelectedSellOrder);
+    const selectedBuyOrders = buyOrders.slice(0, currentSelectedBuyOrder + 1);
+
+    if (selectedSellOrders.length > 0) {
+      totalSellPrice = selectedSellOrders.reduce((sum, order) => sum + order.price, 0);
+      totalSellBTC = selectedSellOrders.reduce((sum, order) => sum + order.quantity, 0);
+      totalSellUSDT = selectedSellOrders.reduce(
+        (sum, order) => sum + order.price * order.quantity,
+        0
+      );
     }
-    if (currentSelectedBuyOrder > 0) {
-      _averagePrice =
-        buyOrders
-          .filter((_order, _index) => _index <= currentSelectedBuyOrder)
-          .reduce((_sum, _order) => _sum + _order.price, 0) /
-        (currentSelectedBuyOrder + 1);
-      _sumBTC = buyOrders
-        .filter((_order, _index) => _index <= currentSelectedBuyOrder)
-        .reduce((_sum, _order) => _sum + _order.quantity, 0);
-      _sumUSDT = buyOrders
-        .filter((_order, _index) => _index <= currentSelectedBuyOrder)
-        .reduce((_sum, _order) => _sum + _order.price * _order.quantity, 0);
-    } else {
-      _averagePrice = 0;
-      _sumBTC = 0;
-      _sumUSDT = 0;
+
+    if (selectedBuyOrders.length > 0) {
+      totalBuyPrice = selectedBuyOrders.reduce((sum, order) => sum + order.price, 0);
+      totalBuyBTC = selectedBuyOrders.reduce((sum, order) => sum + order.quantity, 0);
+      totalBuyUSDT = selectedBuyOrders.reduce(
+        (sum, order) => sum + order.price * order.quantity,
+        0
+      );
     }
-    setAveragePrice(_averagePrice);
-    setSumBTC(_sumBTC);
-    setSumUSDT(_sumUSDT);
-  }, [currentSelectedSellOrder, currentSelectedBuyOrder, sellOrders, buyOrders]);
+
+    const avgPrice =
+      (totalSellPrice + totalBuyPrice) /
+      (selectedSellOrders.length + selectedBuyOrders.length || 1);
+    const sumA = totalSellBTC + totalBuyBTC;
+    const sumB = totalSellUSDT + totalBuyUSDT;
+
+    // Calculate the buy-sell ratio
+    const ratio = totalSellUSDT !== 0 ? totalBuyUSDT / totalSellUSDT : 1;
+
+    const currentBuyPercentage = (ratio / (1 + ratio)) * 100;
+    const currentSellPercentage = 100 - buyPercentage;
+
+    if (buyOrders.length > 0 && sellOrders.length > 0) {
+      const bestBidPrice = buyOrders[0].price; // Highest bid (first buy order)
+      const bestAskPrice = sellOrders[0].price; // Lowest ask (first sell order)
+      const currentMarketPrice = (bestBidPrice + bestAskPrice) / 2;
+
+      if (currentMarketPrice > marketPrice) {
+        setMarketPriceDirection('up');
+      } else if (currentMarketPrice < marketPrice) {
+        setMarketPriceDirection('down');
+      }
+
+      setMarketPrice(currentMarketPrice);
+    }
+
+    // Determine the direction of the price movement
+
+    setBuyPercentage(currentBuyPercentage);
+    setSellPercentage(currentSellPercentage);
+
+    setAveragePrice(avgPrice);
+    setSumBTC(sumA);
+    setSumUSDT(sumB);
+  }, [
+    currentSelectedSellOrder,
+    currentSelectedBuyOrder,
+    sellOrders,
+    buyOrders,
+    buyPercentage,
+    sellPercentage,
+    marketPrice,
+  ]);
 
   const handleMouseEnterSellOrder = (e: React.MouseEvent, orderIndex: number) => {
     setCurrentSelectedSellOrder(orderIndex);
@@ -255,18 +290,21 @@ export default function DashboardOrderBook() {
           mb: buySellLayout !== 'SELL' ? 1 : 0,
         }}
       >
-        <Typography variant="h6" color="error">
-          61,076.93
+        <Typography variant="h6" color={marketPriceDirection === 'up' ? 'success.main' : 'error'}>
+          {fNumberPrice(marketPrice, 2)}
         </Typography>
         <Iconify
-          icon="mingcute:arrow-down-fill"
+          icon={
+            marketPriceDirection === 'up' ? 'mingcute:arrow-up-fill' : 'mingcute:arrow-down-fill'
+          }
           sx={{
-            color: (theme) => theme.palette.error.main,
+            color: (theme) =>
+              marketPriceDirection === 'up' ? theme.palette.success.main : theme.palette.error.main,
           }}
         />
 
         <Typography variant="caption" sx={{ ml: 2 }}>
-          $61,076.93
+          ${fNumberPrice(marketPrice, 2)}
         </Typography>
       </Stack>
 
@@ -345,7 +383,7 @@ export default function DashboardOrderBook() {
               color: (theme) => theme.palette.success.main,
             }}
           >
-            32.34%
+            {buyPercentage.toFixed(2)}%
           </Typography>
           <Stack
             direction="row"
@@ -358,14 +396,14 @@ export default function DashboardOrderBook() {
           >
             <Box
               sx={{
-                width: '30%',
+                width: `${buyPercentage}%`,
                 height: '4px',
                 backgroundColor: (theme) => theme.palette.success.main,
               }}
             />
             <Box
               sx={{
-                flexGrow: 1,
+                width: `${sellPercentage}%`,
                 height: '4px',
                 backgroundColor: (theme) => theme.palette.error.main,
               }}
@@ -377,7 +415,7 @@ export default function DashboardOrderBook() {
               color: (theme) => theme.palette.error.main,
             }}
           >
-            {(100 - 32.34).toFixed(2)}%
+            {sellPercentage.toFixed(2)}%
           </Typography>
           <Typography variant="body2">S</Typography>
         </Stack>
