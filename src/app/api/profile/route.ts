@@ -77,10 +77,10 @@ export async function POST(req: NextRequest) {
 
     if (existingUserProfile) {
       const { error } = await supabase
-        .from('user_plans')
-        .update([body])
+        .from('users_profile')
+        .update({ ...body })
         .eq('user_id', user?.id)
-
+      console.log('error', error)
       if (error) {
         return NextResponse.json({ success: false, error: 'Error updating user profile' }, { status: 500 });
       }
