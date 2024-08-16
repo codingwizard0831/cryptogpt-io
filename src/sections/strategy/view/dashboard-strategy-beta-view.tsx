@@ -23,8 +23,8 @@ import { useAITeacher } from 'src/store/strategy/useAITeacher';
 
 import StrategyCoinModel from '../dashboard-strategy-coin';
 import DashboardStrategyTeacher from '../dashboard-strategy-teacher';
-import DashboardStrategyContent from '../dashboard-strategy-content';
 import DashboardStrategyCardWrapper from '../dashboard-strategy-card-wrapper';
+import DashboardStrategyContentBeta from '../dashboard-strategy-content-beta';
 
 
 const Textarea = styled(BaseTextareaAutosize)(
@@ -118,7 +118,7 @@ const itemPlacement: ItemPlacement = {
   },
 };
 
-export default function DashboardStrategyView() {
+export default function DashboardStrategyBetaView() {
   const teacher = useAITeacher((state) => state.teacher);
   const classroom = useAITeacher((state) => state.classroom);
   const step = useStrategy((state) => state.step);
@@ -209,7 +209,7 @@ export default function DashboardStrategyView() {
             <Float speed={0.5} floatIntensity={0.2} rotationIntensity={0.1}>
               <Html transform {...itemPlacement[classroom].board} distanceFactor={1}>
                 <CanvasLayout>
-                  <DashboardStrategyContent />
+                  <DashboardStrategyContentBeta />
                 </CanvasLayout>
               </Html>
               <Html transform {...itemPlacement[classroom].card} distanceFactor={1}>

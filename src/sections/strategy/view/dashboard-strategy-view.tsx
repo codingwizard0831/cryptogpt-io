@@ -143,12 +143,12 @@ export default function DashboardStrategyView() {
         }}
       >
         <Link href={paths.dashboard.strategy.beta} component={RouterLink}>
-          <Button sx={{
+          <Button variant="outlined" sx={{
             position: 'absolute',
             right: '8px',
             top: '8px',
           }}>
-            Beta
+            Beta (3D)
           </Button>
         </Link>
         <DashboardStrategyContent sx={{
