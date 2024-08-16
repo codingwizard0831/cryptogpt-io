@@ -106,8 +106,13 @@ export default function ProfileSetupAvatar() {
     isSubmitting.onTrue();
     try {
       const formData = new FormData();
+      if (data.avatar) {
+        formData.append('image', data.avatar);
+      } else {
+        enqueueSnackbar('Please upload an image.', { variant: 'error' });
+        return
+      }
       formData.append('prompt', data.idealDescription);
-      formData.append('image', data.avatar);
       formData.append('width', data.size.split('x')[0]);
       formData.append('height', data.size.split('x')[1]);
       formData.append('model', data.model);
