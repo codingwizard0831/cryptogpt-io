@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -21,13 +21,13 @@ import {
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useUserProfile } from 'src/hooks/use-user-profile';
 
-import { fData } from 'src/utils/format-number';
+// import { fData } from 'src/utils/format-number';
 import axios, { endpoints } from 'src/utils/axios';
 
 import { languages } from 'src/assets/data';
 
 import { useSnackbar } from 'src/components/snackbar';
-import UploadAvatar from 'src/components/upload/upload-avatar';
+// import UploadAvatar from 'src/components/upload/upload-avatar';
 
 interface Language {
   code: string;
@@ -100,12 +100,12 @@ export default function ProfileSetup() {
     setData((prevData) => ({ ...prevData, birthday: newValue }));
   };
 
-  const handleDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      setData((prevData) => ({ ...prevData, avatar: file }));
-    }
-  }, []);
+  // const handleDrop = useCallback((acceptedFiles: File[]) => {
+  //   const file = acceptedFiles[0];
+  //   if (file) {
+  //     setData((prevData) => ({ ...prevData, avatar: file }));
+  //   }
+  // }, []);
 
   const handleAgreeToTerms = (event: React.ChangeEvent<HTMLInputElement>) => {
     setData((prevData) => ({ ...prevData, agreeToTerms: event.target.checked }));

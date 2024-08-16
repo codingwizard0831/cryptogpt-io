@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       negative_prompt: "painting, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, deformed, ugly, blurry, bad anatomy, bad proportions, extra limbs, cloned face, skinny, glitchy, double torso, extra arms, extra hands, mangled fingers, missing lips, ugly face, distorted face, extra legs, anime",
       width: formData.get('width') || '512',
       height: formData.get('height') || '512',
-      samples: formData.get('image_count') || '1',
+      samples: formData.get('image_count') || '4',
       num_inference_steps: formData.get('num_inference_steps') || '30',
       safety_checker: formData.get('safety_checker') || 'no',
       enhance_prompt: formData.get('enhance_prompt') || 'yes',

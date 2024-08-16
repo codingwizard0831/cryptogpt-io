@@ -100,8 +100,8 @@ export default function JwtLoginView() {
         const response = await axios.get(endpoints.profile.index);
         console.log('test', response.data)
         console.log('test', !response.data?.length)
-        console.log('test', !response.data?.terms)
-        if (!response.data?.length || !response.data?.terms) {
+        console.log('test', !response.data[0]?.terms)
+        if (!response.data?.length || !response.data[0]?.terms) {
           router.push(paths.dashboard.user.profileSetup);
         } else {
           router.push(returnTo || paths.dashboard.root);
