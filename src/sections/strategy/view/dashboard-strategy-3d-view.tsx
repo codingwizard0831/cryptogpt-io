@@ -6,7 +6,7 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { useRef, Suspense, useState, useEffect, FunctionComponent } from 'react';
 import { Gltf, Html, Float, Loader, useGLTF, Environment, CameraControls } from '@react-three/drei';
 
-import { Box, Card, alpha, Stack, styled, Button, Typography } from '@mui/material';
+import { Box, Card, styled } from '@mui/material';
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
 // import { BoardSettings } from "./BoardSettings";
 // import { MessagesList } from "./MessagesList";
@@ -151,7 +151,7 @@ export default function DashboardStrategyView() {
           position: 'relative',
         }}
       >
-        <Box sx={{
+        {/* <Box sx={{
           width: 'calc(100vw - 48px)',
           maxWidth: '800px',
           position: 'absolute',
@@ -191,7 +191,7 @@ export default function DashboardStrategyView() {
             </Box>
             <Button variant="contained" size="small" color="primary">Ask</Button>
           </Stack>
-        </Box>
+        </Box> */}
 
         <Leva hidden />
         <Loader />
