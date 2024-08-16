@@ -22,6 +22,7 @@ interface PlanUsageItem {
 }
 
 const OverviewPlanUsage: React.FC = () => {
+
 	const { user } = useAuthContext();
 
 	const [open, setOpen] = useState(false);
@@ -62,17 +63,17 @@ const OverviewPlanUsage: React.FC = () => {
 		};
 
 		fetchUsageData();
-	}, [user?.id]);
+	}, [user]);
 
 	useEffect(() => {
+		let interval: NodeJS.Timeout;
 		if (usageData.length > 0) {
-			const interval = setInterval(() => {
+			interval = setInterval(() => {
 				setCurrentIndex((prevIndex) => (prevIndex + 1) % usageData.length);
 			}, 2500);
-
-			return () => clearInterval(interval);
 		}
-	}, [usageData]);
+		return () => clearInterval(interval);
+	}, [usageData, setCurrentIndex]);
 
 	useEffect(() => {
 		if (usageData.length > 0) {

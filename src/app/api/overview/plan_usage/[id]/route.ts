@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { supabase } from "src/lib/supabase";
 
 export async function GET(req: NextRequest, { params }: { params: { id: number } }) {
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: number }
         return NextResponse.json(data)
     } catch (error) {
         console.log("Error: ", error);
-        return NextResponse.json({ error: error }, { status: 500 })
+        return NextResponse.json({ error }, { status: 500 })
     }
 }
 
@@ -43,7 +44,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: number }
         return NextResponse.json(data[0])
     } catch (error) {
         console.log("Error: ", error);
-        return NextResponse.json({ error: error }, { status: 500 })
+        return NextResponse.json({ error }, { status: 500 })
     }
 }
 
@@ -61,6 +62,6 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: numbe
         return NextResponse.json({ message: "Plan usage deleted successfully" }, { status: 200 })
     } catch (error) {
         console.log("Error: ", error);
-        return NextResponse.json({ error: error }, { status: 500 })
+        return NextResponse.json({ error }, { status: 500 })
     }
 }

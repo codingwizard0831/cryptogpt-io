@@ -1,13 +1,15 @@
 import React from 'react';
+
 import {
-    Typography,
+    Box,
+    Card,
     Table,
+    alpha,
+    TableRow,
     TableBody,
     TableCell,
     TableHead,
-    TableRow,
-    alpha,
-    Card
+    Typography
 } from '@mui/material';
 
 interface CreditGrant {
@@ -21,18 +23,19 @@ interface CreditGrantsProps {
     grants: CreditGrant[];
 }
 
-const OverviewCredit: React.FC<CreditGrantsProps> = ({ grants }) => {
-    return (
-        <Card sx={{
-            color: 'text.primary',
-            p: 2,
-            borderRadius: 2,
-            width: '100%'
-        }}>
-            <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-                Credit Grants USD
-            </Typography>
+const OverviewCredit: React.FC<CreditGrantsProps> = ({ grants }) => (
+    <Card sx={{
+        color: 'text.primary',
+        p: 2,
+        borderRadius: 2,
+        width: '100%',
+        overflow: 'auto'
+    }}>
+        <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+            Credit Grants USD
+        </Typography>
 
+        <Box sx={{ overflowY: "auto" }}>
             <Table sx={{
                 "& tr": {
                     px: 1,
@@ -76,8 +79,9 @@ const OverviewCredit: React.FC<CreditGrantsProps> = ({ grants }) => {
                     )}
                 </TableBody>
             </Table>
-        </Card>
-    );
-};
+        </Box>
+
+    </Card>
+);
 
 export default OverviewCredit;

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { supabase } from "src/lib/supabase";
 
 export async function POST(req: NextRequest) {
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-    const searchParams = req.nextUrl.searchParams;
+    const { searchParams } = req.nextUrl;
     const date = searchParams.get('date');
 
     if (!date) {

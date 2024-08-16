@@ -9,8 +9,7 @@ import {
 
 import { STRIPE_API_KEY } from 'src/config-global';
 
-const loadStripePromise = function () {
-
+const loadStripePromise = () => {
     const fn = async (resolve: any, reject: any) => {
         try {
             const result = await loadStripe(STRIPE_API_KEY);
@@ -41,6 +40,7 @@ export default function Stripe(props: any) {
 }
 
 function useStaticCallback(callback: any, depends: any) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const _Callback = useCallback(callback, depends);
     const _CallbackRef = useRef(_Callback);
     _CallbackRef.current = _Callback;
@@ -112,8 +112,8 @@ export function useStripe() {
                     if (!payment_method) {
                         return {};
                     }
-                    const { billing_details, ...rest } = payment_method;
-                    return !billing_details ? rest : payment_method;
+                    const { billing_details, ...other } = payment_method;
+                    return !billing_details ? other : payment_method;
                 })(),
             },
             ...(() => !return_url ? {} : { return_url })(),
@@ -167,8 +167,8 @@ export function useStripe() {
                     if (!payment_method) {
                         return {};
                     }
-                    const { billing_details, ...rest } = payment_method;
-                    return !billing_details ? rest : payment_method;
+                    const { billing_details, ...other } = payment_method;
+                    return !billing_details ? other : payment_method;
                 })(),
             },
             ...(() => !return_url ? {} : { return_url })(),

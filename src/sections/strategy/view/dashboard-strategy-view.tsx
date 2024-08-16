@@ -237,7 +237,7 @@ export default function DashboardStrategyView() {
 
 
               {
-                step === '1.choose-pair' && (
+                step === '1.2.choose-pair' && (
                   <>
                     <StrategyCoinModel
                       key="pair-coin1"

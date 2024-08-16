@@ -34,6 +34,8 @@ import {
   CircularProgress
 } from '@mui/material';
 
+import { useResponsive } from 'src/hooks/use-responsive';
+
 import axios, { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -69,6 +71,9 @@ const iconMap: { [key: string]: React.ReactNode } = {
 const getIconForAgent = (iconType: string): React.ReactNode => iconMap[iconType] || <ErrorOutlineIcon />;
 
 const ManageAgents: React.FC = () => {
+
+  const smUp = useResponsive("up", "sm")
+
   const { user } = useAuthContext();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -125,8 +130,8 @@ const ManageAgents: React.FC = () => {
       setEditingAgent(response.data);
       setIsEditDialogOpen(true);
       setIsEditLoading(false);
-    } catch (error) {
-      console.error('Error fetching agent details:', error);
+    } catch (e) {
+      console.error('Error fetching agent details:', e);
       setSnackbar({ open: true, message: 'Failed to fetch agent details', severity: 'error' });
     } finally {
       setIsEditLoading(false);
@@ -150,8 +155,8 @@ const ManageAgents: React.FC = () => {
         setIsEditDialogOpen(false);
         setEditingAgent(null);
         setSnackbar({ open: true, message: 'Agent updated successfully', severity: 'success' });
-      } catch (error) {
-        console.error('Error updating agent:', error);
+      } catch (e) {
+        console.error('Error updating agent:', e);
         setSnackbar({ open: true, message: 'Failed to update agent', severity: 'error' });
       } finally {
         setIsEditLoading(false);
@@ -166,8 +171,8 @@ const ManageAgents: React.FC = () => {
       setAgents(agents.filter(agent => agent.agent_id !== agent_id));
       setSnackbar({ open: true, message: 'Agent unsubscribed successfully', severity: 'success' });
       setIsDeleteLoading(false);
-    } catch (error) {
-      console.error('Error unsubscribing agent:', error);
+    } catch (e) {
+      console.error('Error unsubscribing agent:', e);
       setSnackbar({ open: true, message: 'Failed to unsubscribe agent', severity: 'error' });
     } finally {
       setIsDeleteLoading(false);
@@ -209,7 +214,7 @@ const ManageAgents: React.FC = () => {
         Manage agents to access knowledge bases and facilitate OnDemand model interaction with external services.
       </Typography>
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', my: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', my: 3, flexDirection: smUp ? 'row' : "column" }}>
         <TextField
           variant="outlined"
           placeholder="Search"
@@ -222,9 +227,9 @@ const ManageAgents: React.FC = () => {
               </InputAdornment>
             ),
           }}
-          sx={{ width: '50%', bgcolor: 'rgba(249, 250, 251, 0.08)' }}
+          sx={{ width: smUp ? '50%' : '100%', bgcolor: 'rgba(249, 250, 251, 0.08)', mb: smUp ? '0' : 2 }}
         />
-        <Box>
+        <Box sx={{ display: 'flex' }}>
           {['All Agents', 'Chat Agents', 'File Agents'].map((text) => (
             <Button
               key={text}
@@ -239,70 +244,73 @@ const ManageAgents: React.FC = () => {
         </Box>
       </Box>
 
-      <Table sx={{
-        "& tr": {
-          px: 1,
-        },
-        "& td,th": {
-          py: 0.5,
-          px: 2,
-        },
-        "& tbody tr": {
-          py: 0.5,
-          transition: 'background-color 0.3s',
-          "&:hover": {
-            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+      <Box sx={{ overflowY: 'auto' }}>
+        <Table sx={{
+          overflow: 'auto',
+          "& tr": {
+            px: 1,
           },
-        },
-      }} aria-label="agents table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Icon</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Agent ID</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Category</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {filteredAgents.map((agent) => (
-            <TableRow key={agent.agent_id}>
-              <TableCell>{agent.icon}</TableCell>
-              <TableCell>
-                <Typography variant="body1">{agent.name}</Typography>
-                <Typography variant="caption" color="text.secondary">Last modified on: {agent.last_modified}</Typography>
-              </TableCell>
-              <TableCell>{agent.agent_id}</TableCell>
-              <TableCell>{agent.type}</TableCell>
-              <TableCell>{agent.category}</TableCell>
-              <TableCell>
-                <Typography color="success.main">{agent.status}</Typography>
-              </TableCell>
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  startIcon={<EditIcon />}
-                  sx={{ mr: 1 }}
-                  onClick={() => handleEdit(agent)}
-                  disabled={isEditLoading}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => handleUnsubscribe(agent.agent_id)}
-                  disabled={isDeleteLoading}
-                >
-                  Unsubscribe
-                </Button>
-              </TableCell>
+          "& td,th": {
+            py: 0.5,
+            px: 2,
+          },
+          "& tbody tr": {
+            py: 0.5,
+            transition: 'background-color 0.3s',
+            "&:hover": {
+              backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+            },
+          },
+        }} aria-label="agents table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Icon</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Agent ID</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Category</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {filteredAgents.map((agent) => (
+              <TableRow key={agent.agent_id}>
+                <TableCell>{agent.icon}</TableCell>
+                <TableCell>
+                  <Typography variant="body1">{agent.name}</Typography>
+                  <Typography variant="caption" color="text.secondary">Last modified on: {agent.last_modified}</Typography>
+                </TableCell>
+                <TableCell>{agent.agent_id}</TableCell>
+                <TableCell>{agent.type}</TableCell>
+                <TableCell>{agent.category}</TableCell>
+                <TableCell>
+                  <Typography color="success.main">{agent.status}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    startIcon={<EditIcon />}
+                    sx={{ mr: 1 }}
+                    onClick={() => handleEdit(agent)}
+                    disabled={isEditLoading}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => handleUnsubscribe(agent.agent_id)}
+                    disabled={isDeleteLoading}
+                  >
+                    Unsubscribe
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
 
       <IconButton sx={{ position: 'fixed', bottom: 16, right: 16 }}>
         <HelpOutlineIcon />

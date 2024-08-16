@@ -4,10 +4,12 @@ import React, { useState, useEffect } from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 import {
+  Box,
   Card,
   Table,
   alpha,
   Alert,
+  Stack,
   Button,
   TableRow,
   Snackbar,
@@ -20,6 +22,7 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import axios, { endpoints } from 'src/utils/axios';
 
@@ -34,6 +37,7 @@ interface Model {
 
 const ModelsView: React.FC = () => {
   const router = useRouter();
+  const smUp = useResponsive("up", "sm")
 
   const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,7 +73,8 @@ const ModelsView: React.FC = () => {
     try {
       setIsEditLoading(true);
       // Navigate to the edit page with the model ID
-      router.replace(`${paths.dashboard.modelCreate}/${modelId}`)
+      const updatePath = paths.dashboard.modelUpdate(modelId);
+      router.replace(updatePath);
     } catch (err) {
       console.error('Error navigating to edit page:', err);
       setSnackbar({
@@ -122,72 +127,85 @@ const ModelsView: React.FC = () => {
 
   return (
     <Card sx={{ color: "text.primary", p: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Manage available models to deploy and seamlessly integrate into the OnDemand ecosystem.
-      </Typography>
+      <Stack justifyContent="space-between" alignItems="center" sx={{ mb: 2 }} flexDirection={smUp ? 'row' : 'column'}>
+        <Typography variant="h6" gutterBottom>
+          Manage available models to deploy and seamlessly integrate into the OnDemand ecosystem.
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mr: 1, color: "text.primary" }}
+          onClick={() => router.replace(paths.dashboard.modelCreate)}
+        >
+          Create New Model
+        </Button>
+      </Stack>
 
-      <Table sx={{
-        "& tr": { px: 1 },
-        "& td,th": { py: 0.5, px: 2 },
-        "& tbody tr": {
-          py: 0.5,
-          transition: 'background-color 0.3s',
-          "&:hover": {
-            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+      <Box sx={{ overflowY: 'auto' }}>
+        <Table sx={{
+          "& tr": { px: 1 },
+          "& td,th": { py: 0.5, px: 2 },
+          "& tbody tr": {
+            py: 0.5,
+            transition: 'background-color 0.3s',
+            "&:hover": {
+              backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+            },
           },
-        },
-      }} aria-label="model table">
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ color: 'text.secondary' }}>Model Name</TableCell>
-            <TableCell sx={{ color: 'text.secondary' }}>Hugging face repo ID</TableCell>
-            <TableCell sx={{ color: 'text.secondary' }}>Model Size</TableCell>
-            <TableCell sx={{ color: 'text.secondary' }}>Hugging face repo token</TableCell>
-            <TableCell sx={{ color: 'text.secondary' }}>Status</TableCell>
-            <TableCell sx={{ color: 'text.secondary' }}>Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {models.length === 0 ? (
+        }} aria-label="model table">
+          <TableHead>
             <TableRow>
-              <TableCell colSpan={6} align='center' sx={{ color: 'warning.main' }}>
-                There are no Models
-              </TableCell>
+              <TableCell sx={{ color: 'text.secondary' }}>Model Name</TableCell>
+              <TableCell sx={{ color: 'text.secondary' }}>Hugging face repo ID</TableCell>
+              <TableCell sx={{ color: 'text.secondary' }}>Model Size</TableCell>
+              <TableCell sx={{ color: 'text.secondary' }}>Hugging face repo token</TableCell>
+              <TableCell sx={{ color: 'text.secondary' }}>Status</TableCell>
+              <TableCell sx={{ color: 'text.secondary' }}>Action</TableCell>
             </TableRow>
-          ) : (
-            models.map((model) => (
-              <TableRow key={model.id}>
-                <TableCell component="th" scope='row' sx={{ color: 'text.primary' }}>
-                  {model.model_name}
-                </TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{model.hugging_face_repo_id}</TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{model.model_size}</TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{model.hugging_face_repo_token}</TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{model.status}</TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<EditIcon />}
-                    sx={{ mr: 1 }}
-                    disabled={isEditLoading}
-                    onClick={() => handleEdit(model.id)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => handleUnsubscribe(model.id)}
-                    disabled={unsubscribingModelId === model.id}
-                  >
-                    {unsubscribingModelId === model.id ? <CircularProgress size={24} /> : 'Unsubscribe'}
-                  </Button>
+          </TableHead>
+          <TableBody>
+            {models.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} align='center' sx={{ color: 'warning.main' }}>
+                  There are no Models
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              models.map((model) => (
+                <TableRow key={model.id}>
+                  <TableCell component="th" scope='row' sx={{ color: 'text.primary' }}>
+                    {model.model_name}
+                  </TableCell>
+                  <TableCell sx={{ color: 'text.primary' }}>{model.hugging_face_repo_id}</TableCell>
+                  <TableCell sx={{ color: 'text.primary' }}>{model.model_size}</TableCell>
+                  <TableCell sx={{ color: 'text.primary' }}>{model.hugging_face_repo_token}</TableCell>
+                  <TableCell sx={{ color: 'text.primary' }}>{model.status}</TableCell>
+                  <TableCell sx={{ color: 'text.primary' }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<EditIcon />}
+                      sx={{ mr: 1 }}
+                      disabled={isEditLoading}
+                      onClick={() => handleEdit(model.id)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleUnsubscribe(model.id)}
+                      disabled={unsubscribingModelId === model.id}
+                    >
+                      {unsubscribingModelId === model.id ? <CircularProgress size={24} /> : 'Unsubscribe'}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </Box>
+
 
       <Snackbar
         open={snackbar.open}
