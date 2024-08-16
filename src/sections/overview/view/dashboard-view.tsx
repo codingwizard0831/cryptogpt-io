@@ -2,6 +2,8 @@
 
 import { Box, Grid } from '@mui/material';
 
+import { useResponsive } from 'src/hooks/use-responsive';
+
 import OverviewCredit from '../overview-credit';
 import OverviewMyAgents from '../overview-my-agents';
 import OverviewMyModels from '../overview-my-models';
@@ -11,21 +13,22 @@ import OverviewFilesStats from '../overview-chart-files-stats';
 import OverviewInterfaceStats from '../overview-chart-interface-stats';
 
 export default function DashboardView() {
+    const smUp = useResponsive("up", "sm")
 
-    const models: Array<any> = []
     const grants: Array<any> = []
 
     return (
         <Box sx={{
             minHeight: '100%',
             display: 'flex',
+            flexDirection: smUp ? "row" : "column",
             justifyContent: 'start',
             gap: 2,
             pb: 2,
             overflowX: 'hidden',
             overflowY: 'auto',
         }}>
-            <Grid container spacing={2} maxWidth="60%">
+            <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                     <OverviewPlanUsage />
                 </Grid>
@@ -42,7 +45,7 @@ export default function DashboardView() {
                     <OverviewCredit grants={grants} />
                 </Grid>
             </Grid>
-            <Grid container spacing={2} maxWidth="40%">
+            <Grid container spacing={2}>
                 <Grid item xs={12} md={12}>
                     <OverviewFilesStats />
                 </Grid>
@@ -50,7 +53,6 @@ export default function DashboardView() {
                     <OverviewInterfaceStats />
                 </Grid>
             </Grid>
-
         </Box>
     );
 }
