@@ -120,9 +120,13 @@ export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrate
                     </FormControl>
                 </Stack>
 
-                <Stack direction="row" alignItems='center' spacing={2} sx={{ width: '100%', mb: 2 }}>
-                    <Button fullWidth variant="contained" color="primary" startIcon={<Iconify icon="et:strategy" sx={{
+                <Stack direction="row" alignItems='center' spacing={1} sx={{ width: '100%', mb: 2 }}>
+                    <Button fullWidth variant="contained" color="warning" startIcon={<Iconify icon="ic:outline-edit" sx={{
+                    }} />}>Edit</Button>
+                    <Button fullWidth variant="contained" color="success" startIcon={<Iconify icon="et:strategy" sx={{
                     }} />}>Submit</Button>
+                    <Button fullWidth variant="contained" color="info" startIcon={<Iconify icon="ic:outline-watch-later" sx={{
+                    }} />}>Mint as NFT</Button>
                 </Stack>
 
                 <Box sx={{ width: '100%' }}>

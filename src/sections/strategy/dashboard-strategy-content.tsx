@@ -43,6 +43,7 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
         flexDirection: 'column',
         justifyContent: 'space-between',
         gap: 2,
+        ...sx,
     }} {...other}>
         {
             step === "1.2.choose-pair" &&
