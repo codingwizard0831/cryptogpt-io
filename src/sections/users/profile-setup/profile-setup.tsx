@@ -18,6 +18,9 @@ import {
   FormControlLabel,
 } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useUserProfile } from 'src/hooks/use-user-profile';
 
@@ -50,6 +53,7 @@ interface ErrorList {
 }
 
 export default function ProfileSetup() {
+  const router = useRouter();
   const { profile } = useUserProfile();
   const { enqueueSnackbar } = useSnackbar();
   const isSubmitting = useBoolean(false);
@@ -145,6 +149,7 @@ export default function ProfileSetup() {
       const response = await axios.post(endpoints.profile.index, body);
       console.log('body', response)
       enqueueSnackbar('Profile setup successful!');
+      router.push(paths.dashboard.root);
     } catch (error) {
       console.error(error.error);
       if (error.error?.username) {
@@ -215,14 +220,14 @@ export default function ProfileSetup() {
             }
             filterSelectedOptions
           />
-          {errorList.language && <FormHelperText sx={{marginTop: "-15px", marginLeft: 2}} error>{errorList.language}</FormHelperText>}
+          {errorList.language && <FormHelperText sx={{ marginTop: "-15px", marginLeft: 2 }} error>{errorList.language}</FormHelperText>}
 
           <DatePicker
             label="Enter your birthday"
             value={data.birthday}
             onChange={handleChangeBirthday}
           />
-          {errorList.birthday && <FormHelperText sx={{marginTop: "-15px", marginLeft: 2}} error>{errorList.birthday}</FormHelperText>}
+          {errorList.birthday && <FormHelperText sx={{ marginTop: "-15px", marginLeft: 2 }} error>{errorList.birthday}</FormHelperText>}
 
           <TextField
             fullWidth
@@ -231,7 +236,7 @@ export default function ProfileSetup() {
             value={data.username}
             onChange={handleChange}
           />
-          {errorList.username && <FormHelperText sx={{marginTop: "-15px", marginLeft: 2}} error>{errorList.username}</FormHelperText>}
+          {errorList.username && <FormHelperText sx={{ marginTop: "-15px", marginLeft: 2 }} error>{errorList.username}</FormHelperText>}
 
           <FormControlLabel
             control={
@@ -247,7 +252,7 @@ export default function ProfileSetup() {
               </Typography>
             }
           />
-          {errorList.terms && <FormHelperText sx={{marginTop: "-15px", marginLeft: 2}} error>{errorList.terms}</FormHelperText>}
+          {errorList.terms && <FormHelperText sx={{ marginTop: "-15px", marginLeft: 2 }} error>{errorList.terms}</FormHelperText>}
 
           <LoadingButton
             fullWidth
