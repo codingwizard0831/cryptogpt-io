@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import SearchIcon from '@mui/icons-material/Search';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
@@ -38,24 +38,24 @@ const ModelFormView: React.FC = () => {
   const router = useRouter();
 
 
-  useEffect(() => {
-    const getModelsList = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${endpoints.dashboard.hugging_face}`);
-        const { data } = response
+  // useEffect(() => {
+  //   const getModelsList = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await axios.get(`${endpoints.dashboard.hugging_face}`);
+  //       const { data } = response
 
-        console.log(data)
-      } catch (err) {
-        console.log('Error Fetching Models: ', err);
-        setError("Failed to fetch Models");
-      } finally {
-        setLoading(false)
-      }
-    }
+  //       console.log(data)
+  //     } catch (err) {
+  //       console.log('Error Fetching Models: ', err);
+  //       setError("Failed to fetch Models");
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
 
-    getModelsList()
-  }, [])
+  //   getModelsList()
+  // }, [])
 
   const [model, setModel] = useState<Model>({
     model_name: '',

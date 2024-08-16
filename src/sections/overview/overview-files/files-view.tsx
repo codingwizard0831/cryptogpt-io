@@ -148,54 +148,56 @@ const FilesView: React.FC = () => {
             </Select>
           </Box>
 
-          <Table sx={{
-            "& tr": { px: 1 },
-            "& td,th": { py: 0.5, px: 2 },
-            "& tbody tr": {
-              py: 0.5,
-              transition: 'background-color 0.3s',
-              "&:hover": {
-                backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+          <Box sx={{ overflowY: 'auto' }}>
+            <Table sx={{
+              "& tr": { px: 1 },
+              "& td,th": { py: 0.5, px: 2 },
+              "& tbody tr": {
+                py: 0.5,
+                transition: 'background-color 0.3s',
+                "&:hover": {
+                  backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+                },
               },
-            },
-          }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  Name
-                  {sortBy === 'name' && (sortOrder === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />)}
-                </TableCell>
-                <TableCell>ID</TableCell>
-                <TableCell>Size</TableCell>
-                <TableCell>Extension</TableCell>
-                <TableCell>Processing Status</TableCell>
-                <TableCell>
-                  Date
-                  {sortBy === 'date' && (sortOrder === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />)}
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {files.length === 0 ? (
+            }}>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    There are no uploaded files with OD API
+                  <TableCell>
+                    Name
+                    {sortBy === 'name' && (sortOrder === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />)}
+                  </TableCell>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Size</TableCell>
+                  <TableCell>Extension</TableCell>
+                  <TableCell>Processing Status</TableCell>
+                  <TableCell>
+                    Date
+                    {sortBy === 'date' && (sortOrder === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />)}
                   </TableCell>
                 </TableRow>
-              ) : (
-                files.map((file) => (
-                  <TableRow key={file.id}>
-                    <TableCell>{file.name}</TableCell>
-                    <TableCell>{file.id}</TableCell>
-                    <TableCell>{file.size}</TableCell>
-                    <TableCell>{file.extension}</TableCell>
-                    <TableCell>{file.processing_status}</TableCell>
-                    <TableCell>{new Date(file.created_at).toLocaleDateString()}</TableCell>
+              </TableHead>
+              <TableBody>
+                {files.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center">
+                      There are no uploaded files with OD API
+                    </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  files.map((file) => (
+                    <TableRow key={file.id}>
+                      <TableCell>{file.name}</TableCell>
+                      <TableCell>{file.id}</TableCell>
+                      <TableCell>{file.size}</TableCell>
+                      <TableCell>{file.extension}</TableCell>
+                      <TableCell>{file.processing_status}</TableCell>
+                      <TableCell>{new Date(file.created_at).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </Box>
         </Grid>
       </Grid>
       <IconButton
