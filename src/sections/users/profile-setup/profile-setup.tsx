@@ -21,35 +21,40 @@ import {
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useUserProfile } from 'src/hooks/use-user-profile';
 
-import axios from 'src/utils/axios';
 import { fData } from 'src/utils/format-number';
+import axios, { endpoints } from 'src/utils/axios';
 
-// Ensure this import is correct and the file exists
 import { languages } from 'src/assets/data';
 
 import { useSnackbar } from 'src/components/snackbar';
 import UploadAvatar from 'src/components/upload/upload-avatar';
 
-type Language = {
+interface Language {
   code: string;
   name: string;
-};
+}
 
-type ProfileData = {
+interface ProfileData {
   languages: Language[];
   birthday: Date | null;
   avatar: File | null;
   username: string;
   agreeToTerms: boolean;
-};
+}
+
+interface ErrorList {
+  language?: string;
+  birthday?: string;
+  username?: string;
+  terms?: string;
+}
 
 export default function ProfileSetup() {
   const { profile } = useUserProfile();
   const { enqueueSnackbar } = useSnackbar();
   const isSubmitting = useBoolean(false);
 
-  const [errorList, setErrorList] = useState<any>({});
-
+  const [errorList, setErrorList] = useState<ErrorList>({});
   const [data, setData] = useState<ProfileData>({
     languages: [],
     birthday: null,
@@ -61,21 +66,22 @@ export default function ProfileSetup() {
   useEffect(() => {
     if (profile?.length) {
       setData({
-        languages: profile?.languages || [],
-        birthday: profile?.birthday || null,
-        avatar: profile?.avatar || null,
-        username: profile?.user_name || '',
-        agreeToTerms: profile?.terms || false,
-      })
+        languages: profile.languages || [],
+        birthday: profile.birthday || null,
+        avatar: profile.avatar || null,
+        username: profile.user_name || '',
+        agreeToTerms: profile.terms || false,
+      });
     }
-  }, [profile, setData])
+  }, [profile]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+    setData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleChangeLanguages = (event: React.SyntheticEvent, newValue: Language[]) => {
-    setData({ ...data, languages: newValue });
+  const handleChangeLanguages = (_event: React.SyntheticEvent, newValue: Language[]) => {
+    setData((prevData) => ({ ...prevData, languages: newValue }));
   };
 
   const handleChangeBirthday = (newValue: Date | null) => {
@@ -86,52 +92,64 @@ export default function ProfileSetup() {
       if (newValue > sixteenYearsAgo) {
         setErrorList((prev) => ({ ...prev, birthday: 'You must be at least 16 years old.' }));
       } else {
-        setErrorList((prev) => ({ ...prev, birthday: null }));
+        setErrorList((prev) => ({ ...prev, birthday: undefined }));
       }
     } else {
-      setErrorList((prev) => ({ ...prev, birthday: null }));
+      setErrorList((prev) => ({ ...prev, birthday: undefined }));
     }
-    setData({ ...data, birthday: newValue });
+    setData((prevData) => ({ ...prevData, birthday: newValue }));
   };
 
   const handleDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
-      setData((prev) => ({ ...prev, avatar: file }));
+      setData((prevData) => ({ ...prevData, avatar: file }));
     }
   }, []);
 
   const handleAgreeToTerms = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, agreeToTerms: event.target.checked });
+    setData((prevData) => ({ ...prevData, agreeToTerms: event.target.checked }));
+  };
+
+  const validateForm = (): boolean => {
+    const newErrorList: ErrorList = {};
+
+    if (!data.languages.length) {
+      newErrorList.language = 'You must select your language.';
+    }
+    if (!data.birthday) {
+      newErrorList.birthday = 'You must select your birthday.';
+    }
+    if (!data.username) {
+      newErrorList.username = 'You must enter your username.';
+    }
+    if (!data.agreeToTerms) {
+      newErrorList.terms = 'You must accept our terms.';
+    }
+
+    setErrorList(newErrorList);
+    return Object.keys(newErrorList).length === 0;
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+
     try {
       isSubmitting.onTrue();
-      if (!data.languages?.length) {
-        setErrorList((prev) => ({ ...prev, language: 'You must select your language.' }));
-        return;
+      const body: any = {
+        user_name: data.username,
+        languages: data.languages,
+        terms: data.agreeToTerms,
+        birthday: data.birthday
       }
-      setErrorList((prev) => ({ ...prev, language: null }));
-      if (!data.birthday) {
-        setErrorList((prev) => ({ ...prev, birthday: 'You must select your birthday.' }));
-        return;
-      }
-      if (!data.username) {
-        setErrorList((prev) => ({ ...prev, username: 'You must enter your username.' }));
-        return;
-      }
-      setErrorList((prev) => ({ ...prev, username: null }));
-      if (!data.agreeToTerms) {
-        setErrorList((prev) => ({ ...prev, terms: 'You must accept out terms.' }));
-        return;
-      }
-      setErrorList((prev) => ({ ...prev, terms: null }));
-      console.log('data', data)
-      // await axios.post('/api/profile-setup', data);
-      // enqueueSnackbar('Profile setup successful!');
+      const response = await axios.post(endpoints.profile.index, body);
+      console.log('body', response)
+      enqueueSnackbar('Profile setup successful!');
     } catch (error) {
-      console.error(error);
+      console.error(error.error);
+      if (error.error?.username) {
+        setErrorList((prev) => ({ ...prev, username: error.error?.username }));
+      }
       enqueueSnackbar('Profile setup failed', { variant: 'error' });
     } finally {
       isSubmitting.onFalse();
@@ -166,7 +184,7 @@ export default function ProfileSetup() {
         </Typography>
 
         <Stack spacing={3} mt={3}>
-          <UploadAvatar
+          {/* <UploadAvatar
             file={data.avatar}
             maxSize={3145728}
             onDrop={handleDrop}
@@ -176,7 +194,7 @@ export default function ProfileSetup() {
                 <br /> max size of {fData(3145728)}
               </Typography>
             }
-          />
+          /> */}
 
           <Autocomplete
             multiple
@@ -197,14 +215,14 @@ export default function ProfileSetup() {
             }
             filterSelectedOptions
           />
-          {errorList?.language && <FormHelperText error>{errorList?.language}</FormHelperText>}
+          {errorList.language && <FormHelperText sx={{marginTop: "-15px", marginLeft: 2}} error>{errorList.language}</FormHelperText>}
 
           <DatePicker
             label="Enter your birthday"
             value={data.birthday}
             onChange={handleChangeBirthday}
           />
-          {errorList?.birthday && <FormHelperText error>{errorList?.birthday}</FormHelperText>}
+          {errorList.birthday && <FormHelperText sx={{marginTop: "-15px", marginLeft: 2}} error>{errorList.birthday}</FormHelperText>}
 
           <TextField
             fullWidth
@@ -213,7 +231,7 @@ export default function ProfileSetup() {
             value={data.username}
             onChange={handleChange}
           />
-          {errorList?.username && <FormHelperText error>{errorList?.username}</FormHelperText>}
+          {errorList.username && <FormHelperText sx={{marginTop: "-15px", marginLeft: 2}} error>{errorList.username}</FormHelperText>}
 
           <FormControlLabel
             control={
@@ -229,7 +247,7 @@ export default function ProfileSetup() {
               </Typography>
             }
           />
-          {errorList?.terms && <FormHelperText error>{errorList?.terms}</FormHelperText>}
+          {errorList.terms && <FormHelperText sx={{marginTop: "-15px", marginLeft: 2}} error>{errorList.terms}</FormHelperText>}
 
           <LoadingButton
             fullWidth
@@ -241,15 +259,6 @@ export default function ProfileSetup() {
           >
             I Agree
           </LoadingButton>
-
-          {/* <LoadingButton
-            fullWidth
-            size="large"
-            type="submit"
-            variant="contained"
-          >
-            Skip
-          </LoadingButton> */}
         </Stack>
       </Card>
     </Modal>

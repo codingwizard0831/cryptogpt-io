@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     if (existingUsername) {
       return NextResponse.json(
-        { error: "user_name already exists" },
+        { error: { username: "username already exists" } },
         { status: 409 }
       );
     }
@@ -87,10 +87,10 @@ export async function POST(req: NextRequest) {
     } else {
       const { error } = await supabase
         .from("users_profile")
-        .insert([body])
+        .insert([{ ...body, user_id: user.id }])
         .select()
         .single();
-  
+
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }

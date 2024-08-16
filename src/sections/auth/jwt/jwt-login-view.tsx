@@ -16,6 +16,7 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import axios, { endpoints } from 'src/utils/axios';
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
 import { supabase } from 'src/lib/supabase';
@@ -95,8 +96,21 @@ export default function JwtLoginView() {
     isSubmitting.onTrue();
     try {
       await loginWithEmailAndPassword(email, password);
+      try {
+        const response = await axios.get(endpoints.profile.index);
+        console.log('test', response.data)
+        console.log('test', !response.data?.length)
+        console.log('test', !response.data?.terms)
+        if (!response.data?.length || !response.data?.terms) {
+          router.push(paths.dashboard.user.profileSetup);
+        } else {
+          router.push(returnTo || paths.dashboard.root);
+        }
+      } catch (err) {
+        console.error('Error fetching user profile:', err);
+        setErrorMsg(`Error fetching user profile: ${err}`);
+      }
       isSubmitting.onFalse();
-      router.push(returnTo || paths.dashboard.root);
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
