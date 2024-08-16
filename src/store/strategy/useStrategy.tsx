@@ -18,8 +18,8 @@ interface StrategyState {
 export const useStrategy = create<StrategyState>((set, get) => ({
     step: '1.2.choose-pair',
     coin1: {
-        name: 'BNB',
-        symbol: 'BNB'
+        name: 'USDT',
+        symbol: 'Tether'
     },
     coin2: {
         name: 'Bitcoin',

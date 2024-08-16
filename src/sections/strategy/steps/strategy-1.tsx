@@ -1,11 +1,4 @@
-// Desc: This file contains the content of the strategy dashboard.
-
-
-import { SciChartReact } from "scichart-react";
-import {
-    SciChartSurface,
-    SciChart3DSurface,
-} from "scichart";
+import { Area, XAxis, YAxis, Tooltip, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
 import { Box, Stack, Select, BoxProps, MenuItem, TextField, Typography, ButtonBase, InputLabel, FormControl } from '@mui/material';
 
@@ -15,22 +8,14 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Image from 'src/components/image';
 
-import { drawExample } from "../dashboard-strategy-chart";
 import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
 
-
-// SciChartSurface.configure({
-//     wasmUrl: "scichart2d.wasm",
-//     dataUrl: "scichart2d.data",
-// });
-
-// SciChart3DSurface.configure({
-//     wasmUrl: "scichart3d.wasm",
-//     dataUrl: "scichart3d.data",
-// });
-
-SciChartSurface.loadWasmFromCDN()
-SciChart3DSurface.loadWasmFromCDN()
+interface DataPoint {
+    date: string;
+    price: number;
+    change: number;
+    action?: 'Buy' | 'Sell';
+}
 
 interface DashboardStrategyStep1Props extends BoxProps {
 
@@ -91,6 +76,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
             <Box
                 sx={{
                     position: 'relative',
+                    width: '320px',
                 }}
                 onMouseEnter={() => isHover.onTrue()}
                 onMouseLeave={() => isHover.onFalse()}
@@ -110,10 +96,95 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                     <MenuItem value="4h">4h</MenuItem>
                 </Select>
 
-                <SciChartReact initChart={drawExample} style={{
+                <Box sx={{
                     width: '100%',
                     height: '220px',
-                }} />
+                }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={data}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#ffd70055" strokeWidth={4} />
+                            <XAxis
+                                dataKey="date"
+                                stroke="#ddd"
+                                tick={{ fill: '#ddd' }}
+                            />
+                            <YAxis
+                                stroke="#ddd"
+                                tick={{ fill: '#ddd' }}
+                                domain={[0, 32000]}
+                                ticks={[0, 7500, 15000, 22500, 30000]}
+                            />
+                            <Tooltip
+                                content={({ active, payload, label }) => {
+                                    if (active && payload && payload.length) {
+                                        const data = payload[0].payload;
+                                        const changePercent = data.change !== 0 ? (data.change / (data.price - data.change) * 100).toFixed(2) : 0;
+                                        return (
+                                            <Box sx={{
+                                                p: 1,
+                                                borderRadius: 1,
+                                                backgroundColor: '#372b1e',
+                                            }}>
+                                                <Typography sx={{ color: 'primary.main' }}>{`Time: ${label}`}</Typography>
+                                                <Typography sx={{ color: 'primary.main' }}>{`Price: ${data.price.toFixed(2)}`}</Typography>
+                                                <Typography sx={{ color: data.change > 0 ? "success.main" : "error.main" }}>{`Change: ${data.change >= 0 ? '+' : ''}${data.change.toFixed(2)} (${changePercent}%)`}</Typography>
+                                                {
+                                                    data.action &&
+                                                    <Typography sx={{ color: data.action === 'Buy' ? "success.main" : "error.main" }}>{`Action: ${data.action}`}</Typography>
+                                                }
+                                            </Box>
+                                        );
+                                    }
+                                    return null;
+                                }}
+                            />
+                            <defs>
+                                <linearGradient id="neonGradient-FFD700" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#FFD700" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#FFD700" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <Area
+                                type="monotone"
+                                dataKey="price"
+                                stroke="#ffd700"
+                                strokeWidth={6}
+                                fill="url(#neonGradient-FFD700)"
+                                filter="url(#neonGlow)"
+                            />
+
+                            <defs>
+                                <filter id="neonGlow" height="300%" width="300%" x="-75%" y="-75%">
+                                    <feGaussianBlur stdDeviation="5" result="coloredBlur" />
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur" />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+
+                            {data.map((entry: DataPoint, index) => {
+                                if (entry.change !== 0) {
+                                    return (
+                                        <ReferenceLine
+                                            key={`referenceline - ${index}`}
+                                            x={entry.date}
+                                            stroke={entry.change > 0 ? "#006400" : "#8B0000"}
+                                            strokeWidth={2}
+                                            label={{
+                                                value: entry.change > 0 ? '+' : '-',
+                                                position: 'top',
+                                                fill: entry.change > 0 ? "#006400" : "#8B0000",
+                                                style: { textShadow: `0 0 8px ${entry.change > 0 ? "#006400" : "#8B0000"}` }
+                                            }}
+                                        />
+                                    );
+                                }
+                                return null;
+                            })}
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </Box>
             </Box>
 
             <Box sx={{
@@ -249,3 +320,14 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
         </Stack>
     </Box>
 }
+
+const data: DataPoint[] = [
+    { date: '2023-01', price: 16500, change: 0 },
+    { date: '2023-02', price: 21000, change: 0 },
+    { date: '2023-03', price: 18500, change: -0.1, action: 'Sell' },
+    { date: '2023-04', price: 15500, change: 0.1, action: 'Buy' },
+    { date: '2023-05', price: 17500, change: 0.1 },
+    { date: '2023-06', price: 11000, change: -0.1, action: 'Sell' },
+    { date: '2023-07', price: 19500, change: 0.0 },
+    { date: '2023-08', price: 16500, change: -0.1, action: 'Sell' },
+];
