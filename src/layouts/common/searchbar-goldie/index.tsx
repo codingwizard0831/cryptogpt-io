@@ -2,11 +2,15 @@ import React from 'react';
 
 import { Stack, alpha, IconButton, Typography } from '@mui/material';
 
+import { useResponsive } from 'src/hooks/use-responsive';
+
 import { useChatbot } from "src/store/chatbox/useChatbot";
 
 import Iconify from 'src/components/iconify';
 
 export default function SearchBarGoldie() {
+    const smUp = useResponsive("up", 'sm');
+
     const setIsShow = useChatbot((state) => state.setIsShow);
     return <Stack direction="row" alignItems="center" justifyContent="space-between"
         sx={{
@@ -21,9 +25,13 @@ export default function SearchBarGoldie() {
             <Iconify icon="eva:search-fill" sx={{ color: 'primary.main' }} />
         </IconButton>
 
-        <Typography variant="subtitle2" sx={{
-            color: 'primary.main',
-            pr: 2,
-        }}>Ask Goldie, your AI Assistant</Typography>
+        {
+            smUp &&
+            <Typography variant="subtitle2" sx={{
+                color: 'primary.main',
+                pr: 2,
+            }}>Ask Goldie, your AI Assistant</Typography>
+        }
+
     </Stack>
 }

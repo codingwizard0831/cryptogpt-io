@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Area, XAxis, YAxis, Tooltip, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { Box, alpha, Stack, Button, BoxProps, MenuItem, Typography, InputLabel, FormControl } from '@mui/material';
+import { Box, Stack, Table, Button, BoxProps, MenuItem, TableRow, TextField, TableHead, TableCell, TableBody, Typography, InputLabel, FormControl } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -11,8 +11,6 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Iconify from 'src/components/iconify';
 import Image from 'src/components/image/image';
-
-import DashboardStrategyTableWithDetail from '../dashboard-strategy-table-with-detail';
 
 interface DataPoint {
     date: string;
@@ -22,11 +20,11 @@ interface DataPoint {
 }
 
 
-interface DashboardStrategyStep1Props extends BoxProps {
+interface DashboardStrategyStep3BetaProps extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrategyStep1Props) {
+export default function DashboardStrategyStep3Beta({ sx, ...other }: DashboardStrategyStep3BetaProps) {
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
@@ -48,12 +46,13 @@ export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrate
         flexDirection: 'column',
         alignItems: 'center',
     }}>
-        <Typography variant="h4" color="primary" sx={{ textAlign: "center", my: 2 }}>Finalize Your Strategy</Typography>
+        <Typography variant="h4" color="primary" sx={{ textAlign: "center", my: 2 }}>Review and Adjust Strategy</Typography>
         <Stack direction='row' alignItems="center" spacing={2} sx={{ width: '90%', mb: 2 }}>
             <Typography variant="h4" sx={{
                 whitespace: 'nowrap',
-            }}>5. Strategy Summary</Typography>
+            }}>4. Backtesting for {coin1.name}/{coin2.name}</Typography>
         </Stack>
+
 
         <Box sx={{
             flex: 1,
@@ -66,7 +65,7 @@ export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrate
             <Box sx={{
                 width: '100%',
                 height: '100%',
-                maxHeight: '450px',
+                maxHeight: '400px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'start',
@@ -74,8 +73,7 @@ export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrate
                 overflowY: 'auto',
                 overflowX: 'hidden',
             }}>
-                <Stack direction="row" alignItems='center' spacing={2} sx={{ width: '100%', mb: 2 }}>
-                    <Typography>Pair: </Typography>
+                <Stack direction="row" alignItems='center' spacing={2} sx={{ width: '100%', mb: 1 }}>
                     <Box sx={{
                         position: 'relative',
                         pr: 3,
@@ -100,33 +98,48 @@ export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrate
                         }} />
                     </Box>
 
-                    <Typography sx={{ ml: 2 }}>Trading Platform: </Typography>
                     <FormControl sx={{
                         minWidth: '120px',
                         '.MuiInputBase-root': {
                             border: 'none',
                         },
                     }}>
-                        <InputLabel htmlFor="account-label">Account</InputLabel>
-                        <Select labelId="account-label" id="account" label="Account" size="small" value={period}
+                        <InputLabel htmlFor="source-label">Source</InputLabel>
+                        <Select labelId="source-label" id="source" label="Source" size="small" value="5m" sx={{
+                            border: (theme: any) => `1px solid ${theme.palette.primary.main}`
+                        }}>
+                            <MenuItem value="Pyth">Pyth Netowork</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl sx={{
+                        minWidth: '120px',
+                        '.MuiInputBase-root': {
+                            border: 'none',
+                        },
+                    }}>
+                        <InputLabel htmlFor="period-label">Period</InputLabel>
+                        <Select labelId="period-label" id="period" label="Period" size="small" value={period}
                             onChange={handleChangePeriod}
                             sx={{
                                 border: (theme: any) => `1px solid ${theme.palette.primary.main}`
                             }}>
-                            <MenuItem value="Binance">Binance</MenuItem>
-                            <MenuItem value="Mexc">Mexc</MenuItem>
-                            <MenuItem value="Okx">Okx</MenuItem>
+                            <MenuItem value="10m">10m</MenuItem>
+                            <MenuItem value="30m">30m</MenuItem>
+                            <MenuItem value="1h">1h</MenuItem>
+                            <MenuItem value="1day">1day</MenuItem>
+                            <MenuItem value="1week">1week</MenuItem>
+                            <MenuItem value="Custom">Custom</MenuItem>
                         </Select>
                     </FormControl>
                 </Stack>
 
-                <Stack direction="row" alignItems='center' spacing={1} sx={{ width: '100%', mb: 2 }}>
-                    <Button fullWidth variant="contained" color="warning" startIcon={<Iconify icon="ic:outline-edit" sx={{
-                    }} />}>Edit</Button>
-                    <Button fullWidth variant="contained" color="success" startIcon={<Iconify icon="et:strategy" sx={{
-                    }} />}>Submit</Button>
-                    <Button fullWidth variant="contained" color="info" startIcon={<Iconify icon="ic:outline-watch-later" sx={{
-                    }} />}>Mint as NFT</Button>
+                <Stack direction="row" alignItems='center' spacing={2} sx={{ width: '100%', mb: 2 }}>
+                    {
+                        isCustom.value &&
+                        <TextField size="small" sx={{ minWidth: '120px' }} />
+                    }
+                    <Button fullWidth variant="contained" color="primary" startIcon={<Iconify icon="carbon:chart-multitype" sx={{
+                    }} />}>Run</Button>
                 </Stack>
 
                 <Box sx={{ width: '100%' }}>
@@ -139,94 +152,51 @@ export default function DashboardStrategyStep4({ sx, ...other }: DashboardStrate
                         <Typography variant="h6" sx={{ color: 'primary.main' }}>Backtesting Data</Typography>
                     </Stack>
 
-                    <DashboardStrategyTableWithDetail />
+                    <Table sx={{
+                        width: '100%',
+                    }}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Period</TableCell>
+                                <TableCell>Price</TableCell>
+                                <TableCell>Order</TableCell>
+                                <TableCell>Order Price</TableCell>
+                                <TableCell>Pro</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>2023-01</TableCell>
+                                <TableCell>$16500</TableCell>
+                                <TableCell>Buy</TableCell>
+                                <TableCell>$16500</TableCell>
+                                <TableCell>0%</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>2023-01</TableCell>
+                                <TableCell>$16500</TableCell>
+                                <TableCell>Buy</TableCell>
+                                <TableCell>$16500</TableCell>
+                                <TableCell>0%</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>2023-01</TableCell>
+                                <TableCell>$16500</TableCell>
+                                <TableCell>Buy</TableCell>
+                                <TableCell>$16500</TableCell>
+                                <TableCell>0%</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
                 </Box>
             </Box>
 
             <Box sx={{
                 width: '100%',
             }}>
-                <Box sx={{ mb: 2 }}>
-                    <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-                        <Iconify icon="mdi:trending-up" sx={{
-                            width: '28px',
-                            height: '28px',
-                            color: 'primary.main',
-                        }} />
-                        <Typography variant="h6" sx={{ color: 'primary.main' }}>Performance Analytics</Typography>
-                    </Stack>
-
-                    <Stack direction="column" spacing={2}>
-                        <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
-                            <Box sx={{
-                                width: '100%',
-                                borderRadius: 1,
-                                p: 1,
-                                backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
-                            }}>
-                                <Stack direction="row" justifyContent="space-between" alignItems="end">
-                                    <Typography sx={{ color: 'text.secondary' }}>Total Return</Typography>
-                                    <Typography sx={{ color: 'primary.main' }}>%</Typography>
-                                </Stack>
-                                <Stack direction="row" alignItems="end">
-                                    <Typography variant="h6" sx={{ color: 'text.primary' }}>35%</Typography>
-                                    <Iconify icon="mdi:trending-up" sx={{ color: 'success.main' }} />
-                                </Stack>
-                            </Box>
-                            <Box sx={{
-                                width: '100%',
-                                borderRadius: 1,
-                                p: 1,
-                                backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
-                            }}>
-                                <Stack direction="row" justifyContent="space-between" alignItems="end">
-                                    <Typography sx={{ color: 'text.secondary' }}>Annualized Return</Typography>
-                                    <Iconify icon="mdi:trending-up" sx={{ color: 'primary.main' }} />
-                                </Stack>
-                                <Stack direction="row" alignItems="end">
-                                    <Typography variant="h6" sx={{ color: 'text.primary' }}>28%</Typography>
-                                    <Iconify icon="mdi:trending-up" sx={{ color: 'success.main' }} />
-                                </Stack>
-                            </Box>
-                        </Stack>
-
-                        <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
-                            <Box sx={{
-                                width: '100%',
-                                borderRadius: 1,
-                                p: 1,
-                                backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
-                            }}>
-                                <Stack direction="row" justifyContent="space-between" alignItems="end">
-                                    <Typography sx={{ color: 'text.secondary' }}>Sharpe Ratio</Typography>
-                                    <Typography sx={{ color: 'primary.main' }}>$</Typography>
-                                </Stack>
-                                <Stack direction="row" alignItems="end">
-                                    <Typography variant="h6" sx={{ color: 'text.primary' }}>1.80</Typography>
-                                    {/* <Iconify icon="mdi:trending-up" sx={{ color: 'success.main' }} /> */}
-                                </Stack>
-                            </Box>
-                            <Box sx={{
-                                width: '100%',
-                                borderRadius: 1,
-                                p: 1,
-                                backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
-                            }}>
-                                <Stack direction="row" justifyContent="space-between" alignItems="end">
-                                    <Typography sx={{ color: 'text.secondary' }}>Max Drawdown</Typography>
-                                    <Iconify icon="mdi:trending-down" sx={{ color: 'primary.main' }} />
-                                </Stack>
-                                <Stack direction="row" alignItems="end">
-                                    <Typography variant="h6" sx={{ color: 'text.primary' }}>12%</Typography>
-                                    <Iconify icon="mdi:trending-down" sx={{ color: 'error.main' }} />
-                                </Stack>
-                            </Box>
-                        </Stack>
-                    </Stack>
-                </Box>
                 <Box sx={{
                     width: '100%',
-                    height: '250px',
+                    height: '400px',
                     border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
                 }}>
                     <ResponsiveContainer width="100%" height="100%">

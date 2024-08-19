@@ -1,5 +1,7 @@
 import { useRef, useEffect } from "react";
 
+import { TAAPI_API_KEY } from "src/config-global";
+
 import styles from "./index.module.css";
 import TaapiDatafeedFunc from "./TaapiDatafeed";
 import { widget, LanguageCode, ResolutionString, ChartingLibraryWidgetOptions } from "../../../public/static/charting_library";
@@ -7,7 +9,7 @@ import { widget, LanguageCode, ResolutionString, ChartingLibraryWidgetOptions } 
 export const TVChartContainer = (props: Partial<ChartingLibraryWidgetOptions>) => {
     const chartContainerRef =
         useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
-    const TaapiAPIKey = process.env.NEXT_PUBLIC_TAAPI_API_KEY || '';
+    const TaapiAPIKey = TAAPI_API_KEY || '';
 
     useEffect(() => {
         const widgetOptions: ChartingLibraryWidgetOptions = {

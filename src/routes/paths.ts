@@ -31,7 +31,10 @@ export const paths = {
     modelUpdate: (id: string) => `${ROOTS.DASHBOARD}/model/update/${id}`,
     trading: `${ROOTS.DASHBOARD}/trading`,
     tracking: `${ROOTS.DASHBOARD}/tracking`,
-    strategy: `${ROOTS.DASHBOARD}/strategy`,
+    strategy: {
+      root: `${ROOTS.DASHBOARD}/strategy`,
+      beta: `${ROOTS.DASHBOARD}/strategy/beta`,
+    },
     profile: `${ROOTS.DASHBOARD}/profile`,
     deliver: {
       me: {

@@ -2,9 +2,10 @@ import { mainnet, sepolia } from 'wagmi/chains'
 import { http, createConfig, cookieStorage, createStorage } from 'wagmi'
 import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
 
+import { WEB3_WALLET_CONNECT_PROJECT_ID } from 'src/config-global'
 
 // Get projectId at https://cloud.walletconnect.com
-export const projectId = process.env.NEXT_PUBLIC_WEB3_WALLET_CONNECT_PROJECT_ID
+export const projectId = WEB3_WALLET_CONNECT_PROJECT_ID
 
 if (!projectId) throw new Error('Project ID is not defined')
 

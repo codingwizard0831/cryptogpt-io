@@ -67,7 +67,7 @@ export function useNavData() {
           { title: 'DASHBOARD', path: paths.dashboard.root, icon: ICONS.dashboard, tooltip: "" },
           { title: 'AI TRADING', path: paths.dashboard.trading, icon: ICONS.trading, tooltip: "" },
           { title: 'TRACKING', path: paths.dashboard.tracking, icon: ICONS.tracking, tooltip: "" },
-          { title: 'STRATEGY', path: paths.dashboard.strategy, icon: ICONS.strategy, tooltip: "" },
+          { title: 'STRATEGY', path: paths.dashboard.strategy.root, icon: ICONS.strategy, tooltip: "" },
           { title: 'DISCOVER', path: paths.dashboard.user.root, icon: ICONS.discover, tooltip: "" },
           { title: 'KNOWLEDGE BASE', path: paths.dashboard.user.root, icon: ICONS.knowledgebase, tooltip: '' },
           { title: 'MY WALLET', path: paths.dashboard.user.root, icon: ICONS.wallet, tooltip: "" },
