@@ -36,6 +36,7 @@ export const paths = {
       beta: `${ROOTS.DASHBOARD}/strategy/beta`,
     },
     profile: `${ROOTS.DASHBOARD}/profile`,
+    avatarCreate: `${ROOTS.DASHBOARD}/user/profile-voice-avatar`,
     deliver: {
       me: {
         root: `${ROOTS.DASHBOARD}/deliver/me/favorite`,
