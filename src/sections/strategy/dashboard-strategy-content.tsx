@@ -210,7 +210,7 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
                 alignItems: 'start',
                 justifyContent: 'space-between',
             }}>
-                <MobileMenu data={menuButtons} value={step} handleChange={setStep} />
+                <MobileMenu size={smUp ? "medium" : "small"} data={menuButtons} value={step} handleChange={setStep} />
 
                 {
                     !smUp &&

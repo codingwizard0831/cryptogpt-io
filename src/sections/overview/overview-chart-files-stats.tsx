@@ -25,7 +25,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             <Box sx={{
                 p: 1,
                 borderRadius: 1,
-                backgroundColor: '#372b1e',
+                backgroundColor: '#100e0d',
             }}>
                 <Typography sx={{ color: 'primary.main' }}>{`Time: ${data.time}`}</Typography>
                 <Typography sx={{ color: 'primary.main' }}>{`Value: ${data.value}`}</Typography>
