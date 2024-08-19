@@ -1,9 +1,13 @@
 "use client"
 
+import Image from 'next/image';
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { LoadingButton } from '@mui/lab';
-import { Card, Stack, TextField, Typography, Autocomplete } from '@mui/material';
+import { Box, Card, Grid, Modal, Stack, TextField, Typography, Autocomplete } from '@mui/material';
+
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -29,11 +33,15 @@ interface ErrorList {
 const sizes = ["256x256", "512x512", "1024x1024"];
 
 export default function ProfileSetupAvatar() {
+  const router = useRouter();
+
   const { enqueueSnackbar } = useSnackbar();
   const isSubmitting = useBoolean(false);
 
   const [errorList, setErrorList] = useState<ErrorList>({});
   const [models, setModels] = useState<any>([]);
+  const [avatars, setAvatars] = useState<any>([]);
+  const [selectedAvatar, setSelectedAvatar] = useState<number | null>(null);
   const [data, setData] = useState<ProfileData>({
     size: "256x256",
     model: "flux",
@@ -124,7 +132,7 @@ export default function ProfileSetupAvatar() {
 
       if (response.data.success) {
         enqueueSnackbar('Avatar generated successfully!', { variant: 'success' });
-        console.log('Generated avatars:', response.data.data);
+        setAvatars(response.data.data);
       } else {
         throw new Error(response.data.error || 'Failed to generate avatar');
       }
@@ -137,90 +145,191 @@ export default function ProfileSetupAvatar() {
     }
   };
 
+  const handleUpdateAvatar = async () => {
+    if (!selectedAvatar) {
+      enqueueSnackbar('Please choose one image what you like.', { variant: 'error' });
+      return;
+    }
+    isSubmitting.onTrue();
+    try {
+      const response = await axios.put(endpoints.profile.updateAvatar, { imageUrl: avatars[selectedAvatar] });
+      console.log('response', response)
+      if (response.data.success) {
+        enqueueSnackbar('Update your avatar successfully!', { variant: 'success' });
+        router.push(paths.dashboard.root);
+      } else {
+        throw new Error(response.data.error || 'Failed to update your avatar');
+      }
+    } catch (error) {
+      console.error('Error generating avatar:', error);
+      enqueueSnackbar('Failed to update your avatar. Please try again.', { variant: 'error' });
+    } finally {
+      isSubmitting.onFalse();
+    }
+  };
+
+  const handleAvatarClick = (index: number) => {
+    setSelectedAvatar(index);
+  };
+
   return (
-    <Card
-      sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 'auto',
-        maxWidth: 400,
-        p: 3,
-        borderRadius: 2,
-      }}
+    <Modal
+      open
+      aria-labelledby="profile-avatar-setup-modal"
+      aria-describedby="modal-to-setup-user-profile-avatar"
     >
-      <Typography variant="h4" align="center" gutterBottom>
-        Generate your avatar from your picture
-      </Typography>
+      {
+        avatars?.length > 0 ?
+          (
+            <Card
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'auto',
+                maxWidth: 400,
+                p: 3,
+                borderRadius: 2,
+              }}
+            >
+              <Typography variant="h4" align="center" gutterBottom>
+                Choose your avatar from these AI images
+              </Typography>
 
-      <Stack spacing={3} mt={3}>
-        <UploadAvatar
-          file={data.avatar}
-          maxSize={3145728}
-          onDrop={handleDrop}
-          helperText={
-            <Typography variant="caption" sx={{ mt: 2, textAlign: 'center', display: 'block' }}>
-              Allowed *.jpeg, *.jpg, *.png, *.gif
-              <br /> max size of {fData(3145728)}
-            </Typography>
-          }
-        />
+              <Grid container spacing={2} sx={{ mt: 2, mb: 3 }}>
+                {avatars.map((avatar: string, index: number) => (
+                  <Grid item xs={6} key={index}>
+                    <Box
+                      onClick={() => handleAvatarClick(index)}
+                      sx={{
+                        cursor: 'pointer',
+                        border: selectedAvatar === index ? '4px solid #1976d2' : 'none',
+                        borderRadius: '12px',
+                        padding: '4px',
+                      }}
+                    >
+                      <Image
+                        src={`${avatar}`}
+                        alt={`Generated avatar ${index + 1}`}
+                        width={250}
+                        height={250}
+                        style={{ borderRadius: '8px' }}
+                      />
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
 
-        <TextField
-          fullWidth
-          label="Describe your ideal avatar"
-          name="idealDescription"
-          value={data.idealDescription}
-          onChange={handleChange}
-          error={!!errorList.idealDescription}
-          helperText={errorList.idealDescription}
-        />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                <LoadingButton
+                  size="large"
+                  variant="outlined"
+                  loading={isSubmitting.value}
+                  onClick={() => setAvatars(null)}
+                >
+                  Regenerate
+                </LoadingButton>
+                <LoadingButton
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  loading={isSubmitting.value}
+                  disabled={selectedAvatar == null}
+                  onClick={handleUpdateAvatar}
+                >
+                  Continue
+                </LoadingButton>
+              </Box>
+            </Card>
+          ) :
+          (
+            <Card
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'auto',
+                maxWidth: 400,
+                p: 3,
+                borderRadius: 2,
+              }}
+            >
+              <Typography variant="h4" align="center" gutterBottom>
+                Generate your avatar from your picture
+              </Typography>
 
-        <Stack spacing={1.5} direction="row">
-          <Autocomplete
-            sx={{ width: "50%" }}
-            options={sizes}
-            value={data.size}
-            onChange={handleChangeSize}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Size"
-                error={!!errorList.size}
-                helperText={errorList.size}
-              />
-            )}
-            disableClearable
-          />
-          <Autocomplete
-            sx={{ width: "50%" }}
-            options={models}
-            value={data.model}
-            onChange={handleChangeModel}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Model"
-                error={!!errorList.model}
-                helperText={errorList.model}
-              />
-            )}
-            disableClearable
-          />
-        </Stack>
+              <Stack spacing={3} mt={3}>
+                <UploadAvatar
+                  file={data.avatar}
+                  maxSize={3145728}
+                  onDrop={handleDrop}
+                  helperText={
+                    <Typography variant="caption" sx={{ mt: 2, textAlign: 'center', display: 'block' }}>
+                      Allowed *.jpeg, *.jpg, *.png, *.gif
+                      <br /> max size of {fData(3145728)}
+                    </Typography>
+                  }
+                />
 
-        <LoadingButton
-          fullWidth
-          size="large"
-          type="submit"
-          variant="contained"
-          loading={isSubmitting.value}
-          onClick={handleSubmit}
-        >
-          Generate My Avatar
-        </LoadingButton>
-      </Stack>
-    </Card>
+                <TextField
+                  fullWidth
+                  label="Describe your ideal avatar"
+                  name="idealDescription"
+                  value={data.idealDescription}
+                  onChange={handleChange}
+                  error={!!errorList.idealDescription}
+                  helperText={errorList.idealDescription}
+                />
+
+                <Stack spacing={1.5} direction="row">
+                  <Autocomplete
+                    sx={{ width: "50%" }}
+                    options={sizes}
+                    value={data.size}
+                    onChange={handleChangeSize}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Size"
+                        error={!!errorList.size}
+                        helperText={errorList.size}
+                      />
+                    )}
+                    disableClearable
+                  />
+                  <Autocomplete
+                    sx={{ width: "50%" }}
+                    options={models}
+                    value={data.model}
+                    onChange={handleChangeModel}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Model"
+                        error={!!errorList.model}
+                        helperText={errorList.model}
+                      />
+                    )}
+                    disableClearable
+                  />
+                </Stack>
+
+                <LoadingButton
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  loading={isSubmitting.value}
+                  onClick={handleSubmit}
+                >
+                  Generate My Avatar
+                </LoadingButton>
+              </Stack>
+            </Card>
+          )
+      }
+    </Modal>
   );
 }

@@ -149,7 +149,7 @@ export default function ProfileSetup() {
       const response = await axios.post(endpoints.profile.index, body);
       console.log('body', response)
       enqueueSnackbar('Profile setup successful!');
-      router.push(paths.dashboard.root);
+      router.push(paths.dashboard.user.profileSetupAvatar);
     } catch (error) {
       console.error(error.error);
       if (error.error?.username) {

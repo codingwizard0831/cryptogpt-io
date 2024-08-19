@@ -51,6 +51,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/user`,
       profile: `${ROOTS.DASHBOARD}/user/profile`,
       profileSetup: `${ROOTS.DASHBOARD}/user/profile-setup`,
+      profileSetupAvatar: `${ROOTS.DASHBOARD}/user/profile-setup-avatar`,
       account: `${ROOTS.DASHBOARD}/user/account`,
       billing: `${ROOTS.DASHBOARD}/user/billing`,
       connection: `${ROOTS.DASHBOARD}/user/connection`,
