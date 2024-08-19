@@ -121,14 +121,12 @@ export default function DashboardStrategyView() {
   return (
     <Box
       sx={{
-        minHeight: '100%',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         gap: 2,
         pb: 2,
-        overflowX: 'hidden',
-        overflowY: 'auto',
       }}
     >
       <Card
@@ -138,25 +136,26 @@ export default function DashboardStrategyView() {
           borderRadius: 1,
           boxShadow: 2,
           height: '100%',
-          // display: 'none',
           position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
         }}
       >
-        <Link href={paths.dashboard.strategy.beta} component={RouterLink}>
-          <Button variant="outlined" sx={{
-            position: 'absolute',
-            right: '8px',
-            top: '8px',
-          }}>
-            Beta (3D)
-          </Button>
-        </Link>
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}>
+          <Link href={paths.dashboard.strategy.beta} component={RouterLink}>
+            <Button variant="outlined">
+              Beta (3D)
+            </Button>
+          </Link>
+        </Box>
+
         <DashboardStrategyContent sx={{
-          position: 'unset',
-          width: '10%%',
-          height: '100%',
-          border: 'none',
-          backdropFilter: 'none',
+          flex: 1,
+          height: 0,
         }} />
       </Card>
     </Box>

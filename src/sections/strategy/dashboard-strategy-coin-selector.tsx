@@ -88,7 +88,7 @@ export default function DashboardStrategyCoinSelector({
             borderRadius: 1,
             border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
         }} onClick={coinListPopover.onOpen}>
-            <Typography>{currency.name}</Typography>
+            <Typography sx={{ width: '64px' }}>{currency.name}</Typography>
             <Iconify icon="mingcute:down-fill" />
         </ButtonBase>
 

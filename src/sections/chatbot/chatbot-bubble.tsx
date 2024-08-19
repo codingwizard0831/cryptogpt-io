@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
 import { Box, Card, alpha, Stack, styled, IconButton, Typography } from "@mui/material";
@@ -36,6 +36,14 @@ export default function ChatbotBubble() {
     const isMultipleLines = useBoolean();
     const [text, setText] = useState('');
     const smUp = useResponsive("up", 'sm');
+
+    useEffect(() => {
+        if (text.split('\n').length > 2) {
+            isMultipleLines.onTrue();
+        } else {
+            isMultipleLines.onFalse();
+        }
+    }, [text, isMultipleLines]);
 
     return <Card sx={{
         display: 'flex',
