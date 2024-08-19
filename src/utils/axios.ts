@@ -98,6 +98,7 @@ export const endpoints = {
     index: '/api/profile',
     models: '/api/profile/image/models',
     generateImage: '/api/profile/image/generate',
+    updateAvatar: '/api/profile/image',
   }
 };
 

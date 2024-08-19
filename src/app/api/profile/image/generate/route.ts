@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
     console.log('response', response)
 
     if (response.status === 200 && response.data.status === 'success') {
-      const results = response.data.output.map((url: string) => ({ success: true, file_url: url }));
+      const results = response.data.output.map((url: string) => (url));
       return NextResponse.json({ success: true, data: results }, { status: 200 });
     } 
     const errorMessage = response.data.message || 'Image creation failed.';
