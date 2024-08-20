@@ -68,7 +68,7 @@ export default function ChatbotBubble() {
         })
     }}>
         <Stack direction="row" alignItems="center" spacing={2} sx={{ pb: 2 }}>
-            <Image src="/images/Nanami.jpg" sx={{
+            <Image src="/images/Goldie.png" sx={{
                 width: '36px',
                 height: '36px',
             }} />
@@ -114,7 +114,7 @@ export default function ChatbotBubble() {
                             gap: 0.5,
                             alignItems: 'center',
                         }}>
-                            <Image src="/images/Nanami.jpg" sx={{
+                            <Image src="/images/Goldie.png" sx={{
                                 width: '32px',
                                 height: '32px',
                             }} />

@@ -2,7 +2,7 @@ import React from 'react';
 import { Pie, Area, Cell, XAxis, YAxis, Legend, Tooltip, PieChart, AreaChart, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 import { styled } from '@mui/system';
-import { Box, alpha, Stack, Button, Accordion, Typography, AccordionDetails, AccordionSummary } from '@mui/material';
+import { Box, alpha, Stack, Button, Rating, Accordion, Typography, AccordionDetails, AccordionSummary } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import Carousel, { useCarousel } from 'src/components/carousel';
@@ -212,11 +212,110 @@ export default function DashboardStrategyAccordion() {
                 <Box sx={{
                     borderRadius: 1,
                     overflow: 'hidden',
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.1),
                 }}>
                     <Box sx={{
                         aspectRatio: '16/9',
+                        backgroundImage: 'linear-gradient(to right, #fde047 , #67e8f9, #fde047)', // Adjust the gradient colors as needed
                     }} />
+                    <Box sx={{
+                        p: 1,
+                    }}>
+                        <Typography variant="body2" sx={{ color: 'primary.main' }}>Crypto Pair Analysis</Typography>
+                        <Typography variant="caption" sx={{ display: 'block', mb: 1 }}>ETH/USDT pair, 4H timeframe, allocated $10,000 for trading.</Typography>
+                        <Stack direction="row" alignItems="center" justifyContent="space-between">
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                                <Iconify icon="ri:user-line" color="primary.main" />
+                                <Typography variant="body2" sx={{ color: 'info.main' }}>Goldie AI</Typography>
+                            </Stack>
+                            <Rating name="read-only" value={4} readOnly />
+                        </Stack>
+                    </Box>
                 </Box>
+
+                <Box sx={{
+                    p: 1,
+                    borderRadius: 1,
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.1),
+                }}>
+                    <Typography variant="body2" sx={{ color: 'primary.main' }}>Strategy Insights</Typography>
+                    <Typography variant="caption" sx={{ display: 'block', mb: 1 }}>Learn key aspects of this strategy step</Typography>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        <Iconify icon="ri:user-line" color="primary.main" />
+                        <Typography variant="body2" sx={{ color: 'primary.main' }}>Goldie AI</Typography>
+                        <Rating name="read-only" value={4} readOnly />
+                    </Stack>
+                </Box>
+
+                <Accordion expandIcon={<Iconify icon="eva:arrow-ios-downward-fill" />} sx={{
+                    '&.MuiAccordion-root': {
+                        boxShadow: 'none',
+                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.1),
+                        '& .MuiAccordionSummary-root': {
+                            position: 'relative',
+                            borderRadius: `4px 4px 0 0`,
+                            overflow: 'hidden',
+                            padding: '0px 4px',
+                            minHeight: '36px!important',
+                            '&::before': {
+                                content: '""',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '4px', // Adjust the height of the line bar as needed
+                                background: 'linear-gradient(to right, #fde047 , #67e8f9, #fde047)', // Adjust the gradient colors as needed
+                            },
+                        },
+                        '& .MuiAccordionSummary-expandIconWrapper': {
+                            color: "primary.main",
+                        },
+                        '&.Mui-expanded': {
+                            margin: '0px', // Adjust this value to your needs
+                            '& .MuiAccordionSummary-root': {
+                                margin: '0',
+                                paddingRight: '0px !improtant',
+                                minHeight: '48px',
+                                '& .MuiAccordionSummary-content': {
+                                    margin: '0',
+                                },
+                            },
+                            '& .MuiAccordionDetails-root': {
+                                padding: '0px 0px 0px 0px !important',
+                            },
+                        },
+                    },
+                }}>
+                    <AccordionSummary>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: 24,
+                                height: 24,
+                                borderRadius: '50%',
+                                backgroundColor: 'primary.main',
+                            }}>
+                                <Iconify icon="eva:person-outline" sx={{
+                                    color: 'white',
+                                }} />
+                            </Box>
+                            <Typography variant="body2" sx={{ color: 'primary.main' }}>Ask Goldie</Typography>
+                        </Stack>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Box sx={{ p: 1 }}>
+                            <Typography variant="caption" sx={{
+                            }}>Solid choices! ETH/USDT is liquid, 4H balances noise and signals. $10K is a good start. Remember, risk management is key! 🔑</Typography>
+                        </Box>
+                    </AccordionDetails>
+                </Accordion>
+
+                <Typography variant="caption" sx={{
+                    fontStyle: 'italic',
+                    color: 'text.secondary',
+                }}>Goldie AI has analyzed the ETH/USDT pair and recommended a buy signal.</Typography>
             </Stack>
         </AccordionDetails>
     </StyledAccordion>
