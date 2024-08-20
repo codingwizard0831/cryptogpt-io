@@ -38,42 +38,46 @@ export default function DashboardStrategySummary() {
         }}
     >
         <Box sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
+            p: 1,
         }}>
-            <IconButton sx={{
-                backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
             }}>
-                <Iconify icon="material-symbols:close" sx={{
-                    color: 'primary.main',
-                }} onClick={() => setIsShowSummary(false)} />
-            </IconButton>
+                <IconButton size="small" sx={{
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+                }}>
+                    <Iconify icon="material-symbols:close" sx={{
+                        color: 'primary.main',
+                    }} onClick={() => setIsShowSummary(false)} />
+                </IconButton>
+            </Box>
+            <Timeline
+                sx={{
+                    [`& .${timelineItemClasses.root}:before`]: {
+                        flex: 0,
+                        padding: 0,
+                    },
+                }}
+            >
+                {
+                    [1, 2, 3].map((item, index) => (
+                        <TimelineItem key={index}>
+                            <TimelineSeparator>
+                                <TimelineDot />
+                                <TimelineConnector />
+                            </TimelineSeparator>
+                            <TimelineContent sx={{
+                                width: "100%",
+                            }}>
+                                <Box>
+                                    <DashboardStrategyAccordion />
+                                </Box>
+                            </TimelineContent>
+                        </TimelineItem>
+                    ))
+                }
+            </Timeline>
         </Box>
-        <Timeline
-            sx={{
-                [`& .${timelineItemClasses.root}:before`]: {
-                    flex: 0,
-                    padding: 0,
-                },
-            }}
-        >
-            {
-                [1, 2, 3].map((item, index) => (
-                    <TimelineItem key={index}>
-                        <TimelineSeparator>
-                            <TimelineDot />
-                            <TimelineConnector />
-                        </TimelineSeparator>
-                        <TimelineContent sx={{
-                            width: "100%",
-                        }}>
-                            <Box>
-                                <DashboardStrategyAccordion />
-                            </Box>
-                        </TimelineContent>
-                    </TimelineItem>
-                ))
-            }
-        </Timeline>
     </Box>
 }
