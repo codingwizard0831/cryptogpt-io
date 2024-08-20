@@ -3,16 +3,18 @@
 import Timeline from '@mui/lab/Timeline';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineContent from '@mui/lab/TimelineContent';
+import { Box, alpha, IconButton } from '@mui/material';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
-import { Box, alpha, Stack, IconButton, Typography } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
 
 import Iconify from 'src/components/iconify/iconify';
+
+import DashboardStrategyAccordion from './dashboard-strategy-accordion';
 
 
 export default function DashboardStrategySummary() {
@@ -65,22 +67,9 @@ export default function DashboardStrategySummary() {
                         <TimelineContent sx={{
                             width: "100%",
                         }}>
-                            <Stack direction="column" spacing={1}>
-                                <Typography variant="body2" sx={{
-                                    color: "text.secondary",
-                                }} >Step {item}</Typography>
-                                <Typography variant={smUp ? "h6" : 'subtitle1'} sx={{
-                                    zIndex: 1,
-                                }}>item.title</Typography>
-                                <Box sx={{
-                                    color: "text.secondary",
-                                    fontSize: '14px',
-                                    overflow: "hidden",
-                                    display: "-webkit-box",
-                                    WebkitBoxOrient: "vertical",
-                                    WebkitLineClamp: 3,
-                                }}>item.content</Box>
-                            </Stack>
+                            <Box>
+                                <DashboardStrategyAccordion />
+                            </Box>
                         </TimelineContent>
                     </TimelineItem>
                 ))
