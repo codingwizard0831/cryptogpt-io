@@ -1,10 +1,7 @@
-import { useState, useEffect } from 'react';
 import { Area, XAxis, YAxis, Tooltip, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, Stack, styled, Select, Button, Slider, BoxProps, MenuItem, TextField, Typography, ButtonBase } from '@mui/material';
+import { Box, Stack, Select, Button, Slider, BoxProps, MenuItem, TextField, Typography, ButtonBase } from '@mui/material';
 
-import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from "src/store/strategy/useStrategy";
@@ -13,20 +10,6 @@ import Image from 'src/components/image';
 
 import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
 
-const Textarea = styled(BaseTextareaAutosize)(
-    ({ theme }) => `
-  box-sizing: border-box;
-  width: 100%;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.5;
-  border: none;
-  outline: none;
-  resize: none;
-  color: ${theme.palette.mode === 'dark' ? theme.palette.grey[300] : theme.palette.grey[900]};
-  background: transparent;
-  `,
-);
 interface DataPoint {
     date: string;
     price: number;
@@ -43,25 +26,13 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
     const setCoin2 = useStrategy((state) => state.setCoin2);
-    const [text, setText] = useState('');
-    const isFocus = useBoolean();
-    const isMultipleLines = useBoolean();
     const smUp = useResponsive("up", 'sm');
-    const isPreview = useBoolean(false);
 
     const handleSwapCoin = () => {
         const [temp1, temp2] = [coin1, coin2];
         setCoin1(temp2);
         setCoin2(temp1);
     }
-
-    useEffect(() => {
-        if (text.split('\n').length > 2) {
-            isMultipleLines.onTrue();
-        } else {
-            isMultipleLines.onFalse();
-        }
-    }, [text, isMultipleLines]);
 
     return <Box sx={{
         display: 'flex',
@@ -86,7 +57,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                 }}>1. Start, Select Pair</Typography>
 
                 <Stack direction="row" alignItems='center' justifyContent="center" spacing={2}>
-                    <DashboardStrategyCoinSelector currency={coin1} handleChange={setCoin1} />
+                    <DashboardStrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin1} handleChange={setCoin1} />
                     <Box sx={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -95,14 +66,14 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                         <ButtonBase sx={{
                         }} onClick={() => handleSwapCoin()}>
                             <Image src="/assets/images/ethereum-to-dollar-swap.png" alt="swap" sx={{
-                                width: '96px',
-                                height: '96px',
+                                width: smUp ? '96px' : '64px',
+                                height: smUp ? '96px' : '64px',
                             }} />
                         </ButtonBase>
                     </Box>
-                    <DashboardStrategyCoinSelector currency={coin2} handleChange={setCoin2} />
+                    <DashboardStrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin2} handleChange={setCoin2} />
 
-                    <Select size="small" value="5m" sx={{
+                    <Select size={smUp ? "medium" : 'small'} value="5m" sx={{
                         border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
                     }}>
                         <MenuItem value="5m">5m</MenuItem>
@@ -150,7 +121,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                                 <Box sx={{
                                                     p: 1,
                                                     borderRadius: 1,
-                                                    backgroundColor: '#372b1e',
+                                                    backgroundColor: '#100e0d',
                                                 }}>
                                                     <Typography sx={{ color: 'primary.main' }}>{`Time: ${label}`}</Typography>
                                                     <Typography sx={{ color: 'primary.main' }}>{`Price: ${data.price.toFixed(2)}`}</Typography>
@@ -225,7 +196,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                 </Box>
             </Stack>
 
-            <Button variant="contained" color="primary" fullWidth>Submit</Button>
+            <Button variant="contained" color="primary" fullWidth>Continue/Select  Indicators</Button>
         </Stack>
     </Box>
 }

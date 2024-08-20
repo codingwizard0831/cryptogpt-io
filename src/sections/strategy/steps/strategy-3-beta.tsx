@@ -222,7 +222,7 @@ export default function DashboardStrategyStep3Beta({ sx, ...other }: DashboardSt
                                             <Box sx={{
                                                 p: 1,
                                                 borderRadius: 1,
-                                                backgroundColor: '#372b1e',
+                                                backgroundColor: '#100e0d',
                                             }}>
                                                 <Typography sx={{ color: 'primary.main' }}>{`Time: ${label}`}</Typography>
                                                 <Typography sx={{ color: 'primary.main' }}>{`Price: ${data.price.toFixed(2)}`}</Typography>
