@@ -1,14 +1,33 @@
 // Desc: This file contains the content of the strategy dashboard.
 
-import { Box, BoxProps } from '@mui/material';
+
+import { Box, Button, BoxProps } from '@mui/material';
+
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
 
+import Iconify from 'src/components/iconify/iconify';
 import MobileMenu from 'src/components/mobile-tab/mobile-tab';
 
 import DashboardStrategyStep1 from './steps/strategy-1';
 import DashboardStrategyStep2 from './steps/strategy-2';
 import DashboardStrategyStep3 from './steps/strategy-3';
+import DashboardStrategyStep4 from './steps/strategy-4';
+import DashboardStrategyChat from './dashboard-strategy-chat';
+import DashboardStrategySummary from './dashboard-strategy-summary';
+
+interface MenuButton {
+    icon: React.ReactNode;
+    id: string;
+}
+
+const menuButtons: MenuButton[] = [
+    { icon: <Iconify icon="pepicons-pop:coins" />, id: '1.2.choose-pair' },
+    { icon: <Iconify icon="hugeicons:bitcoin-invoice" />, id: '3.detail' },
+    { icon: <Iconify icon="carbon:chart-multitype" />, id: '4.backtesting' },
+    { icon: <Iconify icon="vaadin:chart-3d" />, id: '5.review' },
+];
 
 interface DashboardStrategyContentProps extends BoxProps {
 
@@ -17,39 +36,78 @@ interface DashboardStrategyContentProps extends BoxProps {
 export default function DashboardStrategyContent({ sx, ...other }: DashboardStrategyContentProps) {
     const step = useStrategy(state => state.step);
     const setStep = useStrategy(state => state.setStep);
+    const smUp = useResponsive("up", 'sm');
+    const isPreview = useStrategy((state) => state.isPreview);
+    const setIsPreview = useStrategy((state) => state.setIsPreview);
+    const isShowSummary = useStrategy((state) => state.isShowSummary);
 
     return <Box sx={{
-        width: '1280px',
-        height: '680px',
-        border: "1px solid white",
-        backdropFilter: "blur(10px)",
-        p: 2,
+        height: '100%',
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
+        flexDirection: 'row',
         gap: 2,
+        ...sx,
     }} {...other}>
-        {
-            step === "1.choose-pair" &&
-            <DashboardStrategyStep1 />
-        }
-        {
-            step === "2.detail" &&
-            <DashboardStrategyStep2 />
-        }
-        {
-            step === "3.configure-indicators" &&
-            <DashboardStrategyStep3 />
-        }
-
+        <DashboardStrategyChat />
 
         <Box sx={{
-            mt: 'auto',
+            width: '100%',
+            height: '100%',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-around',
+            flexDirection: 'column',
+            ...(
+                (!isPreview && !smUp) && {
+                    display: 'none',
+                }
+            ),
+            ...(
+                (isShowSummary && !smUp) && {
+                    display: 'none',
+                }
+            ),
         }}>
-            <MobileMenu value={step} handleChange={setStep} />
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'start',
+                justifyContent: 'space-between',
+            }}>
+                <MobileMenu size={smUp ? "medium" : "small"} data={menuButtons} value={step} handleChange={setStep} />
+
+                {
+                    !smUp &&
+                    <Button size="small" variant="outlined" sx={{
+                    }}
+                        onClick={() => setIsPreview(!isPreview)}
+                    >Chat</Button>
+                }
+            </Box>
+
+            <Box sx={{
+                height: 0,
+                flex: 1,
+                width: '100%',
+                overflowX: 'hidden',
+                overflowY: 'auto',
+            }}>
+                {
+                    step === "1.2.choose-pair" &&
+                    <DashboardStrategyStep1 />
+                }
+                {
+                    step === "3.detail" &&
+                    <DashboardStrategyStep2 />
+                }
+                {
+                    step === "4.backtesting" &&
+                    <DashboardStrategyStep3 />
+                }
+                {
+                    step === "5.review" &&
+                    <DashboardStrategyStep4 />
+                }
+            </Box>
         </Box>
+
+        <DashboardStrategySummary />
     </Box>
 }

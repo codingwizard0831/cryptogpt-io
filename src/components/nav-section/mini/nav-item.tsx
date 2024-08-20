@@ -167,6 +167,7 @@ const StyledNavItem = styled(ListItemButton, {
     // Root item
     ...(!subItem && {
       ...baseStyles.item,
+      pointerEvents: 'all',
       fontSize: 10,
       minHeight: 48,
       lineHeight: '16px',

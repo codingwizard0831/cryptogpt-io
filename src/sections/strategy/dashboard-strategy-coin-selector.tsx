@@ -60,11 +60,13 @@ const coinsData: CoinType[] = [
 interface DashboardStrategyCoinSelectorProps extends BoxProps {
     currency: CoinType,
     handleChange?: (v: CoinType) => void,
+    size?: "small" | "medium",
 }
 
 export default function DashboardStrategyCoinSelector({
     currency = { name: "BNB", symbol: "BNB" },
     handleChange,
+    size = "medium",
     sx,
     ...other }: DashboardStrategyCoinSelectorProps) {
     const coinListPopover = usePopover();
@@ -83,12 +85,12 @@ export default function DashboardStrategyCoinSelector({
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            p: 2,
+            p: size === "medium" ? 2 : 1,
             gap: 1,
             borderRadius: 1,
             border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
         }} onClick={coinListPopover.onOpen}>
-            <Typography>{currency.name}</Typography>
+            <Typography sx={{ width: '64px' }}>{currency.name}</Typography>
             <Iconify icon="mingcute:down-fill" />
         </ButtonBase>
 

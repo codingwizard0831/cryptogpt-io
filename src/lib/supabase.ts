@@ -1,8 +1,6 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-const supabaseServiceRoleKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY as string
+import { SUPABASE_API } from 'src/config-global';
 
-export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey)
-export const supabaseServiceRole: SupabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey)
+export const supabase: SupabaseClient = createClient(SUPABASE_API.url, SUPABASE_API.anonKey)
+export const supabaseServiceRole: SupabaseClient = createClient(SUPABASE_API.url, SUPABASE_API.serviceRoleKey)

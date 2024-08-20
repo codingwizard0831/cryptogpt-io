@@ -7,23 +7,34 @@ export interface CoinType {
 }
 
 interface StrategyState {
+    isShowSummary: boolean,
     step: string,
     coin1: CoinType,
     coin2: CoinType,
+    isPreview: boolean,
+    setIsPreview: (v: boolean) => void,
     setStep: (v: string) => void,
     setCoin1: (v: CoinType) => void,
     setCoin2: (v: CoinType) => void,
+    setIsShowSummary: (v: boolean) => void,
 }
 
 export const useStrategy = create<StrategyState>((set, get) => ({
-    step: '1.choose-pair',
+    isShowSummary: false,
+    step: '1.2.choose-pair',
     coin1: {
-        name: 'BNB',
-        symbol: 'BNB'
+        name: 'USDT',
+        symbol: 'Tether'
     },
     coin2: {
         name: 'Bitcoin',
         symbol: 'Bitcon'
+    },
+    isPreview: false,
+    setIsShowSummary: (v: boolean) => {
+        set(() => ({
+            isShowSummary: v,
+        }))
     },
     setStep: (step: string) => {
         set(() => ({
@@ -39,5 +50,10 @@ export const useStrategy = create<StrategyState>((set, get) => ({
         set(() => ({
             coin2,
         }));
+    },
+    setIsPreview: (v: boolean) => {
+        set(() => ({
+            isPreview: v,
+        }))
     },
 }))

@@ -16,6 +16,7 @@ function NavSectionMini({ data, slotProps, sx, ...other }: NavProps) {
       overflowX: 'hidden',
       overflowY: 'auto',
       scrollbarWidth: 'none',
+      pointerEvents: 'none',
       ...sx,
     }} {...other}>
       {data.map((group, index) => (

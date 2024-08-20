@@ -28,10 +28,15 @@ export const paths = {
     agents: `${ROOTS.DASHBOARD}/agents`,
     files: `${ROOTS.DASHBOARD}/files`,
     modelCreate: `${ROOTS.DASHBOARD}/model/create`,
+    modelUpdate: (id: string) => `${ROOTS.DASHBOARD}/model/update/${id}`,
     trading: `${ROOTS.DASHBOARD}/trading`,
     tracking: `${ROOTS.DASHBOARD}/tracking`,
-    strategy: `${ROOTS.DASHBOARD}/strategy`,
+    strategy: {
+      root: `${ROOTS.DASHBOARD}/strategy`,
+      beta: `${ROOTS.DASHBOARD}/strategy/beta`,
+    },
     profile: `${ROOTS.DASHBOARD}/profile`,
+    avatarCreate: `${ROOTS.DASHBOARD}/user/profile-voice-avatar`,
     deliver: {
       me: {
         root: `${ROOTS.DASHBOARD}/deliver/me/favorite`,
@@ -49,6 +54,8 @@ export const paths = {
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       profile: `${ROOTS.DASHBOARD}/user/profile`,
+      profileSetup: `${ROOTS.DASHBOARD}/user/profile-setup`,
+      profileSetupAvatar: `${ROOTS.DASHBOARD}/user/profile-setup-avatar`,
       account: `${ROOTS.DASHBOARD}/user/account`,
       billing: `${ROOTS.DASHBOARD}/user/billing`,
       connection: `${ROOTS.DASHBOARD}/user/connection`,

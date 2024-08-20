@@ -8,7 +8,7 @@ import { signMessageWithMetamask, connectWalletWithMetamask } from 'src/lib/meta
 
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
-import { getUserInfo, setUserInfo, isValidToken, getAccessToken, setAccessToken, setRefreshToken } from './utils';
+import { getUserInfo, setUserInfo, isValidToken, getAccessToken, setAccessToken, setRefreshToken, loadUserProfileData } from './utils';
 
 // ----------------------------------------------------------------------
 /**
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: Props) {
     const { access_token, refresh_token } = session;
 
     if (session) {
-      setAccessToken(access_token);
+      await setAccessToken(access_token);
       setRefreshToken(refresh_token);
     }
     if (user) {
@@ -213,7 +213,7 @@ export function AuthProvider({ children }: Props) {
     const { access_token, refresh_token } = session;
 
     if (session) {
-      setAccessToken(access_token);
+      await setAccessToken(access_token);
       setRefreshToken(refresh_token);
     }
     if (user) {
@@ -261,7 +261,7 @@ export function AuthProvider({ children }: Props) {
     } else {
       const { user, token } = data;
       if (token) {
-        setAccessToken(token);
+        await setAccessToken(token);
       }
       if (user) {
         console.log('user', user);
@@ -290,7 +290,7 @@ export function AuthProvider({ children }: Props) {
     } else {
       const { user, token } = responseData.data;
       if (token) {
-        setAccessToken(token);
+        await setAccessToken(token);
       }
       if (user) {
         console.log('user', user);
@@ -344,9 +344,13 @@ export function AuthProvider({ children }: Props) {
       await axios.post(endpoints.auth.logout, {});
       setAccessToken(null);
       setRefreshToken(null);
+      setUserInfo(null);
+      loadUserProfileData(false);
     } catch (error) {
       setAccessToken(null);
       setRefreshToken(null);
+      setUserInfo(null);
+      loadUserProfileData(false);
     }
     dispatch({
       type: Types.LOGOUT,

@@ -86,4 +86,19 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+  dashboard: {
+    'plan_usage': '/api/overview/plan_usage',
+    'media_storage': '/api/overview/media_storage',
+    'agents': '/api/overview/agents',
+    'models': '/api/overview/models',
+    'hugging_face': '/api/overview/hugging_face',
+    'stats': '/api/overview/stats',
+  },
+  profile: {
+    index: '/api/profile',
+    models: '/api/profile/image/models',
+    generateImage: '/api/profile/image/generate',
+    updateAvatar: '/api/profile/image',
+  }
 };
+

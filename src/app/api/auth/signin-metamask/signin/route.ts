@@ -32,7 +32,7 @@ export async function POST(req: Request) {
                     )
                 }
 
-                let finalAuthUser = null
+                let finalAuthUser: any = null
                 // 2. Select * from public.auth_users view where address matches
                 const { data: authUser, error: authUserError } = await supabase
                     .from('auth_users')

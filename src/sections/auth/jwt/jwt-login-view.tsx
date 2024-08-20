@@ -16,6 +16,7 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import axios, { endpoints } from 'src/utils/axios';
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
 import { supabase } from 'src/lib/supabase';
@@ -95,8 +96,21 @@ export default function JwtLoginView() {
     isSubmitting.onTrue();
     try {
       await loginWithEmailAndPassword(email, password);
+      try {
+        const response = await axios.get(endpoints.profile.index);
+        console.log('test', response.data)
+        console.log('test', !response.data?.length)
+        console.log('test', !response.data[0]?.terms)
+        if (!response.data?.length || !response.data[0]?.terms) {
+          router.push(paths.dashboard.user.profileSetup);
+        } else {
+          router.push(returnTo || paths.dashboard.root);
+        }
+      } catch (err) {
+        console.error('Error fetching user profile:', err);
+        setErrorMsg(`Error fetching user profile: ${err}`);
+      }
       isSubmitting.onFalse();
-      router.push(returnTo || paths.dashboard.root);
     } catch (error) {
       console.error(error);
       setErrorMsg(typeof error === 'string' ? error : error.message);
@@ -114,8 +128,18 @@ export default function JwtLoginView() {
       return true;
     } catch (error) {
       console.error(error);
-      setErrorMsg(typeof error === 'string' ? error : (error.message ? error.message : error.error));
-      enqueueSnackbar(typeof error === 'string' ? error : (error.message ? error.message : error.error), { variant: 'error' });
+
+      let errorMessage = 'An unknown error occurred';
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else if (error.error) {
+        errorMessage = error.error;
+      }
+
+      setErrorMsg(errorMessage);
+      enqueueSnackbar(errorMessage, { variant: 'error' });
       isSubmitting.onFalse();
       return false;
     }
@@ -131,8 +155,19 @@ export default function JwtLoginView() {
     } catch (error) {
       console.error(error);
       setCode('');
-      setErrorMsg(typeof error === 'string' ? error : (error.message ? error.message : error.error));
-      enqueueSnackbar(typeof error === 'string' ? error : (error.message ? error.message : error.error), { variant: 'error' });
+
+      let errorMessage = 'An unknown error occurred';
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else if (error.error) {
+        errorMessage = error.error;
+      }
+
+      setErrorMsg(errorMessage);
+      enqueueSnackbar(errorMessage, { variant: 'error' });
+    } finally {
       isSubmitting.onFalse();
     }
   }
@@ -162,28 +197,6 @@ export default function JwtLoginView() {
   const handleLoginWithTest = async () => {
     try {
       window.location.href = `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=${BINANCE_API.clientId}&redirect_uri=${PROJECT_URL}/auth/jwt/binance-oauth-callback&scope=user:openId`;
-      // window.location.href = `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=${BINANCE_API.clientId}&redirect_uri=${PROJECT_URL}&scope=user:openId`;
-      // open({ view: 'Connect' });
-      // return;
-      // const token = getAccessToken();
-      // const headers = {
-      //   global: {
-      //     headers: { Authorization: `Bearer ${token}` }
-      //   },
-      //   auth: { persistSession: false }
-      // }
-
-      // const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-      // const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
-      // const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, headers);
-      // console.log('supabaseWithAuth', supabaseWithAuth);
-      // const { data } = await supabaseWithAuth.auth.getUser()
-      // console.log('user: ', data);
-
-      // const { data: userData } = await supabaseWithAuth.from('users').select('*').eq('address', '0x0000001006').single()
-      // console.log('user: ', userData);
-      // const { data: authUsersData, error: authUsersError } = await supabaseWithAuth.from('auth.users').select('*')
-      // console.log('auth User: ', authUsersData, authUsersError);
     } catch (error) {
       console.error(error);
     }
@@ -191,10 +204,10 @@ export default function JwtLoginView() {
 
   const handleLoginWithGoogle = async () => {
     console.log('Login with Google');
-    const response = await supabase.auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback?`,
+        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
       },
     });
   }

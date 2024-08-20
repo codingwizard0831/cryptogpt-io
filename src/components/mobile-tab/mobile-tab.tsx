@@ -14,10 +14,10 @@ const MainWrapper = styled(Box)(({ theme }) => ({
     display: 'table',
 }));
 
-const ButtonsWrapper = styled(Box)(({ theme }) => ({
+const ButtonsWrapper = styled(Box)<{ size?: "small" | "medium" }>(({ theme, size = 'medium' }) => ({
     display: 'table-cell',
     verticalAlign: 'middle',
-    height: '59px',
+    height: size === 'medium' ? '59px' : '40px',
     // width: '330px',
     borderRadius: '7px',
     backgroundColor: 'black',
@@ -27,11 +27,11 @@ const ButtonsWrapper = styled(Box)(({ theme }) => ({
 
 const StyledIconButton = styled(IconButton, {
     shouldForwardProp: (prop) => prop !== 'isSelected',
-})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+})<{ isSelected: boolean, size?: "small" | "medium" }>(({ theme, isSelected, size = "medium" }) => ({
     position: 'relative',
     zIndex: isSelected ? 3 : 1,
     float: 'left',
-    padding: '15px 23px',
+    padding: size === "medium" ? '15px 23px' : '8px 16px',
     backgroundImage: isSelected
         ? 'linear-gradient(#202020, #151515)'
         : 'linear-gradient(#333, #222)',
@@ -98,12 +98,14 @@ interface MobileMenuTabProps extends BoxProps {
     data?: MenuButton[],
     value?: string,
     handleChange?: (v: string) => void,
+    size?: "small" | "medium",
 }
 
 const MobileMenuTab: React.FC<MobileMenuTabProps> = ({
     data = menuButtons,
     value = '1.choose-pair',
     handleChange,
+    size = "medium",
     sx,
     ...other
 }) => {
@@ -120,7 +122,7 @@ const MobileMenuTab: React.FC<MobileMenuTabProps> = ({
         <MainWrapper sx={{
             ...sx,
         }} {...other}>
-            <ButtonsWrapper>
+            <ButtonsWrapper size={size}>
                 {data.map((button) => (
                     <StyledIconButton
                         key={button.id}
@@ -128,6 +130,7 @@ const MobileMenuTab: React.FC<MobileMenuTabProps> = ({
                         onClick={() => handleButtonClick(button.id)}
                         aria-label={`Select ${button.id}`}
                         color="primary"
+                        size={size}
                     >
                         {button.icon}
                     </StyledIconButton>

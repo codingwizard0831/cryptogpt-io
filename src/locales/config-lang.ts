@@ -36,7 +36,7 @@ import {
 
 // PLEASE REMOVE `LOCAL STORAGE` WHEN YOU CHANGE SETTINGS.
 // ----------------------------------------------------------------------
-type LanguageCode = "ar" | "zh" | "ca_ES" | "en" | "fr" | "de" | "he_IL" | "id_ID" | "it" | "ja" | "ko" | "pl" | "pt" | "ru" | "es" | "sv" | "th" | "tr" | "vi" | "ms_MY" | "zh_TW";
+type LanguageCode = "ar" | "cn" | "zh" | "ca_ES" | "en" | "fr" | "de" | "he_IL" | "id_ID" | "it" | "ja" | "ko" | "pl" | "pt" | "ru" | "es" | "sv" | "th" | "tr" | "vi" | "ms_MY" | "zh_TW";
 
 type LangProps = {
   label: string;

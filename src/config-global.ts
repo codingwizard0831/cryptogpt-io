@@ -6,6 +6,8 @@ import { paths } from 'src/routes/paths';
 export const HOST_API = process.env.NEXT_PUBLIC_HOST_API;
 export const ASSETS_API = process.env.NEXT_PUBLIC_ASSETS_API;
 export const STRIPE_API_KEY = process.env.NEXT_PUBLIC_STRIPE_API_KEY || "";
+export const STABLE_DIFUSSION_API_KEY = process.env.NEXT_PUBLIC_STABLE_DIFUSSION_API_KEY || "";
+export const OPENAI_API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY || "";
 
 export const FIREBASE_API = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -29,9 +31,12 @@ export const AUTH0_API = {
   callbackUrl: process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
 };
 
+
 export const SUPABASE_API = {
-  url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  url: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+  serviceRoleKey: process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || "",
+  jwtSecret: process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET || "",
 };
 
 export const MAPBOX_API = process.env.NEXT_PUBLIC_MAPBOX_API;
@@ -39,11 +44,21 @@ export const MAPBOX_API = process.env.NEXT_PUBLIC_MAPBOX_API;
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
 
-export const PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL
+export const PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL;
+
+export const WEB3_WALLET_CONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WEB3_WALLET_CONNECT_PROJECT_ID;
 
 export const BINANCE_API = {
   clientId: process.env.NEXT_PUBLIC_BINANCE_CLIENT_ID,
   clientSecret: process.env.NEXT_PUBLIC_BINANCE_SECRET_KEY,
   apiKey: process.env.NEXT_PUBLIC_BINANCE_TEST_API_KEY,
   secretKey: process.env.NEXT_PUBLIC_BINANCE_TEST_SECRET_KEY,
-}
+};
+
+export const TAAPI_API_KEY = process.env.NEXT_PUBLIC_TAAPI_API_KEY;
+
+// STRIPE
+
+export const NEXT_PUBLIC_STRIPE_SECRET_API_KEY = process.env.NEXT_PUBLIC_STRIPE_SECRET_API_KEY || "";
+
+export const NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET = process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET || "";

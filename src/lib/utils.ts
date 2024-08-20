@@ -1,3 +1,5 @@
+import { SUPABASE_API } from "src/config-global";
+
 const jwt = require('jsonwebtoken');
 
 export async function fetcher<JSON = any>(
@@ -32,15 +34,15 @@ export function formatDate(input: string | number | Date): string {
 }
 
 export async function signToken(payload: any, options: any) {
-    const token = jwt.sign(payload, process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET, options)
+    const token = jwt.sign(payload, SUPABASE_API.jwtSecret, options)
     console.log('signToken: token', token);
     return token;
 }
 
 export async function verifyToken(token: string) {
     console.log('verifyToken: token', token);
-    console.log('verifyToken: JWT_SECRET', process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET);
-    return jwt.verify(token, process.env.NEXT_PUBLIC_SUPABASE_JWT_SECRET)
+    console.log('verifyToken: JWT_SECRET', SUPABASE_API.jwtSecret);
+    return jwt.verify(token, SUPABASE_API.jwtSecret)
 }
 
 export function jsonResponse(status: number, data: any, init?: ResponseInit) {
