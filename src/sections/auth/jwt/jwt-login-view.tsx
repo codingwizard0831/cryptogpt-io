@@ -197,28 +197,6 @@ export default function JwtLoginView() {
   const handleLoginWithTest = async () => {
     try {
       window.location.href = `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=${BINANCE_API.clientId}&redirect_uri=${PROJECT_URL}/auth/jwt/binance-oauth-callback&scope=user:openId`;
-      // window.location.href = `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=${BINANCE_API.clientId}&redirect_uri=${PROJECT_URL}&scope=user:openId`;
-      // open({ view: 'Connect' });
-      // return;
-      // const token = getAccessToken();
-      // const headers = {
-      //   global: {
-      //     headers: { Authorization: `Bearer ${token}` }
-      //   },
-      //   auth: { persistSession: false }
-      // }
-
-      // const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-      // const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
-      // const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, headers);
-      // console.log('supabaseWithAuth', supabaseWithAuth);
-      // const { data } = await supabaseWithAuth.auth.getUser()
-      // console.log('user: ', data);
-
-      // const { data: userData } = await supabaseWithAuth.from('users').select('*').eq('address', '0x0000001006').single()
-      // console.log('user: ', userData);
-      // const { data: authUsersData, error: authUsersError } = await supabaseWithAuth.from('auth.users').select('*')
-      // console.log('auth User: ', authUsersData, authUsersError);
     } catch (error) {
       console.error(error);
     }

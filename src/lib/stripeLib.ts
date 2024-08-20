@@ -1,14 +1,16 @@
 import Stripe from 'stripe';
 
-if (!process.env.NEXT_PUBLIC_STRIPE_SECRET_API_KEY) {
+import { NEXT_PUBLIC_STRIPE_SECRET_API_KEY, NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET } from 'src/config-global';
+
+if (!NEXT_PUBLIC_STRIPE_SECRET_API_KEY) {
   throw new Error('NEXT_PUBLIC_STRIPE_SECRET_API_KEY is not set in the environment variables');
 }
 
-if (!process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET) {
+if (!NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET) {
   throw new Error('NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET is not set in the environment variables');
 }
 
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_API_KEY, {
+const stripe = new Stripe(NEXT_PUBLIC_STRIPE_SECRET_API_KEY, {
   apiVersion: '2024-06-20'
 });
 
@@ -101,7 +103,7 @@ export async function retrievePaymentIntent(paymentIntentId: string): Promise<St
 export function constructWebhookEvent(payload:string, signature: any) {
   let event;
   try {
-    event = stripe.webhooks.constructEvent(payload, signature, (process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET || ""));
+    event = stripe.webhooks.constructEvent(payload, signature, (NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET || ""));
   } catch (err) {
     throw new Error(`Webhook Error: ${err.message}`);
   }
