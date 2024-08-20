@@ -21,6 +21,8 @@ import { MotionLazy } from 'src/components/animate/motion-lazy';
 import SnackbarProvider from 'src/components/snackbar/snackbar-provider';
 import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
 
+import ChatbotBubble from 'src/sections/chatbot/chatbot-bubble';
+
 // ----------------------------------------------------------------------
 
 export const viewport = {
@@ -75,6 +77,7 @@ export default function RootLayout({ children }: Props) {
                           <SettingsDrawer />
                           <ProgressBar />
                           {children}
+                          <ChatbotBubble />
                         </SnackbarProvider>
                       </MotionLazy>
                     </UserMembershipPlansProvider>

@@ -2,9 +2,10 @@ import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 
 import { supabase } from "src/lib/supabase";
+import { OPENAI_API_KEY } from "src/config-global";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: OPENAI_API_KEY,
 });
 
 async function processWithAI(message: string): Promise<string> {

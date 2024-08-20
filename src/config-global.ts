@@ -7,6 +7,7 @@ export const HOST_API = process.env.NEXT_PUBLIC_HOST_API;
 export const ASSETS_API = process.env.NEXT_PUBLIC_ASSETS_API;
 export const STRIPE_API_KEY = process.env.NEXT_PUBLIC_STRIPE_API_KEY || "";
 export const STABLE_DIFUSSION_API_KEY = process.env.NEXT_PUBLIC_STABLE_DIFUSSION_API_KEY || "";
+export const OPENAI_API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY || "";
 
 export const FIREBASE_API = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

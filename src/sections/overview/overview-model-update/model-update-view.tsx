@@ -1,5 +1,6 @@
 'use client';
 
+import { useParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
 import SearchIcon from '@mui/icons-material/Search';
@@ -34,28 +35,10 @@ interface Model {
   context_length: string;
 }
 
-const ModelFormView: React.FC = () => {
+const ModelUpdateView: React.FC = () => {
   const router = useRouter();
-
-
-  useEffect(() => {
-    const getModelsList = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${endpoints.dashboard.hugging_face}`);
-        const { data } = response
-
-        console.log(data)
-      } catch (err) {
-        console.log('Error Fetching Models: ', err);
-        setError("Failed to fetch Models");
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    getModelsList()
-  }, [])
+  const params = useParams();
+  const id = params?.id as string | undefined;
 
   const [model, setModel] = useState<Model>({
     model_name: '',
@@ -73,6 +56,25 @@ const ModelFormView: React.FC = () => {
     severity: 'success',
   });
 
+  useEffect(() => {
+    if (id) {
+      fetchModel(id as string);
+    }
+  }, [id]);
+
+  const fetchModel = async (modelId: string) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${endpoints.dashboard.models}/${modelId}`);
+      setModel(response.data);
+    } catch (err) {
+      console.error('Error fetching model:', err);
+      setError('Failed to fetch model details. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setModel(prevModel => ({ ...prevModel, [name]: value }));
@@ -82,19 +84,20 @@ const ModelFormView: React.FC = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      await axios.post(endpoints.dashboard.models, model);
-      setSnackbar({ open: true, message: 'Model created successfully', severity: 'success' });
-      router.push(paths.dashboard.models);
+      if (id) {
+        await axios.put(`${endpoints.dashboard.models}/${id}`, model);
+        setSnackbar({ open: true, message: 'Model updated successfully', severity: 'success' });
+        router.push(paths.dashboard.models);
+      }
     } catch (err) {
       console.error('Error saving model:', err);
-      setError(err)
       setSnackbar({ open: true, message: 'Failed to save model', severity: 'error' });
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
+  if (loading && id) {
     return (
       <Card sx={{ color: 'text.primary', p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
         <CircularProgress />
@@ -113,7 +116,7 @@ const ModelFormView: React.FC = () => {
   return (
     <Card sx={{ color: 'text.primary', p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5">Deploy a new Model</Typography>
+        <Typography variant="h5">Edit Model</Typography>
         <Box>
           <Button
             variant="contained"
@@ -122,7 +125,7 @@ const ModelFormView: React.FC = () => {
             onClick={handleSubmit}
             disabled={loading}
           >
-            Deploy
+            Save
           </Button>
           <Button
             variant="outlined"
@@ -273,4 +276,4 @@ const ModelFormView: React.FC = () => {
   );
 };
 
-export default ModelFormView;
+export default ModelUpdateView;

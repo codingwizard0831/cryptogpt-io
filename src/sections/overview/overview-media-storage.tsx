@@ -1,22 +1,26 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+
 import {
+    Box,
+    Card,
     Table,
+    alpha,
+    Button,
+    TableRow,
     TableBody,
     TableCell,
     TableHead,
-    TableRow,
     Typography,
-    Box,
-    Button,
-    Card,
-    alpha,
     CircularProgress
 } from '@mui/material';
-import { useRouter } from 'src/routes/hooks';
+
 import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
 import axios, { endpoints } from 'src/utils/axios';
+
 import { useAuthContext } from 'src/auth/hooks';
 
 interface MediaSummaryItem {
@@ -139,7 +143,7 @@ const formatSize = (bytes: number) => {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
 };
 
 export default OverviewMediaStorage;
