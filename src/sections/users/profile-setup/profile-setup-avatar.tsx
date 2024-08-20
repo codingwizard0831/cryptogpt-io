@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Grid, Modal, Stack, TextField, Typography, Autocomplete } from '@mui/material';
+import { Box, Card, Grid, Modal, Stack, TextField, Typography, Autocomplete, Skeleton } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -13,6 +13,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { fData } from 'src/utils/format-number';
 import axios, { endpoints } from 'src/utils/axios';
+
+import { loadUserProfileData } from 'src/auth/context/jwt/utils';
 
 import { useSnackbar } from 'src/components/snackbar';
 import UploadAvatar from 'src/components/upload/upload-avatar';
@@ -41,6 +43,7 @@ export default function ProfileSetupAvatar() {
   const [errorList, setErrorList] = useState<ErrorList>({});
   const [models, setModels] = useState<any>([]);
   const [avatars, setAvatars] = useState<any>([]);
+  const [loadedImages, setLoadedImages] = useState<boolean[]>(new Array(avatars?.length).fill(false));
   const [selectedAvatar, setSelectedAvatar] = useState<number | null>(null);
   const [data, setData] = useState<ProfileData>({
     size: "256x256",
@@ -48,6 +51,30 @@ export default function ProfileSetupAvatar() {
     avatar: null,
     idealDescription: "",
   });
+
+  const handleImageLoad = (index: number) => {
+    setLoadedImages(prev => {
+      const newLoadedImages = [...prev];
+      newLoadedImages[index] = true;
+      console.log('newLoadedImages', newLoadedImages)
+      return newLoadedImages;
+    });
+  };
+
+  const handleImageError = (index: number) => {
+    setLoadedImages(prev => {
+      const newLoadedImages = [...prev];
+      newLoadedImages[index] = false;
+      console.log('newLoadedImages', newLoadedImages)
+      return newLoadedImages;
+    });
+  };
+
+  useEffect(() => {
+    setLoadedImages(new Array(avatars?.length).fill(null));
+  }, [avatars]);
+
+  console.log('loadedImages', loadedImages)
 
   useEffect(() => {
     const fetchModels = async () => {
@@ -155,8 +182,9 @@ export default function ProfileSetupAvatar() {
       const response = await axios.put(endpoints.profile.updateAvatar, { imageUrl: avatars[selectedAvatar] });
       console.log('response', response)
       if (response.data.success) {
+        await loadUserProfileData();
         enqueueSnackbar('Update your avatar successfully!', { variant: 'success' });
-        router.push(paths.dashboard.root);
+        router.replace(paths.dashboard.root);
       } else {
         throw new Error(response.data.error || 'Failed to update your avatar');
       }
@@ -207,14 +235,68 @@ export default function ProfileSetupAvatar() {
                         border: selectedAvatar === index ? '4px solid #1976d2' : 'none',
                         borderRadius: '12px',
                         padding: '4px',
+                        position: 'relative',
+                        width: 150,
+                        height: 150,
+                        overflow: 'hidden',
                       }}
                     >
+                      {loadedImages[index] === null && (
+                        <Skeleton
+                          variant="rectangular"
+                          width={150}
+                          height={150}
+                          animation="wave"
+                          sx={{
+                            borderRadius: '8px',
+                            bgcolor: 'grey.800',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            zIndex: 1
+                          }}
+                        />
+                      )}
+                      {loadedImages[index] === false && (
+                        <Box
+                          sx={{
+                            width: 150,
+                            height: 150,
+                            borderRadius: '8px',
+                            bgcolor: 'grey.800',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            zIndex: 1
+                          }}
+                        >
+                          <Typography variant="caption">Failed to load</Typography>
+                        </Box>
+                      )}
                       <Image
-                        src={`${avatar}`}
+                        src={avatar}
                         alt={`Generated avatar ${index + 1}`}
-                        width={250}
-                        height={250}
-                        style={{ borderRadius: '8px' }}
+                        width={150}
+                        height={150}
+                        style={{
+                          borderRadius: '8px',
+                          opacity: loadedImages[index] === true ? 1 : 0,
+                          transition: 'opacity 0.3s ease',
+                        }}
+                        loading="lazy"
+                        onLoadingComplete={(result) => {
+                          console.log('Image loaded:', result.naturalWidth, result.naturalHeight);
+                          if (result.naturalWidth === 0) {
+                            console.log('Image failed to load');
+                            handleImageError(index);
+                          } else {
+                            console.log('Image loaded successfully');
+                            handleImageLoad(index);
+                          }
+                        }}
                       />
                     </Box>
                   </Grid>

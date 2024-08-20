@@ -4,7 +4,7 @@ import React from 'react';
 
 import { GuestGuard } from 'src/auth/guard';
 import { supabase } from "src/lib/supabase";
-import { setUserInfo, setAccessToken, setRefreshToken } from 'src/auth/context/jwt/utils';
+import { setUserInfo, setAccessToken, setRefreshToken, getUserProfileInfo } from 'src/auth/context/jwt/utils';
 
 export default function OAuthPage() {
   // React.useEffect(() => {
@@ -24,13 +24,8 @@ export default function OAuthPage() {
         const accessToken = searchParams.get('access_token');
         const refreshToken = searchParams.get('refresh_token');
 
-        if (!accessToken) {
-          window.location.href = `${window.location.origin}/auth/jwt/supabase-oauth-callback`;
-          return;
-        }
-
         const { error } = await supabase.auth.setSession({
-          access_token: accessToken,
+          access_token: accessToken || '',
           refresh_token: refreshToken || '',
         });
 
@@ -40,10 +35,16 @@ export default function OAuthPage() {
 
         if (user) {
           console.log('User authenticated:', user);
-          setAccessToken(accessToken);
+          await setAccessToken(accessToken);
           setUserInfo(user);
           if (refreshToken) setRefreshToken(refreshToken);
-          window.location.href = `${window.location.origin}/dashboard`;
+          const user_profile = getUserProfileInfo();
+          console.log('user_profile-oauth', user_profile)
+          if (user_profile?.terms) {
+            window.location.href = `${window.location.origin}/dashboard`;
+          } else {
+            window.location.href = `${window.location.origin}/dashboard/user/profile-setup`;
+          }
         } else {
           throw new Error('User is null after authentication');
         }

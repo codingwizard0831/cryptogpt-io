@@ -13,6 +13,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
 
 import { varHover } from 'src/components/animate';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -36,6 +37,8 @@ export default function AccountPopover() {
   const router = useRouter();
 
   const { logout, user } = useAuthContext();
+
+  const user_profile = getUserProfileInfo();
 
   const popover = usePopover();
 
@@ -73,22 +76,22 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={user?.photoURL}
-          alt={user?.username}
+          src={user_profile?.avatar}
+          alt={user_profile?.user_name}
           sx={{
             width: 36,
             height: 36,
             border: (theme: any) => `solid 2px ${alpha(theme.palette.background.opposite, 0.2)}`,
           }}
         >
-          {user?.username?.charAt(0).toUpperCase()}
+          {user_profile?.user_name?.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user?.username}
+            {user_profile?.user_name}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
