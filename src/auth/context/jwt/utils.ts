@@ -1,6 +1,6 @@
 import { paths } from 'src/routes/paths';
 
-import axios from 'src/utils/axios';
+import axios, { endpoints } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -55,12 +55,27 @@ export const tokenExpired = (exp: number) => {
 
 // ----------------------------------------------------------------------
 
-export const setAccessToken = (accessToken: string | null) => {
+export const loadUserProfileData = async (flag: boolean = true) => {
+  if (flag) {
+    const response = await axios.get(endpoints.profile.index);
+    if (response.data?.length) {
+      sessionStorage.setItem('userProfile', JSON.stringify(response.data[0]));
+    } else {
+      sessionStorage.setItem('userProfile', JSON.stringify({}));
+    }
+  } else {
+    sessionStorage.setItem('userProfile', JSON.stringify({}));
+  }
+};
+
+export const setAccessToken = async (accessToken: string | null) => {
   if (accessToken) {
     sessionStorage.setItem('access_token', accessToken);
 
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     axios.defaults.headers.common['Content-Type'] = `application/json`;
+
+    await loadUserProfileData();
 
     // This function below will handle when token is expired
     const { exp } = jwtDecode(accessToken); // ~3 days by minimals server
@@ -96,5 +111,11 @@ export const setUserInfo = (user: any) => {
 export const getUserInfo = () => {
   const userInfoByString = sessionStorage.getItem('user');
   if (userInfoByString) return JSON.parse(userInfoByString);
+  return {};
+}
+
+export const getUserProfileInfo = () => {
+  const userProfileInfoByString = sessionStorage.getItem('userProfile');
+  if (userProfileInfoByString) return JSON.parse(userProfileInfoByString);
   return {};
 }

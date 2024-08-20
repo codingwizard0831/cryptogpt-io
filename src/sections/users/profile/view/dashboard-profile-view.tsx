@@ -9,6 +9,7 @@ import Tabs, { tabsClasses } from '@mui/material/Tabs';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
 import { _userAbout, _userFeeds, _userFriends, _userFollowers } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
@@ -78,6 +79,8 @@ export default function DashboardProfileView() {
 
     const { user } = useAuthContext();
 
+    const user_profile = getUserProfileInfo();
+
     const [searchFriends, setSearchFriends] = useState('');
 
     const [currentTab, setCurrentTab] = useState('profile');
@@ -121,8 +124,8 @@ export default function DashboardProfileView() {
                 >
                     <ProfileCover
                         role={_userAbout.role}
-                        name={user?.displayName}
-                        avatarUrl={user?.photoURL}
+                        name={user_profile?.user_name}
+                        avatarUrl={user_profile?.avatar}
                         coverUrl={_userAbout.coverUrl}
                     />
 

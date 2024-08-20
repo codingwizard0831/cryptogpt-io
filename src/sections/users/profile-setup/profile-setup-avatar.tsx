@@ -14,6 +14,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { fData } from 'src/utils/format-number';
 import axios, { endpoints } from 'src/utils/axios';
 
+import { loadUserProfileData } from 'src/auth/context/jwt/utils';
+
 import { useSnackbar } from 'src/components/snackbar';
 import UploadAvatar from 'src/components/upload/upload-avatar';
 
@@ -180,8 +182,9 @@ export default function ProfileSetupAvatar() {
       const response = await axios.put(endpoints.profile.updateAvatar, { imageUrl: avatars[selectedAvatar] });
       console.log('response', response)
       if (response.data.success) {
+        await loadUserProfileData();
         enqueueSnackbar('Update your avatar successfully!', { variant: 'success' });
-        router.push(paths.dashboard.root);
+        router.replace(paths.dashboard.root);
       } else {
         throw new Error(response.data.error || 'Failed to update your avatar');
       }
