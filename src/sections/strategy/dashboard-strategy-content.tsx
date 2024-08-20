@@ -2,8 +2,14 @@
 
 import { useState, useEffect } from 'react';
 
+import Timeline from '@mui/lab/Timeline';
+import TimelineDot from '@mui/lab/TimelineDot';
+import TimelineContent from '@mui/lab/TimelineContent';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, alpha, Stack, styled, Button, BoxProps, IconButton } from '@mui/material';
+import { Box, alpha, Stack, styled, Button, BoxProps, IconButton, Typography } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -58,6 +64,8 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
     const isMultipleLines = useBoolean();
     const smUp = useResponsive("up", 'sm');
     const isPreview = useBoolean(false);
+    const isShowSummary = useStrategy((state) => state.isShowSummary);
+    const setIsShowSummary = useStrategy((state) => state.setIsShowSummary);
 
     useEffect(() => {
         if (text.split('\n').length > 2) {
@@ -84,7 +92,12 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
                 (isPreview.value && !smUp) && {
                     display: 'none',
                 }
-            )
+            ),
+            ...(
+                (isShowSummary && !smUp) && {
+                    display: 'none',
+                }
+            ),
         }}>
             {
                 !smUp &&
@@ -203,7 +216,12 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
                 (!isPreview.value && !smUp) && {
                     display: 'none',
                 }
-            )
+            ),
+            ...(
+                (isShowSummary && !smUp) && {
+                    display: 'none',
+                }
+            ),
         }}>
             <Box sx={{
                 display: 'flex',
@@ -245,6 +263,74 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
                     <DashboardStrategyStep4 />
                 }
             </Box>
+        </Box>
+
+        <Box
+            sx={{
+                width: isShowSummary ? 1 : 0,
+                height: '100%',
+                backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
+                transition: 'all 0.3s',
+                overflowX: 'hidden',
+                overflowY: 'auto',
+                ...(
+                    (!isShowSummary && !smUp) && {
+                        display: 'none',
+                    }
+                ),
+            }}
+        >
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+            }}>
+                <IconButton sx={{
+                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+                }}>
+                    <Iconify icon="material-symbols:close" sx={{
+                        color: 'primary.main',
+                    }} onClick={() => setIsShowSummary(false)} />
+                </IconButton>
+            </Box>
+            <Timeline
+                sx={{
+                    [`& .${timelineItemClasses.root}:before`]: {
+                        flex: 0,
+                        padding: 0,
+                    },
+                }}
+            >
+                {
+                    [1, 2, 3].map((item, index) => (
+                        <TimelineItem key={index}>
+                            <TimelineSeparator>
+                                <TimelineDot />
+                                <TimelineConnector />
+                            </TimelineSeparator>
+                            <TimelineContent sx={{
+                                width: "100%",
+                            }}>
+                                <Stack direction="column" spacing={1}>
+                                    <Typography variant="body2" sx={{
+                                        color: "text.secondary",
+                                    }} >Step {item}</Typography>
+                                    <Typography variant={smUp ? "h6" : 'subtitle1'} sx={{
+                                        zIndex: 1,
+                                    }}>item.title</Typography>
+                                    <Box sx={{
+                                        color: "text.secondary",
+                                        fontSize: '14px',
+                                        overflow: "hidden",
+                                        display: "-webkit-box",
+                                        WebkitBoxOrient: "vertical",
+                                        WebkitLineClamp: 3,
+                                    }}>item.content</Box>
+                                </Stack>
+                            </TimelineContent>
+                        </TimelineItem>
+                    ))
+                }
+            </Timeline>
         </Box>
     </Box>
 }
