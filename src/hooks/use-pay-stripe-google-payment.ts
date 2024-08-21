@@ -17,7 +17,7 @@ export default function usePayStripeGooglePayment(getPaymentIntent: any, confirm
     const confirmPaymentMethodRef = useRef(confirmPaymentMethod);
     confirmPaymentMethodRef.current = confirmPaymentMethod;
 
-    const [paymentRequest, _SetPaymentRequest] = useState(null);
+    const [paymentRequest, _SetPaymentRequest] = useState<any>(null);
     const [email, setEmail] = useState("");
     const paymentRequestRef = useRef<any>(paymentRequest);
     const setPaymentRequest = useCallback((value: any) => {
@@ -53,7 +53,7 @@ export default function usePayStripeGooglePayment(getPaymentIntent: any, confirm
     const _ConfirmPaymentMethodRef = useRef(_ConfirmPaymentMethod);
     _ConfirmPaymentMethodRef.current = _ConfirmPaymentMethod;
 
-    const _OnPaymentMethod = useCallback(async (e) => {
+    const _OnPaymentMethod = useCallback(async (e: any) => {
         const paymentIntent = await getPaymentIntentRef.current();
         if (!paymentIntent) {
             e.complete("fail");
@@ -127,7 +127,7 @@ export default function usePayStripeGooglePayment(getPaymentIntent: any, confirm
             return paymentRequestRef.current;
         }
         // Check the availability of the Payment Request API.
-        pr.on('paymentmethod', (e) => {
+        pr.on('paymentmethod', (e: any) => {
             const { payerEmail } = e;
             setEmail(payerEmail);
             _OnPaymentMethodRef.current(e);
