@@ -140,7 +140,7 @@ export default function ProfileVoiceView() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const [selectedTab, setSelectedTab] = useState(4);
+    const [selectedTab, setSelectedTab] = useState(0);
     const [selectedLanguage, setSelectedLanguage] = useState('Sonic English');
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [uploadedAudioFile, setUploadedAudioFile] = useState<File | null>(null);
