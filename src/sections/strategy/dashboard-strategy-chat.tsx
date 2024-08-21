@@ -11,6 +11,7 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify/iconify';
+import Carousel, { useCarousel } from 'src/components/carousel';
 
 interface DataPoint {
     date: string;
@@ -42,7 +43,9 @@ export default function DashboardStrategyChat() {
     const isPreview = useStrategy((state) => state.isPreview);
     const setIsPreview = useStrategy((state) => state.setIsPreview);
     const isShowSummary = useStrategy((state) => state.isShowSummary);
-    const isChatHistory = useBoolean();
+    const isSettingDetail = useBoolean(true);
+    const isChatHistory = useBoolean(false);
+    const carousel = useCarousel();
 
     useEffect(() => {
         if (text.split('\n').length > 2) {
@@ -75,7 +78,7 @@ export default function DashboardStrategyChat() {
                 position: 'absolute',
                 left: '8px',
                 top: '8px',
-                zIndex: 1,
+                zIndex: 11,
             }}
                 onClick={() => setIsPreview(!isPreview)}
             >Preview</Button>
@@ -100,15 +103,23 @@ export default function DashboardStrategyChat() {
                     gap: 1,
                     p: 1,
                     zIndex: 10,
-                    backdropFilter: 'blur(10px)',
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}>
                     <Box sx={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'flex-end',
                         gap: 1,
-                        mb: 1,
                     }}>
+                        <IconButton size="small" sx={{
+                            transition: 'all 0.3s',
+                            transform: isSettingDetail.value ? 'rotate(180deg)' : 'rotate(0deg)',
+                        }} onClick={() => isSettingDetail.onToggle()}>
+                            <Iconify icon="subway:down-2" sx={{
+                                color: 'primary.main',
+                            }} />
+                        </IconButton>
                         <IconButton size="small" sx={{
                         }} onClick={() => isChatHistory.onToggle()}>
                             <Iconify icon="material-symbols-light:view-list" sx={{
@@ -121,13 +132,162 @@ export default function DashboardStrategyChat() {
                                 color: 'primary.main',
                             }} />
                         </IconButton>
-                        <IconButton size="small" sx={{
-                            // backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+                    </Box>
+
+                    <Box sx={{
+                        position: 'relative',
+                        width: '100%',
+                        height: isSettingDetail.value ? '596px' : '0px',
+                        overflow: 'hidden',
+                        transition: 'all 0.3s',
+                    }}>
+                        <Box sx={{
+                            width: '100%',
+                            position: 'absolute',
+                            top: 0,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1,
+                            p: 1,
                         }}>
-                            <Iconify icon="lets-icons:setting-fill" sx={{
-                                color: 'primary.main',
-                            }} />
-                        </IconButton>
+                            <Typography variant="subtitle2" sx={{ color: 'primary.main', textAlign: 'center', fontWeight: '800' }}>CRYPTO TRADING ASSISTANT</Typography>
+
+                            <Box sx={{
+                                aspectRatio: '16 / 9',
+                            }}>
+                                <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
+                                    <Box sx={{
+                                        width: '100%',
+                                        height: '100%',
+                                    }}>
+                                        <video src="/videos/nicolas-model.mp4" autoPlay loop muted playsInline style={{
+                                            width: '100%',
+                                            height: '100%',
+                                        }} />
+                                    </Box>
+                                    {
+                                        modelData.map((item, index) => (
+                                            <Box key={index} sx={{
+                                                width: '100%',
+                                                height: '100%',
+                                            }}>
+                                                <Box sx={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    backgroundColor: `${item.color}.main`,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                    <Image src={item.avatar} sx={{
+                                                        width: '100px',
+                                                        height: '100px',
+                                                        objectFit: 'cover',
+                                                        borderRadius: '50%',
+                                                    }} />
+                                                </Box>
+                                            </Box>
+                                        ))
+                                    }
+                                </Carousel>
+                            </Box>
+
+                            <Box sx={{
+                                width: '100%',
+                                height: '240px',
+                                p: 1,
+                                borderRadius: 1,
+                                border: theme => `1px solid ${theme.palette.primary.main}`,
+                            }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={data}>
+                                        <XAxis
+                                            dataKey="date"
+                                            stroke="#ddd"
+                                            tick={{ fill: '#ddd' }}
+                                        />
+                                        <YAxis
+                                            stroke="#ddd"
+                                            tick={{ fill: '#ddd' }}
+                                            domain={[0, 32000]}
+                                            ticks={[0, 7500, 15000, 22500, 30000]}
+                                        />
+                                        <Tooltip
+                                            content={({ active, payload, label }) => {
+                                                if (active && payload && payload.length) {
+                                                    const data = payload[0].payload;
+                                                    const changePercent = data.change !== 0 ? (data.change / (data.price - data.change) * 100).toFixed(2) : 0;
+                                                    return (
+                                                        <Box sx={{
+                                                            p: 1,
+                                                            borderRadius: 1,
+                                                            backgroundColor: '#100e0d',
+                                                        }}>
+                                                            <Typography sx={{ color: 'primary.main' }}>{`Time: ${label}`}</Typography>
+                                                            <Typography sx={{ color: 'primary.main' }}>{`Price: ${data.price.toFixed(2)}`}</Typography>
+                                                            <Typography sx={{ color: data.change > 0 ? "success.main" : "error.main" }}>{`Change: ${data.change >= 0 ? '+' : ''}${data.change.toFixed(2)} (${changePercent}%)`}</Typography>
+                                                            {
+                                                                data.action &&
+                                                                <Typography sx={{ color: data.action === 'Buy' ? "success.main" : "error.main" }}>{`Action: ${data.action}`}</Typography>
+                                                            }
+                                                        </Box>
+                                                    );
+                                                }
+                                                return null;
+                                            }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="price"
+                                            stroke="#ffd700"
+                                            strokeWidth={2}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="change"
+                                            stroke="#00d700"
+                                            strokeWidth={2}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </Box>
+
+                            <Box sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: 1,
+                                my: 1,
+                            }}>
+                                {
+                                    modelData.map((item, index) => (
+                                        <Box sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: 1,
+                                            alignItems: 'center',
+                                            width: '56px',
+                                        }} key={index}>
+                                            <Image src={item.avatar} sx={{
+                                                width: '32px',
+                                                minWidth: '32px',
+                                                height: '32px',
+                                                borderRadius: '50%',
+                                            }} />
+                                            <Typography variant="caption" sx={{
+                                                color: `${item.color}.main`,
+                                                textAlign: 'center',
+                                                fontSize: '8px',
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                width: '100%',
+                                            }}>{item.name}</Typography>
+                                        </Box>
+                                    ))
+                                }
+                            </Box>
+                        </Box>
                     </Box>
 
                     <Box sx={{
@@ -135,73 +295,21 @@ export default function DashboardStrategyChat() {
                         justifyContent: 'center',
                         alignItems: 'center',
                         gap: 1,
+                        my: 1,
                     }}>
-                        <Chip label="ETH/USDT" />
-                        <Chip label="BTC/USDT" />
-                        <Chip label="ADA/USDT" />
-                        <Chip label="XRP/USDT" />
+                        <Chip size="small" label="ETH/USDT" sx={{
+                            borderRadius: '16px',
+                        }} />
+                        <Chip size="small" label="BTC/USDT" sx={{
+                            borderRadius: '16px',
+                        }} />
+                        <Chip size="small" label="ADA/USDT" sx={{
+                            borderRadius: '16px',
+                        }} />
+                        <Chip size="small" label="XRP/USDT" sx={{
+                            borderRadius: '16px',
+                        }} />
                     </Box>
-                </Box>
-
-                <Box sx={{
-                    width: '100%',
-                    minHeight: '320px',
-                    aspectRatio: '4 / 3',
-                    p: 1,
-                    borderRadius: 1,
-                    border: theme => `1px solid ${theme.palette.primary.main}`,
-                }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={data}>
-                            <XAxis
-                                dataKey="date"
-                                stroke="#ddd"
-                                tick={{ fill: '#ddd' }}
-                            />
-                            <YAxis
-                                stroke="#ddd"
-                                tick={{ fill: '#ddd' }}
-                                domain={[0, 32000]}
-                                ticks={[0, 7500, 15000, 22500, 30000]}
-                            />
-                            <Tooltip
-                                content={({ active, payload, label }) => {
-                                    if (active && payload && payload.length) {
-                                        const data = payload[0].payload;
-                                        const changePercent = data.change !== 0 ? (data.change / (data.price - data.change) * 100).toFixed(2) : 0;
-                                        return (
-                                            <Box sx={{
-                                                p: 1,
-                                                borderRadius: 1,
-                                                backgroundColor: '#100e0d',
-                                            }}>
-                                                <Typography sx={{ color: 'primary.main' }}>{`Time: ${label}`}</Typography>
-                                                <Typography sx={{ color: 'primary.main' }}>{`Price: ${data.price.toFixed(2)}`}</Typography>
-                                                <Typography sx={{ color: data.change > 0 ? "success.main" : "error.main" }}>{`Change: ${data.change >= 0 ? '+' : ''}${data.change.toFixed(2)} (${changePercent}%)`}</Typography>
-                                                {
-                                                    data.action &&
-                                                    <Typography sx={{ color: data.action === 'Buy' ? "success.main" : "error.main" }}>{`Action: ${data.action}`}</Typography>
-                                                }
-                                            </Box>
-                                        );
-                                    }
-                                    return null;
-                                }}
-                            />
-                            <Line
-                                type="monotone"
-                                dataKey="price"
-                                stroke="#ffd700"
-                                strokeWidth={6}
-                            />
-                            <Line
-                                type="monotone"
-                                dataKey="change"
-                                stroke="#00d700"
-                                strokeWidth={6}
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
                 </Box>
 
                 {
@@ -230,6 +338,7 @@ export default function DashboardStrategyChat() {
                                     width: '32px',
                                     minWidth: '32px',
                                     height: '32px',
+                                    borderRadius: '50%',
                                 }} />
                                 <Box sx={{
                                     display: 'flex',
@@ -351,6 +460,7 @@ export default function DashboardStrategyChat() {
                                     width: '32px',
                                     minWidth: '32px',
                                     height: '32px',
+                                    borderRadius: '50%',
                                 }} />
                             </Box>
                         </Box>
@@ -457,6 +567,7 @@ export default function DashboardStrategyChat() {
                 </Box>
             </Box>
         </Box>
+
         <Box sx={{
             width: '100%',
             height: '100%',
@@ -510,3 +621,26 @@ const data: DataPoint[] = [
     { date: '2023-07', price: 19500, change: 0.0 },
     { date: '2023-08', price: 16500, change: -0.1, action: 'Sell' },
 ];
+
+const modelData = [
+    {
+        avatar: '/images/Goldie.png',
+        name: 'Goldie',
+        color: 'primary',
+    },
+    {
+        avatar: '/images/Nanami.jpg',
+        name: 'Crypto Sage',
+        color: 'success',
+    },
+    {
+        avatar: '/images/Naoki.jpg',
+        name: 'Market Maven',
+        color: 'info',
+    },
+    {
+        avatar: '/images/Nicolas.png',
+        name: 'Risk Ranger',
+        color: 'error',
+    },
+]
