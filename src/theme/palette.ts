@@ -53,6 +53,19 @@ export const grey = {
   900: '#161C24',
 };
 
+export const brown = {
+  50: '#e0cfc7',
+  100: '#c1a798',
+  200: '#a27f69',
+  300: '#83573a',
+  400: '#64301b',
+  500: '#4b2414',
+  600: '#3a1c10',
+  700: '#2a140c',
+  800: '#1a0c08',
+  900: '#100e0d', // Dark brown
+};
+
 export const primary = {
   lighter: '#C8FAD6',
   light: '#5BE49B',
@@ -184,8 +197,8 @@ export function palette(mode: 'light' | 'dark') {
       disabled: grey[600],
     },
     background: {
-      paper: grey[800],
-      default: grey[900],
+      paper: brown[800],
+      default: brown[900],
       neutral: alpha(grey[500], 0.12),
       opposite: grey[100],
     },

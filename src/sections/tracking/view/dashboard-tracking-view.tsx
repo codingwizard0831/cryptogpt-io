@@ -73,7 +73,6 @@ export default function DashboardTrackingView() {
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
             gap: 2,
             pb: 2,
             overflowX: 'hidden',
