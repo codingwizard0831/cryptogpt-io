@@ -155,11 +155,11 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
   }, [amount, confirmCardPayment]);
 
   const [paymentRequestGoogle, emailGoogle, { createPaymentRequest: createPaymentRequestGoogle }] = usePayStripeGooglePayment(
-    async () => {
+    async (value: string) => {
       const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
         {
           "amount": amount,
-          "recovery_email": emailGoogle
+          "recovery_email": value
         }
       );
 
@@ -339,7 +339,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
       </Stack>
 
       <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3, paddingTop: 0 }}>
-        {paymentRequestGoogle && <ApplePayButton
+        {paymentRequestApple && <ApplePayButton
           variant="contained"
           startIcon={<ApplePayIcon />}
           disabled={!amount}

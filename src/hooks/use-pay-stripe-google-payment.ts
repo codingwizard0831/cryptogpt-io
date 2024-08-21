@@ -53,8 +53,8 @@ export default function usePayStripeGooglePayment(getPaymentIntent: any, confirm
     const _ConfirmPaymentMethodRef = useRef(_ConfirmPaymentMethod);
     _ConfirmPaymentMethodRef.current = _ConfirmPaymentMethod;
 
-    const _OnPaymentMethod = useCallback(async (e: any) => {
-        const paymentIntent = await getPaymentIntentRef.current();
+    const _OnPaymentMethod = useCallback(async (e: any, payerEmail: string) => {
+        const paymentIntent = await getPaymentIntentRef.current(payerEmail);
         if (!paymentIntent) {
             e.complete("fail");
             return;
@@ -130,7 +130,7 @@ export default function usePayStripeGooglePayment(getPaymentIntent: any, confirm
         pr.on('paymentmethod', (e: any) => {
             const { payerEmail } = e;
             setEmail(payerEmail);
-            _OnPaymentMethodRef.current(e);
+            _OnPaymentMethodRef.current(e, payerEmail);
         });
         const result = await pr.canMakePayment();
         console.log("Google Pay availability: ", result);
