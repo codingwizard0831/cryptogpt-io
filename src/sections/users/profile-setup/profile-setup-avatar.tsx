@@ -224,7 +224,7 @@ export default function ProfileSetupAvatar() {
                 borderRadius: 2,
               }}
             >
-              <Typography variant="h4" align="center" gutterBottom>
+              <Typography variant="h4" align="center" gutterBottom sx={{ color: theme => theme.palette.primary.main }}>
                 Choose your avatar from these AI images
               </Typography>
 
@@ -356,21 +356,26 @@ export default function ProfileSetupAvatar() {
                   bgcolor: 'background.paper',
                   boxShadow: 24,
                   p: 2,
-                  maxWidth: 700,
+                  maxWidth: 680,
                   minWidth: 360,
-                  maxHeight: 700,
+                  maxHeight: 730,
                   borderRadius: 2,
                 }}>
                   {enlargedImage && (
-                    <Image
-                      src={enlargedImage}
-                      alt="Enlarged avatar"
-                      layout="responsive"
-                      width={500}
-                      height={500}
-                      objectFit="contain"
-                      style={{ borderRadius: '8px'}}
-                    />
+                    <>
+                      <Image
+                        src={enlargedImage}
+                        alt="Enlarged avatar"
+                        layout="responsive"
+                        width={500}
+                        height={500}
+                        objectFit="contain"
+                        style={{ borderRadius: '8px' }}
+                      />
+                      <Typography variant="h6" align="center" sx={{ mb: 0, mt: 1, color: theme => theme.palette.primary.main }}>
+                        {data.idealDescription}
+                      </Typography>
+                    </>
                   )}
                 </Box>
               </Modal>
@@ -390,7 +395,7 @@ export default function ProfileSetupAvatar() {
                 borderRadius: 2,
               }}
             >
-              <Typography variant="h4" align="center" gutterBottom>
+              <Typography variant="h4" align="center" gutterBottom sx={{ color: theme => theme.palette.primary.main }}>
                 Generate your avatar from your picture
               </Typography>
 
