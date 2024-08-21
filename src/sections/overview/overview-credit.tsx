@@ -2,6 +2,7 @@ import React from 'react';
 
 import {
     Box,
+    Button,
     Card,
     Table,
     alpha,
@@ -9,79 +10,91 @@ import {
     TableBody,
     TableCell,
     TableHead,
-    Typography
+    Typography,
+    CircularProgress
 } from '@mui/material';
 
-interface CreditGrant {
-    received: string;
-    state: string;
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+
+import { useTokenBalances } from './useTokenBalances';
+
+interface TokenBalance {
+    token: string;
     balance: string;
-    expires: string;
 }
 
-interface CreditGrantsProps {
-    grants: CreditGrant[];
-}
+const OverviewCredit: React.FC = () => {
+    const { eth, usdt, usdc, crgpt } = useTokenBalances();
 
-const OverviewCredit: React.FC<CreditGrantsProps> = ({ grants }) => (
-    <Card sx={{
-        color: 'text.primary',
-        p: 2,
-        borderRadius: 2,
-        width: '100%',
-        overflow: 'auto'
-    }}>
-        <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-            Credit Grants USD
-        </Typography>
+    const balances: TokenBalance[] = [
+        { token: 'ETH', balance: eth },
+        { token: 'USDT', balance: usdt },
+        { token: 'USDC', balance: usdc },
+        { token: 'CRGPT', balance: crgpt },
+    ];
 
-        <Box sx={{ overflowY: "auto" }}>
-            <Table sx={{
-                "& tr": {
-                    px: 1,
-                },
-                "& td,th": {
-                    py: 0.5,
-                    px: 2,
-                },
-                "& tbody tr": {
-                    py: 0.5,
-                    transition: 'background-color 0.3s',
-                    "&:hover": {
-                        backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+    return (
+        <Card sx={{
+            color: 'text.primary',
+            p: 2,
+            borderRadius: 2,
+            width: '100%',
+            overflow: 'auto'
+        }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" component="h2">
+                    Token Balances
+                </Typography>
+                <Button
+                    variant="contained"
+                    startIcon={<VisibilityOffIcon />}
+                    color="primary"
+                    sx={{ bgcolor: theme => theme.palette.primary.main, color: "text.primary" }}
+                    onClick={() => console.log('hidden data')}
+                >
+                    Hidden
+                </Button>
+            </Box>
+
+            <Box sx={{ overflowY: "auto" }}>
+                <Table sx={{
+                    "& tr": { px: 1 },
+                    "& td,th": { py: 0.5, px: 2 },
+                    "& tbody tr": {
+                        py: 0.5,
+                        transition: 'background-color 0.3s',
+                        "&:hover": {
+                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+                        },
                     },
-                },
-            }} aria-label="credit grants table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell sx={{ color: 'text.secondary' }}>Received</TableCell>
-                        <TableCell sx={{ color: 'text.secondary' }}>State</TableCell>
-                        <TableCell sx={{ color: 'text.secondary' }}>Balance/Total Balance</TableCell>
-                        <TableCell sx={{ color: 'text.secondary' }}>Expires</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {grants.length === 0 ? (
+                }} aria-label="token balances table">
+                    <TableHead>
                         <TableRow>
-                            <TableCell colSpan={4} align="center" sx={{ color: 'text.secondary' }}>
-                                There are no credit grants
-                            </TableCell>
+                            <TableCell sx={{ color: 'text.secondary' }}>Token</TableCell>
+                            <TableCell sx={{ color: 'text.secondary' }}>Balance</TableCell>
                         </TableRow>
-                    ) : (
-                        grants.map((grant, index) => (
-                            <TableRow key={index}>
-                                <TableCell sx={{ color: 'text.primary' }}>{grant.received}</TableCell>
-                                <TableCell sx={{ color: 'text.primary' }}>{grant.state}</TableCell>
-                                <TableCell sx={{ color: 'text.primary' }}>{grant.balance}</TableCell>
-                                <TableCell sx={{ color: 'text.primary' }}>{grant.expires}</TableCell>
+                    </TableHead>
+                    <TableBody>
+                        {balances.every(b => b.balance === '-1') ? (
+                            <TableRow>
+                                <TableCell colSpan={2} align="center" sx={{ color: 'text.secondary' }}>
+                                    <CircularProgress size={20} sx={{ mr: 1 }} />
+                                    Loading balances...
+                                </TableCell>
                             </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
-        </Box>
-
-    </Card>
-);
+                        ) : (
+                            balances.map((balance, index) => (
+                                <TableRow key={index}>
+                                    <TableCell sx={{ color: 'text.primary' }}>{balance.token}</TableCell>
+                                    <TableCell sx={{ color: 'text.primary' }}>{balance.balance}</TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </Box>
+        </Card>
+    );
+};
 
 export default OverviewCredit;

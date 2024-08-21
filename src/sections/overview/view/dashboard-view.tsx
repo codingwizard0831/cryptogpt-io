@@ -15,8 +15,6 @@ import OverviewInterfaceStats from '../overview-chart-interface-stats';
 export default function DashboardView() {
     const smUp = useResponsive("up", "sm")
 
-    const grants: Array<any> = []
-
     return (
         <Box sx={{
             minHeight: '100%',
@@ -42,7 +40,7 @@ export default function DashboardView() {
                     <OverviewMyModels />
                 </Grid>
                 <Grid item xs={12}>
-                    <OverviewCredit grants={grants} />
+                    <OverviewCredit />
                 </Grid>
             </Grid>
             <Grid container spacing={2}>
