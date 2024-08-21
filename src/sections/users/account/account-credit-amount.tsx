@@ -16,7 +16,11 @@ const AccountCreditAmount = ({ isLoading }: { isLoading: boolean }) => {
         const { statusText, data } = response.data;
         console.log("finally", statusText, data);
         if (statusText === "OK") {
-          setCurrentAmount(data[0]?.amount);
+          if (data?.length) {
+            setCurrentAmount(data[0]?.amount);
+          } else {
+            setCurrentAmount(0);
+          }
         } else {
           console.error(data);
         }

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { LoadingButton } from '@mui/lab';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import { Box, Card, Grid, Modal, Stack, TextField, Typography, Autocomplete, Skeleton, IconButton } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -18,7 +19,6 @@ import { loadUserProfileData } from 'src/auth/context/jwt/utils';
 
 import { useSnackbar } from 'src/components/snackbar';
 import UploadAvatar from 'src/components/upload/upload-avatar';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
 
 interface ProfileData {
   size: string;
