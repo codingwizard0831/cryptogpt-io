@@ -61,14 +61,13 @@ export default function DashboardView() {
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
             gap: 2,
             pb: 2,
             overflowX: 'hidden',
             overflowY: 'auto',
         }}>
             <Stack direction="row" justifyContent="space-between" spacing={2} sx={{
-                flexGrow: 0,
+                flexGrow: 1,
                 flexShrink: 0,
                 minHeight: `${MAIN_CHART_PANEL.W_DESKTOP}px`,
             }}>
