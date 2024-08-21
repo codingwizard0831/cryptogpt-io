@@ -63,7 +63,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     confirmCardPayment,
   } = useStripe();
 
-  const confirmPaymentMethod = React.useCallback(async (e: any, paymentIntent: any) => {
+  const confirmPaymentMethodApple = React.useCallback(async (e: any, paymentIntent: any) => {
     const payResult: any = await confirmCardPayment(
       paymentIntent.client_secret,
       {
@@ -83,31 +83,30 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     );
   }, [amount, confirmCardPayment]);
 
-  const [paymentRequest, email, { createPaymentRequest }] = usePayStripeApplePayment(
+  const [paymentRequestApple, emailApple, { createPaymentRequest: createPaymentRequestApple }] = usePayStripeApplePayment(
     async () => {
       const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
         {
           "amount": amount,
-          "recovery_email": email
+          "recovery_email": emailApple
         }
       );
 
       const { success, data: paymentIntent } = data;
       return success ? paymentIntent : null;
     },
-    confirmPaymentMethod,
+    confirmPaymentMethodApple,
     () => {
-      // router.replace("/");
       setIsLoading(!isLoading);
     }
   );
 
   useEffect(() => {
-    createPaymentRequest(
+    createPaymentRequestApple(
       'credits',
       amount * 100,
     )
-  }, [createPaymentRequest, amount]);
+  }, [createPaymentRequestApple, amount]);
 
   const payStripeCardPayment = usePayStripeCardPayment();
 
@@ -209,7 +208,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
 
   return (
     <Card sx={{ marginTop: 3 }}>
-      <CardHeader title={`Deposit ${email}`} />
+      <CardHeader title="Deposit" />
 
       <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' } }}>
         <TextField
@@ -259,7 +258,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
       </Stack>
 
       <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3, paddingTop: 0 }}>
-        <ApplePayButton variant="contained" startIcon={<ApplePayIcon />} disabled={!amount} onClick={() => paymentRequest.show()} />
+        {paymentRequestApple && <ApplePayButton variant="contained" startIcon={<ApplePayIcon />} disabled={!amount} onClick={() => paymentRequestApple.show()} />}
         <LoadingButton
           size="medium"
           sx={{ paddingLeft: 5, paddingRight: 5 }}
