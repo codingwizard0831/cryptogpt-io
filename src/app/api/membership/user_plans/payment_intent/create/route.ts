@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     console.log(userPlans)
     console.log(userPlansError)
     if (userPlansError) {
-      return NextResponse.json({ success: false, error: 'Error fetching user plans' }, { status: 500 });
+      return NextResponse.json({ success: false, error: `Error fetching user plan: ${userPlansError}` }, { status: 500 });
     }
 
     const { data: stripeCustomer, error: stripeCustomerError } = await supabase

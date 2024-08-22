@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       .single();
 
     if (userPlanError) {
-      return NextResponse.json({ success: false, error: 'Error fetching user plan' }, { status: 500 });
+      return NextResponse.json({ success: false, error: `Error fetching user plan: ${userPlanError}` }, { status: 500 });
     }
 
     if (userPlan.plan_id !== plan.id) {
