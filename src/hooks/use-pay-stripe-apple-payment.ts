@@ -113,7 +113,7 @@ export default function usePayStripeApplePayment(getPaymentIntent: any, confirmP
                     label,
                     amount: amountInCents,
                 },
-                requestPayerName: true,
+                // requestPayerName: true,
                 requestPayerEmail: true,
             }
             // eslint-disable-next-line @typescript-eslint/return-await
@@ -150,5 +150,5 @@ export default function usePayStripeApplePayment(getPaymentIntent: any, confirmP
         }
     ), [createPaymentRequest, setPaymentRequest]);
 
-    return [paymentRequest, email, actions];
+    return [paymentRequest, actions];
 }

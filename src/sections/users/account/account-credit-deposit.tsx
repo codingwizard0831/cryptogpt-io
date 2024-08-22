@@ -114,12 +114,11 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     );
   }, [amount, confirmCardPayment]);
 
-  const [paymentRequestApple, emailApple, { createPaymentRequest: createPaymentRequestApple }] = usePayStripeApplePayment(
+  const [paymentRequestApple, { createPaymentRequest: createPaymentRequestApple }] = usePayStripeApplePayment(
     async () => {
       const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
         {
-          "amount": amount,
-          "recovery_email": emailApple
+          "amount": amount
         }
       );
 
@@ -154,7 +153,7 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     );
   }, [amount, confirmCardPayment]);
 
-  const [paymentRequestGoogle, emailGoogle, { createPaymentRequest: createPaymentRequestGoogle }] = usePayStripeGooglePayment(
+  const [paymentRequestGoogle, { createPaymentRequest: createPaymentRequestGoogle }] = usePayStripeGooglePayment(
     async (value: string) => {
       const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
         {
