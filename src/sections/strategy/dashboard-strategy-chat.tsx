@@ -3,7 +3,7 @@ import { AudioVisualizer, LiveAudioVisualizer } from 'react-audio-visualize';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, Chip, Grid, alpha, Stack, styled, Button, useTheme, IconButton, Typography } from '@mui/material';
+import { Box, Chip, Grid, alpha, Stack, styled, Button, Switch, useTheme, IconButton, Typography, FormControlLabel } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -12,6 +12,7 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify/iconify';
+import ChatInput from 'src/components/chat-input/chat-input';
 import Carousel, { useCarousel } from 'src/components/carousel';
 
 
@@ -39,8 +40,6 @@ const Textarea = styled(BaseTextareaAutosize)(
 
 export default function DashboardStrategyChat() {
     const [text, setText] = useState('');
-    const isFocus = useBoolean();
-    const isMultipleLines = useBoolean();
     const smUp = useResponsive("up", 'sm');
     const isPreview = useStrategy((state) => state.isPreview);
     const setIsPreview = useStrategy((state) => state.setIsPreview);
@@ -49,14 +48,6 @@ export default function DashboardStrategyChat() {
     const isChatHistory = useBoolean(false);
     const carousel = useCarousel();
     const theme = useTheme();
-
-    useEffect(() => {
-        if (text.split('\n').length > 2) {
-            isMultipleLines.onTrue();
-        } else {
-            isMultipleLines.onFalse();
-        }
-    }, [text, isMultipleLines]);
 
     const [blob, setBlob] = useState<Blob>();
     const visualizerRef = useRef<HTMLCanvasElement>(null)
@@ -80,6 +71,8 @@ export default function DashboardStrategyChat() {
                 setMediaRecorder(_mediaRecorder);
             });
     }, []);
+
+    const isAutoplay = useBoolean();
 
     return <Stack direction="column" spacing={2} sx={{
         width: '100%',
@@ -138,6 +131,7 @@ export default function DashboardStrategyChat() {
                         justifyContent: 'flex-end',
                         gap: 1,
                     }}>
+                        <FormControlLabel control={<Switch checked={isAutoplay.value} onChange={isAutoplay.onToggle} />} label="Autoplay" />
                         <IconButton size="small" sx={{
                             transition: 'all 0.3s',
                             transform: isSettingDetail.value ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -424,6 +418,14 @@ export default function DashboardStrategyChat() {
                                 }}>
                                     <IconButton size="small" sx={{
                                     }}>
+                                        <Iconify icon="cil:audio" sx={{
+                                            color: 'primary.main',
+                                            width: '16px',
+                                            height: '16px',
+                                        }} />
+                                    </IconButton>
+                                    <IconButton size="small" sx={{
+                                    }}>
                                         <Iconify icon="lucide:clipboard" sx={{
                                             color: 'primary.main',
                                             width: '16px',
@@ -550,91 +552,14 @@ export default function DashboardStrategyChat() {
                 }
             </Box>
 
-            <Box sx={{
+            <ChatInput sx={{
                 position: 'absolute',
                 bottom: '4px',
                 left: '4px',
                 right: '4px',
                 p: 1,
                 width: 'calc(100% - 8px)',
-                borderRadius: '40px',
-                backgroundColor: alpha(theme.palette.background.default, 0.2),
-                backdropFilter: 'blur(10px)',
-                ...(isFocus.value ? {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                    // backgroundColor: theme.palette.background.paper,
-                } : {}),
-                ...(isMultipleLines.value ? {
-                    borderRadius: '16px',
-                } : {}),
-            }}>
-                <Box sx={{
-                    borderRadius: '30px',
-                    border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
-                    transition: 'all 0.3s',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: 1,
-                    p: 1,
-                    ...(isFocus.value ? {
-                        border: `1px solid ${theme.palette.primary.main}`,
-                    } : {}),
-                    ...(isMultipleLines.value ? {
-                        borderRadius: '10px',
-                        flexWrap: 'wrap',
-                    } : {}),
-                }}>
-                    <IconButton size="small" sx={{
-                        order: !isMultipleLines.value ? 0 : 1,
-                    }}>
-                        <Iconify icon="gg:add" sx={{
-                            color: theme.palette.text.primary,
-                        }} />
-                    </IconButton>
-                    <Box sx={{
-                        width: '100%',
-                        order: !isMultipleLines.value ? 1 : 0,
-                        maxHeight: '100px',
-                        overflowY: 'auto',
-                        overflowX: 'hidden',
-                        display: 'flex',
-                        alignItems: 'center',
-                    }}>
-                        <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Message" onFocus={() => isFocus.onTrue()} onBlur={() => isFocus.onFalse()} sx={{
-                            width: '100%',
-                            height: '100%',
-                        }} />
-                    </Box>
-
-                    <Box sx={{
-                        order: 2,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}>
-                        <IconButton size="small" sx={{
-                        }}>
-                            <Iconify icon="majesticons:underline-2" sx={{
-                                color: theme.palette.text.primary,
-                            }} />
-                        </IconButton>
-                        <IconButton size="small" sx={{
-                        }}>
-                            <Iconify icon="mingcute:emoji-line" sx={{
-                                color: theme.palette.text.primary,
-                            }} />
-                        </IconButton>
-                        <IconButton size="small" sx={{
-                            backgroundColor: theme.palette.primary.main,
-                        }}>
-                            <Iconify icon="ph:arrow-up-bold" sx={{
-                                color: theme.palette.text.primary,
-                            }} />
-                        </IconButton>
-                    </Box>
-                </Box>
-            </Box>
+            }} />
         </Box>
 
         <Box sx={{
