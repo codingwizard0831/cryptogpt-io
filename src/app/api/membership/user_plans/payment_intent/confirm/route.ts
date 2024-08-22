@@ -17,6 +17,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
     }
     const user = JSON.parse(userHeader);
+    console.log('user', user)
 
     const payment_intent = await retrievePaymentIntent(payment_intent_id);
     // console.log('payment_intent', payment_intent)
@@ -25,8 +26,10 @@ export async function POST(req: Request) {
       .select()
       .eq('user_id', user?.id)
       .order('id', { ascending: false }).single();
+    console.log('userPlans', userPlans)
 
     if (userPlansError) {
+      console.log('userPlansError', userPlansError)
       return NextResponse.json({ success: false, error: `Error fetching user plan: ${userPlansError}` }, { status: 500 });
     }
 
