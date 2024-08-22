@@ -318,6 +318,9 @@ export default function DashboardStrategyChat() {
                                                 minWidth: '32px',
                                                 height: '32px',
                                                 borderRadius: '50%',
+                                                borderWidth: '2px',
+                                                borderStyle: 'solid',
+                                                borderColor: `${item.color}.main`,
                                             }} />
                                             <Typography variant="caption" sx={{
                                                 color: `${item.color}.main`,
@@ -392,7 +395,8 @@ export default function DashboardStrategyChat() {
                                     <Box sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        backgroundColor: alpha(theme.palette.info.main, 0.8),
+                                        // backgroundColor: alpha(theme.palette.info.main, 0.8),
+                                        backgroundImage: `linear-gradient(to right, ${theme.palette.info.main}, ${theme.palette.info.dark})`,
                                         borderRadius: 2,
                                         p: 1,
                                         cursor: 'pointer',
@@ -511,7 +515,8 @@ export default function DashboardStrategyChat() {
                                     <Box sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        backgroundColor: alpha(theme.palette.primary.main, 0.8),
+                                        // backgroundColor: alpha(theme.palette.primary.main, 0.8),
+                                        backgroundImage: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
                                         borderRadius: 2,
                                         p: 1,
                                         cursor: 'pointer',

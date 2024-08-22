@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { LiveAudioVisualizer } from 'react-audio-visualize';
 
 import { Box, alpha, styled, useTheme, BoxProps, IconButton } from '@mui/material';
@@ -33,7 +33,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     const [text, setText] = useState('');
     const isFocus = useBoolean();
     const isMultipleLines = useBoolean();
-    const isRecordingBarShow = useBoolean();
+    const isRecordingBarShow = useBoolean(true);
 
     useEffect(() => {
         if (text.split('\n').length > 2) {
@@ -44,8 +44,10 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     }, [text, isMultipleLines]);
 
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
-    useEffect(() => {
-        console.log('navigator', navigator);
+    const isDeviceExists = useBoolean(true);
+    const isUserApproved = useBoolean(true);
+
+    const requestMicrophoneAccess = useCallback(() => {
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then((stream) => {
                 const _mediaRecorder = new MediaRecorder(stream);
@@ -54,14 +56,43 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                 // };
                 _mediaRecorder.start();
                 setMediaRecorder(_mediaRecorder);
+            })
+            .catch((err) => {
+                console.log('error: ', err);
+                if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    console.log('No audio input devices found.');
+                    // Device does not exist
+                    isDeviceExists.onFalse();
+                } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    // User dismissed the request
+                    console.log('The user refused to let this app use audio inputs.');
+                    isUserApproved.onFalse();
+                } else {
+                    // Handle other errors
+                }
             });
-    }, []);
+    }, [isDeviceExists, isUserApproved]);
+
+    useEffect(() => {
+        if (isRecordingBarShow.value) {
+            console.log('requestMicrophoneAccess');
+            requestMicrophoneAccess();
+        }
+    }, [isRecordingBarShow.value]);
+
+    const handleOpenRecordingBar = () => {
+        if (!isRecordingBarShow.value) {
+            requestMicrophoneAccess();
+        }
+        isRecordingBarShow.onToggle();
+    }
 
     return <Box sx={{
         width: '100%',
         borderRadius: '40px',
         backgroundColor: alpha(theme.palette.background.default, 0.6),
         backdropFilter: 'blur(10px)',
+        boxShadow: `0 0 10px 4px ${alpha(theme.palette.primary.main, 0.2)}`,
         position: 'relative',
         ...(isFocus.value ? {
             backgroundColor: alpha(theme.palette.background.default, 0.9),
@@ -123,7 +154,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                     }} />
                 </IconButton>
                 <IconButton size="small" sx={{
-                }} onClick={() => isRecordingBarShow.onToggle()}>
+                }} onClick={() => handleOpenRecordingBar()}>
                     <Iconify icon="fluent:mic-record-20-filled" sx={{
                         color: theme.palette.text.primary,
                     }} />
@@ -145,23 +176,68 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         </Box>
 
         <Box sx={{
-            backgroundColor: alpha(theme.palette.background.default, 0.6),
+            backgroundColor: alpha(theme.palette.background.default, 0.8),
             borderRadius: 1,
             border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
             position: 'absolute',
             left: 0,
-            top: "-100px",
             width: '100%',
-            height: '100px',
+            top: "-64px",
+            height: '60px',
+            opacity: isRecordingBarShow.value ? 1 : 0,
+            visibility: isRecordingBarShow.value ? 'visible' : 'hidden',
+            transition: 'all 0.3s',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 2,
+            p: 1,
         }}>
 
-            {mediaRecorder && (
-                <LiveAudioVisualizer
-                    mediaRecorder={mediaRecorder}
-                    width={200}
-                    height={75}
-                />
-            )}
+            <Box sx={{ flex: 1 }}>
+                {mediaRecorder && (
+                    <LiveAudioVisualizer
+                        mediaRecorder={mediaRecorder}
+                        width={500}
+                        height={36}
+                    />
+                )}
+            </Box>
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+            }}>
+                <IconButton size="small" sx={{
+                    backgroundColor: alpha(theme.palette.primary.main, 0.8),
+                }}
+                    onClick={() => { }}
+                >
+                    <Iconify icon="fluent:record-20-regular" sx={{
+                        color: 'text.primary'
+                    }} />
+                </IconButton>
+
+                <IconButton size="small" sx={{
+                    backgroundColor: alpha(theme.palette.primary.main, 0.8),
+                }}
+                    onClick={() => { }}
+                >
+                    <Iconify icon="material-symbols:pause" sx={{
+                        color: 'text.primary'
+                    }} />
+                </IconButton>
+
+                <IconButton size="small" sx={{
+                    backgroundColor: alpha(theme.palette.primary.main, 0.8),
+                }}
+                    onClick={() => { }}
+                >
+                    <Iconify icon="mdi:check-bold" sx={{
+                        color: 'text.primary'
+                    }} />
+                </IconButton>
+            </Box>
         </Box>
     </Box>
 }
