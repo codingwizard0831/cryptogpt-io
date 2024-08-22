@@ -150,5 +150,5 @@ export default function usePayStripeGooglePayment(getPaymentIntent: any, confirm
         }
     ), [createPaymentRequest, setPaymentRequest]);
 
-    return [paymentRequest, email, actions];
+    return [paymentRequest, actions];
 }

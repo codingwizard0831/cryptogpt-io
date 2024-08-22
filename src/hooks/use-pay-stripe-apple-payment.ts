@@ -150,5 +150,5 @@ export default function usePayStripeApplePayment(getPaymentIntent: any, confirmP
         }
     ), [createPaymentRequest, setPaymentRequest]);
 
-    return [paymentRequest, email, actions];
+    return [paymentRequest, actions];
 }
