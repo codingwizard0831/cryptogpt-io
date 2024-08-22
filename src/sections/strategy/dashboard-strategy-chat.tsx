@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { AudioVisualizer, LiveAudioVisualizer } from 'react-audio-visualize';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, Chip, Grid, alpha, Stack, styled, Button, IconButton, Typography } from '@mui/material';
+import { Box, Chip, Grid, alpha, Stack, styled, Button, useTheme, IconButton, Typography } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -12,6 +13,7 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify/iconify';
 import Carousel, { useCarousel } from 'src/components/carousel';
+
 
 interface DataPoint {
     date: string;
@@ -43,9 +45,10 @@ export default function DashboardStrategyChat() {
     const isPreview = useStrategy((state) => state.isPreview);
     const setIsPreview = useStrategy((state) => state.setIsPreview);
     const isShowSummary = useStrategy((state) => state.isShowSummary);
-    const isSettingDetail = useBoolean(true);
+    const isSettingDetail = useBoolean(false);
     const isChatHistory = useBoolean(false);
     const carousel = useCarousel();
+    const theme = useTheme();
 
     useEffect(() => {
         if (text.split('\n').length > 2) {
@@ -55,9 +58,32 @@ export default function DashboardStrategyChat() {
         }
     }, [text, isMultipleLines]);
 
+    const [blob, setBlob] = useState<Blob>();
+    const visualizerRef = useRef<HTMLCanvasElement>(null)
+    useEffect(() => {
+        fetch('/audios/voice.mp3')
+            .then((response) => response.blob())
+            .then((_blob) => {
+                setBlob(_blob);
+            });
+    }, [])
+    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
+    useEffect(() => {
+        console.log('navigator', navigator);
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then((stream) => {
+                const _mediaRecorder = new MediaRecorder(stream);
+                // _mediaRecorder.ondataavailable = (e) => {
+                //     setBlob(e.data);
+                // };
+                _mediaRecorder.start();
+                setMediaRecorder(_mediaRecorder);
+            });
+    }, []);
+
     return <Stack direction="column" spacing={2} sx={{
         width: '100%',
-        backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
+        backgroundColor: alpha(theme.palette.primary.main, 0.05),
         height: '100%',
         position: 'relative',
         p: 1,
@@ -86,7 +112,7 @@ export default function DashboardStrategyChat() {
         <Box sx={{
             width: '100%',
             height: '100%',
-            display: isChatHistory.value ? 'block' : 'none',
+            display: !isChatHistory.value ? 'block' : 'none',
         }}>
             <Box sx={{
                 display: 'flex',
@@ -97,7 +123,7 @@ export default function DashboardStrategyChat() {
                 pb: 8,
             }}>
                 <Box sx={{
-                    backgroundColor: theme => alpha(theme.palette.background.default, 0.8),
+                    backgroundColor: alpha(theme.palette.background.default, 0.8),
                     position: 'sticky',
                     top: 0,
                     gap: 1,
@@ -138,7 +164,8 @@ export default function DashboardStrategyChat() {
                         position: 'relative',
                         width: '100%',
                         height: isSettingDetail.value ? '596px' : '0px',
-                        overflow: 'hidden',
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
                         transition: 'all 0.3s',
                     }}>
                         <Box sx={{
@@ -192,12 +219,36 @@ export default function DashboardStrategyChat() {
                                 </Carousel>
                             </Box>
 
+
+                            {blob && (
+                                <AudioVisualizer
+                                    ref={visualizerRef}
+                                    blob={blob}
+                                    width={300}
+                                    height={50}
+                                    barWidth={1}
+                                    gap={0}
+                                    barColor={theme.palette.primary.main}
+                                    style={{
+                                        height: '50px',
+                                    }}
+                                />
+                            )}
+
+                            {mediaRecorder && (
+                                <LiveAudioVisualizer
+                                    mediaRecorder={mediaRecorder}
+                                    width={200}
+                                    height={75}
+                                />
+                            )}
+
                             <Box sx={{
                                 width: '100%',
                                 height: '240px',
                                 p: 1,
                                 borderRadius: 1,
-                                border: theme => `1px solid ${theme.palette.primary.main}`,
+                                border: `1px solid ${theme.palette.primary.main}`,
                             }}>
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={data}>
@@ -342,18 +393,26 @@ export default function DashboardStrategyChat() {
                                 }} />
                                 <Box sx={{
                                     display: 'flex',
-                                    alignItems: 'center',
-                                    backgroundColor: theme => alpha(theme.palette.info.main, 0.8),
-                                    borderRadius: 2,
-                                    p: 1,
-                                    cursor: 'pointer',
+                                    flexDirection: 'column',
                                 }}>
-                                    <Typography variant="body2" sx={{
-                                        color: theme => theme.palette.background.default,
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        backgroundColor: alpha(theme.palette.info.main, 0.8),
+                                        borderRadius: 2,
+                                        p: 1,
+                                        cursor: 'pointer',
                                     }}>
-                                        Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well.
-                                        Remember, proper risk management is crucial
-                                    </Typography>
+                                        <Typography variant="body2" sx={{
+                                            color: theme.palette.background.default,
+                                        }}>
+                                            Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well.
+                                            Remember, proper risk management is crucial
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="caption" sx={{
+                                        color: 'text.secondary',
+                                    }}>11 min ago</Typography>
                                 </Box>
                                 <Box className="action-buttons" sx={{
                                     display: 'flex',
@@ -444,17 +503,27 @@ export default function DashboardStrategyChat() {
                                 </Box>
                                 <Box sx={{
                                     display: 'flex',
-                                    alignItems: 'center',
-                                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.8),
-                                    borderRadius: 2,
-                                    p: 1,
-                                    cursor: 'pointer',
+                                    flexDirection: 'column',
+                                    alignItems: 'flex-end',
                                 }}>
-                                    <Typography variant="body2" sx={{
-                                        color: theme => theme.palette.background.default,
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        backgroundColor: alpha(theme.palette.primary.main, 0.8),
+                                        borderRadius: 2,
+                                        p: 1,
+                                        cursor: 'pointer',
                                     }}>
-                                        Great choice!
-                                    </Typography>
+                                        <Typography variant="body2" sx={{
+                                            color: theme.palette.background.default,
+                                        }}>
+                                            Great choice!
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="caption" sx={{
+                                        color: 'text.secondary',
+                                        ml: 1,
+                                    }}>11 min ago</Typography>
                                 </Box>
                                 <Image src="/images/Goldie.png" sx={{
                                     width: '32px',
@@ -489,11 +558,11 @@ export default function DashboardStrategyChat() {
                 p: 1,
                 width: 'calc(100% - 8px)',
                 borderRadius: '40px',
-                backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
+                backgroundColor: alpha(theme.palette.background.default, 0.2),
                 backdropFilter: 'blur(10px)',
                 ...(isFocus.value ? {
-                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
-                    // backgroundColor: theme => theme.palette.background.paper,
+                    backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                    // backgroundColor: theme.palette.background.paper,
                 } : {}),
                 ...(isMultipleLines.value ? {
                     borderRadius: '16px',
@@ -501,7 +570,7 @@ export default function DashboardStrategyChat() {
             }}>
                 <Box sx={{
                     borderRadius: '30px',
-                    border: theme => `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
+                    border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
                     transition: 'all 0.3s',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -509,7 +578,7 @@ export default function DashboardStrategyChat() {
                     gap: 1,
                     p: 1,
                     ...(isFocus.value ? {
-                        border: theme => `1px solid ${theme.palette.primary.main}`,
+                        border: `1px solid ${theme.palette.primary.main}`,
                     } : {}),
                     ...(isMultipleLines.value ? {
                         borderRadius: '10px',
@@ -520,7 +589,7 @@ export default function DashboardStrategyChat() {
                         order: !isMultipleLines.value ? 0 : 1,
                     }}>
                         <Iconify icon="gg:add" sx={{
-                            color: theme => theme.palette.text.primary,
+                            color: theme.palette.text.primary,
                         }} />
                     </IconButton>
                     <Box sx={{
@@ -547,20 +616,20 @@ export default function DashboardStrategyChat() {
                         <IconButton size="small" sx={{
                         }}>
                             <Iconify icon="majesticons:underline-2" sx={{
-                                color: theme => theme.palette.text.primary,
+                                color: theme.palette.text.primary,
                             }} />
                         </IconButton>
                         <IconButton size="small" sx={{
                         }}>
                             <Iconify icon="mingcute:emoji-line" sx={{
-                                color: theme => theme.palette.text.primary,
+                                color: theme.palette.text.primary,
                             }} />
                         </IconButton>
                         <IconButton size="small" sx={{
-                            backgroundColor: theme => theme.palette.primary.main,
+                            backgroundColor: theme.palette.primary.main,
                         }}>
                             <Iconify icon="ph:arrow-up-bold" sx={{
-                                color: theme => theme.palette.text.primary,
+                                color: theme.palette.text.primary,
                             }} />
                         </IconButton>
                     </Box>
@@ -571,7 +640,7 @@ export default function DashboardStrategyChat() {
         <Box sx={{
             width: '100%',
             height: '100%',
-            display: !isChatHistory.value ? 'flex' : 'none',
+            display: isChatHistory.value ? 'flex' : 'none',
             flexDirection: 'column',
         }}>
             <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={1} sx={{ mb: 1 }}>
@@ -590,8 +659,8 @@ export default function DashboardStrategyChat() {
                             <Grid item xs={12} sm={6} md={12} lg={6} xl={4}>
                                 <Box sx={{
                                     borderRadius: 1,
-                                    border: theme => `1px solid ${theme.palette.primary.main}`,
-                                    backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+                                    border: `1px solid ${theme.palette.primary.main}`,
+                                    backgroundColor: alpha(theme.palette.primary.main, 0.2),
                                     p: 1,
                                     display: 'flex',
                                     gap: 1,
@@ -600,7 +669,7 @@ export default function DashboardStrategyChat() {
                                 }}>
                                     <Iconify icon="wpf:chat" />
                                     <Typography variant="body2">Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial</Typography>
-                                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>11 minutes ago</Typography>
+                                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>11 min ago</Typography>
                                 </Box>
                             </Grid>
                         ))
