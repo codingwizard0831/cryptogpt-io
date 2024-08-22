@@ -1,37 +1,162 @@
-import React from 'react';
+import Image from 'next/image';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
     Box,
-    Button,
     Card,
     Table,
     alpha,
+    Button,
     TableRow,
     TableBody,
     TableCell,
     TableHead,
     Typography,
+    Pagination,
     CircularProgress
 } from '@mui/material';
 
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import axios, { endpoints } from 'src/utils/axios';
 
 import { useTokenBalances } from './useTokenBalances';
 
 interface TokenBalance {
     token: string;
     balance: string;
+    logo: string;
+    price: number;
+    priceHistory: { time: number; price: number }[];
 }
 
-const OverviewCredit: React.FC = () => {
-    const { eth, usdt, usdc, crgpt } = useTokenBalances();
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <Box sx={{ bgcolor: 'background.paper', p: 1, border: 1, borderColor: 'divider' }}>
+                <Typography variant="body2">
+                    {`Price: $${payload[0].value.toFixed(4)}`}
+                </Typography>
+                <Typography variant="body2">
+                    {`Time: ${new Date(label).toLocaleTimeString()}`}
+                </Typography>
+            </Box>
+        );
+    }
+    return null;
+};
 
-    const balances: TokenBalance[] = [
-        { token: 'ETH', balance: eth },
-        { token: 'USDT', balance: usdt },
-        { token: 'USDC', balance: usdc },
-        { token: 'CRGPT', balance: crgpt },
-    ];
+const OverviewCredit: React.FC = () => {
+    const { eth, usdt, usdc, crgpt, dot, sol, avax } = useTokenBalances();
+    const [prices, setPrices] = useState<{ [key: string]: number }>({});
+    const [priceHistory, setPriceHistory] = useState<{ [key: string]: { time: number; price: number }[] }>({});
+    const [page, setPage] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isHidden, setIsHidden] = useState(false);
+    const rowsPerPage = 5;
+
+    const balances: TokenBalance[] = useMemo(() => [
+        { token: 'CRGPT', balance: crgpt, logo: '/logo/crgpt-icon.png', price: prices.CRGPT || 0, priceHistory: priceHistory.CRGPT || [] },
+        { token: 'ETH', balance: eth, logo: '/images/ethereum-eth-logo.png', price: prices.ETH || 0, priceHistory: priceHistory.ETH || [] },
+        { token: 'USDT', balance: usdt, logo: '/images/tether-usdt-logo.png', price: prices.USDT || 1, priceHistory: priceHistory.USDT || [] },
+        { token: 'USDC', balance: usdc, logo: '/images/usd-coin-usdc-logo.png', price: prices.USDC || 1, priceHistory: priceHistory.USDC || [] },
+        { token: 'DOT', balance: dot, logo: '/images/dot-logo.png', price: prices.DOT || 0, priceHistory: priceHistory.DOT || [] },
+        { token: 'SOL', balance: sol, logo: '/images/sol-logo.png', price: prices.SOL || 0, priceHistory: priceHistory.SOL || [] },
+        { token: 'AVAX', balance: avax, logo: '/images/avax-logo.png', price: prices.AVAX || 0, priceHistory: priceHistory.AVAX || [] },
+    ], [eth, usdt, usdc, crgpt, dot, sol, avax, prices, priceHistory]);
+
+    const totalUSDT = useMemo(() =>
+        balances.reduce((acc, balance) => acc + (parseFloat(balance.balance) * balance.price), 0),
+        [balances]);
+
+    const fetchPrices = useCallback(async () => {
+        try {
+            // Fetch prices from Binance
+            const binanceSymbols = ['ETHUSDT', 'DOTUSDT', 'SOLUSDT', 'AVAXUSDT', 'USDCUSDT'];
+            const binanceResponses = await Promise.all(
+                binanceSymbols.map(symbol =>
+                    fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`)
+                        .then(res => res.json())
+                )
+            );
+
+            const newPrices = binanceResponses.reduce((acc, response) => {
+                const token = response.symbol.replace('USDT', '');
+                acc[token] = parseFloat(response.price);
+                return acc;
+            }, {});
+
+            // Add USDT price (always 1)
+            newPrices.USDT = 1;
+
+            // Fetch CRGPT price from MECX with error handling
+            try {
+                const response = await axios.get(`${endpoints.dashboard.price_charts}`);
+                const { data: allPrices } = response
+                newPrices.CRGPT = allPrices.CRGPT;
+            } catch (mecxError) {
+                console.error('Error fetching CRGPT price from MECX:', mecxError);
+                // Fallback: Use the last known price or a default value
+                newPrices.CRGPT = prices.CRGPT || 0.071; // Using the previous example's default value
+            }
+
+            setPrices(newPrices);
+            setPriceHistory(prevHistory => {
+                const newHistory = { ...prevHistory };
+                Object.keys(newPrices).forEach(token => {
+                    const price = newPrices[token];
+                    newHistory[token] = [
+                        ...(prevHistory[token] || []).slice(-59),
+                        { time: Date.now(), price }
+                    ];
+                });
+                return newHistory;
+            });
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Error fetching prices:', error);
+            setIsLoading(false);
+        }
+    }, [prices]);
+
+    useEffect(() => {
+        fetchPrices(); // Fetch prices immediately on mount
+        const interval = setInterval(fetchPrices, 20000); // Update every 20 seconds
+        return () => clearInterval(interval);
+    }, [fetchPrices]);
+
+    const getChartDomain = (token: string) => {
+        if (token === 'USDT' || token === 'USDC') {
+            return [0.9999, 1.0001]; // Near-flat line for stablecoins
+        }
+        return ['auto', 'auto']; // Dynamic range for other coins
+    };
+
+    const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleToggleVisibility = () => {
+        setIsHidden(!isHidden);
+    };
+
+    const calculatePercentageChange = (history: { time: number; price: number }[]) => {
+        if (history.length < 2) return 0;
+        const firstPrice = history[0].price;
+        const lastPrice = history[history.length - 1].price;
+        return ((lastPrice - firstPrice) / firstPrice) * 100;
+    };
+
+    const paginatedBalances = balances.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+
+    if (isLoading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
         <Card sx={{
@@ -47,12 +172,12 @@ const OverviewCredit: React.FC = () => {
                 </Typography>
                 <Button
                     variant="contained"
-                    startIcon={<VisibilityOffIcon />}
+                    startIcon={isHidden ? <VisibilityIcon /> : <VisibilityOffIcon />}
                     color="primary"
                     sx={{ bgcolor: theme => theme.palette.primary.main, color: "text.primary" }}
-                    onClick={() => console.log('hidden data')}
+                    onClick={handleToggleVisibility}
                 >
-                    Hidden
+                    {isHidden ? 'Show Data' : 'Hide Data'}
                 </Button>
             </Box>
 
@@ -64,7 +189,7 @@ const OverviewCredit: React.FC = () => {
                         py: 0.5,
                         transition: 'background-color 0.3s',
                         "&:hover": {
-                            backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+                            backgroundColor: theme => alpha(theme.palette.background.default, 0.1)
                         },
                     },
                 }} aria-label="token balances table">
@@ -72,29 +197,60 @@ const OverviewCredit: React.FC = () => {
                         <TableRow>
                             <TableCell sx={{ color: 'text.secondary' }}>Token</TableCell>
                             <TableCell sx={{ color: 'text.secondary' }}>Balance</TableCell>
+                            <TableCell sx={{ color: 'text.secondary' }}>Balance in USDT</TableCell>
+                            <TableCell sx={{ color: 'text.secondary' }}>Change (Last 1 hour)</TableCell>
+                            <TableCell sx={{ color: 'text.secondary' }}>Price History (Last 1 hour)</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {balances.every(b => b.balance === '-1') ? (
-                            <TableRow>
-                                <TableCell colSpan={2} align="center" sx={{ color: 'text.secondary' }}>
-                                    <CircularProgress size={20} sx={{ mr: 1 }} />
-                                    Loading balances...
+                        {paginatedBalances.map(balance => (
+                            <TableRow key={balance.token}>
+                                <TableCell>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Image
+                                            src={balance.logo}
+                                            alt={`${balance.token} logo`}
+                                            width={24}
+                                            height={24}
+                                            style={{ marginRight: '8px' }}
+                                        />
+                                        {balance.token}
+                                    </Box>
+                                </TableCell>
+                                <TableCell>{isHidden ? '****' : parseFloat(balance.balance).toFixed(4)}</TableCell>
+                                <TableCell>{isHidden ? '****' : (parseFloat(balance.balance) * balance.price).toFixed(4)}</TableCell>
+                                <TableCell>{isHidden ? '****' : `${calculatePercentageChange(balance.priceHistory).toFixed(2)}%`}</TableCell>
+                                <TableCell>
+                                    <ResponsiveContainer width="100%" height={40}>
+                                        <LineChart data={balance.priceHistory} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                                            <XAxis dataKey="time" hide />
+                                            <YAxis domain={getChartDomain(balance.token)} hide />
+                                            <Tooltip content={<CustomTooltip />} />
+                                            <Line type="monotone" dataKey="price" stroke="#8884d8" dot={false} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
                                 </TableCell>
                             </TableRow>
-                        ) : (
-                            balances.map((balance, index) => (
-                                <TableRow key={index}>
-                                    <TableCell sx={{ color: 'text.primary' }}>{balance.token}</TableCell>
-                                    <TableCell sx={{ color: 'text.primary' }}>{balance.balance}</TableCell>
-                                </TableRow>
-                            ))
-                        )}
+                        ))}
                     </TableBody>
                 </Table>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+                <Typography sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+                    Total: {totalUSDT.toFixed(2)} USDT
+                </Typography>
+                <Pagination
+                    count={Math.ceil(balances.length / rowsPerPage)}
+                    page={page}
+                    onChange={handleChangePage}
+                    color="primary"
+                />
             </Box>
         </Card>
     );
 };
 
 export default OverviewCredit;
+
+

@@ -93,6 +93,7 @@ export const endpoints = {
     'models': '/api/overview/models',
     'hugging_face': '/api/overview/hugging_face',
     'stats': '/api/overview/stats',
+    'price_charts': '/api/overview/priceCharts',
   },
   profile: {
     index: '/api/profile',
