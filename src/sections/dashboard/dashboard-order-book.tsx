@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
 import { fNumberPrice } from 'src/utils/format-number';
+import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
 
 import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
@@ -439,13 +439,13 @@ export default function DashboardOrderBook() {
           opacity:
             currentSelectedSellOrder <
               (buySellLayout === 'BOTH' ? fixedOrderBookNumber - 1 : sellOrders.length - 1) ||
-            currentSelectedBuyOrder > 0
+              currentSelectedBuyOrder > 0
               ? 1
               : 0,
           visibility:
             currentSelectedSellOrder <
               (buySellLayout === 'BOTH' ? fixedOrderBookNumber - 1 : sellOrders.length - 1) ||
-            currentSelectedBuyOrder > 0
+              currentSelectedBuyOrder > 0
               ? 'visible'
               : 'hidden',
         }}
