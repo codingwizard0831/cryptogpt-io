@@ -113,7 +113,7 @@ export default function usePayStripeGooglePayment(getPaymentIntent: any, confirm
                     label,
                     amount: amountInCents,
                 },
-                requestPayerName: true,
+                // requestPayerName: true,
                 requestPayerEmail: true,
             }
             // eslint-disable-next-line @typescript-eslint/return-await
