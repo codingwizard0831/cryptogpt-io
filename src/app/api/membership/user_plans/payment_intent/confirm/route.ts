@@ -17,7 +17,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
     }
     const user = JSON.parse(userHeader);
-    console.log('user', user)
 
     const payment_intent = await retrievePaymentIntent(payment_intent_id);
     // console.log('payment_intent', payment_intent)
@@ -25,7 +24,7 @@ export async function POST(req: Request) {
       .from('user_plans')
       .select()
       .eq('user_id', user?.id)
-      .order('id', { ascending: false }).single();
+      .order('id', { ascending: false });
     console.log('userPlans', userPlans)
 
     if (userPlansError) {
@@ -45,11 +44,11 @@ export async function POST(req: Request) {
 
     const customer_id = stripeCustomer[0]?.customer_id;
 
-    if (userPlans && payment_intent.customer === customer_id && payment_intent.status === 'succeeded') {
+    if (userPlans?.length && payment_intent.customer === customer_id && payment_intent.status === 'succeeded') {
       const { error } = await supabase
         .from('user_plans')
         .update({ is_active: true })
-        .eq('id', userPlans.id)
+        .eq('id', userPlans[0].id)
 
       if (error) {
         return NextResponse.json({ success: false, error: 'Error activating user plan' }, { status: 500 });
