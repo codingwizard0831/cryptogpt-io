@@ -1,5 +1,5 @@
+import WaveSurfer from 'wavesurfer.js';
 import { useRef, useState, useEffect } from 'react';
-import { AudioVisualizer, LiveAudioVisualizer } from 'react-audio-visualize';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
@@ -49,30 +49,53 @@ export default function DashboardStrategyChat() {
     const carousel = useCarousel();
     const theme = useTheme();
 
-    const [blob, setBlob] = useState<Blob>();
-    const visualizerRef = useRef<HTMLCanvasElement>(null)
     useEffect(() => {
         fetch('/audios/voice.mp3')
             .then((response) => response.blob())
             .then((_blob) => {
-                setBlob(_blob);
             });
     }, [])
-    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
-    useEffect(() => {
-        console.log('navigator', navigator);
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then((stream) => {
-                const _mediaRecorder = new MediaRecorder(stream);
-                // _mediaRecorder.ondataavailable = (e) => {
-                //     setBlob(e.data);
-                // };
-                _mediaRecorder.start();
-                setMediaRecorder(_mediaRecorder);
-            });
-    }, []);
 
     const isAutoplay = useBoolean();
+    const audioPlayerRef = useRef<HTMLDivElement>();
+    const [audioPlayerWavesurfer, setAudioPlayerWavesurfer] = useState<WaveSurfer | null>(null);
+    const [recordedAudioMessage, setRecordedAudioMessage] = useState<any>(null);
+    const isRecording = useBoolean();
+
+    const handleAudioMessagePlay = (msgData: any) => {
+        if (recordedAudioMessage !== msgData) {
+            if (audioPlayerRef.current) {
+                audioPlayerRef.current.innerHTML = "";
+
+                const newAudioPlayerWavesurfer = WaveSurfer.create({
+                    container: audioPlayerRef.current,
+                    waveColor: theme.palette.primary.main,
+                    progressColor: theme.palette.primary.dark,
+                    height: 32,
+                    url: '/audios/voice.mp3',
+                })
+                if (isAutoplay.value) {
+                    newAudioPlayerWavesurfer.on('ready', () => {
+                        newAudioPlayerWavesurfer.play();
+                        isRecording.onTrue();
+                    });
+                }
+                setAudioPlayerWavesurfer(newAudioPlayerWavesurfer);
+                setRecordedAudioMessage(msgData);
+            }
+        }
+    }
+
+    const handleAudioMessagePause = () => {
+        isRecording.onToggle();
+        audioPlayerWavesurfer?.playPause();
+    }
+
+    const handleAudioMessageQuit = () => {
+        audioPlayerWavesurfer?.destroy();
+        isRecording.onFalse();
+        setRecordedAudioMessage(null);
+    }
 
     return <Stack direction="column" spacing={2} sx={{
         width: '100%',
@@ -116,7 +139,7 @@ export default function DashboardStrategyChat() {
                 pb: 8,
             }}>
                 <Box sx={{
-                    backgroundColor: alpha(theme.palette.background.default, 0.8),
+                    backgroundColor: alpha(theme.palette.background.default, 0.9),
                     position: 'sticky',
                     top: 0,
                     gap: 1,
@@ -135,21 +158,24 @@ export default function DashboardStrategyChat() {
                         <IconButton size="small" sx={{
                             transition: 'all 0.3s',
                             transform: isSettingDetail.value ? 'rotate(180deg)' : 'rotate(0deg)',
+                            border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
                         }} onClick={() => isSettingDetail.onToggle()}>
-                            <Iconify icon="subway:down-2" sx={{
-                                color: 'primary.main',
+                            <Iconify icon="mingcute:down-line" sx={{
+                                color: 'text.primary',
                             }} />
                         </IconButton>
                         <IconButton size="small" sx={{
+                            border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
                         }} onClick={() => isChatHistory.onToggle()}>
-                            <Iconify icon="material-symbols-light:view-list" sx={{
-                                color: 'primary.main',
+                            <Iconify icon="material-symbols:list" sx={{
+                                color: 'text.primary',
                             }} />
                         </IconButton>
                         <IconButton size="small" sx={{
+                            border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
                         }}>
-                            <Iconify icon="lets-icons:full" sx={{
-                                color: 'primary.main',
+                            <Iconify icon="octicon:screen-full-24" sx={{
+                                color: 'text.primary',
                             }} />
                         </IconButton>
                     </Box>
@@ -157,7 +183,7 @@ export default function DashboardStrategyChat() {
                     <Box sx={{
                         position: 'relative',
                         width: '100%',
-                        height: isSettingDetail.value ? '596px' : '0px',
+                        height: isSettingDetail.value ? '400px' : '0px',
                         overflowY: 'auto',
                         overflowX: 'hidden',
                         transition: 'all 0.3s',
@@ -212,30 +238,6 @@ export default function DashboardStrategyChat() {
                                     }
                                 </Carousel>
                             </Box>
-
-
-                            {blob && (
-                                <AudioVisualizer
-                                    ref={visualizerRef}
-                                    blob={blob}
-                                    width={300}
-                                    height={50}
-                                    barWidth={1}
-                                    gap={0}
-                                    barColor={theme.palette.primary.main}
-                                    style={{
-                                        height: '50px',
-                                    }}
-                                />
-                            )}
-
-                            {mediaRecorder && (
-                                <LiveAudioVisualizer
-                                    mediaRecorder={mediaRecorder}
-                                    width={200}
-                                    height={75}
-                                />
-                            )}
 
                             <Box sx={{
                                 width: '100%',
@@ -345,18 +347,41 @@ export default function DashboardStrategyChat() {
                         gap: 1,
                         my: 1,
                     }}>
-                        <Chip size="small" label="ETH/USDT" sx={{
+                        <Chip size="small" color="primary" label="ETH/USDT" sx={{
                             borderRadius: '16px',
                         }} />
-                        <Chip size="small" label="BTC/USDT" sx={{
+                        <Chip size="small" color="primary" label="BTC/USDT" sx={{
                             borderRadius: '16px',
                         }} />
-                        <Chip size="small" label="ADA/USDT" sx={{
+                        <Chip size="small" color="primary" label="ADA/USDT" sx={{
                             borderRadius: '16px',
                         }} />
-                        <Chip size="small" label="XRP/USDT" sx={{
+                        <Chip size="small" color="primary" label="XRP/USDT" sx={{
                             borderRadius: '16px',
                         }} />
+                    </Box>
+
+                    <Box sx={{
+                        width: '100%',
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.4)}`,
+                        height: '32px',
+                        display: recordedAudioMessage ? 'flex' : 'none',
+                        alignItems: 'center',
+                        gap: 1,
+                    }}>
+                        <IconButton size="small" onClick={() => handleAudioMessagePause()}>
+                            <Iconify icon={isRecording.value ? "material-symbols:pause" : "mdi:play"} sx={{
+                                color: 'text.primary'
+                            }} />
+                        </IconButton>
+                        <Box ref={audioPlayerRef} sx={{
+                            flex: 1,
+                        }} />
+                        <IconButton size="small" onClick={() => handleAudioMessageQuit()}>
+                            <Iconify icon="material-symbols:close" sx={{
+                                color: 'text.primary'
+                            }} />
+                        </IconButton>
                     </Box>
                 </Box>
 
@@ -421,7 +446,7 @@ export default function DashboardStrategyChat() {
                                     transition: 'all 0.3s',
                                 }}>
                                     <IconButton size="small" sx={{
-                                    }}>
+                                    }} onClick={() => handleAudioMessagePlay(item)} >
                                         <Iconify icon="cil:audio" sx={{
                                             color: 'primary.main',
                                             width: '16px',
