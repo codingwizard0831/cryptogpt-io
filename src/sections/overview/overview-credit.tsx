@@ -1,26 +1,13 @@
 import Image from 'next/image';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
-
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
-    Box,
-    Card,
-    Table,
-    alpha,
-    Button,
-    TableRow,
-    TableBody,
-    TableCell,
-    TableHead,
-    Typography,
-    Pagination,
-    CircularProgress
+    Box, Card, Table, Tab, Tabs, alpha, Button, TableRow, TableBody,
+    TableCell, TableHead, Typography, Pagination, CircularProgress
 } from '@mui/material';
-
 import axios, { endpoints } from 'src/utils/axios';
-
 import { useTokenBalances } from './useTokenBalances';
 
 interface TokenBalance {
@@ -54,6 +41,7 @@ const OverviewCredit: React.FC = () => {
     const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [isHidden, setIsHidden] = useState(false);
+    const [activeTab, setActiveTab] = useState(0);
     const rowsPerPage = 5;
 
     const balances: TokenBalance[] = useMemo(() => [
@@ -72,7 +60,6 @@ const OverviewCredit: React.FC = () => {
 
     const fetchPrices = useCallback(async () => {
         try {
-            // Fetch prices from Binance
             const binanceSymbols = ['ETHUSDT', 'DOTUSDT', 'SOLUSDT', 'AVAXUSDT', 'USDCUSDT'];
             const binanceResponses = await Promise.all(
                 binanceSymbols.map(symbol =>
@@ -87,18 +74,15 @@ const OverviewCredit: React.FC = () => {
                 return acc;
             }, {});
 
-            // Add USDT price (always 1)
             newPrices.USDT = 1;
 
-            // Fetch CRGPT price from MECX with error handling
             try {
                 const response = await axios.get(`${endpoints.dashboard.price_charts}`);
-                const { data: allPrices } = response
+                const { data: allPrices } = response;
                 newPrices.CRGPT = allPrices.CRGPT;
             } catch (mecxError) {
                 console.error('Error fetching CRGPT price from MECX:', mecxError);
-                // Fallback: Use the last known price or a default value
-                newPrices.CRGPT = prices.CRGPT || 0.071; // Using the previous example's default value
+                newPrices.CRGPT = prices.CRGPT || 0.071;
             }
 
             setPrices(newPrices);
@@ -121,16 +105,16 @@ const OverviewCredit: React.FC = () => {
     }, [prices]);
 
     useEffect(() => {
-        fetchPrices(); // Fetch prices immediately on mount
-        const interval = setInterval(fetchPrices, 20000); // Update every 20 seconds
+        fetchPrices();
+        const interval = setInterval(fetchPrices, 20000);
         return () => clearInterval(interval);
     }, [fetchPrices]);
 
     const getChartDomain = (token: string) => {
         if (token === 'USDT' || token === 'USDC') {
-            return [0.9999, 1.0001]; // Near-flat line for stablecoins
+            return [0.9999, 1.0001];
         }
-        return ['auto', 'auto']; // Dynamic range for other coins
+        return ['auto', 'auto'];
     };
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
@@ -180,6 +164,25 @@ const OverviewCredit: React.FC = () => {
                     {isHidden ? 'Show Data' : 'Hide Data'}
                 </Button>
             </Box>
+
+            <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)} sx={{
+                mb: 2,
+                '& .MuiTab-root': {
+                    color: 'text.secondary',
+                    '&.Mui-selected': {
+                        color: theme => theme.palette.primary.main,
+                    },
+                },
+                '& .MuiTabs-indicator': {
+                    backgroundColor: theme => theme.palette.primary.main,
+                    height: 2,
+                },
+            }}>
+                <Tab label="MetaMask" sx={{ color: theme => theme.palette.primary.main }} />
+                <Tab label="MECX" sx={{ color: theme => theme.palette.primary.main }} />
+                <Tab label="Binance" sx={{ color: theme => theme.palette.primary.main }} />
+                <Tab label="OKX" sx={{ color: theme => theme.palette.primary.main }} />
+            </Tabs>
 
             <Box sx={{ overflowY: "auto" }}>
                 <Table sx={{
@@ -252,5 +255,3 @@ const OverviewCredit: React.FC = () => {
 };
 
 export default OverviewCredit;
-
-
