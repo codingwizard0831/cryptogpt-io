@@ -338,6 +338,21 @@ export function AuthProvider({ children }: Props) {
     []
   );
 
+  const setUser = useCallback(async (user: any, access_token: string) => {
+    await setAccessToken(access_token);
+    setUserInfo(user);
+
+    dispatch({
+      type: Types.LOGIN,
+      payload: {
+        user: {
+          ...user,
+          access_token,
+        },
+      },
+    });
+  }, []);
+
   // LOGOUT
   const logout = useCallback(async () => {
     try {
@@ -377,9 +392,10 @@ export function AuthProvider({ children }: Props) {
       loginWithMetamask,
       loginWithBinance,
       register,
+      setUser,
       logout,
     }),
-    [loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask, loginWithBinance, logout, register, state.user, status]
+    [loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask, loginWithBinance, logout, setUser, register, state.user, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
