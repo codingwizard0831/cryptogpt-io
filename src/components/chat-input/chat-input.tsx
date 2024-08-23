@@ -1,12 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
-import { LiveAudioVisualizer } from 'react-audio-visualize';
+import WaveSurfer from 'wavesurfer.js';
+import { useRef, useState, useEffect } from 'react';
+// eslint-disable-next-line import/extensions
+import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js';
 
-import { Box, alpha, styled, useTheme, BoxProps, IconButton } from '@mui/material';
+import Select from "@mui/material/Select";
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
+import { Box, alpha, styled, useTheme, BoxProps, MenuItem, Typography, IconButton } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify/iconify';
+
+interface AudioDevice {
+    deviceId: string;
+    label: string;
+}
 
 const Textarea = styled(BaseTextareaAutosize)(
     ({ theme }) => `
@@ -33,7 +41,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     const [text, setText] = useState('');
     const isFocus = useBoolean();
     const isMultipleLines = useBoolean();
-    const isRecordingBarShow = useBoolean(true);
+    const isRecordingBarShow = useBoolean(false);
 
     useEffect(() => {
         if (text.split('\n').length > 2) {
@@ -43,49 +51,132 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         }
     }, [text, isMultipleLines]);
 
-    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
-    const isDeviceExists = useBoolean(true);
-    const isUserApproved = useBoolean(true);
+    const handleOpenRecordingBar = () => {
+        isRecordingBarShow.onToggle();
+    }
 
-    const requestMicrophoneAccess = useCallback(() => {
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then((stream) => {
-                const _mediaRecorder = new MediaRecorder(stream);
-                // _mediaRecorder.ondataavailable = (e) => {
-                //     setBlob(e.data);
-                // };
-                _mediaRecorder.start();
-                setMediaRecorder(_mediaRecorder);
-            })
-            .catch((err) => {
-                console.log('error: ', err);
-                if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                    console.log('No audio input devices found.');
-                    // Device does not exist
-                    isDeviceExists.onFalse();
-                } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                    // User dismissed the request
-                    console.log('The user refused to let this app use audio inputs.');
-                    isUserApproved.onFalse();
-                } else {
-                    // Handle other errors
-                }
-            });
-    }, [isDeviceExists, isUserApproved]);
+    const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null);
+    const [recordedWavesurfer, setRecordedWavesurfer] = useState<WaveSurfer | null>(null);
+    const [record, setRecord] = useState<any>(null);
+    const [isRecording, setIsRecording] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
+    const [scrollingWaveform, setScrollingWaveform] = useState(false);
+    const [audioDevices, setAudioDevices] = useState<AudioDevice[]>([]);
+    const [selectedDevice, setSelectedDevice] = useState<string>('');
+    const [progress, setProgress] = useState('00:00');
+
+    const micRef = useRef<HTMLDivElement>(null);
+    const recordingsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (isRecordingBarShow.value) {
-            console.log('requestMicrophoneAccess');
-            requestMicrophoneAccess();
+            createWaveSurfer();
+            loadAudioDevices();
         }
+
+        return () => {
+            if (wavesurfer) {
+                wavesurfer.destroy();
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isRecordingBarShow.value]);
 
-    const handleOpenRecordingBar = () => {
-        if (!isRecordingBarShow.value) {
-            requestMicrophoneAccess();
+    const createWaveSurfer = () => {
+        console.log("createWaveSurfer");
+
+        if (wavesurfer) {
+            wavesurfer.destroy();
         }
-        isRecordingBarShow.onToggle();
-    }
+
+        if (micRef.current) {
+            micRef.current.innerHTML = "";
+
+            const newWavesurfer = WaveSurfer.create({
+                container: micRef.current,
+                // width: 300,
+                height: 32,
+                waveColor: theme.palette.info.main,
+                progressColor: theme.palette.info.dark,
+            });
+
+            const newRecord = newWavesurfer.registerPlugin(RecordPlugin.create({
+                scrollingWaveform,
+                renderRecordedAudio: false
+            }));
+
+            newRecord.on('record-end', (blob: Blob) => {
+                if (recordingsRef.current) recordingsRef.current.innerHTML = "";
+                const container = recordingsRef.current;
+                if (!container) return;
+
+                const recordedUrl = URL.createObjectURL(blob);
+
+                if (recordedWavesurfer) {
+                    recordedWavesurfer.destroy();
+                }
+
+                const newRecordedWavesurfer = WaveSurfer.create({
+                    container,
+                    // width: 300,
+                    height: 32,
+                    waveColor: theme.palette.primary.main, // 'rgb(200, 100, 0)',
+                    progressColor: theme.palette.primary.dark, // 'rgb(100, 50, 0)',
+                    url: recordedUrl,
+                });
+                setRecordedWavesurfer(newRecordedWavesurfer);
+            });
+
+            newRecord.on('record-progress', (time: number) => {
+                updateProgress(time);
+            });
+
+            setWavesurfer(newWavesurfer);
+            setRecord(newRecord);
+        }
+    };
+
+    const loadAudioDevices = async () => {
+        const devices = await RecordPlugin.getAvailableAudioDevices();
+        setAudioDevices(devices);
+    };
+
+    const updateProgress = (time: number) => {
+        const formattedTime = [
+            Math.floor((time % 3600000) / 60000),
+            Math.floor((time % 60000) / 1000),
+        ]
+            .map((v) => (v < 10 ? `0${v}` : v))
+            .join(':');
+        setProgress(formattedTime);
+    };
+
+    const handleRecord = () => {
+        if (isRecording || isPaused) {
+            record.stopRecording();
+            setIsRecording(false);
+            setIsPaused(false);
+        } else {
+            record.startRecording({ deviceId: selectedDevice }).then(() => {
+                setIsRecording(true);
+            });
+        }
+    };
+
+    const handlePause = () => {
+        if (isPaused) {
+            record.resumeRecording();
+            setIsPaused(false);
+        } else {
+            record.pauseRecording();
+            setIsPaused(true);
+        }
+    };
+
+    const handleScrollingWaveform = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setScrollingWaveform(event.target.checked);
+        createWaveSurfer();
+    };
 
     return <Box sx={{
         width: '100%',
@@ -176,67 +267,135 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         </Box>
 
         <Box sx={{
-            backgroundColor: alpha(theme.palette.background.default, 0.8),
+            backgroundColor: alpha(theme.palette.background.default, 0.9),
             borderRadius: 1,
             border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
             position: 'absolute',
             left: 0,
             width: '100%',
-            top: "-64px",
-            height: '60px',
+            top: "-114px",
+            height: '110px',
             opacity: isRecordingBarShow.value ? 1 : 0,
             visibility: isRecordingBarShow.value ? 'visible' : 'hidden',
             transition: 'all 0.3s',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
             gap: 2,
             p: 1,
         }}>
-
-            <Box sx={{ flex: 1 }}>
-                {mediaRecorder && (
-                    <LiveAudioVisualizer
-                        mediaRecorder={mediaRecorder}
-                        width={500}
-                        height={36}
-                    />
-                )}
-            </Box>
             <Box sx={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
+                justifyContent: 'space-between',
             }}>
-                <IconButton size="small" sx={{
-                    backgroundColor: alpha(theme.palette.primary.main, 0.8),
-                }}
-                    onClick={() => { }}
-                >
-                    <Iconify icon="fluent:record-20-regular" sx={{
-                        color: 'text.primary'
-                    }} />
-                </IconButton>
+                <Box ref={micRef} sx={{
+                    border: `1px solid ${alpha(theme.palette.primary.main, 0.4)}`,
+                    height: '32px',
+                    flex: 1,
+                }} />
 
-                <IconButton size="small" sx={{
-                    backgroundColor: alpha(theme.palette.primary.main, 0.8),
-                }}
-                    onClick={() => { }}
-                >
-                    <Iconify icon="material-symbols:pause" sx={{
-                        color: 'text.primary'
-                    }} />
-                </IconButton>
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                }}>
+                    <IconButton size="small" sx={{
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
+                    }}
+                        onClick={handleRecord}
+                    >
+                        <Iconify icon={isRecording ? "material-symbols:stop" : "material-symbols:mic"} sx={{
+                            color: 'text.primary'
+                        }} />
+                    </IconButton>
 
-                <IconButton size="small" sx={{
-                    backgroundColor: alpha(theme.palette.primary.main, 0.8),
-                }}
-                    onClick={() => { }}
+                    <IconButton size="small" sx={{
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
+                    }}
+                        onClick={handlePause}
+                    >
+                        <Iconify icon={isPaused ? "material-symbols:resume" : "material-symbols:pause"} sx={{
+                            color: 'text.primary'
+                        }} />
+                    </IconButton>
+                </Box>
+
+                <Typography variant="body1">
+                    {progress}
+                </Typography>
+
+                <Select
+                    size="small"
+                    value={selectedDevice}
+                    onChange={(e) => setSelectedDevice(e.target.value as string)}
+                    displayEmpty
+                    sx={{ width: 120 }}
                 >
-                    <Iconify icon="mdi:check-bold" sx={{
-                        color: 'text.primary'
-                    }} />
-                </IconButton>
+                    <MenuItem value="" disabled>Select mic</MenuItem>
+                    {audioDevices.map((device) => (
+                        <MenuItem key={device.deviceId} value={device.deviceId}>
+                            {device.label || device.deviceId}
+                        </MenuItem>
+                    ))}
+                </Select>
+                {/* 
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={scrollingWaveform}
+                            onChange={handleScrollingWaveform}
+                        />
+                    }
+                    label="Scrolling"
+                /> */}
+            </Box>
+
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                justifyContent: 'space-between',
+            }}>
+                <Box ref={recordingsRef} sx={{
+                    border: `1px solid ${alpha(theme.palette.primary.main, 0.4)}`,
+                    height: '32px',
+                    flex: 1,
+                }} />
+
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                }}>
+                    <IconButton size="small" sx={{
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
+                    }}
+                        onClick={() => recordedWavesurfer?.playPause()}
+                    >
+                        <Iconify icon="material-symbols:resume" sx={{
+                            color: 'text.primary'
+                        }} />
+                    </IconButton>
+                    <IconButton size="small" sx={{
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
+                    }}
+                        onClick={() => { }}
+                    >
+                        <Iconify icon="material-symbols:close" sx={{
+                            color: 'text.primary'
+                        }} />
+                    </IconButton>
+                    <IconButton size="small" sx={{
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
+                    }}
+                        onClick={() => { }}
+                    >
+                        <Iconify icon="material-symbols:check" sx={{
+                            color: 'text.primary'
+                        }} />
+                    </IconButton>
+                </Box>
             </Box>
         </Box>
     </Box>
