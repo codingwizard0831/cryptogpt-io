@@ -43,6 +43,8 @@ export const endpoints = {
 
     loginWithBinance: '/api/auth/signin-binance/',
 
+    token: '/api/auth/token/',
+
     confirmEmail: '/auth/confirm_email/',
     resendEmail: '/auth/resend_email_token/',
     confirmPhone: '/auth/confirm_phone/',

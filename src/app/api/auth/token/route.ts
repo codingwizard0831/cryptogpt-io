@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       .update({ expires_at: newExpiresAt })
       .eq('token', token)
 
-    return NextResponse.json({ success: true, data: user }, { status: 200 })
+    return NextResponse.json({ success: true, data: { user, access_token: tokenData.access_token } }, { status: 200 })
 
   } catch (error) {
     console.error('Error in login-with-token:', error)
