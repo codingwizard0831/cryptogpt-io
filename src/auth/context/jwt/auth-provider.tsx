@@ -4,11 +4,19 @@ import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
 
-import { signMessageWithMetamask, connectWalletWithMetamask } from 'src/lib/metamask';
+// import { signMessageWithMetamask, connectWalletWithMetamask } from 'src/lib/metamask';
 
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
-import { getUserInfo, setUserInfo, isValidToken, getAccessToken, setAccessToken, setRefreshToken, loadUserProfileData } from './utils';
+import {
+  getUserInfo,
+  setUserInfo,
+  isValidToken,
+  getAccessToken,
+  setAccessToken,
+  setRefreshToken,
+  loadUserProfileData,
+} from './utils';
 
 // ----------------------------------------------------------------------
 /**
@@ -135,10 +143,7 @@ export function AuthProvider({ children }: Props) {
     };
 
     const res = await axios.post(endpoints.auth.loginWithEmailAndPassword, playloadData);
-    const {
-      data,
-      error,
-    } = res.data;
+    const { data, error } = res.data;
 
     if (!data || error) {
       const { message } = error;
@@ -177,10 +182,7 @@ export function AuthProvider({ children }: Props) {
     };
 
     const res = await axios.post(endpoints.auth.loginWithCodeSend, playloadData);
-    const {
-      data,
-      error,
-    } = res.data;
+    const { data, error } = res.data;
 
     if (!data || error) {
       const { message } = error;
@@ -195,14 +197,11 @@ export function AuthProvider({ children }: Props) {
       ...(email && { email }),
       ...(phone && { phone }),
       token: code,
-      type: email ? "email" : "sms",
+      type: email ? 'email' : 'sms',
     };
 
     const res = await axios.post(endpoints.auth.loginWithCodeVerify, playloadData);
-    const {
-      data,
-      error,
-    } = res.data;
+    const { data, error } = res.data;
 
     if (!data || error) {
       const { message } = error;
@@ -233,38 +232,45 @@ export function AuthProvider({ children }: Props) {
     });
   }, []);
 
-  const loginWithMetamask = useCallback(async () => {
-    const { address, error: walletConnecError } = await connectWalletWithMetamask();
-    if (walletConnecError) {
-      throw new Error(walletConnecError);
+  const loginWithMetamask = useCallback(async (account: string, provider: any) => {
+    const result = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
+      address: account,
+    });
+
+    if (result.status !== 200) {
+      return;
     }
-    const nonceResponse = await axios.post(endpoints.auth.loginWithMetamaskNonce, {
-      address,
-    })
-    const userNonce = nonceResponse.data.user[0].metamask_metadata.nonce;
-    console.log('nonce', userNonce);
-    const rst = await signMessageWithMetamask(userNonce);
-    if (rst.error) {
-      throw new Error(rst.error);
+
+    if (result.data == null) {
+      return;
     }
-    const signedMessage = rst.signature;
+
+    const { nonce } = result.data.user[0].metamask_metadata;
+
+    if (provider == null) {
+      return;
+    }
+
+    const signature = await provider.request({
+      method: 'personal_sign',
+      params: [nonce, account],
+    });
 
     const response = await axios.post(endpoints.auth.loginWithMetamaskSignin, {
-      address,
-      signedMessage,
-      message: rst.message,
-      nonce: userNonce,
-    })
-    const { data, error } = response.data;
+      address: account,
+      signedMessage: signature,
+      nonce,
+    });
+
+    const { token, user, error } = response.data;
+
     if (error) {
       throw new Error(error);
     } else {
-      const { user, token } = data;
       if (token) {
         await setAccessToken(token);
       }
       if (user) {
-        console.log('user', user);
         setUserInfo(user);
       }
 
@@ -282,7 +288,7 @@ export function AuthProvider({ children }: Props) {
 
   const loginWithBinance = useCallback(async (userId: string) => {
     const response = await axios.post(endpoints.auth.loginWithBinance, {
-      userId
+      userId,
     });
     const responseData = response.data;
     if (responseData.error) {
@@ -310,33 +316,27 @@ export function AuthProvider({ children }: Props) {
   }, []);
 
   // REGISTER
-  const register = useCallback(
-    async (email: string, password: string) => {
-      const payloadData = {
-        email,
-        password,
-      };
+  const register = useCallback(async (email: string, password: string) => {
+    const payloadData = {
+      email,
+      password,
+    };
 
-      const res = await axios.post(endpoints.auth.register, payloadData);
-      const {
-        data,
-        error,
-      } = res.data;
+    const res = await axios.post(endpoints.auth.register, payloadData);
+    const { data, error } = res.data;
 
-      if (!data || error) {
-        const { message } = error;
-        throw new Error(message || 'Rigister failed');
-      }
+    if (!data || error) {
+      const { message } = error;
+      throw new Error(message || 'Rigister failed');
+    }
 
-      const { user } = data;
-      console.log('user', user);
+    const { user } = data;
+    console.log('user', user);
 
-      if (!user) {
-        throw new Error("Can't register user");
-      }
-    },
-    []
-  );
+    if (!user) {
+      throw new Error("Can't register user");
+    }
+  }, []);
 
   const setUser = useCallback(async (user: any, access_token: string) => {
     await setAccessToken(access_token);
@@ -395,7 +395,18 @@ export function AuthProvider({ children }: Props) {
       setUser,
       logout,
     }),
-    [loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask, loginWithBinance, logout, setUser, register, state.user, status]
+    [
+      loginWithEmailAndPassword,
+      loginWithCodeSend,
+      loginWithCodeVerify,
+      loginWithMetamask,
+      loginWithBinance,
+      logout,
+      setUser,
+      register,
+      state.user,
+      status,
+    ]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

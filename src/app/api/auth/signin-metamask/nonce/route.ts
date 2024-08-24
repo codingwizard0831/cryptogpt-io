@@ -1,65 +1,56 @@
-import { NextResponse } from "next/server";
+import { v4 as uuidv4 } from 'uuid';
+import { NextRequest, NextResponse } from 'next/server';
 
-import { supabase } from "src/lib/supabase";
+import { supabase } from 'src/lib/supabase';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const res = await req.json();
-    const nonce = Math.floor(Math.random() * 1000000);
-    const { data, error } = await supabase
-      .from("users")
-      .select("id")
-      .eq("metamask_metadata->>address", res.address)
+    const { address } = await req.json();
+    const nonce = uuidv4();
+
+    const { data: existingUser, error: findError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('metamask_metadata->>address', address)
       .single();
-    if (!data || error) {
-      const { data: user, error: upsertError } = await supabase
-        .from("users")
-        .upsert([
-          {
-            metamask_metadata: {
-              address: res.address,
-              nonce: nonce.toString(),
-            },
-            auth: {
-              lastLoggedinTime: new Date().toISOString(),
-              lastAuthStatus: "pending",
-              lastLoggedinProvider: "metamask"
-            }
-          }
-        ])
-        .select();
-      if (user || !upsertError) {
-        return NextResponse.json({ user }, { status: 200 });
-      }
-      throw new Error("Failed to create user");
-    }
-    const { data: user, error: updateError } = await supabase
-      .from("users")
-      .update([
-        {
-          metamask_metadata: {
-            address: res.address,
-            nonce: nonce.toString(),
-          },
+
+    if (existingUser) {
+      // Update the user's nonce
+      const { data: user, error } = await supabase
+        .from('users')
+        .update({
+          metamask_metadata: { address, nonce },
           auth: {
             lastLoggedinTime: new Date().toISOString(),
-            lastAuthStatus: "pending",
-            lastLoggedinProvider: "metamask"
-          }
-        }
-      ])
-      .eq("metamask_metadata->>address", res.address)
-      .select();
+            lastAuthStatus: 'pending',
+            lastLoggedinProvider: 'metamask',
+          },
+        })
+        .eq('id', existingUser.id)
+        .select();
 
-    if (user || !updateError) {
+      if (error) throw new Error('Failed to update user');
+
       return NextResponse.json({ user }, { status: 200 });
     }
-    throw new Error("Failed to update user");
+
+    // If no existing user, create a new user
+    const { data: user, error } = await supabase
+      .from('users')
+      .insert({
+        metamask_metadata: { address, nonce },
+        auth: {
+          lastLoggedinTime: new Date().toISOString(),
+          lastAuthStatus: 'pending',
+          lastLoggedinProvider: 'metamask',
+        },
+      })
+      .select();
+
+    if (error) throw new Error('Failed to create user');
+
+    return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    // console.log(error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
