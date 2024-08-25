@@ -1,9 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-
-import { signToken } from 'src/lib/utils';
-import { verifyMessageWithMetamask } from 'src/lib/metamask';
-import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 import { ethers } from 'ethers';
+import { NextRequest, NextResponse } from 'next/server';
+import { signToken } from 'src/lib/utils';
+import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,55 +10,48 @@ export async function POST(req: NextRequest) {
     // Fetch the user by MetaMask address
     const { data: user, error: userError } = await supabase
       .from('users')
-      .select('id, metamask_metadata')
-      .eq('metamask_metadata->>address', address)
+      .select('id, metamask_nonce')
+      .eq('metamask_address', address)
       .single();
 
     if (userError || !user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Verify the nonce
-    if (user.metamask_metadata.nonce !== nonce) {
-      return NextResponse.json({ error: 'Nonce verification failed' }, { status: 401 });
-    }
-
-    // Verify the signed message
+    // Verify the nonce and signed message
     const recoveredAddress = ethers.verifyMessage(nonce, signedMessage);
-    if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    if (user.metamask_nonce !== nonce || recoveredAddress.toLowerCase() !== address.toLowerCase()) {
+      return NextResponse.json({ error: 'Invalid nonce or signature' }, { status: 401 });
     }
 
-    // Fetch or create the corresponding auth user
-    let authUser;
-    const { data: existingAuthUser, error: authUserError } = await supabase
+    let userId;
+    const { data: authUser, error: authUserError } = await supabase
       .from('auth_users')
-      .select('*')
+      .select('id')
       .eq('raw_user_meta_data->>address', address)
       .single();
 
-    if (!existingAuthUser) {
+    if (!authUser) {
       const { data: newUser, error: newUserError } =
         await supabaseServiceRole.auth.admin.createUser({
-          email: `${address}@cryptogpt.io`,
+          email: '',
           user_metadata: { address },
           email_confirm: true,
         });
 
       if (newUserError || !newUser) {
-        return NextResponse.json({ error: 'Failed to create auth user' }, { status: 500 });
+        return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
       }
-      authUser = newUser.user;
+      userId = newUser.user.id;
     } else {
-      authUser = existingAuthUser;
+      userId = authUser.id;
     }
 
-    // Update user record with auth user ID
     const { error: updateError } = await supabase
       .from('users')
       .update({
-        userId: authUser.id,
-        metamask_metadata: { address, nonce },
+        userId,
+        metamask_nonce: nonce,
         auth: {
           lastLoggedinTime: new Date().toISOString(),
           lastAuthStatus: 'success',
@@ -70,21 +61,15 @@ export async function POST(req: NextRequest) {
       .eq('id', user.id);
 
     if (updateError) {
-      return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
+      return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
     }
 
-    // Sign and return the JWT token
     const token = await signToken(
-      {
-        address,
-        sub: authUser.id,
-        aud: 'authenticated',
-      },
-      { expiresIn: `${60 * 60 * 24}s` }
+      { address, sub: userId, aud: 'authenticated' },
+      { expiresIn: '24h' }
     );
-
-    return NextResponse.json({ token, user: authUser }, { status: 200 });
+    return NextResponse.json({ token, user: { id: userId, address } }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
   }
 }

@@ -8,49 +8,26 @@ export async function POST(req: NextRequest) {
     const { address } = await req.json();
     const nonce = uuidv4();
 
-    const { data: existingUser, error: findError } = await supabase
+    const { data: user, error } = await supabase
       .from('users')
-      .select('id')
-      .eq('metamask_metadata->>address', address)
-      .single();
-
-    if (existingUser) {
-      // Update the user's nonce
-      const { data: user, error } = await supabase
-        .from('users')
-        .update({
-          metamask_metadata: { address, nonce },
+      .upsert(
+        {
+          metamask_address: address,
+          metamask_nonce: nonce,
           auth: {
             lastLoggedinTime: new Date().toISOString(),
             lastAuthStatus: 'pending',
             lastLoggedinProvider: 'metamask',
           },
-        })
-        .eq('id', existingUser.id)
-        .select();
-
-      if (error) throw new Error('Failed to update user');
-
-      return NextResponse.json({ user }, { status: 200 });
-    }
-
-    // If no existing user, create a new user
-    const { data: user, error } = await supabase
-      .from('users')
-      .insert({
-        metamask_metadata: { address, nonce },
-        auth: {
-          lastLoggedinTime: new Date().toISOString(),
-          lastAuthStatus: 'pending',
-          lastLoggedinProvider: 'metamask',
         },
-      })
+        { onConflict: ['metamask_address'] } // This is a unique column
+      )
       .select();
 
-    if (error) throw new Error('Failed to create user');
+    if (error) return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
 
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
   }
 }

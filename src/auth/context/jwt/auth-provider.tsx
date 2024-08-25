@@ -245,7 +245,7 @@ export function AuthProvider({ children }: Props) {
       return;
     }
 
-    const { nonce } = result.data.user[0].metamask_metadata;
+    const metamaskUser = result.data.user[0];
 
     if (provider == null) {
       return;
@@ -253,13 +253,13 @@ export function AuthProvider({ children }: Props) {
 
     const signature = await provider.request({
       method: 'personal_sign',
-      params: [nonce, account],
+      params: [metamaskUser.metamask_nonce, metamaskUser.metamask_address],
     });
 
     const response = await axios.post(endpoints.auth.loginWithMetamaskSignin, {
-      address: account,
+      address: metamaskUser.metamask_address,
       signedMessage: signature,
-      nonce,
+      nonce: metamaskUser.metamask_nonce,
     });
 
     const { token, user, error } = response.data;
