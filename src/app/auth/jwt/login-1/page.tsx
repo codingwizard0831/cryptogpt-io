@@ -36,14 +36,14 @@ export default function Home() {
         method: 'POST',
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const {success, options} = await optionsResponse.json();
+      const { success, options } = await optionsResponse.json();
       if (success) {
         console.log('Received options:', options);
-  
+
         console.log('Starting registration with options');
         const attestationResponse = await startRegistration(options);
         console.log('Attestation response:', attestationResponse);
-  
+
         console.log('Sending verification request');
         const verificationResponse = await fetch('/api/auth/webauthn-register', {
           method: 'PUT',
@@ -53,11 +53,12 @@ export default function Home() {
           },
           body: JSON.stringify({ attestationResponse }),
         });
-  
+
         console.log('Verification response status:', verificationResponse.status);
+        console.log('Verification response:', verificationResponse);
         const verificationResult = await verificationResponse.json();
         console.log('Verification result:', verificationResult);
-  
+
         if (verificationResponse.ok) {
           console.log('WebAuthn registration successful');
         } else {
@@ -73,21 +74,40 @@ export default function Home() {
 
   const handleWebAuthnLogin = async () => {
     try {
-      const options = await (await fetch('/api/auth/webauthn-login', { method: 'POST' })).json();
-      const assertionResponse = await startAuthentication(options);
-      const verificationResponse = await fetch('/api/auth/webauthn-login', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assertionResponse }),
+      const optionsResponse = await fetch('/api/auth/webauthn-login', {
+        method: 'POST',
       });
+      const { success, options } = await optionsResponse.json();
+      if (success) {
+        console.log('Received options:', options);
 
-      if (verificationResponse.ok) {
-        const { session: authSession } = await verificationResponse.json();
-        setSession(authSession);
-        console.log('WebAuthn authentication successful');
+        console.log('Starting login with options');
+        const assertionResponse = await startAuthentication(options);
+        console.log('Assertion response:', assertionResponse);
+
+        console.log('Sending verification request');
+        const verificationResponse = await fetch('/api/auth/webauthn-login', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ assertionResponse }),
+        });
+
+        console.log('Verification response status:', verificationResponse.status);
+        console.log('Verification response:', verificationResponse);
+        const verificationResult = await verificationResponse.json();
+        console.log('Verification result:', verificationResult);
+
+        if (verificationResponse.ok) {
+          const { session: authSession } = await verificationResponse.json();
+          setSession(authSession);
+          console.log('WebAuthn authentication successful');
+        } else {
+          console.error('WebAuthn authentication failed');
+        }
       } else {
-        console.error('WebAuthn authentication failed');
+        console.error('Error during WebAuthn registration:');
       }
+
     } catch (error) {
       console.error('Error during WebAuthn authentication:', error);
     }
