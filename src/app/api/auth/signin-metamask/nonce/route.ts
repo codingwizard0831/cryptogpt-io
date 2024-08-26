@@ -1,65 +1,33 @@
-import { NextResponse } from "next/server";
+import { v4 as uuidv4 } from 'uuid';
+import { NextRequest, NextResponse } from 'next/server';
 
-import { supabase } from "src/lib/supabase";
+import { supabase } from 'src/lib/supabase';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const res = await req.json();
-    const nonce = Math.floor(Math.random() * 1000000);
-    const { data, error } = await supabase
-      .from("users")
-      .select("id")
-      .eq("metamask_metadata->>address", res.address)
-      .single();
-    if (!data || error) {
-      const { data: user, error: upsertError } = await supabase
-        .from("users")
-        .upsert([
-          {
-            metamask_metadata: {
-              address: res.address,
-              nonce: nonce.toString(),
-            },
-            auth: {
-              lastLoggedinTime: new Date().toISOString(),
-              lastAuthStatus: "pending",
-              lastLoggedinProvider: "metamask"
-            }
-          }
-        ])
-        .select();
-      if (user || !upsertError) {
-        return NextResponse.json({ user }, { status: 200 });
-      }
-      throw new Error("Failed to create user");
-    }
-    const { data: user, error: updateError } = await supabase
-      .from("users")
-      .update([
+    const { address } = await req.json();
+    const nonce = uuidv4();
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .upsert(
         {
-          metamask_metadata: {
-            address: res.address,
-            nonce: nonce.toString(),
-          },
+          metamask_address: address,
+          metamask_nonce: nonce,
           auth: {
             lastLoggedinTime: new Date().toISOString(),
-            lastAuthStatus: "pending",
-            lastLoggedinProvider: "metamask"
-          }
-        }
-      ])
-      .eq("metamask_metadata->>address", res.address)
+            lastAuthStatus: 'pending',
+            lastLoggedinProvider: 'metamask',
+          },
+        },
+        { onConflict: ['metamask_address'] } // This is a unique column
+      )
       .select();
 
-    if (user || !updateError) {
-      return NextResponse.json({ user }, { status: 200 });
-    }
-    throw new Error("Failed to update user");
+    if (error) return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
+
+    return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    // console.log(error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
   }
 }

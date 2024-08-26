@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import merge from 'lodash/merge';
+import { MetaMaskProvider } from '@metamask/sdk-react';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeOptions, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
@@ -66,8 +67,18 @@ export default function ThemeProvider({ children }: Props) {
     <NextAppDirEmotionCacheProvider options={{ key: 'css' }}>
       <MuiThemeProvider theme={theme}>
         <RTL themeDirection={settings.themeDirection}>
-          <CssBaseline />
-          {children}
+          <MetaMaskProvider
+            debug={false}
+            sdkOptions={{
+              dappMetadata: {
+                name: 'CryptoGPT',
+                url: window.location.href,
+              },
+            }}
+          >
+            <CssBaseline />
+            {children}
+          </MetaMaskProvider>
         </RTL>
       </MuiThemeProvider>
     </NextAppDirEmotionCacheProvider>
