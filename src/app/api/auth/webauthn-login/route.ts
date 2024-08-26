@@ -15,10 +15,15 @@ export async function POST(req: Request) {
     });
 
     console.log('post-options', options);
-
-    await supabase.from('webauthn_challenges').insert({
+    
+    const { error } = await supabase.from('webauthn_challenges').insert({
       challenge: options.challenge,
     });
+
+    if (error) {
+      console.error('Error inserting challenge:', error);
+      return NextResponse.json({ success: false, error: 'Failed to save challenge' }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true, options });
   } catch (error) {

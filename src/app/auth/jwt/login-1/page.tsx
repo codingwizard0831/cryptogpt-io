@@ -82,11 +82,13 @@ export default function Home() {
         method: 'POST',
       });
       const { success, options } = await optionsResponse.json();
-      if (success) {
+        alert(`sucess: ${success}`);
+        if (success) {
         console.log('Received options:', options);
 
         console.log('Starting login with options');
         const assertionResponse = await startAuthentication(options);
+        alert(true);
         console.log('Assertion response:', assertionResponse);
 
         console.log('Sending verification request');
