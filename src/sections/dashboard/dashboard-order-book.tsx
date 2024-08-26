@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
 import { fNumberPrice } from 'src/utils/format-number';
+import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
 
 import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
@@ -41,7 +41,7 @@ export default function DashboardOrderBook() {
   const [marketPriceDirection, setMarketPriceDirection] = useState('down');
 
   // Get real-time price updates from trading system
-  const [currentSelectedPair, setCurrentSelectedPair] = useState('BTC/USDT');
+  const [currentSelectedPair, setCurrentSelectedPair] = useState('BTC/USDT'); // TODO: Make pair dynamic
   const [currentSelectedExchange, setCurrentSelectedExchange] = useState('Binance');
 
   useEffect(() => {

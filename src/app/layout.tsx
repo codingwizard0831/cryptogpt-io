@@ -13,6 +13,7 @@ import { config } from 'src/web3/config';
 import Web3ModalProvider from 'src/web3/context';
 import { LocalizationProvider } from 'src/locales';
 import { AuthProvider } from 'src/auth/context/jwt';
+import { TokenSection } from 'src/provider/TokenProvider';
 import { MembershipPlansProvider } from 'src/provider/MembershipPlansProvider';
 import { UserMembershipPlansProvider } from 'src/provider/UserMembershipPlansProvider';
 
@@ -74,10 +75,12 @@ export default function RootLayout({ children }: Props) {
                     <UserMembershipPlansProvider>
                       <MotionLazy>
                         <SnackbarProvider>
-                          <SettingsDrawer />
-                          <ProgressBar />
-                          {children}
-                          <ChatbotBubble />
+                          <TokenSection>
+                            <SettingsDrawer />
+                            <ProgressBar />
+                            {children}
+                            <ChatbotBubble />
+                          </TokenSection>
                         </SnackbarProvider>
                       </MotionLazy>
                     </UserMembershipPlansProvider>

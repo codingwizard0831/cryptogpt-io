@@ -4,13 +4,13 @@ import { LogoutOptions, PopupLoginOptions, RedirectLoginOptions } from '@auth0/a
 
 export type ActionMapType<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
-  ? {
-    type: Key;
-  }
-  : {
-    type: Key;
-    payload: M[Key];
-  };
+    ? {
+        type: Key;
+      }
+    : {
+        type: Key;
+        payload: M[Key];
+      };
 };
 
 export type AuthUserType = null | Record<string, any>;
@@ -25,12 +25,7 @@ export type AuthStateType = {
 
 type CanRemove = {
   login?: (email: string, password: string) => Promise<void>;
-  register?: (
-    email: string,
-    username: string,
-    password: string,
-    phone: string,
-  ) => Promise<void>;
+  register?: (email: string, username: string, password: string, phone: string) => Promise<void>;
   //
   loginWithGoogle?: () => Promise<void>;
   loginWithGithub?: () => Promise<void>;
@@ -55,12 +50,10 @@ export type JWTContextType = CanRemove & {
   loginWithEmailAndPassword: (email: string, password: string) => Promise<void>;
   loginWithCodeSend: (email: string, code: string) => Promise<void>;
   loginWithCodeVerify: (email: string, phone: string, code: string) => Promise<void>;
-  loginWithMetamask: () => Promise<void>;
+  loginWithMetamask: (account: string, provider: any) => Promise<void>;
   loginWithBinance: (email: string) => Promise<void>;
-  register: (
-    email: string,
-    password: string,
-  ) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
+  setUser: (user: any, access_token: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 

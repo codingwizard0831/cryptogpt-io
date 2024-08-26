@@ -34,18 +34,18 @@ export async function POST(req: Request) {
     const customer_id = stripeCustomer[0]?.customer_id;
 
     if (payment_intent.customer === customer_id && payment_intent.status === 'succeeded') {
-      const { data: existingUserCredit, error: fetchError } = await supabase
+      const { data: existingUserCredit, error: fetchError }: any = await supabase
         .from('user_credits')
         .select('*')
-        .eq('user_id', user?.id)
-        .single();
+        .eq('user_id', user?.id);
+
 
       if (fetchError) {
         return NextResponse.json({ success: false, error: fetchError }, { status: 400 });
       }
 
-      if (existingUserCredit) {
-        const totalAmount = existingUserCredit.amount + amount;
+      if (existingUserCredit?.length) {
+        const totalAmount = existingUserCredit[0].amount + amount;
         const { error } = await supabase
           .from('user_credits')
           .update({ amount: totalAmount })

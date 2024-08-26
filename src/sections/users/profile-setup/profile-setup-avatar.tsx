@@ -4,7 +4,8 @@ import Image from 'next/image';
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Grid, Modal, Stack, TextField, Typography, Autocomplete, Skeleton } from '@mui/material';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import { Box, Card, Grid, Modal, Stack, TextField, Typography, Autocomplete, Skeleton, IconButton } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -44,6 +45,7 @@ export default function ProfileSetupAvatar() {
   const [models, setModels] = useState<any>([]);
   const [avatars, setAvatars] = useState<any>([]);
   const [loadedImages, setLoadedImages] = useState<boolean[]>(new Array(avatars?.length).fill(false));
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
   const [selectedAvatar, setSelectedAvatar] = useState<number | null>(null);
   const [data, setData] = useState<ProfileData>({
     size: "256x256",
@@ -217,11 +219,12 @@ export default function ProfileSetupAvatar() {
                 transform: 'translate(-50%, -50%)',
                 width: 'auto',
                 maxWidth: 400,
+                minWidth: 360,
                 p: 3,
                 borderRadius: 2,
               }}
             >
-              <Typography variant="h4" align="center" gutterBottom>
+              <Typography variant="h4" align="center" gutterBottom sx={{ color: theme => theme.palette.primary.main }}>
                 Choose your avatar from these AI images
               </Typography>
 
@@ -298,6 +301,23 @@ export default function ProfileSetupAvatar() {
                           }
                         }}
                       />
+                      <IconButton
+                        sx={{
+                          position: 'absolute',
+                          bottom: 5,
+                          right: 5,
+                          backgroundColor: 'rgba(0,0,0,0.5)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0,0,0,0.7)',
+                          },
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEnlargedImage(avatar);
+                        }}
+                      >
+                        <ZoomInIcon sx={{ color: 'white' }} />
+                      </IconButton>
                     </Box>
                   </Grid>
                 ))}
@@ -323,6 +343,42 @@ export default function ProfileSetupAvatar() {
                   Continue
                 </LoadingButton>
               </Box>
+              <Modal
+                open={enlargedImage !== null}
+                onClose={() => setEnlargedImage(null)}
+                aria-labelledby="enlarged-image-modal"
+              >
+                <Box sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  bgcolor: 'background.paper',
+                  boxShadow: 24,
+                  p: 2,
+                  maxWidth: 680,
+                  minWidth: 360,
+                  maxHeight: 730,
+                  borderRadius: 2,
+                }}>
+                  {enlargedImage && (
+                    <>
+                      <Image
+                        src={enlargedImage}
+                        alt="Enlarged avatar"
+                        layout="responsive"
+                        width={500}
+                        height={500}
+                        objectFit="contain"
+                        style={{ borderRadius: '8px' }}
+                      />
+                      <Typography variant="h6" align="center" sx={{ mb: 0, mt: 1, color: theme => theme.palette.primary.main }}>
+                        {data.idealDescription}
+                      </Typography>
+                    </>
+                  )}
+                </Box>
+              </Modal>
             </Card>
           ) :
           (
@@ -334,11 +390,12 @@ export default function ProfileSetupAvatar() {
                 transform: 'translate(-50%, -50%)',
                 width: 'auto',
                 maxWidth: 400,
+                minWidth: 360,
                 p: 3,
                 borderRadius: 2,
               }}
             >
-              <Typography variant="h4" align="center" gutterBottom>
+              <Typography variant="h4" align="center" gutterBottom sx={{ color: theme => theme.palette.primary.main }}>
                 Generate your avatar from your picture
               </Typography>
 

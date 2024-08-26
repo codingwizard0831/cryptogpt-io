@@ -80,6 +80,7 @@ export async function POST(req: NextRequest) {
     console.log('STABLE_DIFUSSION_API_KEY', STABLE_DIFUSSION_API_KEY)
     const payload = {
       init_image: images?.file_url,
+      model_id: formData.get('model') || 'flux',
       key: STABLE_DIFUSSION_API_KEY,
       prompt,
       negative_prompt: "painting, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, deformed, ugly, blurry, bad anatomy, bad proportions, extra limbs, cloned face, skinny, glitchy, double torso, extra arms, extra hands, mangled fingers, missing lips, ugly face, distorted face, extra legs, anime",

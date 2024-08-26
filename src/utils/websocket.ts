@@ -67,12 +67,12 @@ export class WebSocketClient {
           const response = JSON.parse(data);
 
           const orderBookUpdate: OrderBookUpdateResponse = {
-            eventTime: response.E,
-            bids: response.b.map((entry: { price: string; quantity: string }) => ({
+            eventTime: response.event_time,
+            bids: response.bids.map((entry: { price: string; quantity: string }) => ({
               price: parseFloat(entry.price),
               quantity: parseFloat(entry.quantity),
             })),
-            asks: response.a.map((entry: { price: string; quantity: string }) => ({
+            asks: response.asks.map((entry: { price: string; quantity: string }) => ({
               price: parseFloat(entry.price),
               quantity: parseFloat(entry.quantity),
             })),

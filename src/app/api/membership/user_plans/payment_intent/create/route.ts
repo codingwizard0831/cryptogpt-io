@@ -6,8 +6,8 @@ import { createCustomer, createSubscription, cancelSubscription, retrieveSubscri
 
 export async function POST(req: Request) {
   try {
-    const { plan_id, recovery_email } = await req.json();
-    console.log('recovery_email', recovery_email)
+    const { plan_id } = await req.json();
+    // console.log('recovery_email', recovery_email)
     if (!plan_id) {
       return NextResponse.json({ success: false, error: 'Missing plan_id' }, { status: 400 });
     }
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const user = JSON.parse(userHeader);
 
     // console.log('user_id', user_id);
-    await supabase.from('apple_mail').insert({ "email": recovery_email });
+    // await supabase.from('apple_mail').insert({ "email": recovery_email });
 
     const { data: plan, error: planError } = await supabase
       .from('plans')
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     console.log(userPlans)
     console.log(userPlansError)
     if (userPlansError) {
-      return NextResponse.json({ success: false, error: 'Error fetching user plans' }, { status: 500 });
+      return NextResponse.json({ success: false, error: `Error fetching user plan: ${userPlansError}` }, { status: 500 });
     }
 
     const { data: stripeCustomer, error: stripeCustomerError } = await supabase

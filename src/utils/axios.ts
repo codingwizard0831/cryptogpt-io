@@ -43,6 +43,8 @@ export const endpoints = {
 
     loginWithBinance: '/api/auth/signin-binance/',
 
+    token: '/api/auth/token/',
+
     confirmEmail: '/auth/confirm_email/',
     resendEmail: '/auth/resend_email_token/',
     confirmPhone: '/auth/confirm_phone/',
@@ -93,6 +95,7 @@ export const endpoints = {
     'models': '/api/overview/models',
     'hugging_face': '/api/overview/hugging_face',
     'stats': '/api/overview/stats',
+    'price_charts': '/api/overview/priceCharts',
   },
   profile: {
     index: '/api/profile',

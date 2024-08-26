@@ -24,10 +24,12 @@ export async function POST(req: Request) {
       .from('user_plans')
       .select()
       .eq('user_id', user?.id)
-      .order('id', { ascending: false }).single();
+      .order('id', { ascending: false });
+    console.log('userPlans', userPlans)
 
     if (userPlansError) {
-      return NextResponse.json({ success: false, error: 'Error fetching user plan' }, { status: 500 });
+      console.log('userPlansError', userPlansError)
+      return NextResponse.json({ success: false, error: `Error fetching user plan: ${userPlansError}` }, { status: 500 });
     }
 
     // console.log('userPlans', userPlans)
@@ -42,11 +44,11 @@ export async function POST(req: Request) {
 
     const customer_id = stripeCustomer[0]?.customer_id;
 
-    if (userPlans && payment_intent.customer === customer_id && payment_intent.status === 'succeeded') {
+    if (userPlans?.length && payment_intent.customer === customer_id && payment_intent.status === 'succeeded') {
       const { error } = await supabase
         .from('user_plans')
         .update({ is_active: true })
-        .eq('id', userPlans.id)
+        .eq('id', userPlans[0].id)
 
       if (error) {
         return NextResponse.json({ success: false, error: 'Error activating user plan' }, { status: 500 });

@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
 import { Box, Card, alpha, Stack, styled, IconButton, Typography } from "@mui/material";
 
-import { useBoolean } from "src/hooks/use-boolean";
 import { useResponsive } from "src/hooks/use-responsive";
 
 import { useChatbot } from "src/store/chatbox/useChatbot";
@@ -13,6 +12,7 @@ import { HEADER, SPACING } from "src/layouts/config-layout";
 
 import Image from "src/components/image";
 import Iconify from "src/components/iconify";
+import ChatInput from "src/components/chat-input/chat-input";
 
 const Textarea = styled(BaseTextareaAutosize)(
     ({ theme }) => `
@@ -32,18 +32,8 @@ const Textarea = styled(BaseTextareaAutosize)(
 export default function ChatbotBubble() {
     const isShow = useChatbot((state) => state.isShow);
     const setIsShow = useChatbot((state) => state.setIsShow);
-    const isFocus = useBoolean();
-    const isMultipleLines = useBoolean();
     const [text, setText] = useState('');
     const smUp = useResponsive("up", 'sm');
-
-    useEffect(() => {
-        if (text.split('\n').length > 2) {
-            isMultipleLines.onTrue();
-        } else {
-            isMultipleLines.onFalse();
-        }
-    }, [text, isMultipleLines]);
 
     return <Card sx={{
         display: 'flex',
@@ -68,18 +58,13 @@ export default function ChatbotBubble() {
         })
     }}>
         <Stack direction="row" alignItems="center" spacing={2} sx={{ pb: 2 }}>
-            <Image src="/images/Nanami.jpg" sx={{
+            <Image src="/images/Goldie.png" sx={{
                 width: '36px',
                 height: '36px',
             }} />
             <Typography variant="h6" sx={{ color: 'primary.main', flex: 1 }}>Goldie</Typography>
 
-            <IconButton size="small"
-                sx={{
-                    order: !isMultipleLines.value ? 0 : 1,
-                }}
-                onClick={() => setIsShow(false)}
-            >
+            <IconButton size="small" onClick={() => setIsShow(false)} >
                 <Iconify icon="material-symbols:close" sx={{
                     color: theme => theme.palette.primary.main,
                 }} />
@@ -114,7 +99,7 @@ export default function ChatbotBubble() {
                             gap: 0.5,
                             alignItems: 'center',
                         }}>
-                            <Image src="/images/Nanami.jpg" sx={{
+                            <Image src="/images/Goldie.png" sx={{
                                 width: '32px',
                                 height: '32px',
                             }} />
@@ -171,90 +156,12 @@ export default function ChatbotBubble() {
             }
         </Box>
 
-        <Box sx={{
+        <ChatInput sx={{
             position: 'absolute',
             bottom: 0,
             left: 0,
             p: 1,
-            width: '100%',
-            borderRadius: '40px',
-            backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
-            backdropFilter: 'blur(10px)',
-            ...(isFocus.value ? {
-                backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
-                // backgroundColor: theme => theme.palette.background.paper,
-            } : {}),
-            ...(isMultipleLines.value ? {
-                borderRadius: '16px',
-            } : {}),
-        }}>
-            <Box sx={{
-                borderRadius: '30px',
-                border: theme => `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
-                transition: 'all 0.3s',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 1,
-                p: 1,
-                ...(isFocus.value ? {
-                    border: theme => `1px solid ${theme.palette.primary.main}`,
-                } : {}),
-                ...(isMultipleLines.value ? {
-                    borderRadius: '10px',
-                    flexWrap: 'wrap',
-                } : {}),
-            }}>
-                <IconButton size="small" sx={{
-                    order: !isMultipleLines.value ? 0 : 1,
-                }}>
-                    <Iconify icon="gg:add" sx={{
-                        color: theme => theme.palette.text.primary,
-                    }} />
-                </IconButton>
-                <Box sx={{
-                    width: '100%',
-                    order: !isMultipleLines.value ? 1 : 0,
-                    maxHeight: '100px',
-                    overflowY: 'auto',
-                    overflowX: 'hidden',
-                    display: 'flex',
-                    alignItems: 'center',
-                }}>
-                    <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Message" onFocus={() => isFocus.onTrue()} onBlur={() => isFocus.onFalse()} sx={{
-                        width: '100%',
-                        height: '100%',
-                    }} />
-                </Box>
-
-                <Box sx={{
-                    order: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                }}>
-                    <IconButton size="small" sx={{
-                    }}>
-                        <Iconify icon="majesticons:underline-2" sx={{
-                            color: theme => theme.palette.text.primary,
-                        }} />
-                    </IconButton>
-                    <IconButton size="small" sx={{
-                    }}>
-                        <Iconify icon="mingcute:emoji-line" sx={{
-                            color: theme => theme.palette.text.primary,
-                        }} />
-                    </IconButton>
-                    <IconButton size="small" sx={{
-                        backgroundColor: theme => theme.palette.primary.main,
-                    }}>
-                        <Iconify icon="ph:arrow-up-bold" sx={{
-                            color: theme => theme.palette.text.primary,
-                        }} />
-                    </IconButton>
-                </Box>
-            </Box>
-        </Box>
+        }} />
     </Card>
 }
 

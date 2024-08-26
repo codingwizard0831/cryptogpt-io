@@ -180,11 +180,12 @@ export default function ProfileSetup() {
           outline: 'none',
           p: 3,
           maxWidth: 400,
+          minWidth: 360,
           margin: 'auto',
           mt: 5
         }}
       >
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography variant="h4" align="center" gutterBottom sx={{ color: theme => theme.palette.primary.main }}>
           Complete Your Profile
         </Typography>
 
