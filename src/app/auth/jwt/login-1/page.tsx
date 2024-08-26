@@ -31,11 +31,19 @@ export default function Home() {
 
   const handleWebAuthnRegister = async () => {
     try {
-      const options = await (await fetch('/api/auth/webauthn-register', {
+      console.log('Starting WebAuthn registration');
+      const optionsResponse = await fetch('/api/auth/webauthn-register', {
         method: 'POST',
         headers: { Authorization: `Bearer ${session.access_token}` },
-      })).json();
+      });
+      const options = await optionsResponse.json();
+      console.log('Received options:', options);
+
+      console.log('Starting registration with options');
       const attestationResponse = await startRegistration(options);
+      console.log('Attestation response:', attestationResponse);
+
+      console.log('Sending verification request');
       const verificationResponse = await fetch('/api/auth/webauthn-register', {
         method: 'PUT',
         headers: {
@@ -44,6 +52,10 @@ export default function Home() {
         },
         body: JSON.stringify({ attestationResponse }),
       });
+
+      console.log('Verification response status:', verificationResponse.status);
+      const verificationResult = await verificationResponse.json();
+      console.log('Verification result:', verificationResult);
 
       if (verificationResponse.ok) {
         console.log('WebAuthn registration successful');
