@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { startRegistration, startAuthentication, publicKeyCredentialCreationOptions } from '@simplewebauthn/browser';
+import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
 
 import { Box, Button, Divider, Typography } from '@mui/material';
 
@@ -11,32 +11,8 @@ import { useRouter } from 'src/routes/hooks';
 
 export default function Home() {
   const router = useRouter();
-  const [isWebAuthnAvailable, setIsWebAuthnAvailable] = useState<boolean>(false);
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   // const [session, setSession] = useState<any>(null);
-
-  useEffect(() => {
-    const checkWebAuthnSupport = async () => {
-      try {
-        // Check if the browser supports WebAuthn
-        const supported = await publicKeyCredentialCreationOptions({
-          authenticatorSelection: {
-            authenticatorAttachment: 'platform',
-          }
-        });
-        setIsWebAuthnAvailable(!!supported);
-      } catch (error) {
-        console.error('WebAuthn not supported:', error);
-        setIsWebAuthnAvailable(false);
-      }
-    };
-
-    checkWebAuthnSupport();
-  }, []);
-
-  if (!isWebAuthnAvailable) {
-    return null;
-  }
 
   // useEffect(() => {
   //   // eslint-disable-next-line @typescript-eslint/no-shadow
