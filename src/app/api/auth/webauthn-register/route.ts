@@ -9,10 +9,17 @@ const rpID = 'cryptogpt.app';
 const origin = `https://${rpID}`;
 
 export async function POST(req: Request) {
-  const options: any = generateRegistrationOptions({
+  function uuidToUint8Array(uuid: string): Uint8Array {
+    return new Uint8Array(uuid.replace(/-/g, '').match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
+  }
+
+  const userId = "50df3478-f7ae-4d41-b4fb-bd10ee613a05";
+  const userIdBuffer = uuidToUint8Array(userId);
+
+  const options = generateRegistrationOptions({
     rpName,
     rpID,
-    userID: "50df3478-f7ae-4d41-b4fb-bd10ee613a05",
+    userID: userIdBuffer, // Use the Uint8Array instead of the string
     userName: "goldstar105000117@gmail.com",
     attestationType: 'none',
     authenticatorSelection: {
@@ -21,17 +28,19 @@ export async function POST(req: Request) {
     },
   });
 
+  console.log('post-options', options)
   await supabase.from('webauthn_challenges').insert({
     user_id: "50df3478-f7ae-4d41-b4fb-bd10ee613a05",
     challenge: options.challenge,
   });
 
-  return NextResponse.json({ success: true, data: options })
+  return NextResponse.json({ success: true, options })
 }
 
 export async function PUT(req: Request) {
   const res = await req.json();
   const { attestationResponse } = res;
+  console.log('put-attestationResponse', attestationResponse)
 
   const { data: challengeData }: any = await supabase
     .from('webauthn_challenges')
@@ -49,6 +58,7 @@ export async function PUT(req: Request) {
     expectedOrigin: origin,
     expectedRPID: rpID,
   });
+  console.log('put-verification', verification)
 
   if (verification.verified) {
     const { credentialID, credentialPublicKey }: any = verification.registrationInfo;

@@ -4,7 +4,6 @@ import { generateAuthenticationOptions, verifyAuthenticationResponse } from '@si
 
 import { supabase } from "src/lib/supabase";
 
-const rpName = 'cryptogpt';
 const rpID = 'cryptogpt.app';
 const origin = `https://${rpID}`;
 
@@ -14,11 +13,12 @@ export async function POST(req: Request) {
     userVerification: 'required',
   });
 
+  console.log('post-options', options)
   await supabase.from('webauthn_challenges').insert({
     challenge: options.challenge,
   });
 
-  return NextResponse.json({ success: true, data: options })
+  return NextResponse.json({ success: true, options })
 }
 
 export async function PUT(req: Request) {
@@ -56,6 +56,7 @@ export async function PUT(req: Request) {
     expectedRPID: rpID,
     authenticator,
   });
+  console.log('put-verification', verification)
 
   if (verification.verified) {
     await supabase.from('webauthn_credentials').update({
@@ -73,7 +74,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ success: false, error: "Failed to create session" }, { status: 400 })
     }
 
-    return NextResponse.json({ success: true, data: session })
+    return NextResponse.json({ success: true, session })
   }
 
   return NextResponse.json({ success: false, error: "Registration failed" }, { status: 400 })

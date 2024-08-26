@@ -51,6 +51,7 @@
     "@react-pdf/renderer": "^3.1.14",
     "@react-three/drei": "^9.109.2",
     "@react-three/fiber": "^8.16.8",
+    "@simplewebauthn/browser": "^10.0.0",
     "@simplewebauthn/server": "^10.0.1",
     "@stripe/react-stripe-js": "^2.7.3",
     "@stripe/stripe-js": "^4.1.0",
