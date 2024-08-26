@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
+
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
@@ -19,9 +20,12 @@ import {
   Pagination,
   CircularProgress,
 } from '@mui/material';
-import axios, { endpoints } from 'src/utils/axios';
-import { useTokenBalances } from './useTokenBalances';
+
 import { useMetaMask } from 'src/routes/hooks/useMetaMask';
+
+import axios, { endpoints } from 'src/utils/axios';
+
+import { useTokenBalances } from './useTokenBalances';
 
 interface TokenBalance {
   token: string;

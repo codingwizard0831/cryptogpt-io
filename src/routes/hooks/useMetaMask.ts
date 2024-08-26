@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { useSDK } from '@metamask/sdk-react';
