@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
 
+import { Box, Button, Divider, Typography } from '@mui/material';
+
 import { supabase } from "src/lib/supabase";
 
 export default function Home() {
@@ -76,22 +78,35 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {!session ? (
         <>
-          <button onClick={() => handleSignIn('goldstar105000117@gmail.com', 'User$123')}>Sign In</button>
-          <hr></hr>
-          <button onClick={handleWebAuthnLogin}>WebAuthn Login</button>
+          <Button
+            variant="contained"
+            onClick={() => handleSignIn('goldstar105000117@gmail.com', 'User$123')}
+          >
+            Sign In
+          </Button>
+          <Divider />
+          <Button variant="contained" onClick={handleWebAuthnLogin}>
+            WebAuthn Login
+          </Button>
         </>
       ) : (
         <>
-          <p>Logged in as {session.user.email}</p>
-          <hr></hr>
-          <button onClick={handleWebAuthnRegister}>Register WebAuthn</button>
-          <hr></hr>
-          <button onClick={() => supabase.auth.signOut()}>Sign Out</button>
+          <Typography variant="body1">
+            Logged in as {session.user.email}
+          </Typography>
+          <Divider />
+          <Button variant="contained" onClick={handleWebAuthnRegister}>
+            Register WebAuthn
+          </Button>
+          <Divider />
+          <Button variant="contained" onClick={() => supabase.auth.signOut()}>
+            Sign Out
+          </Button>
         </>
       )}
-    </div>
+    </Box>
   );
 }
