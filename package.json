@@ -4,6 +4,9 @@
   "version": "5.7.0",
   "description": "Next & TypeScript",
   "private": true,
+  "engines": {
+    "node": "20.14.0"
+  },
   "scripts": {
     "dev": "next dev -p 8083",
     "start": "next start -p 8083",
