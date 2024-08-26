@@ -1,9 +1,9 @@
+import WaveSurfer from 'wavesurfer.js';
 import { useRef, useState, useEffect } from 'react';
-import { AudioVisualizer, LiveAudioVisualizer } from 'react-audio-visualize';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, Chip, Grid, alpha, Stack, styled, Button, useTheme, IconButton, Typography } from '@mui/material';
+import { Box, Chip, Grid, alpha, Stack, styled, Button, Switch, useTheme, IconButton, Typography, FormControlLabel } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -12,6 +12,7 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify/iconify';
+import ChatInput from 'src/components/chat-input/chat-input';
 import Carousel, { useCarousel } from 'src/components/carousel';
 
 
@@ -39,8 +40,6 @@ const Textarea = styled(BaseTextareaAutosize)(
 
 export default function DashboardStrategyChat() {
     const [text, setText] = useState('');
-    const isFocus = useBoolean();
-    const isMultipleLines = useBoolean();
     const smUp = useResponsive("up", 'sm');
     const isPreview = useStrategy((state) => state.isPreview);
     const setIsPreview = useStrategy((state) => state.setIsPreview);
@@ -51,35 +50,52 @@ export default function DashboardStrategyChat() {
     const theme = useTheme();
 
     useEffect(() => {
-        if (text.split('\n').length > 2) {
-            isMultipleLines.onTrue();
-        } else {
-            isMultipleLines.onFalse();
-        }
-    }, [text, isMultipleLines]);
-
-    const [blob, setBlob] = useState<Blob>();
-    const visualizerRef = useRef<HTMLCanvasElement>(null)
-    useEffect(() => {
         fetch('/audios/voice.mp3')
             .then((response) => response.blob())
             .then((_blob) => {
-                setBlob(_blob);
             });
     }, [])
-    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
-    useEffect(() => {
-        console.log('navigator', navigator);
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then((stream) => {
-                const _mediaRecorder = new MediaRecorder(stream);
-                // _mediaRecorder.ondataavailable = (e) => {
-                //     setBlob(e.data);
-                // };
-                _mediaRecorder.start();
-                setMediaRecorder(_mediaRecorder);
-            });
-    }, []);
+
+    const isAutoplay = useBoolean();
+    const audioPlayerRef = useRef<HTMLDivElement>();
+    const [audioPlayerWavesurfer, setAudioPlayerWavesurfer] = useState<WaveSurfer | null>(null);
+    const [recordedAudioMessage, setRecordedAudioMessage] = useState<any>(null);
+    const isRecording = useBoolean();
+
+    const handleAudioMessagePlay = (msgData: any) => {
+        if (recordedAudioMessage !== msgData) {
+            if (audioPlayerRef.current) {
+                audioPlayerRef.current.innerHTML = "";
+
+                const newAudioPlayerWavesurfer = WaveSurfer.create({
+                    container: audioPlayerRef.current,
+                    waveColor: theme.palette.primary.main,
+                    progressColor: theme.palette.primary.dark,
+                    height: 32,
+                    url: '/audios/voice.mp3',
+                })
+                if (isAutoplay.value) {
+                    newAudioPlayerWavesurfer.on('ready', () => {
+                        newAudioPlayerWavesurfer.play();
+                        isRecording.onTrue();
+                    });
+                }
+                setAudioPlayerWavesurfer(newAudioPlayerWavesurfer);
+                setRecordedAudioMessage(msgData);
+            }
+        }
+    }
+
+    const handleAudioMessagePause = () => {
+        isRecording.onToggle();
+        audioPlayerWavesurfer?.playPause();
+    }
+
+    const handleAudioMessageQuit = () => {
+        audioPlayerWavesurfer?.destroy();
+        isRecording.onFalse();
+        setRecordedAudioMessage(null);
+    }
 
     return <Stack direction="column" spacing={2} sx={{
         width: '100%',
@@ -123,7 +139,7 @@ export default function DashboardStrategyChat() {
                 pb: 8,
             }}>
                 <Box sx={{
-                    backgroundColor: alpha(theme.palette.background.default, 0.8),
+                    backgroundColor: alpha(theme.palette.background.default, 0.9),
                     position: 'sticky',
                     top: 0,
                     gap: 1,
@@ -138,24 +154,28 @@ export default function DashboardStrategyChat() {
                         justifyContent: 'flex-end',
                         gap: 1,
                     }}>
+                        <FormControlLabel control={<Switch checked={isAutoplay.value} onChange={isAutoplay.onToggle} />} label="Autoplay" />
                         <IconButton size="small" sx={{
                             transition: 'all 0.3s',
                             transform: isSettingDetail.value ? 'rotate(180deg)' : 'rotate(0deg)',
+                            border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
                         }} onClick={() => isSettingDetail.onToggle()}>
-                            <Iconify icon="subway:down-2" sx={{
-                                color: 'primary.main',
+                            <Iconify icon="mingcute:down-line" sx={{
+                                color: 'text.primary',
                             }} />
                         </IconButton>
                         <IconButton size="small" sx={{
+                            border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
                         }} onClick={() => isChatHistory.onToggle()}>
-                            <Iconify icon="material-symbols-light:view-list" sx={{
-                                color: 'primary.main',
+                            <Iconify icon="material-symbols:list" sx={{
+                                color: 'text.primary',
                             }} />
                         </IconButton>
                         <IconButton size="small" sx={{
+                            border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
                         }}>
-                            <Iconify icon="lets-icons:full" sx={{
-                                color: 'primary.main',
+                            <Iconify icon="octicon:screen-full-24" sx={{
+                                color: 'text.primary',
                             }} />
                         </IconButton>
                     </Box>
@@ -163,7 +183,7 @@ export default function DashboardStrategyChat() {
                     <Box sx={{
                         position: 'relative',
                         width: '100%',
-                        height: isSettingDetail.value ? '596px' : '0px',
+                        height: isSettingDetail.value ? '400px' : '0px',
                         overflowY: 'auto',
                         overflowX: 'hidden',
                         transition: 'all 0.3s',
@@ -218,30 +238,6 @@ export default function DashboardStrategyChat() {
                                     }
                                 </Carousel>
                             </Box>
-
-
-                            {blob && (
-                                <AudioVisualizer
-                                    ref={visualizerRef}
-                                    blob={blob}
-                                    width={300}
-                                    height={50}
-                                    barWidth={1}
-                                    gap={0}
-                                    barColor={theme.palette.primary.main}
-                                    style={{
-                                        height: '50px',
-                                    }}
-                                />
-                            )}
-
-                            {mediaRecorder && (
-                                <LiveAudioVisualizer
-                                    mediaRecorder={mediaRecorder}
-                                    width={200}
-                                    height={75}
-                                />
-                            )}
 
                             <Box sx={{
                                 width: '100%',
@@ -324,6 +320,9 @@ export default function DashboardStrategyChat() {
                                                 minWidth: '32px',
                                                 height: '32px',
                                                 borderRadius: '50%',
+                                                borderWidth: '2px',
+                                                borderStyle: 'solid',
+                                                borderColor: `${item.color}.main`,
                                             }} />
                                             <Typography variant="caption" sx={{
                                                 color: `${item.color}.main`,
@@ -348,18 +347,41 @@ export default function DashboardStrategyChat() {
                         gap: 1,
                         my: 1,
                     }}>
-                        <Chip size="small" label="ETH/USDT" sx={{
+                        <Chip size="small" color="primary" label="ETH/USDT" sx={{
                             borderRadius: '16px',
                         }} />
-                        <Chip size="small" label="BTC/USDT" sx={{
+                        <Chip size="small" color="primary" label="BTC/USDT" sx={{
                             borderRadius: '16px',
                         }} />
-                        <Chip size="small" label="ADA/USDT" sx={{
+                        <Chip size="small" color="primary" label="ADA/USDT" sx={{
                             borderRadius: '16px',
                         }} />
-                        <Chip size="small" label="XRP/USDT" sx={{
+                        <Chip size="small" color="primary" label="XRP/USDT" sx={{
                             borderRadius: '16px',
                         }} />
+                    </Box>
+
+                    <Box sx={{
+                        width: '100%',
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.4)}`,
+                        height: '32px',
+                        display: recordedAudioMessage ? 'flex' : 'none',
+                        alignItems: 'center',
+                        gap: 1,
+                    }}>
+                        <IconButton size="small" onClick={() => handleAudioMessagePause()}>
+                            <Iconify icon={isRecording.value ? "material-symbols:pause" : "mdi:play"} sx={{
+                                color: 'text.primary'
+                            }} />
+                        </IconButton>
+                        <Box ref={audioPlayerRef} sx={{
+                            flex: 1,
+                        }} />
+                        <IconButton size="small" onClick={() => handleAudioMessageQuit()}>
+                            <Iconify icon="material-symbols:close" sx={{
+                                color: 'text.primary'
+                            }} />
+                        </IconButton>
                     </Box>
                 </Box>
 
@@ -398,7 +420,8 @@ export default function DashboardStrategyChat() {
                                     <Box sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        backgroundColor: alpha(theme.palette.info.main, 0.8),
+                                        // backgroundColor: alpha(theme.palette.info.main, 0.8),
+                                        backgroundImage: `linear-gradient(to right, ${theme.palette.info.main}, ${theme.palette.info.dark})`,
                                         borderRadius: 2,
                                         p: 1,
                                         cursor: 'pointer',
@@ -422,6 +445,14 @@ export default function DashboardStrategyChat() {
                                     visibility: 'hidden',
                                     transition: 'all 0.3s',
                                 }}>
+                                    <IconButton size="small" sx={{
+                                    }} onClick={() => handleAudioMessagePlay(item)} >
+                                        <Iconify icon="cil:audio" sx={{
+                                            color: 'primary.main',
+                                            width: '16px',
+                                            height: '16px',
+                                        }} />
+                                    </IconButton>
                                     <IconButton size="small" sx={{
                                     }}>
                                         <Iconify icon="lucide:clipboard" sx={{
@@ -509,7 +540,8 @@ export default function DashboardStrategyChat() {
                                     <Box sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        backgroundColor: alpha(theme.palette.primary.main, 0.8),
+                                        // backgroundColor: alpha(theme.palette.primary.main, 0.8),
+                                        backgroundImage: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
                                         borderRadius: 2,
                                         p: 1,
                                         cursor: 'pointer',
@@ -550,91 +582,14 @@ export default function DashboardStrategyChat() {
                 }
             </Box>
 
-            <Box sx={{
+            <ChatInput sx={{
                 position: 'absolute',
                 bottom: '4px',
                 left: '4px',
                 right: '4px',
                 p: 1,
                 width: 'calc(100% - 8px)',
-                borderRadius: '40px',
-                backgroundColor: alpha(theme.palette.background.default, 0.2),
-                backdropFilter: 'blur(10px)',
-                ...(isFocus.value ? {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                    // backgroundColor: theme.palette.background.paper,
-                } : {}),
-                ...(isMultipleLines.value ? {
-                    borderRadius: '16px',
-                } : {}),
-            }}>
-                <Box sx={{
-                    borderRadius: '30px',
-                    border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
-                    transition: 'all 0.3s',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: 1,
-                    p: 1,
-                    ...(isFocus.value ? {
-                        border: `1px solid ${theme.palette.primary.main}`,
-                    } : {}),
-                    ...(isMultipleLines.value ? {
-                        borderRadius: '10px',
-                        flexWrap: 'wrap',
-                    } : {}),
-                }}>
-                    <IconButton size="small" sx={{
-                        order: !isMultipleLines.value ? 0 : 1,
-                    }}>
-                        <Iconify icon="gg:add" sx={{
-                            color: theme.palette.text.primary,
-                        }} />
-                    </IconButton>
-                    <Box sx={{
-                        width: '100%',
-                        order: !isMultipleLines.value ? 1 : 0,
-                        maxHeight: '100px',
-                        overflowY: 'auto',
-                        overflowX: 'hidden',
-                        display: 'flex',
-                        alignItems: 'center',
-                    }}>
-                        <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Message" onFocus={() => isFocus.onTrue()} onBlur={() => isFocus.onFalse()} sx={{
-                            width: '100%',
-                            height: '100%',
-                        }} />
-                    </Box>
-
-                    <Box sx={{
-                        order: 2,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}>
-                        <IconButton size="small" sx={{
-                        }}>
-                            <Iconify icon="majesticons:underline-2" sx={{
-                                color: theme.palette.text.primary,
-                            }} />
-                        </IconButton>
-                        <IconButton size="small" sx={{
-                        }}>
-                            <Iconify icon="mingcute:emoji-line" sx={{
-                                color: theme.palette.text.primary,
-                            }} />
-                        </IconButton>
-                        <IconButton size="small" sx={{
-                            backgroundColor: theme.palette.primary.main,
-                        }}>
-                            <Iconify icon="ph:arrow-up-bold" sx={{
-                                color: theme.palette.text.primary,
-                            }} />
-                        </IconButton>
-                    </Box>
-                </Box>
-            </Box>
+            }} />
         </Box>
 
         <Box sx={{

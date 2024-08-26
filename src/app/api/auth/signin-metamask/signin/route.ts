@@ -1,119 +1,75 @@
-import { NextResponse } from "next/server";
-
-import { signToken } from 'src/lib/utils'
-import { verifyMessageWithMetamask } from "src/lib/metamask";
+import { ethers } from 'ethers';
+import { NextRequest, NextResponse } from 'next/server';
+import { signToken } from 'src/lib/utils';
 import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 
+export async function POST(req: NextRequest) {
+  try {
+    const { address, signedMessage, nonce } = await req.json();
 
-export async function POST(req: Request) {
-    try {
-        const res = await req.json();
-        const { address, signedMessage, message, nonce } = res;
+    // Fetch the user by MetaMask address
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('id, metamask_nonce')
+      .eq('metamask_address', address)
+      .single();
 
-        const rst = await verifyMessageWithMetamask(message, signedMessage);
-        if (rst.status === 'error' && rst.error) {
-            return NextResponse.json({ error: rst.error }, { status: 401 })
-        }
-
-        try {
-            // 2. Select * from public.user table to get nonce
-            const { data: user, error: userError } = await supabase
-                .from('users')
-                .select('*')
-                .eq('metamask_metadata->>address', address)
-                .single()
-
-            if (user && !userError) {
-                // 3. Verify the nonce included in the request matches what's already in public.users table for that address
-                if (user?.metamask_metadata.nonce !== nonce) {
-                    return NextResponse.json(
-                        { data: null, error: 'Nonce verification failed' },
-                        { status: 401 }
-                    )
-                }
-
-                let finalAuthUser: any = null
-                // 2. Select * from public.auth_users view where address matches
-                const { data: authUser, error: authUserError } = await supabase
-                    .from('auth_users')
-                    .select('*')
-                    .eq('raw_user_meta_data->>address', address)
-                    .single()
-
-                if (!authUser || authUserError) {
-                    const { data: newUser, error: newUserError } =
-                        await supabaseServiceRole.auth.admin.createUser({
-                            email: `${address}@cryptogpt.io`,
-                            user_metadata: { address },
-                            email_confirm: true
-                        })
-
-                    if (newUserError || !newUser) {
-                        return NextResponse.json(
-                            { data: null, error: 'Failed to create auth user' },
-                            { status: 500 }
-                        )
-                    }
-
-                    // response object is different from auth.users view
-                    finalAuthUser = newUser.user
-                } else {
-                    // selection from auth.users view is the user, assign
-                    finalAuthUser = authUser
-                }
-
-                // 5. Update public.users.id with auth.users.id
-                await supabase
-                    .from('users')
-                    .update([
-                        {
-                            userId: finalAuthUser?.id,
-                            metamask_metadata: {
-                                address,
-                                nonce
-                            },
-                            auth: {
-                                lastLoggedinTime: new Date().toISOString(),
-                                lastAuthStatus: "success",
-                                lastLoggedinProvider: "metamask"
-                            }
-                        }
-                    ])
-                    .eq('metamask_metadata->>address', address)
-                    .select()
-
-                // 6. We sign the token and return it to client
-                const token = await signToken(
-                    {
-                        address,
-                        sub: finalAuthUser.id,
-                        aud: 'authenticated'
-                    },
-                    { expiresIn: `${60 * 60 * 24}s` }
-                )
-                const response = NextResponse.json({
-                    data: {
-                        token,
-                        user: finalAuthUser,
-                    },
-                    error: null,
-                }, { status: 200 })
-                return response
-            }
-
-            return NextResponse.json(
-                { data: null, error: userError?.message || 'Internal Server Error' },
-                { status: 500 }
-            )
-        } catch (error: any) {
-            return NextResponse.json(
-                { data: null, error: error?.message || 'Internal Server Error' },
-                { status: 500 }
-            )
-        }
-
-    } catch (error) {
-        // console.log(error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    if (userError || !user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    // Verify the nonce and signed message
+    const recoveredAddress = ethers.verifyMessage(nonce, signedMessage);
+    if (user.metamask_nonce !== nonce || recoveredAddress.toLowerCase() !== address.toLowerCase()) {
+      return NextResponse.json({ error: 'Invalid nonce or signature' }, { status: 401 });
+    }
+
+    let userId;
+    const { data: authUser, error: authUserError } = await supabase
+      .from('auth_users')
+      .select('id')
+      .eq('raw_user_meta_data->>address', address)
+      .single();
+
+    if (!authUser) {
+      const { data: newUser, error: newUserError } =
+        await supabaseServiceRole.auth.admin.createUser({
+          email: '',
+          user_metadata: { address },
+          email_confirm: true,
+        });
+
+      if (newUserError || !newUser) {
+        return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
+      }
+      userId = newUser.user.id;
+    } else {
+      userId = authUser.id;
+    }
+
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({
+        userId,
+        metamask_nonce: nonce,
+        auth: {
+          lastLoggedinTime: new Date().toISOString(),
+          lastAuthStatus: 'success',
+          lastLoggedinProvider: 'metamask',
+        },
+      })
+      .eq('id', user.id);
+
+    if (updateError) {
+      return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
+    }
+
+    const token = await signToken(
+      { address, sub: userId, aud: 'authenticated' },
+      { expiresIn: '24h' }
+    );
+    return NextResponse.json({ token, user: { id: userId, address } }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Could not login to Metamask' }, { status: 400 });
+  }
 }
