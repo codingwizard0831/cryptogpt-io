@@ -1,6 +1,6 @@
 import { Area, XAxis, YAxis, Tooltip, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-import { Box, Stack, Select, Button, BoxProps, MenuItem, Typography, ButtonBase, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
+import { Box, Stack, Select, Button, BoxProps, MenuItem, Typography, ButtonBase, FormControl, OutlinedInput, InputAdornment, IconButton } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -10,6 +10,9 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 import Image from 'src/components/image';
 
 import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
+import Iconify from 'src/components/iconify';
+import { StyledDialog } from 'src/components/styled-component';
+import { over } from 'lodash';
 
 interface DataPoint {
     date: string;
@@ -27,8 +30,15 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
     const setCoin2 = useStrategy((state) => state.setCoin2);
+    const topAmountCase = useStrategy((state) => state.topAmountCase);
+    const setTopAmountCase = useStrategy((state) => state.setTopAmountCase);
+    const selectedPair = useStrategy((state) => state.selectedPair);
+    const setSelectedPair = useStrategy((state) => state.setSelectedPair);
+    const timeframe = useStrategy((state) => state.timeframe);
+    const setTimeframe = useStrategy((state) => state.setTimeframe);
     const smUp = useResponsive("up", 'sm');
     const isPercentageForBalance = useBoolean(false);
+    const isTradingPairSelectModalShow = useBoolean(false);
 
     const handleSwapCoin = () => {
         const [temp1, temp2] = [coin1, coin2];
@@ -58,33 +68,53 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                     mr: 11,
                 }}>1. Start, Select Pair</Typography>
 
-                <Stack direction="row" alignItems='center' justifyContent="center" spacing={2}>
-                    <DashboardStrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin1} handleChange={setCoin1} />
-                    <Box sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}>
-                        <ButtonBase sx={{
-                        }} onClick={() => handleSwapCoin()}>
-                            <Image src="/assets/images/ethereum-to-dollar-swap.png" alt="swap" sx={{
-                                width: smUp ? '96px' : '64px',
-                                height: smUp ? '96px' : '64px',
-                            }} />
-                        </ButtonBase>
-                    </Box>
-                    <DashboardStrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin2} handleChange={setCoin2} />
+                <Stack direction="row" alignItems='center' justifyContent="space-between">
+                    <IconButton onClick={() => isTradingPairSelectModalShow.onTrue()}>
+                        <Iconify icon="tabler:search" sx={{
+                            color: 'primary.main',
+                            width: '24px',
+                            height: '24px',
+                        }} />
+                    </IconButton>
 
-                    <Select size={smUp ? "medium" : 'small'} value="5m" sx={{
-                        border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
-                    }}>
-                        <MenuItem value="5m">5m</MenuItem>
-                        <MenuItem value="10m">10m</MenuItem>
-                        <MenuItem value="15m">15m</MenuItem>
-                        <MenuItem value="30m">30m</MenuItem>
-                        <MenuItem value="1h">1h</MenuItem>
-                        <MenuItem value="4h">4h</MenuItem>
-                    </Select>
+                    <Stack direction="row" alignItems='center' justifyContent="center" spacing={2}>
+                        <DashboardStrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin1} handleChange={setCoin1} />
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}>
+                            <ButtonBase sx={{
+                            }} onClick={() => handleSwapCoin()}>
+                                <Image src="/assets/images/ethereum-to-dollar-swap.png" alt="swap" sx={{
+                                    width: smUp ? '32px' : '24px',
+                                    height: smUp ? '32px' : '24px',
+                                }} />
+                            </ButtonBase>
+                        </Box>
+                        <DashboardStrategyCoinSelector size={smUp ? "medium" : 'small'} currency={coin2} handleChange={setCoin2} />
+
+                        <Select size={smUp ? "medium" : 'small'}
+                            value={timeframe}
+                            onChange={(e) => setTimeframe(e.target.value as string)}
+                            sx={{
+                                border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                            }}>
+                            {
+                                timeframesDummyData.map((item) => {
+                                    return <MenuItem value={item.value} key={item.value}>{item.label}</MenuItem>
+                                })
+                            }
+                        </Select>
+                    </Stack>
+
+                    <IconButton onClick={() => isTradingPairSelectModalShow.onTrue()}>
+                        <Iconify icon="tabler:search" sx={{
+                            color: 'primary.main',
+                            width: '24px',
+                            height: '24px',
+                        }} />
+                    </IconButton>
                 </Stack>
             </Stack>
 
@@ -216,6 +246,136 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
 
             <Button variant="contained" color="primary" fullWidth>Continue/Select  Indicators</Button>
         </Stack>
+
+
+        <StyledDialog maxWidth="lg" open={isTradingPairSelectModalShow.value} onClose={() => isTradingPairSelectModalShow.onFalse()}>
+            <Box sx={{
+                width: '60vw',
+                maxWidth: '800px',
+                minWidth: '400px',
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+            }}>
+                <Box sx={{
+                    borderRadius: 1,
+                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                }}>
+                    <Typography variant="h6" sx={{
+                        color: 'primary.main',
+                    }}>Traing Pair</Typography>
+
+                    <Box sx={{
+                        width: '100%',
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                    }}>
+                        <Box sx={{
+                            display: 'flex',
+                            gap: 1,
+                        }}>
+                            {
+                                pairAmountDummyData.map((item) => {
+                                    return <Button variant={item.value === topAmountCase.value ? "contained" : 'outlined'} color="primary" key={item} startIcon={<Iconify icon="mingcute:down-line" />}
+                                        onClick={() => setTopAmountCase(item)}
+                                        sx={{
+                                            flexShrink: 0,
+                                        }}
+                                    >TOP {item.label}</Button>
+                                })
+                            }
+                        </Box>
+                    </Box>
+
+                    <Box sx={{
+                        display: 'flex',
+                        gap: 1,
+                        flexWrap: 'wrap',
+                    }}>
+                        {
+                            pairsDummyData.filter((item) => {
+                                return item.amount <= topAmountCase.value;
+                            }).map((item) => {
+                                return <Button variant={item.value === selectedPair ? "contained" : 'outlined'} color="primary" key={item} onClick={() => setSelectedPair(item.value)}>{item.label}</Button>
+                            })
+                        }
+                    </Box>
+                </Box>
+
+
+                <Box sx={{
+                    width: '100%',
+                    overflowX: 'auto',
+                    overflowY: 'hidden',
+                }}>
+                    <Box sx={{
+                        display: 'flex',
+                        gap: 1,
+
+                    }}>
+                        {
+                            pairsDummyData.map((item) => {
+                                return <Button variant={item.value === selectedPair ? "contained" : 'outlined'} color="primary" key={`${item}-pair`}
+                                    onClick={() => setSelectedPair(item.value)}
+                                    sx={{
+                                        flexShrink: 0,
+                                    }}
+                                >{item.label}</Button>
+                            })
+                        }
+                    </Box>
+                </Box>
+
+                <Box sx={{
+                    borderRadius: 1,
+                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                }}>
+                    <Typography variant="h6" sx={{
+                        color: 'primary.main',
+                    }}>Time Frame</Typography>
+
+
+                    <Box sx={{
+                        width: '100%',
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                    }}>
+                        <Box sx={{
+                            display: 'flex',
+                            flexWrap: 'nowrap',
+                            gap: 1,
+                        }}>
+                            {
+                                timeframesDummyData.map((item) => {
+                                    return <Button variant={item.value === timeframe ? "contained" : 'outlined'} color="primary" key={`${item}-timeframe`}
+                                        onClick={() => setTimeframe(item.value)}
+                                        sx={{
+                                            flexShrink: 0,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: 0.5,
+                                        }}
+                                    >
+                                        <Iconify icon={item.icon} />
+                                        <Typography variant="caption">{item.label}</Typography>
+                                        <Iconify icon="et:strategy" />
+                                    </Button>
+                                })
+                            }
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
+        </StyledDialog>
     </Box>
 }
 
@@ -228,4 +388,117 @@ const data: DataPoint[] = [
     { date: '2023-06', price: 11000, change: -0.1, action: 'Sell' },
     { date: '2023-07', price: 19500, change: 0.0 },
     { date: '2023-08', price: 16500, change: -0.1, action: 'Sell' },
+];
+
+const pairAmountDummyData = [
+    {
+        value: 100,
+        label: '100',
+    },
+    {
+        value: 200,
+        label: '200',
+    },
+    {
+        value: 300,
+        label: '300',
+    },
+    {
+        value: 400,
+        label: '400',
+    },
+    {
+        value: 500,
+        label: '500',
+    },
+    {
+        value: 1000,
+        label: '1k',
+    },
+];
+
+const pairsDummyData = [
+    {
+        value: "BTC/USDT",
+        label: "BTC/USDT",
+        amount: 100,
+    },
+    {
+        value: "ETH/USDT",
+        label: "ETH/USDT",
+        amount: 200,
+    },
+    {
+        value: "BNB/USDT",
+        label: "BNB/USDT",
+        amount: 300,
+    },
+    {
+        value: "ADA/USDT",
+        label: "ADA/USDT",
+        amount: 400,
+    },
+    {
+        value: "SOL/USDT",
+        label: "SOL/USDT",
+        amount: 500,
+    },
+    {
+        value: "DOT/USDT",
+        label: "DOT/USDT",
+        amount: 1000,
+    },
+];
+
+const timeframesDummyData = [
+    {
+        value: "5m",
+        label: "5m",
+        icon: "mingcute:time-line",
+    },
+    {
+        value: "10m",
+        label: "10m",
+        icon: "mingcute:time-line",
+    },
+    {
+        value: "15m",
+        label: "15m",
+        icon: "mingcute:time-line",
+    },
+    {
+        value: "30m",
+        label: "30m",
+        icon: "mingcute:time-line",
+    },
+    {
+        value: "1h",
+        label: "1h",
+        icon: "mingcute:time-line",
+    },
+    {
+        value: "4h",
+        label: "4h",
+        icon: "mingcute:time-line",
+    },
+    {
+        value: "1d",
+        label: "1d",
+        icon: "lets-icons:date-today",
+    },
+    {
+        value: "1w",
+        label: "1w",
+        icon: "lets-icons:date-today",
+    },
+    {
+        value: "1m",
+        label: "1m",
+        icon: "lets-icons:date-today",
+    },
+    {
+        value: "1y",
+        label: "1y",
+        icon: "lets-icons:date-today",
+    },
 ];

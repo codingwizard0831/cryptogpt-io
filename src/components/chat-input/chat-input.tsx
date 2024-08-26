@@ -244,9 +244,15 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                         borderRadius: 1,
                         p: 0.5,
                     }}>
-                        <Button variant="outlined" color="primary" onClick={() => { }}>Upload single file</Button>
-                        <Button variant="outlined" color="primary" onClick={() => { }}>Upload multi files</Button>
-                        <Button variant="outlined" color="primary" onClick={() => { }}>Import from the driver</Button>
+                        <Button variant="outlined" color="primary"
+                            startIcon={<Iconify icon="material-symbols:upload" />}
+                            onClick={() => { }}>Upload single file</Button>
+                        <Button variant="outlined" color="primary"
+                            startIcon={<Iconify icon="formkit:uploadcloud" />}
+                            onClick={() => { }}>Upload multi files</Button>
+                        <Button variant="outlined" color="primary"
+                            startIcon={<Iconify icon="vaadin:cloud-upload" />}
+                            onClick={() => { }}>Import from the driver</Button>
                     </Stack>
                 </Box>
             </StyledPopover>
