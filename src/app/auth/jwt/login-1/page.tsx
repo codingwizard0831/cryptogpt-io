@@ -36,31 +36,35 @@ export default function Home() {
         method: 'POST',
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const options = await optionsResponse.json();
-      console.log('Received options:', options);
-
-      console.log('Starting registration with options');
-      const attestationResponse = await startRegistration(options);
-      console.log('Attestation response:', attestationResponse);
-
-      console.log('Sending verification request');
-      const verificationResponse = await fetch('/api/auth/webauthn-register', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ attestationResponse }),
-      });
-
-      console.log('Verification response status:', verificationResponse.status);
-      const verificationResult = await verificationResponse.json();
-      console.log('Verification result:', verificationResult);
-
-      if (verificationResponse.ok) {
-        console.log('WebAuthn registration successful');
+      const {success, options} = await optionsResponse.json();
+      if (success) {
+        console.log('Received options:', options);
+  
+        console.log('Starting registration with options');
+        const attestationResponse = await startRegistration(options);
+        console.log('Attestation response:', attestationResponse);
+  
+        console.log('Sending verification request');
+        const verificationResponse = await fetch('/api/auth/webauthn-register', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ attestationResponse }),
+        });
+  
+        console.log('Verification response status:', verificationResponse.status);
+        const verificationResult = await verificationResponse.json();
+        console.log('Verification result:', verificationResult);
+  
+        if (verificationResponse.ok) {
+          console.log('WebAuthn registration successful');
+        } else {
+          console.error('WebAuthn registration failed');
+        }
       } else {
-        console.error('WebAuthn registration failed');
+        console.error('Error during WebAuthn registration:');
       }
     } catch (error) {
       console.error('Error during WebAuthn registration:', error);
