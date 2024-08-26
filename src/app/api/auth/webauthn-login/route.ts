@@ -8,31 +8,37 @@ const rpID = 'cryptogpt.app';
 const origin = `https://${rpID}`;
 
 export async function POST(req: Request) {
-  const options = generateAuthenticationOptions({
-    rpID,
-    userVerification: 'required',
-  });
+  try {
+    const options = await generateAuthenticationOptions({
+      rpID,
+      userVerification: 'required',
+    });
 
-  console.log('post-options', options)
-  await supabase.from('webauthn_challenges').insert({
-    challenge: options.challenge,
-  });
+    console.log('post-options', options);
 
-  return NextResponse.json({ success: true, options })
+    await supabase.from('webauthn_challenges').insert({
+      challenge: options.challenge,
+    });
+
+    return NextResponse.json({ success: true, options });
+  } catch (error) {
+    console.error('Error in WebAuthn login:', error);
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+  }
 }
 
 export async function PUT(req: Request) {
   const res = await req.json();
   const { assertionResponse } = res;
 
-  const { data: challengeData } = await supabase
+  const { data: challengeData }: any = await supabase
     .from('webauthn_challenges')
     .select('challenge')
     .order('created_at', { ascending: false })
     .limit(1)
     .single();
 
-  const expectedChallenge = challengeData.challenge;
+  const expectedChallenge = challengeData?.challenge || "";
 
   const { data: credentialData } = await supabase
     .from('webauthn_credentials')
@@ -43,7 +49,7 @@ export async function PUT(req: Request) {
   if (!credentialData) {
     return NextResponse.json({ success: false, error: "Credential not found" }, { status: 400 })
   }
-  const authenticator = {
+  const authenticator: any = {
     credentialID: Buffer.from(credentialData.credential_id, 'base64'),
     credentialPublicKey: Buffer.from(credentialData.public_key, 'base64'),
     counter: credentialData.counter,
