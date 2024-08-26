@@ -5,11 +5,14 @@ import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js';
 
 import Select from "@mui/material/Select";
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, alpha, styled, useTheme, BoxProps, MenuItem, Typography, IconButton } from '@mui/material';
+import { Box, alpha, Stack, styled, Button, useTheme, BoxProps, MenuItem, Typography, IconButton } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify/iconify';
+
+import { usePopover } from '../custom-popover';
+import { StyledPopover } from '../styled-component';
 
 interface AudioDevice {
     deviceId: string;
@@ -42,6 +45,8 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     const isFocus = useBoolean();
     const isMultipleLines = useBoolean();
     const isRecordingBarShow = useBoolean(false);
+    const uploadButtonsPopover = usePopover();
+    const isUploadPanelShow = useBoolean(true);
 
     useEffect(() => {
         if (text.split('\n').length > 2) {
@@ -212,11 +217,40 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         }}>
             <IconButton size="small" sx={{
                 order: !isMultipleLines.value ? 0 : 1,
-            }}>
+            }} onClick={(e) => { uploadButtonsPopover.onOpen(e); isUploadPanelShow.onToggle() }}>
                 <Iconify icon="gg:add" sx={{
                     color: theme.palette.text.primary,
                 }} />
             </IconButton>
+
+            <StyledPopover
+                open={Boolean(uploadButtonsPopover.open)}
+                anchorEl={uploadButtonsPopover.open}
+                onClose={uploadButtonsPopover.onClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+            >
+                <Box sx={{
+                    p: 0.5,
+                }}>
+                    <Stack direction="column" spacing={1} sx={{
+                        border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
+                        borderRadius: 1,
+                        p: 0.5,
+                    }}>
+                        <Button variant="outlined" color="primary" onClick={() => { }}>Upload single file</Button>
+                        <Button variant="outlined" color="primary" onClick={() => { }}>Upload multi files</Button>
+                        <Button variant="outlined" color="primary" onClick={() => { }}>Import from the driver</Button>
+                    </Stack>
+                </Box>
+            </StyledPopover>
+
             <Box sx={{
                 width: '100%',
                 order: !isMultipleLines.value ? 1 : 0,
@@ -395,6 +429,112 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                             color: 'text.primary'
                         }} />
                     </IconButton>
+                </Box>
+            </Box>
+        </Box>
+
+        <Box sx={{
+            backgroundColor: alpha(theme.palette.background.default, 0.9),
+            borderRadius: 1,
+            border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
+            position: 'absolute',
+            left: 0,
+            width: '100%',
+            bottom: "72px",
+            maxHeight: '240px',
+            opacity: isUploadPanelShow.value ? 1 : 0,
+            visibility: isUploadPanelShow.value ? 'visible' : 'hidden',
+            transition: 'all 0.3s',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            p: 1,
+        }}>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 1,
+            }}>
+                <Typography variant="subtitle2">
+                    Selected files to upload
+                </Typography>
+
+                <IconButton size="small" sx={{
+                    border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
+                }} onClick={() => isUploadPanelShow.onToggle()}>
+                    <Iconify icon="material-symbols:close" sx={{
+                        color: theme.palette.text.primary,
+                    }} />
+                </IconButton>
+            </Box>
+
+
+            <Box sx={{
+                width: '100%',
+                height: 'calc(100% - 20px)',
+                overflowX: 'hidden',
+                overflowY: 'auto',
+            }}>
+                <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                }}>
+                    {
+                        [1, 2, 3, 4, 5, 6, 7, 8, 9].map((item, index) => (
+                            <Box key={index} sx={{
+                                width: "100%",
+                                backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                                borderRadius: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 0.5,
+                                p: 1,
+                            }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                }}>
+                                    <Iconify icon="fluent:delete-20-filled" sx={{
+                                        color: "primary.main",
+                                    }} />
+                                    <Typography variant="body2" sx={{ flex: 1 }}>
+                                        File name {item}
+                                    </Typography>
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary",
+                                    }}>
+                                        6 KB
+                                    </Typography>
+                                </Box>
+
+                                <Typography variant="body2">
+                                    File description {item}
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                    Last modified 1 hour ago
+                                </Typography>
+
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                }}>
+                                    <Iconify icon="fluent:delete-20-filled" sx={{
+                                        color: "success.main",
+                                    }} />
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary",
+                                    }}>
+                                        Public
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        ))
+                    }
                 </Box>
             </Box>
         </Box>

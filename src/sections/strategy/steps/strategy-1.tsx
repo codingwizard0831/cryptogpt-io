@@ -1,7 +1,8 @@
 import { Area, XAxis, YAxis, Tooltip, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-import { Box, Stack, Select, Button, Slider, BoxProps, MenuItem, TextField, Typography, ButtonBase } from '@mui/material';
+import { Box, Stack, Select, Button, BoxProps, MenuItem, Typography, ButtonBase, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
 
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from "src/store/strategy/useStrategy";
@@ -27,6 +28,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
     const coin2 = useStrategy((state) => state.coin2);
     const setCoin2 = useStrategy((state) => state.setCoin2);
     const smUp = useResponsive("up", 'sm');
+    const isPercentageForBalance = useBoolean(false);
 
     const handleSwapCoin = () => {
         const [temp1, temp2] = [coin1, coin2];
@@ -97,6 +99,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                     <Box sx={{
                         width: '100%',
                         aspectRatio: '3 / 2',
+                        maxHeight: '200px',
                     }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={data}>
@@ -188,9 +191,24 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                             gap: 2,
                             alignItems: 'center',
                         }}>
-                            <Typography sx={{ color: 'primary.main' }}>90%</Typography>
-                            <Slider size="medium" color="primary" />
-                            <TextField size="small" />
+
+                            <FormControl size="small" variant="outlined" fullWidth>
+                                <OutlinedInput
+                                    id="outlined-adornment-password"
+                                    type='text'
+                                    startAdornment={
+                                        <InputAdornment position="end">
+                                            <Typography sx={{ color: 'primary.main' }}>{isPercentageForBalance.value ? "%" : "$"}</Typography>
+                                        </InputAdornment>
+                                    }
+                                />
+                            </FormControl>
+
+                            <Button sizem="small" variant="contained" color="primary"
+                                onClick={() => isPercentageForBalance.onToggle()}
+                            >
+                                {isPercentageForBalance.value ? "On" : "Off"}
+                            </Button>
                         </Box>
                     </Box>
                 </Box>
