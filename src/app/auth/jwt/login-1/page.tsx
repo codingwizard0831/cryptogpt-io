@@ -23,18 +23,18 @@ export default function Home() {
     });
   }, []);
 
-  const handleSignIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) console.error('Error signing in:', error);
-    else console.log('Sign in successful:', data);
-  };
+  // const handleSignIn = async (email: string, password: string) => {
+  //   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  //   if (error) console.error('Error signing in:', error);
+  //   else console.log('Sign in successful:', data);
+  // };
 
   const handleWebAuthnRegister = async () => {
     try {
       console.log('Starting WebAuthn registration');
       const optionsResponse = await fetch('/api/auth/webauthn-register', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        // headers: { Authorization: `Bearer ${session.access_token}` },
       });
       const { success, options } = await optionsResponse.json();
       if (success) {
@@ -49,7 +49,7 @@ export default function Home() {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
+            // Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ attestationResponse }),
         });
@@ -72,50 +72,50 @@ export default function Home() {
     }
   };
 
-  const handleWebAuthnLogin = async () => {
-    try {
-      const optionsResponse = await fetch('/api/auth/webauthn-login', {
-        method: 'POST',
-      });
-      const { success, options } = await optionsResponse.json();
-      if (success) {
-        console.log('Received options:', options);
+  // const handleWebAuthnLogin = async () => {
+  //   try {
+  //     const optionsResponse = await fetch('/api/auth/webauthn-login', {
+  //       method: 'POST',
+  //     });
+  //     const { success, options } = await optionsResponse.json();
+  //     if (success) {
+  //       console.log('Received options:', options);
 
-        console.log('Starting login with options');
-        const assertionResponse = await startAuthentication(options);
-        console.log('Assertion response:', assertionResponse);
+  //       console.log('Starting login with options');
+  //       const assertionResponse = await startAuthentication(options);
+  //       console.log('Assertion response:', assertionResponse);
 
-        console.log('Sending verification request');
-        const verificationResponse = await fetch('/api/auth/webauthn-login', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ assertionResponse }),
-        });
+  //       console.log('Sending verification request');
+  //       const verificationResponse = await fetch('/api/auth/webauthn-login', {
+  //         method: 'PUT',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({ assertionResponse }),
+  //       });
 
-        console.log('Verification response status:', verificationResponse.status);
-        console.log('Verification response:', verificationResponse);
-        const verificationResult = await verificationResponse.json();
-        console.log('Verification result:', verificationResult);
+  //       console.log('Verification response status:', verificationResponse.status);
+  //       console.log('Verification response:', verificationResponse);
+  //       const verificationResult = await verificationResponse.json();
+  //       console.log('Verification result:', verificationResult);
 
-        if (verificationResponse.ok) {
-          const { session: authSession } = await verificationResponse.json();
-          setSession(authSession);
-          console.log('WebAuthn authentication successful');
-        } else {
-          console.error('WebAuthn authentication failed');
-        }
-      } else {
-        console.error('Error during WebAuthn registration:');
-      }
+  //       if (verificationResponse.ok) {
+  //         const { session: authSession } = await verificationResponse.json();
+  //         setSession(authSession);
+  //         console.log('WebAuthn authentication successful');
+  //       } else {
+  //         console.error('WebAuthn authentication failed');
+  //       }
+  //     } else {
+  //       console.error('Error during WebAuthn registration:');
+  //     }
 
-    } catch (error) {
-      console.error('Error during WebAuthn authentication:', error);
-    }
-  };
+  //   } catch (error) {
+  //     console.error('Error during WebAuthn authentication:', error);
+  //   }
+  // };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {!session ? (
+      {/* {!session ? (
         <>
           <Button
             variant="contained"
@@ -142,7 +142,10 @@ export default function Home() {
             Sign Out
           </Button>
         </>
-      )}
+      )} */}
+      <Button variant="contained" onClick={handleWebAuthnRegister}>
+        Register WebAuthn
+      </Button>
     </Box>
   );
 }
