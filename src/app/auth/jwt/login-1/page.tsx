@@ -2,26 +2,53 @@
 
 import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
+import { startRegistration, startAuthentication, publicKeyCredentialCreationOptions } from '@simplewebauthn/browser';
 
 import { Box, Button, Divider, Typography } from '@mui/material';
 
-import { supabase } from "src/lib/supabase";
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
 export default function Home() {
-  const [session, setSession] = useState<any>(null);
+  const router = useRouter();
+  const [isWebAuthnAvailable, setIsWebAuthnAvailable] = useState<boolean>(false);
+  const [isRegistered, setIsRegistered] = useState<boolean>(false);
+  // const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    const checkWebAuthnSupport = async () => {
+      try {
+        // Check if the browser supports WebAuthn
+        const supported = await publicKeyCredentialCreationOptions({
+          authenticatorSelection: {
+            authenticatorAttachment: 'platform',
+          }
+        });
+        setIsWebAuthnAvailable(!!supported);
+      } catch (error) {
+        console.error('WebAuthn not supported:', error);
+        setIsWebAuthnAvailable(false);
+      }
+    };
 
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    checkWebAuthnSupport();
   }, []);
+
+  if (!isWebAuthnAvailable) {
+    return null;
+  }
+
+  // useEffect(() => {
+  //   // eslint-disable-next-line @typescript-eslint/no-shadow
+  //   supabase.auth.getSession().then(({ data: { session } }) => {
+  //     setSession(session);
+  //   });
+
+  //   // eslint-disable-next-line @typescript-eslint/no-shadow
+  //   supabase.auth.onAuthStateChange((_event, session) => {
+  //     setSession(session);
+  //   });
+  // }, []);
 
   // const handleSignIn = async (email: string, password: string) => {
   //   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -59,6 +86,7 @@ export default function Home() {
         const verificationResult = await verificationResponse.json();
         console.log('Verification result:', verificationResult);
 
+        setIsRegistered(true)
         if (verificationResponse.ok) {
           console.log('WebAuthn registration successful');
         } else {
@@ -72,46 +100,49 @@ export default function Home() {
     }
   };
 
-  // const handleWebAuthnLogin = async () => {
-  //   try {
-  //     const optionsResponse = await fetch('/api/auth/webauthn-login', {
-  //       method: 'POST',
-  //     });
-  //     const { success, options } = await optionsResponse.json();
-  //     if (success) {
-  //       console.log('Received options:', options);
+  const handleWebAuthnLogin = async () => {
+    try {
+      const optionsResponse = await fetch('/api/auth/webauthn-login', {
+        method: 'POST',
+      });
+      const { success, options } = await optionsResponse.json();
+      if (success) {
+        console.log('Received options:', options);
 
-  //       console.log('Starting login with options');
-  //       const assertionResponse = await startAuthentication(options);
-  //       console.log('Assertion response:', assertionResponse);
+        console.log('Starting login with options');
+        const assertionResponse = await startAuthentication(options);
+        console.log('Assertion response:', assertionResponse);
 
-  //       console.log('Sending verification request');
-  //       const verificationResponse = await fetch('/api/auth/webauthn-login', {
-  //         method: 'PUT',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify({ assertionResponse }),
-  //       });
+        console.log('Sending verification request');
+        const verificationResponse = await fetch('/api/auth/webauthn-login', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ assertionResponse }),
+        });
 
-  //       console.log('Verification response status:', verificationResponse.status);
-  //       console.log('Verification response:', verificationResponse);
-  //       const verificationResult = await verificationResponse.json();
-  //       console.log('Verification result:', verificationResult);
+        console.log('Verification response status:', verificationResponse.status);
+        console.log('Verification response:', verificationResponse);
+        const { success: verificationSuccess, session } = await verificationResponse.json();
+        if (session.ok) {
+          router.push(paths.dashboard.user.profileSetup);
+          console.log('WebAuthn authentication successful');
+          return;
+        }
+        
+        if (verificationSuccess) {
+          router.push(paths.dashboard.root);
+          return;
+        }
+         
+        console.error('WebAuthn authentication failed');
+      } else {
+        console.error('Error during WebAuthn registration:');
+      }
 
-  //       if (verificationResponse.ok) {
-  //         const { session: authSession } = await verificationResponse.json();
-  //         setSession(authSession);
-  //         console.log('WebAuthn authentication successful');
-  //       } else {
-  //         console.error('WebAuthn authentication failed');
-  //       }
-  //     } else {
-  //       console.error('Error during WebAuthn registration:');
-  //     }
-
-  //   } catch (error) {
-  //     console.error('Error during WebAuthn authentication:', error);
-  //   }
-  // };
+    } catch (error) {
+      console.error('Error during WebAuthn authentication:', error);
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -143,9 +174,12 @@ export default function Home() {
           </Button>
         </>
       )} */}
-      <Button variant="contained" onClick={handleWebAuthnRegister}>
+      {isRegistered && <Button variant="contained" onClick={handleWebAuthnLogin}>
+        WebAuthn Login
+      </Button>}
+      {!isRegistered && <Button variant="contained" onClick={handleWebAuthnRegister}>
         Register WebAuthn
-      </Button>
+      </Button>}
     </Box>
   );
 }
