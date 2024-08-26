@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const userId = "50df3478-f7ae-4d41-b4fb-bd10ee613a05";
   const userIdBuffer = uuidToUint8Array(userId);
 
-  const options = generateRegistrationOptions({
+  const options = await generateRegistrationOptions({
     rpName,
     rpID,
     userID: userIdBuffer, // Use the Uint8Array instead of the string
