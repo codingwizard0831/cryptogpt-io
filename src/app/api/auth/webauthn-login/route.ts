@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     });
 
     console.log('post-options', options);
-    
+
     const { error } = await supabase.from('webauthn_challenges').insert({
       challenge: options.challenge,
     });
@@ -78,18 +78,21 @@ export async function PUT(req: Request) {
       counter: 100,
     }).eq('credential_id', credentialData.credential_id);
 
-    const { data: userData } = await supabase.from('users').select('*').eq('id', credentialData.user_id).single();
+    const { data: userData } = await supabase.from('auth_users').select('*').eq('id', credentialData.user_id).single();
+    console.log("userData.email", userData.email)
 
-    const { data: session, error } = await supabase.auth.signInWithPassword({
-      email: userData.email,
+    const response = await supabase.auth.signInWithPassword({
+      email: "goldstar105000117@gmail.com",
       password: 'User$123',
-    });
+    })
 
-    if (error) {
-      return NextResponse.json({ success: false, error: "Failed to create session" }, { status: 400 })
+    console.log('response', response)
+    const userId = response?.data?.user?.id;
+    if (!userId) {
+      return NextResponse.json({ success: false, error: 'Failed to sign in' }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true, session })
+    return NextResponse.json({ success: true, session: response?.data?.session })
   }
 
   return NextResponse.json({ success: false, error: "Registration failed" }, { status: 400 })
