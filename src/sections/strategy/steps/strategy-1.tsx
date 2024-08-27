@@ -1,4 +1,4 @@
-import { Area, XAxis, YAxis, Tooltip, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
+import { Pie, Area, Cell, XAxis, YAxis, Tooltip, PieChart, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
 import { Box, Stack, Select, Button, BoxProps, MenuItem, Typography, ButtonBase, IconButton, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
 
@@ -298,6 +298,74 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                     </Box>
                 </Box>
 
+                <Box sx={{
+                    height: "100px",
+                }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={data}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#ffd70055" strokeWidth={4} />
+                            <XAxis
+                                dataKey="date"
+                                stroke="#ddd"
+                                tick={{ fill: '#ddd' }}
+                            />
+                            <YAxis
+                                stroke="#ddd"
+                                tick={{ fill: '#ddd' }}
+                                domain={[0, 32000]}
+                                ticks={[0, 7500, 15000, 22500, 30000]}
+                            />
+                            <defs>
+                                <linearGradient id="neonGradient-FFD700" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#FFD700" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#FFD700" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <Area
+                                type="monotone"
+                                dataKey="price"
+                                stroke="#ffd700"
+                                strokeWidth={6}
+                                fill="url(#neonGradient-FFD700)"
+                                filter="url(#neonGlow)"
+                            />
+
+                            <defs>
+                                <filter id="neonGlow" height="300%" width="300%" x="-75%" y="-75%">
+                                    <feGaussianBlur stdDeviation="5" result="coloredBlur" />
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur" />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </Box>
+
+                <Box sx={{
+                    height: "200px",
+                }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={pieChartData}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                outerRadius={80}
+                                fill="#8884d8"
+                                dataKey="value"
+                            >
+                                {pieChartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                        </PieChart>
+                    </ResponsiveContainer>
+                </Box>
+
+
 
                 <Box sx={{
                     width: '100%',
@@ -376,6 +444,15 @@ const data: DataPoint[] = [
     { date: '2023-07', price: 19500, change: 0.0 },
     { date: '2023-08', price: 16500, change: -0.1, action: 'Sell' },
 ];
+
+const pieChartData = [
+    { name: 'Category A', value: 400 },
+    { name: 'Category B', value: 300 },
+    { name: 'Category C', value: 200 },
+    { name: 'Category D', value: 100 },
+];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
 
 const pairAmountDummyData = [
     {
