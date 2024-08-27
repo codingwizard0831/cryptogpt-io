@@ -45,7 +45,7 @@ export default function ChatbotBubble() {
         right: `${SPACING.md * 2}px`,
         bottom: `${SPACING.md * 2}px`,
         borderRadius: 1,
-        zIndex: 10000,
+        zIndex: 100,
         p: 2,
         backdropFilter: 'none',
         backgroundColor: "#100e0d",

@@ -199,7 +199,7 @@ export function palette(mode: 'light' | 'dark') {
     background: {
       paper: brown[800],
       default: brown[900],
-      neutral: alpha(grey[500], 0.12),
+      neutral: alpha(brown[500], 0.12),
       opposite: grey[100],
     },
     action: {

@@ -12,11 +12,17 @@ interface StrategyState {
     coin1: CoinType,
     coin2: CoinType,
     isPreview: boolean,
+    topAmountCase: any,
+    selectedPair: string,
+    timeframe: string,
     setIsPreview: (v: boolean) => void,
     setStep: (v: string) => void,
     setCoin1: (v: CoinType) => void,
     setCoin2: (v: CoinType) => void,
     setIsShowSummary: (v: boolean) => void,
+    setTopAmountCase: (v: any) => void,
+    setSelectedPair: (v: string) => void,
+    setTimeframe: (v: string) => void,
 }
 
 export const useStrategy = create<StrategyState>((set, get) => ({
@@ -31,6 +37,12 @@ export const useStrategy = create<StrategyState>((set, get) => ({
         symbol: 'Bitcon'
     },
     isPreview: false,
+    topAmountCase: {
+        value: 100,
+        label: '100',
+    },
+    selectedPair: 'BTC/USDT',
+    timeframe: '1h',
     setIsShowSummary: (v: boolean) => {
         set(() => ({
             isShowSummary: v,
@@ -56,4 +68,20 @@ export const useStrategy = create<StrategyState>((set, get) => ({
             isPreview: v,
         }))
     },
+    setTopAmountCase: (v: { value: number, label: string }) => {
+        set((state) => ({
+            ...state,
+            topAmountCase: v,
+        }));
+    },
+    setSelectedPair: (v: string) => {
+        set(() => ({
+            selectedPair: v,
+        }))
+    },
+    setTimeframe: (v: string) => {
+        set(() => ({
+            timeframe: v,
+        }))
+    }
 }))

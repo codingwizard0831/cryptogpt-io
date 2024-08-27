@@ -1,0 +1,1 @@
+export { default as PersonColorSelector } from './person-color-selector';
