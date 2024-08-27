@@ -75,7 +75,7 @@ export async function PUT(req: Request) {
 
     await supabase.from('webauthn_credentials').insert({
       user_id: "50df3478-f7ae-4d41-b4fb-bd10ee613a05",
-      credential_id: Buffer.from(credentialID).toString('base64'),
+      credential_id: credentialID,
       public_key: Buffer.from(credentialPublicKey).toString('base64'),
       counter: verification.registrationInfo.counter,
     });

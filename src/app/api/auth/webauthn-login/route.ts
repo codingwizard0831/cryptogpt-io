@@ -49,7 +49,7 @@ export async function PUT(req: Request) {
   const { data: credentialData } = await supabase
     .from('webauthn_credentials')
     .select('*')
-    .eq('credential_id', Buffer.from(assertionResponse.id, 'base64').toString('base64'))
+    .eq('credential_id', assertionResponse.id)
     .single();
 
   console.log('credentialData', credentialData)
@@ -57,7 +57,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({ success: false, error: "Credential not found" }, { status: 400 })
   }
   const authenticator: any = {
-    credentialID: Buffer.from(credentialData.credential_id, 'base64'),
+    credentialID: credentialData.credential_id,
     credentialPublicKey: Buffer.from(credentialData.public_key, 'base64'),
     counter: credentialData.counter,
   };
