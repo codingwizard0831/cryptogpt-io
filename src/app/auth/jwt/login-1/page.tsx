@@ -87,12 +87,10 @@ export default function Home() {
       });
       const { success, options } = await optionsResponse.json();
       if (success) {
-        alert(`options: ${options}`);
         console.log('Received options:', options);
 
         console.log('Starting login with options');
         const assertionResponse = await startAuthentication(options);
-        alert(assertionResponse);
         console.log('Assertion response:', assertionResponse);
 
         console.log('Sending verification request');
@@ -101,13 +99,18 @@ export default function Home() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ assertionResponse }),
         });
-        alert(`verificationResponse: ${verificationResponse}`);
+
+        await fetch('/api/auth/webauthn-test', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ verificationResponse }),
+        });
 
         console.log('Verification response status:', verificationResponse.status);
         console.log('Verification response:', verificationResponse);
         const { success: verificationSuccess, session } = await verificationResponse.json();
-        alert(`session: ${session}`);
-        alert(`session: ${session.ok}`);
         if (session.ok) {
           router.push(paths.dashboard.user.profileSetup);
           console.log('WebAuthn authentication successful');
@@ -120,8 +123,10 @@ export default function Home() {
         }
 
         alert(`all faild`);
+        router.push(paths.dashboard.user.profile);
         console.error('WebAuthn authentication failed');
       } else {
+        alert(`full error`);
         console.error('Error during WebAuthn registration:');
       }
       setSubmetting(false);
