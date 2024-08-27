@@ -5,14 +5,16 @@ import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js';
 
 import Select from "@mui/material/Select";
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, alpha, Stack, styled, Button, useTheme, BoxProps, MenuItem, Typography, IconButton } from '@mui/material';
+import { Box, Tab, Tabs, alpha, Stack, styled, Button, useTheme, BoxProps, MenuItem, Collapse, Typography, IconButton, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify/iconify';
 
+import Image from '../image/image';
 import { usePopover } from '../custom-popover';
 import { StyledPopover } from '../styled-component';
+import { PersonColorSelector } from '../person-color-selector';
 
 interface AudioDevice {
     deviceId: string;
@@ -34,6 +36,19 @@ const Textarea = styled(BaseTextareaAutosize)(
   `,
 );
 
+
+type EmojiType = {
+    image: string;
+    value: string;
+    group: string;
+}
+
+type EmojiGroupType = {
+    image: string;
+    name: string;
+    value: string;
+}
+
 export interface ChatInputProps extends BoxProps {
 
 }
@@ -44,9 +59,9 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     const [text, setText] = useState('');
     const isFocus = useBoolean();
     const isMultipleLines = useBoolean(false);
-    const isRecordingBarShow = useBoolean(false);
-    const uploadButtonsPopover = usePopover();
+
     const isUploadPanelShow = useBoolean(false);
+    const uploadButtonsPopover = usePopover();
 
     useEffect(() => {
         if (text.split('\n').length > 2) {
@@ -55,6 +70,10 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
             isMultipleLines.onFalse();
         }
     }, [text, isMultipleLines]);
+
+
+    // Recording bar
+    const isRecordingBarShow = useBoolean(false);
 
     const handleOpenRecordingBar = () => {
         isRecordingBarShow.onToggle();
@@ -183,6 +202,25 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         createWaveSurfer();
     };
 
+
+    const isEmojiPanelShow = useBoolean(false);
+    const [emojiTab, setEmojiTab] = useState<string>("emoji");
+    const [emojiData, setEmojiData] = useState<EmojiType[][]>([...emojiDummyData]);
+    const [emojiGroup, setEmojiGroup] = useState<EmojiGroupType[]>([...emojiGroupsDummyData]);
+    const [hoveredEmoji, setHoveredEmoji] = useState<any>(null);
+    const [emojiGroupCollapse, setEmojiGroupCollapse] = useState<boolean[]>([]);
+
+    useEffect(() => {
+        setEmojiGroupCollapse(emojiGroup.map(() => true));
+    }, [emojiGroup]);
+
+    const handleMoveEmojiGroup = (groupValue: string) => {
+        const section = document.getElementById(`emoji-section-${groupValue}`);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
     return <Box sx={{
         width: '100%',
         borderRadius: '40px',
@@ -292,7 +330,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                     }} />
                 </IconButton>
                 <IconButton size="small" sx={{
-                }}>
+                }} onClick={() => isEmojiPanelShow.onToggle()} >
                     <Iconify icon="mingcute:emoji-line" sx={{
                         color: theme.palette.text.primary,
                     }} />
@@ -547,5 +585,315 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                 </Box>
             </Box>
         </Box>
+
+        {/* emoji panel */}
+        <Box sx={{
+            backgroundColor: alpha(theme.palette.background.default, 0.9),
+            borderRadius: 1,
+            border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
+            position: 'absolute',
+            left: 0,
+            width: '100%',
+            bottom: "68px",
+            opacity: isEmojiPanelShow.value ? 1 : 0,
+            visibility: isEmojiPanelShow.value ? 'visible' : 'hidden',
+            transition: 'all 0.3s',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+        }}>
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                p: 1,
+                boxShadow: `0 0 10px 4px ${theme.palette.background.default}`,
+            }}>
+                <Tabs value={emojiTab}
+                    onChange={(e, v) => setEmojiTab(v)}
+                    sx={{
+                        '& .MuiTab-root': {
+                            margin: '0px 2px !important',
+                            padding: '4px 8px',
+                        },
+                        '& .MuiTab-selected': {
+                            backgroundColor: theme.palette.primary.main,
+                            color: theme.palette.primary.contrastText,
+                        },
+                        '& .MuiTab-indicator': {
+                            display: 'none !important',
+                        },
+                    }}>
+                    <Tab value="gifs" label='GIFs' />
+                    <Tab value="stickers" label='Stickers' />
+                    <Tab value="emoji" label='Emoji' />
+                </Tabs>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 1,
+                }}>
+                    <FormControl variant="outlined" size="small" fullWidth sx={{}}>
+                        <OutlinedInput
+                            id="outlined-adornment-password"
+                            type='text'
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <Iconify icon="ic:baseline-search" />
+                                </InputAdornment>
+                            }
+                        />
+                    </FormControl>
+
+                    <PersonColorSelector />
+                </Box>
+            </Box>
+
+            <Box sx={{
+                width: '100%',
+                maxHeight: '240px',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'stretch',
+            }}>
+                <Box sx={{
+                    width: '48px',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    scrollbarWidth: 'none',
+                    borderColor: alpha(theme.palette.background.opposite, 0.2),
+                    borderStyle: 'solid',
+                    borderWidth: '1px 1px 0px 0px',
+                }}>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        alignItems: 'center',
+                        p: 1,
+                    }}>
+                        {
+                            emojiGroup.map((item, index) => (
+                                <Box key={index}
+                                    sx={{
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: "50%",
+                                        overflow: 'hidden',
+                                        cursor: 'pointer',
+                                        color: 'text.secondary',
+                                        transition: 'all 0.3s',
+                                        "&:hover": {
+                                            borderRadius: "10px",
+                                            color: 'text.primary',
+                                        }
+                                    }}
+                                    onClick={() => handleMoveEmojiGroup(item.value)}
+                                >
+                                    <Image src={item.image} alt={item.value} sx={{
+                                        width: '100%',
+                                        height: '100%',
+                                    }} />
+                                </Box>
+                            ))
+                        }
+                    </Box>
+                </Box>
+
+                <Box sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}>
+                    <Box sx={{
+                        flex: 1,
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        p: 1,
+                        backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                        scrollBehavior: 'smooth',
+                    }}>
+                        {
+                            emojiData.map((_emojis, emojiDataIndex) => (
+                                <Box key={`emojis-${emojiDataIndex}`} id={`emoji-section-${emojiGroup.find((item) => item.value === _emojis[0].group)?.value || ""}`} sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 0.5,
+                                }}>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1,
+                                        pl: 1,
+                                        cursor: 'pointer',
+                                    }} onClick={() => setEmojiGroupCollapse([
+                                        ...emojiGroupCollapse.slice(0, emojiDataIndex),
+                                        !emojiGroupCollapse[emojiDataIndex],
+                                        ...emojiGroupCollapse.slice(emojiDataIndex + 1),
+                                    ])}>
+                                        <Image src={emojiGroup.find((item) => item.value === _emojis[0].group)?.image || ""} sx={{
+                                            width: '24px',
+                                            height: '24px',
+                                            borderRadius: '50%',
+                                            overflow: 'hidden',
+                                        }} />
+                                        <Typography variant="button">{emojiGroup.find((item) => item.value === _emojis[0].group)?.name || ""}</Typography>
+                                        <Iconify icon="fluent:chevron-down-12-filled" sx={{
+                                            transition: 'rotate 0.3s',
+                                            transform: emojiGroupCollapse[emojiDataIndex] ? 'rotate(0deg)' : 'rotate(-90deg)',
+                                        }} />
+                                    </Box>
+                                    <Collapse in={emojiGroupCollapse[emojiDataIndex]}>
+                                        <Box sx={{
+                                            display: 'flex',
+                                            flexWrap: 'wrap',
+                                        }}>
+                                            {
+                                                [..._emojis, ..._emojis, ..._emojis, ..._emojis, ..._emojis, ..._emojis, ..._emojis].map((_, emojisIndex) => (
+                                                    <Box key={emojisIndex} sx={{
+                                                        width: '48px',
+                                                        height: '48px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        overflow: 'hidden',
+                                                        cursor: 'pointer',
+                                                        color: 'text.secondary',
+                                                        "&:hover": {
+                                                            backgroundColor: theme.palette.background.default,
+                                                            color: 'text.primary',
+                                                        }
+                                                    }}
+                                                        onMouseEnter={() => setHoveredEmoji(_)}
+                                                    // onMouseLeave={() => setHoveredEmoji(null)}
+                                                    >
+                                                        <Image src={_.image} sx={{
+                                                            width: '32px',
+                                                            height: '32px',
+                                                        }} />
+                                                    </Box>
+                                                ))
+                                            }
+                                        </Box>
+                                    </Collapse>
+                                </Box>
+                            ))
+                        }
+                    </Box>
+
+                    <Box sx={{
+                        display: hoveredEmoji ? 'flex' : 'none',
+                        alignItems: 'center',
+                        gap: 1,
+                        width: '100%',
+                        backgroundColor: alpha(theme.palette.background.default, 0.5),
+                        px: 1,
+                        py: 0.5,
+                    }}>
+                        <Image src={hoveredEmoji?.image || ""} sx={{
+                            width: '32px',
+                            height: '32px',
+                        }} />
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            flex: 1,
+                        }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: '800' }}>{hoveredEmoji?.value || ""}</Typography>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>from {hoveredEmoji?.group || ""}</Typography>
+                        </Box>
+                        <Image src={emojiGroup.find((item) => item.value === hoveredEmoji?.group)?.image || ""} sx={{
+                            width: '32px',
+                            height: '32px',
+                        }} />
+                    </Box>
+                </Box>
+            </Box>
+        </Box>
     </Box>
 }
+
+const emojiGroupsDummyData: EmojiGroupType[] = [
+    {
+        image: '/images/bitcoin-btc-logo.png',
+        name: 'CrytoCurrency logo',
+        value: 'crypto',
+    },
+    {
+        image: '/images/uniswap-uni-logo.png',
+        name: 'Uniswap',
+        value: 'uniswap',
+    },
+    {
+        image: '/images/dot-logo.png',
+        name: 'Among Us',
+        value: 'among-us',
+    },
+];
+
+const emojiDummyData: EmojiType[][] = [
+    [
+        {
+            image: '/images/Goldie.png',
+            value: ':AU_yelloflushed:',
+            group: 'uniswap',
+        },
+        {
+            image: '/images/Nanami.jpg',
+            value: ':icon1:',
+            group: 'crypto',
+        },
+        {
+            image: '/images/Naoki.jpg',
+            value: ':icon2:',
+            group: 'among-us',
+        },
+        {
+            image: '/images/Nicolas.png',
+            value: ':icon3:',
+            group: 'among-us',
+        },
+        {
+            image: '/images/what-is-trading-strategy-1000x375.jpg',
+            value: ':icon4:',
+            group: 'among-us',
+        },
+    ],
+    [
+        {
+            image: '/images/Goldie.png',
+            value: ':AU_yelloflushed:',
+            group: 'among-us',
+        },
+        {
+            image: '/images/Nanami.jpg',
+            value: ':icon1:',
+            group: 'among-us',
+        },
+        {
+            image: '/images/Naoki.jpg',
+            value: ':icon2:',
+            group: 'among-us',
+        },
+        {
+            image: '/images/Nicolas.png',
+            value: ':icon3:',
+            group: 'among-us',
+        },
+        {
+            image: '/images/what-is-trading-strategy-1000x375.jpg',
+            value: ':icon4:',
+            group: 'among-us',
+        },
+        {
+            image: '/images/2021-04-crypto-cataclysm.jpg',
+            value: ':icon5:',
+            group: 'among-us',
+        },
+    ],
+]
