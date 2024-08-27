@@ -35,13 +35,14 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   const res = await req.json();
   const { assertionResponse } = res;
-
+  console.log('assertionResponse', assertionResponse)
   const { data: challengeData }: any = await supabase
     .from('webauthn_challenges')
     .select('challenge')
     .order('created_at', { ascending: false })
     .limit(1)
     .single();
+  console.log('challengeData', challengeData)
 
   const expectedChallenge = challengeData?.challenge || "";
 
@@ -51,6 +52,7 @@ export async function PUT(req: Request) {
     .eq('credential_id', Buffer.from(assertionResponse.id, 'base64').toString('base64'))
     .single();
 
+  console.log('credentialData', credentialData)
   if (!credentialData) {
     return NextResponse.json({ success: false, error: "Credential not found" }, { status: 400 })
   }
@@ -59,6 +61,7 @@ export async function PUT(req: Request) {
     credentialPublicKey: Buffer.from(credentialData.public_key, 'base64'),
     counter: credentialData.counter,
   };
+  console.log('put-authenticator', authenticator)
 
   const verification = await verifyAuthenticationResponse({
     response: assertionResponse,
@@ -71,7 +74,8 @@ export async function PUT(req: Request) {
 
   if (verification.verified) {
     await supabase.from('webauthn_credentials').update({
-      counter: verification.authenticationInfo.newCounter,
+      // counter: verification.authenticationInfo.newCounter,
+      counter: 100,
     }).eq('credential_id', credentialData.credential_id);
 
     const { data: userData } = await supabase.from('users').select('*').eq('id', credentialData.user_id).single();
