@@ -12,7 +12,7 @@ import { useRouter } from 'src/routes/hooks';
 export default function Home() {
   const router = useRouter();
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
-  // const [session, setSession] = useState<any>(null);
+  const [submetting, setSubmetting] = useState(false);
 
   // useEffect(() => {
   //   // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -33,6 +33,7 @@ export default function Home() {
   // };
 
   const handleWebAuthnRegister = async () => {
+    setSubmetting(true);
     try {
       console.log('Starting WebAuthn registration');
       const optionsResponse = await fetch('/api/auth/webauthn-register', {
@@ -71,24 +72,27 @@ export default function Home() {
       } else {
         console.error('Error during WebAuthn registration:');
       }
+      setSubmetting(false);
     } catch (error) {
       console.error('Error during WebAuthn registration:', error);
+      setSubmetting(false);
     }
   };
 
   const handleWebAuthnLogin = async () => {
+    setSubmetting(true);
     try {
       const optionsResponse = await fetch('/api/auth/webauthn-login', {
         method: 'POST',
       });
       const { success, options } = await optionsResponse.json();
-        alert(`sucess: ${success}`);
-        if (success) {
+      if (success) {
+        alert(`options: ${options}`);
         console.log('Received options:', options);
 
         console.log('Starting login with options');
         const assertionResponse = await startAuthentication(options);
-        alert(true);
+        alert(assertionResponse);
         console.log('Assertion response:', assertionResponse);
 
         console.log('Sending verification request');
@@ -97,28 +101,34 @@ export default function Home() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ assertionResponse }),
         });
+        alert(`verificationResponse: ${verificationResponse}`);
 
         console.log('Verification response status:', verificationResponse.status);
         console.log('Verification response:', verificationResponse);
         const { success: verificationSuccess, session } = await verificationResponse.json();
+        alert(`session: ${session}`);
+        alert(`session: ${session.ok}`);
         if (session.ok) {
           router.push(paths.dashboard.user.profileSetup);
           console.log('WebAuthn authentication successful');
           return;
         }
-        
+        alert(`verificationSuccess: ${verificationSuccess}`);
         if (verificationSuccess) {
           router.push(paths.dashboard.root);
           return;
         }
-         
+
+        alert(`all faild`);
         console.error('WebAuthn authentication failed');
       } else {
         console.error('Error during WebAuthn registration:');
       }
+      setSubmetting(false);
 
     } catch (error) {
       console.error('Error during WebAuthn authentication:', error);
+      setSubmetting(false);
     }
   };
 
@@ -152,10 +162,10 @@ export default function Home() {
           </Button>
         </>
       )} */}
-      {isRegistered && <Button variant="contained" onClick={handleWebAuthnLogin}>
+      {isRegistered && <Button variant="contained" onClick={handleWebAuthnLogin} disabled={submetting}>
         WebAuthn Login
       </Button>}
-      {!isRegistered && <Button variant="contained" onClick={handleWebAuthnRegister}>
+      {!isRegistered && <Button variant="contained" onClick={handleWebAuthnRegister} disabled={submetting}>
         Register WebAuthn
       </Button>}
     </Box>
