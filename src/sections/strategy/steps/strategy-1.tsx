@@ -1,6 +1,6 @@
 import { Area, XAxis, YAxis, Tooltip, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-import { Box, Stack, Select, Button, BoxProps, MenuItem, Typography, ButtonBase, FormControl, OutlinedInput, InputAdornment, IconButton } from '@mui/material';
+import { Box, Stack, Select, Button, BoxProps, MenuItem, Typography, ButtonBase, IconButton, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -8,11 +8,10 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Image from 'src/components/image';
-
-import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
 import Iconify from 'src/components/iconify';
 import { StyledDialog } from 'src/components/styled-component';
-import { over } from 'lodash';
+
+import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
 
 interface DataPoint {
     date: string;
@@ -101,9 +100,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                 border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
                             }}>
                             {
-                                timeframesDummyData.map((item) => {
-                                    return <MenuItem value={item.value} key={item.value}>{item.label}</MenuItem>
-                                })
+                                timeframesDummyData.map((item) => <MenuItem value={item.value} key={item.value}>{item.label}</MenuItem>)
                             }
                         </Select>
                     </Stack>
@@ -280,14 +277,12 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                             gap: 1,
                         }}>
                             {
-                                pairAmountDummyData.map((item) => {
-                                    return <Button variant={item.value === topAmountCase.value ? "contained" : 'outlined'} color="primary" key={item} startIcon={<Iconify icon="mingcute:down-line" />}
-                                        onClick={() => setTopAmountCase(item)}
-                                        sx={{
-                                            flexShrink: 0,
-                                        }}
-                                    >TOP {item.label}</Button>
-                                })
+                                pairAmountDummyData.map((item) => <Button variant={item.value === topAmountCase.value ? "contained" : 'outlined'} color="primary" key={item} startIcon={<Iconify icon="mingcute:down-line" />}
+                                    onClick={() => setTopAmountCase(item)}
+                                    sx={{
+                                        flexShrink: 0,
+                                    }}
+                                >TOP {item.label}</Button>)
                             }
                         </Box>
                     </Box>
@@ -298,11 +293,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                         flexWrap: 'wrap',
                     }}>
                         {
-                            pairsDummyData.filter((item) => {
-                                return item.amount <= topAmountCase.value;
-                            }).map((item) => {
-                                return <Button variant={item.value === selectedPair ? "contained" : 'outlined'} color="primary" key={item} onClick={() => setSelectedPair(item.value)}>{item.label}</Button>
-                            })
+                            pairsDummyData.filter((item) => item.amount <= topAmountCase.value).map((item) => <Button variant={item.value === selectedPair ? "contained" : 'outlined'} color="primary" key={item} onClick={() => setSelectedPair(item.value)}>{item.label}</Button>)
                         }
                     </Box>
                 </Box>
@@ -319,14 +310,12 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
 
                     }}>
                         {
-                            pairsDummyData.map((item) => {
-                                return <Button variant={item.value === selectedPair ? "contained" : 'outlined'} color="primary" key={`${item}-pair`}
-                                    onClick={() => setSelectedPair(item.value)}
-                                    sx={{
-                                        flexShrink: 0,
-                                    }}
-                                >{item.label}</Button>
-                            })
+                            pairsDummyData.map((item) => <Button variant={item.value === selectedPair ? "contained" : 'outlined'} color="primary" key={`${item}-pair`}
+                                onClick={() => setSelectedPair(item.value)}
+                                sx={{
+                                    flexShrink: 0,
+                                }}
+                            >{item.label}</Button>)
                         }
                     </Box>
                 </Box>
@@ -355,21 +344,19 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                             gap: 1,
                         }}>
                             {
-                                timeframesDummyData.map((item) => {
-                                    return <Button variant={item.value === timeframe ? "contained" : 'outlined'} color="primary" key={`${item}-timeframe`}
-                                        onClick={() => setTimeframe(item.value)}
-                                        sx={{
-                                            flexShrink: 0,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            gap: 0.5,
-                                        }}
-                                    >
-                                        <Iconify icon={item.icon} />
-                                        <Typography variant="caption">{item.label}</Typography>
-                                        <Iconify icon="et:strategy" />
-                                    </Button>
-                                })
+                                timeframesDummyData.map((item) => <Button variant={item.value === timeframe ? "contained" : 'outlined'} color="primary" key={`${item}-timeframe`}
+                                    onClick={() => setTimeframe(item.value)}
+                                    sx={{
+                                        flexShrink: 0,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 0.5,
+                                    }}
+                                >
+                                    <Iconify icon={item.icon} />
+                                    <Typography variant="caption">{item.label}</Typography>
+                                    <Iconify icon="et:strategy" />
+                                </Button>)
                             }
                         </Box>
                     </Box>

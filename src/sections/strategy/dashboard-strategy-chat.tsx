@@ -2,8 +2,7 @@ import WaveSurfer from 'wavesurfer.js';
 import { useRef, useState, useEffect } from 'react';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { Box, Chip, Grid, alpha, Stack, styled, Button, Switch, useTheme, IconButton, Typography, FormControlLabel } from '@mui/material';
+import { Box, Chip, Grid, alpha, Stack, Button, Switch, useTheme, IconButton, Typography, FormControlLabel } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -23,23 +22,7 @@ interface DataPoint {
     action?: 'Buy' | 'Sell';
 }
 
-const Textarea = styled(BaseTextareaAutosize)(
-    ({ theme }) => `
-  box-sizing: border-box;
-  width: 100%;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.5;
-  border: none;
-  outline: none;
-  resize: none;
-  color: ${theme.palette.mode === 'dark' ? theme.palette.grey[300] : theme.palette.grey[900]};
-  background: transparent;
-  `,
-);
-
 export default function DashboardStrategyChat() {
-    const [text, setText] = useState('');
     const smUp = useResponsive("up", 'sm');
     const isPreview = useStrategy((state) => state.isPreview);
     const setIsPreview = useStrategy((state) => state.setIsPreview);

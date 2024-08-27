@@ -43,10 +43,10 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
 
     const [text, setText] = useState('');
     const isFocus = useBoolean();
-    const isMultipleLines = useBoolean();
+    const isMultipleLines = useBoolean(false);
     const isRecordingBarShow = useBoolean(false);
     const uploadButtonsPopover = usePopover();
-    const isUploadPanelShow = useBoolean(true);
+    const isUploadPanelShow = useBoolean(false);
 
     useEffect(() => {
         if (text.split('\n').length > 2) {
@@ -217,7 +217,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         }}>
             <IconButton size="small" sx={{
                 order: !isMultipleLines.value ? 0 : 1,
-            }} onClick={(e) => { uploadButtonsPopover.onOpen(e); isUploadPanelShow.onToggle() }}>
+            }} onClick={(e) => { uploadButtonsPopover.onOpen(e); isUploadPanelShow.onTrue() }}>
                 <Iconify icon="gg:add" sx={{
                     color: theme.palette.text.primary,
                 }} />
@@ -252,7 +252,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                             onClick={() => { }}>Upload multi files</Button>
                         <Button variant="outlined" color="primary"
                             startIcon={<Iconify icon="vaadin:cloud-upload" />}
-                            onClick={() => { }}>Import from the driver</Button>
+                            onClick={() => { }}>Import from driver</Button>
                     </Stack>
                 </Box>
             </StyledPopover>
@@ -272,6 +272,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                 }} />
             </Box>
 
+            {/* tool bar */}
             <Box sx={{
                 order: 2,
                 display: 'flex',
@@ -306,6 +307,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
             </Box>
         </Box>
 
+        {/* recording panel */}
         <Box sx={{
             backgroundColor: alpha(theme.palette.background.default, 0.9),
             borderRadius: 1,
@@ -439,6 +441,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
             </Box>
         </Box>
 
+        {/* uploading panel */}
         <Box sx={{
             backgroundColor: alpha(theme.palette.background.default, 0.9),
             borderRadius: 1,
