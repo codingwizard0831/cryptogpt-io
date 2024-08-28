@@ -12,15 +12,23 @@ export async function POST(req: Request) {
   function uuidToUint8Array(uuid: string): Uint8Array {
     return new Uint8Array(uuid.replace(/-/g, '').match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
   }
+
+  const userHeader = req.headers.get('x-user') as string;
+
+  if (!userHeader) {
+    return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
+  }
+  const user = JSON.parse(userHeader);
+
   try {
-    const userId = "50df3478-f7ae-4d41-b4fb-bd10ee613a05";
+    const userId = user?.id;
     const userIdBuffer = uuidToUint8Array(userId);
 
     const options = await generateRegistrationOptions({
       rpName,
       rpID,
-      userID: userIdBuffer, // Use the Uint8Array instead of the string
-      userName: "goldstar105000117@gmail.com",
+      userID: userIdBuffer,
+      userName: user?.email,
       attestationType: 'none',
       authenticatorSelection: {
         authenticatorAttachment: 'platform',
@@ -49,13 +57,21 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   const res = await req.json();
+
   const { attestationResponse } = res;
+
+  const userHeader = req.headers.get('x-user') as string;
+
+  if (!userHeader) {
+    return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
+  }
+  const user = JSON.parse(userHeader);
   console.log('put-attestationResponse', attestationResponse)
 
   const { data: challengeData }: any = await supabase
     .from('webauthn_challenges')
     .select('challenge')
-    .eq('user_id', "50df3478-f7ae-4d41-b4fb-bd10ee613a05")
+    .eq('user_id', user?.id)
     .order('created_at', { ascending: false })
     .limit(1)
     .single();
@@ -74,7 +90,7 @@ export async function PUT(req: Request) {
     const { credentialID, credentialPublicKey }: any = verification.registrationInfo;
 
     await supabase.from('webauthn_credentials').insert({
-      user_id: "50df3478-f7ae-4d41-b4fb-bd10ee613a05",
+      user_id: user?.id,
       credential_id: credentialID,
       public_key: Buffer.from(credentialPublicKey).toString('base64'),
       counter: verification.registrationInfo.counter,

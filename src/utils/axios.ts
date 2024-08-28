@@ -54,6 +54,8 @@ export const endpoints = {
     passwordUpdate: '/auth/update_password/',
 
     profileUpdate: '/auth/user/profile/update/',
+
+    registerFaceId: '/api/webauthn-register/',
   },
   membership: {
     plans: '/api/membership/plans/',
