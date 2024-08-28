@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { startRegistration } from '@simplewebauthn/browser';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -80,6 +81,30 @@ export default function AccountGeneral() {
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
+      isSubmitting.onFalse();
+    }
+  };
+
+  const handleWebAuthnRegister = async () => {
+    try {
+      isSubmitting.onTrue();
+      const { data: optionsResponse } = await axios.post(endpoints.auth.registerFaceId);
+      const { success, options } = optionsResponse;
+      if (success) {
+        const attestationResponse = await startRegistration(options);
+        const { data: verificationResponse } = await axios.put(endpoints.auth.registerFaceId, { attestationResponse });
+
+        if (verificationResponse.success) {
+          enqueueSnackbar('Face id registration successful!', { variant: 'success' });
+        } else {
+          enqueueSnackbar('Face id registration failed!', { variant: 'success' });
+        }
+      } else {
+        enqueueSnackbar('Error during face id registration.', { variant: 'error' });
+      }
+      isSubmitting.onFalse();
+    } catch (error) {
+      enqueueSnackbar('Error during face id registration.', { variant: 'error' });
       isSubmitting.onFalse();
     }
   };
@@ -215,8 +240,11 @@ export default function AccountGeneral() {
             }
           </Box>
 
+          <LoadingButton variant="contained" color="primary" sx={{ mt: 3, width: 235, mx: 'auto', color: "white" }} onClick={handleWebAuthnRegister} loading={isSubmitting.value}>
+            Register Face Id
+          </LoadingButton>
 
-          <Button variant="soft" color="error" sx={{ mt: 3 }}>
+          <Button variant="contained" color="error" sx={{ mt: 1, width: 235, mx: 'auto' }} disabled={isSubmitting.value}>
             Delete User
           </Button>
         </Card>

@@ -36,7 +36,7 @@ export default function Home() {
     setSubmetting(true);
     try {
       console.log('Starting WebAuthn registration');
-      const optionsResponse = await fetch('/api/auth/webauthn-register', {
+      const optionsResponse = await fetch('/api/webauthn-register', {
         method: 'POST',
         // headers: { Authorization: `Bearer ${session.access_token}` },
       });
@@ -49,7 +49,7 @@ export default function Home() {
         console.log('Attestation response:', attestationResponse);
 
         console.log('Sending verification request');
-        const verificationResponse = await fetch('/api/auth/webauthn-register', {
+        const verificationResponse = await fetch('/api/webauthn-register', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
