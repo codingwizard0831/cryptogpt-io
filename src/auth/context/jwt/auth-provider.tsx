@@ -4,8 +4,6 @@ import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
 
-// import { signMessageWithMetamask, connectWalletWithMetamask } from 'src/lib/metamask';
-
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
 import {

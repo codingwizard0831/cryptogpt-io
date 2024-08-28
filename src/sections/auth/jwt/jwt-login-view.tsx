@@ -2,8 +2,6 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { useAccount } from 'wagmi';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 // import { cookies } from 'next/headers'
 import { MuiOtpInput } from 'mui-one-time-password-input';
 
@@ -22,6 +20,7 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { useMetaMask } from 'src/routes/hooks/useMetaMask';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -35,18 +34,14 @@ import { BINANCE_API, PROJECT_URL } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import { useMetaMask } from 'src/routes/hooks/useMetaMask';
 
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
-  const { open, close } = useWeb3Modal();
   const { loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask } =
     useAuthContext();
   const metaMask = useMetaMask();
   const { enqueueSnackbar } = useSnackbar();
-  const { isConnected } = useAccount();
-  console.log('isConnected', isConnected);
 
   const router = useRouter();
   const searchParams = useSearchParams();
