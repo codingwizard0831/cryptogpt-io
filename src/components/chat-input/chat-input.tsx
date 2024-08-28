@@ -203,6 +203,8 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     };
 
 
+    // Emoji panel
+    const emojiPanelRef = useRef<HTMLDivElement | null>(null);
     const isEmojiPanelShow = useBoolean(false);
     const [emojiTab, setEmojiTab] = useState<string>("emoji");
     const [emojiData, setEmojiData] = useState<EmojiType[][]>([...emojiDummyData]);
@@ -215,9 +217,11 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     }, [emojiGroup]);
 
     const handleMoveEmojiGroup = (groupValue: string) => {
-        const section = document.getElementById(`emoji-section-${groupValue}`);
-        if (section) {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (emojiPanelRef.current) {
+            const section = emojiPanelRef.current.querySelector(`.emoji-section-${groupValue}`);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
     }
 
@@ -587,7 +591,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         </Box>
 
         {/* emoji panel */}
-        <Box sx={{
+        <Box ref={emojiPanelRef} sx={{
             backgroundColor: alpha(theme.palette.background.default, 0.9),
             borderRadius: 1,
             border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
@@ -720,7 +724,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                     }}>
                         {
                             emojiData.map((_emojis, emojiDataIndex) => (
-                                <Box key={`emojis-${emojiDataIndex}`} id={`emoji-section-${emojiGroup.find((item) => item.value === _emojis[0].group)?.value || ""}`} sx={{
+                                <Box key={`emojis-${emojiDataIndex}`} className={`emoji-section-${emojiGroup.find((item) => item.value === _emojis[0].group)?.value || ""}`} sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
                                     gap: 0.5,

@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Pie, Area, Cell, XAxis, YAxis, Tooltip, PieChart, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-import { Box, Stack, Select, Button, BoxProps, MenuItem, Typography, ButtonBase, IconButton, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
+import { alpha } from '@mui/system';
+import { Box, Tab, Tabs, Stack, Select, Button, Switch, BoxProps, MenuItem, TextField, Typography, ButtonBase, IconButton, InputLabel, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -11,6 +13,7 @@ import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import { StyledDialog } from 'src/components/styled-component';
 
+import InternetNoiseItem from '../internet-noise-item';
 import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
 
 interface DataPoint {
@@ -35,14 +38,51 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
     const setSelectedPair = useStrategy((state) => state.setSelectedPair);
     const timeframe = useStrategy((state) => state.timeframe);
     const setTimeframe = useStrategy((state) => state.setTimeframe);
+    const internetNoise = useStrategy((state) => state.internetNoise);
+    const toggleInternetNoise = useStrategy((state) => state.toggleInternetNoise);
+    const addInternetNoise = useStrategy((state) => state.addInternetNoise);
+    const dataSources = useStrategy((state) => state.dataSources);
+    const updateDataSource = useStrategy((state) => state.updateDataSource);
+    const [lastSelectedDataSourceIndex, setLastSelectedDataSourceIndex] = useState(-1);
     const smUp = useResponsive("up", 'sm');
     const isPercentageForBalance = useBoolean(false);
     const isTradingPairSelectModalShow = useBoolean(false);
+    const internetNoiseAddModalShow = useBoolean(false);
+    const settingTypeIn1step = useStrategy((state) => state.settingTypeIn1step);
+    const setSettingTypeIn1step = useStrategy((state) => state.setSettingTypeIn1step);
+    const [newInternetNoiseSource, setNewInternetNoiseSource] = useState('');
+    const [apikey, setApikey] = useState('');
+    const [secretkey, setSecretkey] = useState('');
 
     const handleSwapCoin = () => {
         const [temp1, temp2] = [coin1, coin2];
         setCoin1(temp2);
         setCoin2(temp1);
+    }
+
+    const handleAddInternetNoise = () => {
+        addInternetNoise({ name: newInternetNoiseSource, isActive: true });
+        internetNoiseAddModalShow.onFalse();
+    }
+
+    const handleSelectDataSource = (index: number) => {
+        if (dataSources[index].name === "Pyth Network") {
+            updateDataSource(index, { ...dataSources[index], isSelected: !dataSources[index].isSelected });
+        } else if (dataSources[index].isSelected) {
+            updateDataSource(index, { ...dataSources[index], isSelected: !dataSources[index].isSelected });
+        } else {
+            setLastSelectedDataSourceIndex(index);
+            setApikey(dataSources[index].apiKey || '');
+            setSecretkey(dataSources[index].secretKey || '');
+            updateDataSource(index, { ...dataSources[index], isSelected: true });
+        }
+    }
+
+    const handleSaveDataSourceKeys = () => {
+        updateDataSource(lastSelectedDataSourceIndex, { ...dataSources[lastSelectedDataSourceIndex], apiKey: apikey, secretKey: secretkey });
+        setLastSelectedDataSourceIndex(-1);
+        setApikey('');
+        setSecretkey('');
     }
 
     return <Box sx={{
@@ -231,17 +271,472 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                 />
                             </FormControl>
 
-                            <Button sizem="small" variant="contained" color="primary"
+                            <Button sizem="small" variant="outlined" color="primary"
+                                sx={{
+                                    minWidth: '42px',
+                                }}
                                 onClick={() => isPercentageForBalance.onToggle()}
                             >
-                                {isPercentageForBalance.value ? "On" : "Off"}
+                                {isPercentageForBalance.value ? "$" : "%"}
                             </Button>
                         </Box>
                     </Box>
                 </Box>
             </Stack>
 
-            <Button variant="contained" color="primary" fullWidth>Continue/Select  Indicators</Button>
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+            }}>
+                <Typography variant="h6" sx={{
+                    color: 'primary.main',
+                }}>Create Custom Strategy</Typography>
+                <FormControl fullWidth size="small">
+                    <OutlinedInput
+                        type='text'
+                        startAdornment={
+                            <InputAdornment position="start">
+                                <Iconify icon="material-symbols:search" />
+                            </InputAdornment>
+                        }
+                        placeholder="Search Existing Strategies"
+                    />
+                </FormControl>
+
+                <Tabs value={settingTypeIn1step} onChange={(e, v) => setSettingTypeIn1step(v)} sx={{
+                    mb: 1,
+                }}>
+                    <Tab value="basic" label="Basic Setting" />
+                    <Tab value="advanced" label="Advanced Setting" />
+                </Tabs>
+
+                {
+                    settingTypeIn1step === 'basic' &&
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        p: 1,
+                        borderRadius: 1,
+                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                    }}>
+                        <FormControl fullWidth size="small">
+                            <InputLabel htmlFor="my-profit-target-input">My Profit Target</InputLabel>
+                            <OutlinedInput
+                                id='my-profit-target-input'
+                                type='text'
+                                startAdornment={
+                                    <InputAdornment position="start">
+                                        <Iconify icon="hugeicons:trade-up" sx={{
+                                            color: 'success.main',
+                                        }} />
+                                    </InputAdornment>
+                                }
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <Typography sx={{ color: 'text.primary' }}>%</Typography>
+                                    </InputAdornment>
+                                }
+                                placeholder="Example: 10%"
+                                label="My Profit Target"
+                            />
+                        </FormControl>
+                        <FormControl fullWidth size="small">
+                            <InputLabel htmlFor="stop-less-input">Stop less</InputLabel>
+                            <OutlinedInput
+                                id='stop-less-input'
+                                type='text'
+                                startAdornment={
+                                    <InputAdornment position="start">
+                                        <Iconify icon="hugeicons:trade-down" sx={{
+                                            color: 'error.main',
+                                        }} />
+                                    </InputAdornment>
+                                }
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <Typography sx={{ color: 'text.primary' }}>%</Typography>
+                                    </InputAdornment>
+                                }
+                                placeholder="Example: 10%"
+                                label="My Profit Target"
+                            />
+                        </FormControl>
+                        <FormControl fullWidth size="small">
+                            <InputLabel htmlFor="max-draw-down-input">Max Draw Down</InputLabel>
+                            <OutlinedInput
+                                id='max-draw-down-input'
+                                type='text'
+                                startAdornment={
+                                    <InputAdornment position="start">
+                                        <Iconify icon="hugeicons:trade-down" sx={{
+                                            color: 'primary.main',
+                                        }} />
+                                    </InputAdornment>
+                                }
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <Typography sx={{ color: 'text.primary' }}>%</Typography>
+                                    </InputAdornment>
+                                }
+                                placeholder="Example: 10%"
+                                label="My Profit Target"
+                            />
+                        </FormControl>
+                    </Box>
+                }
+
+                {
+                    settingTypeIn1step === 'advanced' &&
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        p: 1,
+                        borderRadius: 1,
+                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                    }}>
+                        <Box>
+                            <Typography variant="subtitle2" sx={{
+                                color: 'primary.main',
+                                mb: 1,
+                            }}>Indicator Configure</Typography>
+                            {
+                                [1, 2, 3, 4].map((item, index) => <Stack key={`key-indicator-${index}`} direction="row" alignItems='center' spacing={2} sx={{ width: '100%' }}>
+                                    <FormControl sx={{
+                                        '.MuiInputBase-root': {
+                                            border: 'none',
+                                            width: '100px',
+                                        },
+                                    }}>
+                                        <InputLabel htmlFor="indicator-label">indicators</InputLabel>
+                                        <Select labelId="indicator-label" id="indicator" label="Time frame" size="small" value="SMA" sx={{
+                                            border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                                        }}>
+                                            <MenuItem value="SMA">SMA</MenuItem>
+                                            <MenuItem value="EMA">EMA</MenuItem>
+                                            <MenuItem value="RSI">RSI</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <FormControl sx={{
+                                        '.MuiInputBase-root': {
+                                            border: 'none',
+                                            width: '100px',
+                                        },
+                                    }}>
+                                        <InputLabel htmlFor="add-indicator-label">Operator</InputLabel>
+                                        <Select labelId="add-indicator-label" id="add-indicator" label="Operator" size="small" value="plus" sx={{
+                                            border: (theme: any) => `1px solid ${theme.palette.primary.main}`
+                                        }}>
+                                            <MenuItem value="plus">plus</MenuItem>
+                                            <MenuItem value="minus">minus</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <TextField size="small" sx={{ flex: 1 }} />
+                                    <IconButton sx={{
+                                        border: (theme: any) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                                    }}>
+                                        <Iconify icon="fa:trash" sx={{
+                                            color: 'primary.main',
+                                            width: '24px',
+                                            hegiht: '24px',
+                                        }} />
+                                    </IconButton>
+                                </Stack>
+                                )
+                            }
+                        </Box>
+
+                        <Box sx={{}}>
+                            <Typography variant="subtitle2" sx={{
+                                color: 'primary.main',
+                                mb: 1,
+                            }}>Internet Noise</Typography>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                flexWrap: 'wrap',
+                                gap: 1,
+                            }}>
+                                {
+                                    internetNoise.map((item, index) => <InternetNoiseItem
+                                        key={`internet-noise-${index}`}
+                                        name={item.name}
+                                        logo={item.logo}
+                                        startColor={item.startColor}
+                                        endColor={item.endColor}
+                                        isActive={item.isActive}
+                                        onChangleActive={() => toggleInternetNoise(index)}
+                                    />)
+                                }
+                                <Button variant='outlined' color='primary' startIcon={<Iconify icon="material-symbols:add" />}
+                                    onClick={() => internetNoiseAddModalShow.onTrue()}>Add Source</Button>
+
+                                <StyledDialog open={internetNoiseAddModalShow.value} onClose={() => internetNoiseAddModalShow.onFalse()}>
+                                    <Box sx={{
+                                        p: 2,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 2,
+                                        width: '400px',
+                                    }}>
+                                        <Typography variant="h6" sx={{
+                                            color: 'primary.main',
+                                        }}>Add New Internet Noise Source</Typography>
+                                        <FormControl fullWidth size="small">
+                                            <InputLabel htmlFor="source-name-input">Source Name</InputLabel>
+                                            <OutlinedInput
+                                                id='source-name-input'
+                                                type='text'
+                                                placeholder="Source Name"
+                                                label="Source Name"
+                                                value={newInternetNoiseSource}
+                                                onChange={(e) => setNewInternetNoiseSource(e.target.value)}
+                                            />
+                                        </FormControl>
+                                        <Box sx={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                        }}>
+                                            <Button variant="contained" color="primary" onClick={() => handleAddInternetNoise()}>Add</Button>
+                                        </Box>
+                                    </Box>
+                                </StyledDialog>
+                            </Box>
+                        </Box>
+
+                        <Box>
+                            <Typography variant="subtitle2" sx={{
+                                color: 'primary.main',
+                            }}>Data Sources</Typography>
+
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                            }}>
+                                {
+                                    dataSources.map((item, index) => <Button
+                                        key={`data-source-${index}`}
+                                        variant={item.isSelected ? "contained" : 'outlined'}
+                                        color="primary"
+                                        sx={{
+                                            position: 'relative',
+                                        }}
+                                        onClick={() => handleSelectDataSource(index)}
+                                    >
+                                        {item.name}
+                                        {
+                                            item.apiKey &&
+                                            <Iconify icon="fluent:key-multiple-20-regular" sx={{
+                                                position: 'absolute',
+                                                right: '-8px',
+                                                bottom: '-6px',
+                                                backgroundColor: 'background.default',
+                                                color: 'primary.main',
+                                                border: theme => `1px solid ${theme.palette.primary.main}`,
+                                                borderRadius: '50%',
+                                                p: '3px',
+                                            }} />
+                                        }
+                                    </Button>)
+                                }
+
+                                <StyledDialog open={lastSelectedDataSourceIndex !== -1} onClose={() => setLastSelectedDataSourceIndex(-1)}>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 2,
+                                        p: 2,
+                                        width: '400px',
+                                    }}>
+                                        <Typography variant="h6" sx={{
+                                        }}>Set API Keys for {dataSources[lastSelectedDataSourceIndex]?.name || ""}</Typography>
+                                        <TextField
+                                            label="API Key"
+                                            variant="outlined"
+                                            fullWidth
+                                            value={apikey}
+                                            onChange={(e) => setApikey(e.target.value)}
+                                        />
+                                        <TextField
+                                            label="Secret Key"
+                                            variant="outlined"
+                                            fullWidth
+                                            value={secretkey}
+                                            onChange={(e) => setSecretkey(e.target.value)}
+                                        />
+                                        <Box sx={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                        }}>
+                                            <Button variant="contained" color="primary" onClick={() => handleSaveDataSourceKeys()}>Save</Button>
+                                        </Box>
+                                    </Box>
+                                </StyledDialog>
+                            </Box>
+                        </Box>
+
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                        }}>
+                            <Iconify icon="mingcute:time-line" sx={{
+                                color: 'primary.main',
+                            }} />
+                            <Typography variant="subtitle2" sx={{
+                                flex: 1,
+                            }}>Auto-rebalance</Typography>
+                            <Switch />
+                        </Box>
+
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                        }}>
+                            <Iconify icon="fa:usd" sx={{
+                                color: 'primary.main',
+                            }} />
+                            <Typography variant="subtitle2" sx={{
+                                flex: 1,
+                            }}>Reinvest Profits</Typography>
+                            <Switch />
+                        </Box>
+                    </Box>
+                }
+
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                }}>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        p: 1,
+                        borderRadius: 1,
+                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                        backgroundImage: theme => `linear-gradient(45deg, ${alpha(theme.palette.primary.main, 0.1)} 25%, transparent 25%, transparent 50%, ${alpha(theme.palette.primary.main, 0.1)} 50%, ${alpha(theme.palette.primary.main, 0.1)} 75%, transparent 75%, transparent)`,
+                        mb: 1,
+                    }}>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            justifyContent: 'space-between',
+                        }}>
+                            <Box>
+                                <Typography variant="h5" sx={{
+                                    color: 'primary.main'
+                                }}>Credit Balance</Typography>
+                                <Typography variant="subtitle2" sx={{
+                                    color: 'text.primary',
+                                }}>Available for strategies</Typography>
+                            </Box>
+                            <Iconify icon="fluent-mdl2:payment-card" sx={{
+                                color: 'primary.main',
+                                width: '36px',
+                                height: '36px',
+                            }} />
+                        </Box>
+                        <Typography variant="h5" sx={{
+                            color: 'primary.main'
+                        }}>1000.00 CRGPT</Typography>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                        }}>
+                            <Iconify icon="bx:user" sx={{
+                                color: 'primary.main',
+                                width: '42px',
+                                height: '42px',
+                                p: 0.5,
+                                borderRadius: '50%',
+                                backgroundColor: theme => alpha(theme.palette.primary.main, 0.1),
+                            }} />
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                            }}>
+                                <Typography variant="body2" sx={{
+                                    color: 'text.primary',
+                                }}>John Doe</Typography>
+                                <Typography variant="caption" sx={{
+                                    color: 'text.secondary',
+                                }}>Premium Member</Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        p: 1,
+                        borderRadius: 1,
+                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                        boxShadow: theme => `0 2px 5px 2px ${alpha(theme.palette.primary.main, 0.2)}`,
+                    }}>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                        }}>
+                            <Typography variant="subtitle2" sx={{
+                                color: 'text.primary',
+                            }}>Strategy Score:</Typography>
+                            <Typography variant="h6" sx={{
+                                color: 'primary.main'
+                            }}>75/100</Typography>
+                        </Box>
+
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                        }}>
+                            <Typography variant="subtitle2" sx={{
+                                color: 'text.primary',
+                            }}>Strategy Cost:</Typography>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'flex-end',
+                                gap: 1,
+                            }}>
+                                <Typography variant="h6" sx={{
+                                    color: 'primary.main'
+                                }}>4.29 CRGPT</Typography>
+                                <Typography variant="body2" sx={{
+                                    color: 'primary.main'
+                                }}>$0.30</Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
+
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                gap: 1,
+            }}>
+                <Button variant="outlined" color="primary" fullWidth startIcon={<Iconify icon="la:chart-line" sx={{
+                    width: '24px',
+                    height: '24px',
+                }} />}>Run Backtest</Button>
+                <Button variant="contained" color="primary" fullWidth startIcon={<Iconify icon="et:strategy" sx={{
+                    width: '24px',
+                    height: '24px',
+                }} />}>Create Strategy</Button>
+                <Button variant="outlined" color="primary" fullWidth startIcon={<Iconify icon="tabler:discount" sx={{
+                    width: '24px',
+                    height: '24px',
+                }} />}>Spin for Discount</Button>
+            </Box>
         </Stack>
 
 

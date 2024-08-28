@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Box, styled, BoxProps, IconButton } from '@mui/material';
 
+import { useStrategy } from 'src/store/strategy/useStrategy';
+
 import Iconify from '../iconify/iconify';
 
 interface MenuButton {
@@ -110,10 +112,15 @@ const MobileMenuTab: React.FC<MobileMenuTabProps> = ({
     ...other
 }) => {
     // const [selectedButton, setSelectedButton] = useState<string>(value);
+    const setSettingTypeIn1step = useStrategy((state) => state.setSettingTypeIn1step);
 
     const handleButtonClick = (id: string) => {
         if (handleChange) {
             handleChange(id);
+            if (id === "3.detail") {
+                handleChange("1.2.choose-pair");
+                setSettingTypeIn1step("advanced");
+            }
         }
         // setSelectedButton(id);
     };
