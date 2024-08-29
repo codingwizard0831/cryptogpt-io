@@ -53,6 +53,10 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
     const [newInternetNoiseSource, setNewInternetNoiseSource] = useState('');
     const [apikey, setApikey] = useState('');
     const [secretkey, setSecretkey] = useState('');
+    const strategyForge = useStrategy((state) => state.strategyForge);
+    const setStrategyForge = useStrategy((state) => state.setStrategyForge);
+    const [value, setValue] = useState<any>(null);
+    const [inputValue, setInputValue] = useState('');
 
     const handleSwapCoin = () => {
         const [temp1, temp2] = [coin1, coin2];
@@ -83,6 +87,14 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
         setLastSelectedDataSourceIndex(-1);
         setApikey('');
         setSecretkey('');
+    }
+
+    const handleStrategyForge = (_data: any) => {
+        if (strategyForge.find((item) => item.value === _data.value)) {
+            setStrategyForge(strategyForge.filter((item) => item.value !== _data.value));
+        } else {
+            setStrategyForge([...strategyForge, _data]);
+        }
     }
 
     return <Box sx={{
@@ -292,17 +304,52 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                 <Typography variant="h6" sx={{
                     color: 'primary.main',
                 }}>Create Custom Strategy</Typography>
-                <FormControl fullWidth size="small">
-                    <OutlinedInput
-                        type='text'
-                        startAdornment={
-                            <InputAdornment position="start">
-                                <Iconify icon="material-symbols:search" />
-                            </InputAdornment>
-                        }
-                        placeholder="Search Existing Strategies"
-                    />
-                </FormControl>
+
+                {/* <Autocomplete
+                    id="country-select-demo"
+                    sx={{ width: 300 }}
+                    options={countries}
+                    value={value}
+                    onChange={(event: any, newValue: string | null) => {
+                      setValue(newValue);
+                    }}
+                    inputValue={inputValue}
+                    onInputChange={(event, newInputValue) => {
+                      setInputValue(newInputValue);
+                    }}
+                    autoHighlight
+                    getOptionLabel={(option: any) => option.label}
+                    renderOption={(props, option) => {
+                        const { key, ...optionProps } = props;
+                        return (
+                            <Box
+                                key={key}
+                                component="li"
+                                sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                                {...optionProps}
+                            >
+                                <img
+                                    loading="lazy"
+                                    width="20"
+                                    srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                                    src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                                    alt=""
+                                />
+                                {option.label} ({option.code}) +{option.phone}
+                            </Box>
+                        );
+                    }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Choose a country"
+                            inputProps={{
+                                ...params.inputProps,
+                                autoComplete: 'new-password', // disable autocomplete and autofill
+                            }}
+                        />
+                    )}
+                /> */}
 
                 <Tabs value={settingTypeIn1step} onChange={(e, v) => setSettingTypeIn1step(v)} sx={{
                     mb: 1,
@@ -397,6 +444,71 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                         borderRadius: 1,
                         backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
                     }}>
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1,
+                        }}>
+                            <Typography variant="subtitle2" sx={{
+                                color: 'primary.main',
+                            }}>Indicator Configure</Typography>
+                            <Box sx={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                alignItems: 'center',
+                                gap: 1,
+                            }}>
+                                {
+                                    strategyForgeDummyData.map((item, index) => <ButtonBase key={`key-indicator-${index}`} direction="row" alignItems='center' spacing={2} sx={{
+                                        width: '100px',
+                                        height: '80px',
+                                        borderRadius: 1,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 1,
+                                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.08),
+                                        cursor: 'pointer',
+                                        trasnition: 'all 0.3s',
+                                        ...(strategyForge.find((i) => i.value === item.value) && {
+                                            backgroundImage: theme => `linear-gradient(to right, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.dark, 0.4)})`,
+                                        }),
+                                    }}
+                                        onClick={() => handleStrategyForge(item)}
+                                    >
+                                        <Iconify icon={item.icon} sx={{
+                                            color: 'text.primary',
+                                            width: '32px',
+                                            height: '32px',
+                                        }} />
+                                        <Typography variant="subtitle2" sx={{
+                                            color: 'text.primary',
+                                        }}>{item.label}</Typography>
+                                    </ButtonBase>)
+                                }
+                            </Box>
+                            {
+                                strategyForge.length !== 0 &&
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    borderRadius: 1,
+                                    border: (theme: any) => `1px dashed ${theme.palette.primary.main}`,
+                                    p: 1,
+                                }}>
+                                    {
+                                        strategyForge.map((item, index) => <Button key={`key-indicator-${index}`} direction="row" alignItems='center' spacing={2} sx={{
+                                            backgroundImage: theme => `linear-gradient(to right, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.dark, 0.4)})`,
+                                        }}>
+                                            {item.label}
+                                        </Button>)
+                                    }
+                                </Box>
+                            }
+                        </Box>
+
                         <Box>
                             <Typography variant="subtitle2" sx={{
                                 color: 'primary.main',
@@ -608,7 +720,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                     </Box>
                 }
 
-                <Box sx={{
+                {/* <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 1,
@@ -716,7 +828,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                             </Box>
                         </Box>
                     </Box>
-                </Box>
+                </Box> */}
             </Box>
 
             <Box sx={{
@@ -1059,5 +1171,40 @@ const timeframesDummyData = [
         value: "1y",
         label: "1y",
         icon: "lets-icons:date-today",
+    },
+];
+
+const strategyForgeDummyData = [
+    {
+        value: "ma",
+        label: "MA",
+        icon: 'hugeicons:trade-up',
+    },
+    {
+        value: "rsi",
+        label: "RSI",
+        icon: 'mynaui:chart-line',
+    },
+    {
+        value: "macd",
+        label: "MACD",
+        icon: 'mage:chart',
+    },
+    {
+        value: "bb",
+        label: "BB",
+        icon: 'solar:pie-chart-bold',
+    },
+    {
+        value: "fib",
+        label: "FIB",
+        icon: 'ph:lightning',
+    },
+];
+
+const strategyDummyData = [
+    {
+        value: 'ma',
+        label: 'MA',
     },
 ];
