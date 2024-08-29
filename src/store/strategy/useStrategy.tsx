@@ -18,6 +18,7 @@ interface StrategyState {
     timeframe: string,
     internetNoise: any[],
     dataSources: any[],
+    strategyForge: any[],
     setIsPreview: (v: boolean) => void,
     setStep: (v: string) => void,
     setSettingTypeIn1step: (v: string) => void,
@@ -32,6 +33,7 @@ interface StrategyState {
     removeInternetNoise: (v: number) => void,
     toggleInternetNoise: (v: number) => void,
     updateDataSource: (index: number, value: any) => void,
+    setStrategyForge: (v: any[]) => void,
 }
 
 export const useStrategy = create<StrategyState>((set, get) => ({
@@ -109,6 +111,7 @@ export const useStrategy = create<StrategyState>((set, get) => ({
             secretKey: '',
         },
     ],
+    strategyForge: [],
     setIsShowSummary: (v: boolean) => {
         set(() => ({
             isShowSummary: v,
@@ -196,4 +199,9 @@ export const useStrategy = create<StrategyState>((set, get) => ({
             })
         }))
     },
+    setStrategyForge: (v: any[]) => {
+        set(() => ({
+            strategyForge: [...v],
+        }))
+    }
 }))
