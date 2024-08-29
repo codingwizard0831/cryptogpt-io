@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { supabase } from "src/lib/supabase";
+import { createCustomServerClient } from "src/utils/supabase";
 
 export async function POST(req: Request) {
   const res = await req.json();
@@ -10,6 +10,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: 'Token is required' }, { status: 400 })
   }
 
+  const supabase = createCustomServerClient();
   try {
     const { data: tokenData, error: tokenError } = await supabase
       .from('user_tokens')

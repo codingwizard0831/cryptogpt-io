@@ -413,6 +413,25 @@ export default function JwtLoginView() {
           variant="outlined"
           color="primary"
           startIcon={
+            <Iconify
+              icon="teenyicons:face-id-outline"
+              width={24}
+              height={24}
+            />
+          }
+          loading={isSubmitting.value}
+          // onClick={() => handleLoginWithFaceId()}
+          sx={{
+            mt: 2,
+          }}
+        >
+          Continue with Face Id
+        </LoadingButton>
+        <LoadingButton
+          fullWidth
+          variant="outlined"
+          color="primary"
+          startIcon={
             <Image
               src="/assets/icons/project/logo-metamask.png"
               alt="metamask"
@@ -422,9 +441,6 @@ export default function JwtLoginView() {
           }
           loading={isSubmitting.value}
           onClick={() => handleLoginWithMetamask()}
-          sx={{
-            mt: 2,
-          }}
         >
           Continue with MetaMask
         </LoadingButton>

@@ -8,6 +8,21 @@ const rpName = 'cryptogpt';
 const rpID = 'cryptogpt.app';
 const origin = `https://${rpID}`;
 
+async function checkUserPassword(userId) {
+  const { data, error } = await supabase
+    .from('auth.users')
+    .select('encrypted_password')
+    .eq('id', userId)
+    .single();
+
+  if (error) {
+    console.error('Error checking user password:', error);
+    return false;
+  }
+
+  return data.encrypted_password != null && data.encrypted_password !== '';
+}
+
 export async function POST(req: Request) {
   function uuidToUint8Array(uuid: string): Uint8Array {
     return new Uint8Array(uuid.replace(/-/g, '').match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
@@ -95,8 +110,13 @@ export async function PUT(req: Request) {
       public_key: Buffer.from(credentialPublicKey).toString('base64'),
       counter: verification.registrationInfo.counter,
     });
+    const hasPassword = await checkUserPassword(user?.id);
+    console.log('User has set a password:', hasPassword)
 
-    return NextResponse.json({ success: true })
+    if (hasPassword) {
+      return NextResponse.json({ success: true })
+    }
+    return NextResponse.json({ success: true, message: "no_password" })
   }
 
   return NextResponse.json({ success: false, error: "Registration failed" }, { status: 400 })
