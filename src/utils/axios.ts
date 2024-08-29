@@ -101,6 +101,7 @@ export const endpoints = {
   },
   profile: {
     index: '/api/profile',
+    setPassword: '/api/profile/set-password',
     models: '/api/profile/image/models',
     generateImage: '/api/profile/image/generate',
     updateAvatar: '/api/profile/image',

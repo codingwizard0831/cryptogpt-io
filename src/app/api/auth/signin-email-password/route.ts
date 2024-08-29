@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { supabase } from "src/lib/supabase";
+import { createCustomServerClient } from "src/utils/supabase";
 
 function generateRandom(length: number = 32): string {
   const letters = 'abcdefghijklmnopqrstuvwxyz1234567890';
@@ -14,6 +14,7 @@ function generateRandom(length: number = 32): string {
 }
 
 export async function POST(req: Request) {
+  const supabase = createCustomServerClient();
   try {
     const res = await req.json();
     const { email } = res;
