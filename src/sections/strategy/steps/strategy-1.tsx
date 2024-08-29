@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Pie, Area, Cell, XAxis, YAxis, Tooltip, PieChart, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
+import { Pie, Line, Area, Cell, XAxis, YAxis, Tooltip, PieChart, LineChart, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
 import { alpha } from '@mui/system';
-import { Box, Tab, Tabs, Stack, Select, Button, Switch, BoxProps, MenuItem, TextField, Typography, ButtonBase, IconButton, InputLabel, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import { Box, Tab, Tabs, Stack, Select, Button, Switch, BoxProps, MenuItem, useTheme, TextField, Typography, ButtonBase, IconButton, InputLabel, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -16,6 +17,8 @@ import { StyledDialog } from 'src/components/styled-component';
 import InternetNoiseItem from '../internet-noise-item';
 import DashboardStrategyCoinSelector from '../dashboard-strategy-coin-selector';
 
+const filter = createFilterOptions<any>();
+
 interface DataPoint {
     date: string;
     price: number;
@@ -28,6 +31,7 @@ interface DashboardStrategyStep1Props extends BoxProps {
 };
 
 export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrategyStep1Props) {
+    const theme = useTheme();
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
@@ -55,8 +59,9 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
     const [secretkey, setSecretkey] = useState('');
     const strategyForge = useStrategy((state) => state.strategyForge);
     const setStrategyForge = useStrategy((state) => state.setStrategyForge);
-    const [value, setValue] = useState<any>(null);
-    const [inputValue, setInputValue] = useState('');
+
+    const [strategySearchValue, setStrategySearchValue] = useState<any>(null);
+    const [strategySearchInputValue, setStrategySearchInputValue] = useState('');
 
     const handleSwapCoin = () => {
         const [temp1, temp2] = [coin1, coin2];
@@ -149,7 +154,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                             value={timeframe}
                             onChange={(e) => setTimeframe(e.target.value as string)}
                             sx={{
-                                border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                                border: `1px solid ${theme.palette.primary.main}`,
                             }}>
                             {
                                 timeframesDummyData.map((item) => <MenuItem value={item.value} key={item.value}>{item.label}</MenuItem>)
@@ -305,51 +310,136 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                     color: 'primary.main',
                 }}>Create Custom Strategy</Typography>
 
-                {/* <Autocomplete
-                    id="country-select-demo"
-                    sx={{ width: 300 }}
-                    options={countries}
-                    value={value}
-                    onChange={(event: any, newValue: string | null) => {
-                      setValue(newValue);
+                <Autocomplete
+                    id="strategy-autocomplete"
+                    fullWidth
+                    options={strategyDummyData}
+                    value={strategySearchValue}
+                    onChange={(event: any, newValue: any) => {
+                        if (typeof newValue === 'string') {
+                            // timeout to avoid instant validation of the dialog's form.
+                            alert('string');
+                        } else if (newValue && newValue.inputValue) {
+                            alert('object');
+                        } else {
+                            setStrategySearchValue(newValue);
+                        }
                     }}
-                    inputValue={inputValue}
+                    inputValue={strategySearchInputValue}
                     onInputChange={(event, newInputValue) => {
-                      setInputValue(newInputValue);
+                        setStrategySearchInputValue(newInputValue);
                     }}
                     autoHighlight
-                    getOptionLabel={(option: any) => option.label}
+                    getOptionLabel={(option) => {
+                        if (typeof option === 'string') {
+                            return option;
+                        }
+                        if (option.inputValue) {
+                            return option.inputValue;
+                        }
+                        return option.name;
+                    }}
+                    selectOnFocus
+                    clearOnBlur
+                    handleHomeEndKeys
+                    filterOptions={(options, params) => {
+                        const filtered = filter(options, params);
+
+                        if (params.inputValue !== '') {
+                            filtered.push({
+                                inputValue: params.inputValue,
+                                title: `Add "${params.inputValue}"`,
+                                isNew: true,
+                            });
+                        }
+
+                        return filtered;
+                    }}
+
                     renderOption={(props, option) => {
                         const { key, ...optionProps } = props;
                         return (
                             <Box
                                 key={key}
                                 component="li"
-                                sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                                sx={{
+                                    p: 1,
+                                    cursor: 'pointer',
+                                }}
                                 {...optionProps}
                             >
-                                <img
-                                    loading="lazy"
-                                    width="20"
-                                    srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                                    src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                                    alt=""
-                                />
-                                {option.label} ({option.code}) +{option.phone}
+                                {
+                                    option.isNew ?
+                                        <Button variant="outlined" color="primary" sx={{
+                                            width: '100%',
+                                        }}>Add New Strategy</Button> :
+                                        <Box sx={{
+                                            width: '100%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            gap: 1,
+                                        }}>
+                                            <Image src={option.logo} sx={{
+                                                width: '32px',
+                                                height: '32px',
+                                            }} />
+
+                                            <Box sx={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                            }}>
+                                                <Typography variant="subtitle2">{option.name}</Typography>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>{option.description}</Typography>
+                                            </Box>
+
+                                            <Box sx={{
+                                                flex: 1,
+                                                height: '48px',
+                                            }}>
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <LineChart
+                                                        data={data}
+                                                        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                                                    >
+                                                        <XAxis dataKey="time" hide />
+                                                        <YAxis dataKey='price' hide />
+                                                        <Line type="monotone" dataKey="price" stroke={theme.palette.primary.main} dot={false} />
+                                                    </LineChart>
+                                                </ResponsiveContainer>
+                                            </Box>
+
+                                            <Typography sx={{ color: 'success.main', textAlign: 'right' }}>+7%</Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                width: '120px',
+                                                gap: 1,
+                                            }}>
+                                                <Iconify icon="mingcute:time-line" sx={{
+                                                    color: 'success.main',
+                                                }} />
+                                                <Typography variant="caption" sx={{
+                                                    color: 'text.primary',
+                                                    whiteSpace: 'nowrap',
+                                                }}>Active: 29.1h</Typography>
+                                            </Box>
+                                        </Box>
+                                }
                             </Box>
                         );
                     }}
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            label="Choose a country"
+                            label="Search the strategy"
                             inputProps={{
                                 ...params.inputProps,
                                 autoComplete: 'new-password', // disable autocomplete and autofill
                             }}
                         />
                     )}
-                /> */}
+                />
 
                 <Tabs value={settingTypeIn1step} onChange={(e, v) => setSettingTypeIn1step(v)} sx={{
                     mb: 1,
@@ -366,7 +456,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                         gap: 1,
                         p: 1,
                         borderRadius: 1,
-                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                        backgroundColor: alpha(theme.palette.primary.main, 0.04),
                     }}>
                         <FormControl fullWidth size="small">
                             <InputLabel htmlFor="my-profit-target-input">My Profit Target</InputLabel>
@@ -442,7 +532,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                         gap: 2,
                         p: 1,
                         borderRadius: 1,
-                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
+                        backgroundColor: alpha(theme.palette.primary.main, 0.04),
                     }}>
                         <Box sx={{
                             display: 'flex',
@@ -468,11 +558,11 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         gap: 1,
-                                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.08),
+                                        backgroundColor: alpha(theme.palette.primary.main, 0.08),
                                         cursor: 'pointer',
                                         trasnition: 'all 0.3s',
                                         ...(strategyForge.find((i) => i.value === item.value) && {
-                                            backgroundImage: theme => `linear-gradient(to right, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.dark, 0.4)})`,
+                                            backgroundImage: `linear-gradient(to right, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.dark, 0.4)})`,
                                         }),
                                     }}
                                         onClick={() => handleStrategyForge(item)}
@@ -495,12 +585,12 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                     alignItems: 'center',
                                     gap: 1,
                                     borderRadius: 1,
-                                    border: (theme: any) => `1px dashed ${theme.palette.primary.main}`,
+                                    border: `1px dashed ${theme.palette.primary.main}`,
                                     p: 1,
                                 }}>
                                     {
                                         strategyForge.map((item, index) => <Button key={`key-indicator-${index}`} direction="row" alignItems='center' spacing={2} sx={{
-                                            backgroundImage: theme => `linear-gradient(to right, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.dark, 0.4)})`,
+                                            backgroundImage: `linear-gradient(to right, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.dark, 0.4)})`,
                                         }}>
                                             {item.label}
                                         </Button>)
@@ -524,7 +614,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                     }}>
                                         <InputLabel htmlFor="indicator-label">indicators</InputLabel>
                                         <Select labelId="indicator-label" id="indicator" label="Time frame" size="small" value="SMA" sx={{
-                                            border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                                            border: `1px solid ${theme.palette.primary.main}`,
                                         }}>
                                             <MenuItem value="SMA">SMA</MenuItem>
                                             <MenuItem value="EMA">EMA</MenuItem>
@@ -539,7 +629,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                     }}>
                                         <InputLabel htmlFor="add-indicator-label">Operator</InputLabel>
                                         <Select labelId="add-indicator-label" id="add-indicator" label="Operator" size="small" value="plus" sx={{
-                                            border: (theme: any) => `1px solid ${theme.palette.primary.main}`
+                                            border: `1px solid ${theme.palette.primary.main}`
                                         }}>
                                             <MenuItem value="plus">plus</MenuItem>
                                             <MenuItem value="minus">minus</MenuItem>
@@ -547,7 +637,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                     </FormControl>
                                     <TextField size="small" sx={{ flex: 1 }} />
                                     <IconButton sx={{
-                                        border: (theme: any) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                                        border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
                                     }}>
                                         <Iconify icon="fa:trash" sx={{
                                             color: 'primary.main',
@@ -647,7 +737,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                                 bottom: '-6px',
                                                 backgroundColor: 'background.default',
                                                 color: 'primary.main',
-                                                border: theme => `1px solid ${theme.palette.primary.main}`,
+                                                border: `1px solid ${theme.palette.primary.main}`,
                                                 borderRadius: '50%',
                                                 p: '3px',
                                             }} />
@@ -731,8 +821,8 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                         gap: 1,
                         p: 1,
                         borderRadius: 1,
-                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
-                        backgroundImage: theme => `linear-gradient(45deg, ${alpha(theme.palette.primary.main, 0.1)} 25%, transparent 25%, transparent 50%, ${alpha(theme.palette.primary.main, 0.1)} 50%, ${alpha(theme.palette.primary.main, 0.1)} 75%, transparent 75%, transparent)`,
+                        backgroundColor: alpha(theme.palette.primary.main, 0.04),
+                        backgroundImage: `linear-gradient(45deg, ${alpha(theme.palette.primary.main, 0.1)} 25%, transparent 25%, transparent 50%, ${alpha(theme.palette.primary.main, 0.1)} 50%, ${alpha(theme.palette.primary.main, 0.1)} 75%, transparent 75%, transparent)`,
                         mb: 1,
                     }}>
                         <Box sx={{
@@ -768,7 +858,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                 height: '42px',
                                 p: 0.5,
                                 borderRadius: '50%',
-                                backgroundColor: theme => alpha(theme.palette.primary.main, 0.1),
+                                backgroundColor: alpha(theme.palette.primary.main, 0.1),
                             }} />
                             <Box sx={{
                                 display: 'flex',
@@ -790,8 +880,8 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                         gap: 1,
                         p: 1,
                         borderRadius: 1,
-                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.04),
-                        boxShadow: theme => `0 2px 5px 2px ${alpha(theme.palette.primary.main, 0.2)}`,
+                        backgroundColor: alpha(theme.palette.primary.main, 0.04),
+                        boxShadow: `0 2px 5px 2px ${alpha(theme.palette.primary.main, 0.2)}`,
                     }}>
                         <Box sx={{
                             display: 'flex',
@@ -864,7 +954,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
             }}>
                 <Box sx={{
                     borderRadius: 1,
-                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                    border: `1px solid ${theme.palette.primary.main}`,
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
@@ -997,7 +1087,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
 
                 <Box sx={{
                     borderRadius: 1,
-                    border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
+                    border: `1px solid ${theme.palette.primary.main}`,
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
@@ -1204,7 +1294,21 @@ const strategyForgeDummyData = [
 
 const strategyDummyData = [
     {
-        value: 'ma',
-        label: 'MA',
+        value: '1',
+        logo: '/images/Goldie.png',
+        name: 'Strate 1',
+        description: 'Moving Average',
+    },
+    {
+        value: '2',
+        logo: '/images/Goldie.png',
+        name: 'Strate 2',
+        description: 'Moving Average',
+    },
+    {
+        value: '3',
+        logo: '/images/Goldie.png',
+        name: 'Strate 3',
+        description: 'Moving Average',
     },
 ];
