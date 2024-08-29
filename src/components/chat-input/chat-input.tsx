@@ -60,7 +60,8 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     const isFocus = useBoolean();
     const isMultipleLines = useBoolean(false);
 
-    const isUploadPanelShow = useBoolean(false);
+    const isUploadPanelVisible = useBoolean(false);
+    const uploadingPanelRef = useRef<HTMLDivElement | null>(null);
     const uploadButtonsPopover = usePopover();
 
     useEffect(() => {
@@ -73,10 +74,11 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
 
 
     // Recording bar
-    const isRecordingBarShow = useBoolean(false);
+    const isRecordingPanelVisible = useBoolean(false);
+    const recordingPanelRef = useRef<HTMLDivElement | null>(null);
 
     const handleOpenRecordingBar = () => {
-        isRecordingBarShow.onToggle();
+        isRecordingPanelVisible.onToggle();
     }
 
     const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null);
@@ -93,7 +95,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     const recordingsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (isRecordingBarShow.value) {
+        if (isRecordingPanelVisible.value) {
             createWaveSurfer();
             loadAudioDevices();
         }
@@ -104,7 +106,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isRecordingBarShow.value]);
+    }, [isRecordingPanelVisible.value]);
 
     const createWaveSurfer = () => {
         console.log("createWaveSurfer");
@@ -205,7 +207,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
 
     // Emoji panel
     const emojiPanelRef = useRef<HTMLDivElement | null>(null);
-    const isEmojiPanelShow = useBoolean(false);
+    const isEmojiPanelVisible = useBoolean(false);
     const [emojiTab, setEmojiTab] = useState<string>("emoji");
     const [emojiData, setEmojiData] = useState<EmojiType[][]>([...emojiDummyData]);
     const [emojiGroup, setEmojiGroup] = useState<EmojiGroupType[]>([...emojiGroupsDummyData]);
@@ -224,6 +226,38 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
             }
         }
     }
+
+    const handleClickOutside = (event: MouseEvent) => {
+        if (
+            recordingPanelRef.current &&
+            !recordingPanelRef.current.contains(event.target as Node)
+        ) {
+            isRecordingPanelVisible.onFalse();
+        }
+
+        if (
+            emojiPanelRef.current &&
+            !emojiPanelRef.current.contains(event.target as Node)
+        ) {
+            isEmojiPanelVisible.onFalse();
+        }
+
+        if (
+            uploadingPanelRef.current &&
+            !uploadingPanelRef.current.contains(event.target as Node)
+        ) {
+            isUploadPanelVisible.onFalse();
+        }
+    };
+
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return <Box sx={{
         width: '100%',
@@ -259,7 +293,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         }}>
             <IconButton size="small" sx={{
                 order: !isMultipleLines.value ? 0 : 1,
-            }} onClick={(e) => { uploadButtonsPopover.onOpen(e); isUploadPanelShow.onTrue() }}>
+            }} onClick={(e) => { uploadButtonsPopover.onOpen(e); isUploadPanelVisible.onTrue() }}>
                 <Iconify icon="gg:add" sx={{
                     color: theme.palette.text.primary,
                 }} />
@@ -334,7 +368,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                     }} />
                 </IconButton>
                 <IconButton size="small" sx={{
-                }} onClick={() => isEmojiPanelShow.onToggle()} >
+                }} onClick={() => isEmojiPanelVisible.onToggle()} >
                     <Iconify icon="mingcute:emoji-line" sx={{
                         color: theme.palette.text.primary,
                     }} />
@@ -350,7 +384,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         </Box>
 
         {/* recording panel */}
-        <Box sx={{
+        <Box ref={recordingPanelRef} sx={{
             backgroundColor: alpha(theme.palette.background.default, 0.9),
             borderRadius: 1,
             border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
@@ -359,8 +393,8 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
             width: '100%',
             top: "-114px",
             height: '110px',
-            opacity: isRecordingBarShow.value ? 1 : 0,
-            visibility: isRecordingBarShow.value ? 'visible' : 'hidden',
+            opacity: isRecordingPanelVisible.value ? 1 : 0,
+            visibility: isRecordingPanelVisible.value ? 'visible' : 'hidden',
             transition: 'all 0.3s',
             display: 'flex',
             flexDirection: 'column',
@@ -484,7 +518,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
         </Box>
 
         {/* uploading panel */}
-        <Box sx={{
+        <Box ref={uploadingPanelRef} sx={{
             backgroundColor: alpha(theme.palette.background.default, 0.9),
             borderRadius: 1,
             border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
@@ -493,8 +527,8 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
             width: '100%',
             bottom: "72px",
             maxHeight: '240px',
-            opacity: isUploadPanelShow.value ? 1 : 0,
-            visibility: isUploadPanelShow.value ? 'visible' : 'hidden',
+            opacity: isUploadPanelVisible.value ? 1 : 0,
+            visibility: isUploadPanelVisible.value ? 'visible' : 'hidden',
             transition: 'all 0.3s',
             display: 'flex',
             flexDirection: 'column',
@@ -513,7 +547,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
 
                 <IconButton size="small" sx={{
                     border: `1px solid ${alpha(theme.palette.primary.main, 0.8)}`,
-                }} onClick={() => isUploadPanelShow.onToggle()}>
+                }} onClick={() => isUploadPanelVisible.onToggle()}>
                     <Iconify icon="material-symbols:close" sx={{
                         color: theme.palette.text.primary,
                     }} />
@@ -599,8 +633,8 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
             left: 0,
             width: '100%',
             bottom: "68px",
-            opacity: isEmojiPanelShow.value ? 1 : 0,
-            visibility: isEmojiPanelShow.value ? 'visible' : 'hidden',
+            opacity: isEmojiPanelVisible.value ? 1 : 0,
+            visibility: isEmojiPanelVisible.value ? 'visible' : 'hidden',
             transition: 'all 0.3s',
             overflow: 'hidden',
             display: 'flex',

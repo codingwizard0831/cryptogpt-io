@@ -3,7 +3,7 @@ import { Pie, Line, Area, Cell, XAxis, YAxis, Tooltip, PieChart, LineChart, Area
 
 import { alpha } from '@mui/system';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import { Box, Tab, Tabs, Stack, Select, Button, Switch, BoxProps, MenuItem, useTheme, TextField, Typography, ButtonBase, IconButton, InputLabel, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
+import { Box, Tab, Tabs, Stack, Select, Button, Switch, Rating, BoxProps, MenuItem, useTheme, TextField, Typography, ButtonBase, IconButton, InputLabel, FormControl, OutlinedInput, InputAdornment } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -12,6 +12,7 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+import { useCarousel } from 'src/components/carousel';
 import { StyledDialog } from 'src/components/styled-component';
 
 import InternetNoiseItem from '../internet-noise-item';
@@ -62,6 +63,9 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
 
     const [strategySearchValue, setStrategySearchValue] = useState<any>(null);
     const [strategySearchInputValue, setStrategySearchInputValue] = useState('');
+    const carouselPreloadIndicator = useCarousel({
+        slidesToShow: 4,
+    });
 
     const handleSwapCoin = () => {
         const [temp1, temp2] = [coin1, coin2];
@@ -424,6 +428,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                                     whiteSpace: 'nowrap',
                                                 }}>Active: 29.1h</Typography>
                                             </Box>
+                                            <Rating name="half-rating" size="small" defaultValue={2.5} precision={0.5} />
                                         </Box>
                                 }
                             </Box>
@@ -541,42 +546,49 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                         }}>
                             <Typography variant="subtitle2" sx={{
                                 color: 'primary.main',
-                            }}>Indicator Configure</Typography>
+                            }}>Preloaded Indicators</Typography>
                             <Box sx={{
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                alignItems: 'center',
-                                gap: 1,
+                                width: '100%',
+                                overflowX: 'auto',
+                                overflowY: 'hidden',
                             }}>
-                                {
-                                    strategyForgeDummyData.map((item, index) => <ButtonBase key={`key-indicator-${index}`} direction="row" alignItems='center' spacing={2} sx={{
-                                        width: '100px',
-                                        height: '80px',
-                                        borderRadius: 1,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: 1,
-                                        backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                                        cursor: 'pointer',
-                                        trasnition: 'all 0.3s',
-                                        ...(strategyForge.find((i) => i.value === item.value) && {
-                                            backgroundImage: `linear-gradient(to right, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.dark, 0.4)})`,
-                                        }),
-                                    }}
-                                        onClick={() => handleStrategyForge(item)}
-                                    >
-                                        <Iconify icon={item.icon} sx={{
-                                            color: 'text.primary',
-                                            width: '32px',
-                                            height: '32px',
-                                        }} />
-                                        <Typography variant="subtitle2" sx={{
-                                            color: 'text.primary',
-                                        }}>{item.label}</Typography>
-                                    </ButtonBase>)
-                                }
+                                <Box sx={{
+                                    display: 'flex',
+                                    gap: 1,
+                                }}>
+                                    {
+                                        [...strategyForgeDummyData, ...strategyForgeDummyData].map((item, index) => <ButtonBase key={`key-indicator-${index}`} direction="row" alignItems='center' spacing={2} sx={{
+                                            width: '100px',
+                                            height: '80px',
+                                            borderRadius: 1,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: 1,
+                                            backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                                            cursor: 'pointer',
+                                            trasnition: 'all 0.3s',
+                                            flexGrow: 0,
+                                            flexShrink: 0,
+                                            ...(strategyForge.find((i) => i.value === item.value) && {
+                                                backgroundImage: `linear-gradient(to right, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.dark, 0.4)})`,
+                                            }),
+                                        }}
+                                            onClick={() => handleStrategyForge(item)}
+                                        >
+                                            <Iconify icon={item.icon} sx={{
+                                                color: 'text.primary',
+                                                width: '32px',
+                                                height: '32px',
+                                            }} />
+                                            <Typography variant="subtitle2" sx={{
+                                                color: 'text.primary',
+                                            }}>{item.label}</Typography>
+                                        </ButtonBase>
+                                        )
+                                    }
+                                </Box>
                             </Box>
                             {
                                 strategyForge.length !== 0 &&
