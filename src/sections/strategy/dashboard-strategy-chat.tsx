@@ -2,7 +2,7 @@ import WaveSurfer from 'wavesurfer.js';
 import { useRef, useState, useEffect } from 'react';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
-import { Box, Chip, Grid, alpha, Stack, Button, Switch, useTheme, IconButton, Typography, FormControlLabel } from '@mui/material';
+import { Box, Chip, Grid, alpha, Stack, Button, Switch, BoxProps, useTheme, IconButton, Typography, FormControlLabel } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -22,7 +22,13 @@ interface DataPoint {
     action?: 'Buy' | 'Sell';
 }
 
-export default function DashboardStrategyChat() {
+interface DashboardStrategyChatProps extends BoxProps {
+}
+
+export default function DashboardStrategyChat({
+    sx,
+    ...other
+}: DashboardStrategyChatProps) {
     const smUp = useResponsive("up", 'sm');
     const isPreview = useStrategy((state) => state.isPreview);
     const setIsPreview = useStrategy((state) => state.setIsPreview);
@@ -81,7 +87,8 @@ export default function DashboardStrategyChat() {
     }
 
     return <Stack direction="column" spacing={2} sx={{
-        width: '100%',
+        width: isShowSummary ? '33%' : '50%',
+        flex: 1,
         backgroundColor: alpha(theme.palette.primary.main, 0.05),
         height: '100%',
         position: 'relative',
@@ -96,7 +103,8 @@ export default function DashboardStrategyChat() {
                 display: 'none',
             }
         ),
-    }}>
+        ...sx,
+    }} {...other}>
         {
             !smUp &&
             <Button size="small" variant="outlined" sx={{
@@ -391,9 +399,9 @@ export default function DashboardStrategyChat() {
                                 },
                             }}>
                                 <Image src="/images/Goldie.png" sx={{
-                                    width: '32px',
-                                    minWidth: '32px',
-                                    height: '32px',
+                                    width: '46px',
+                                    minWidth: '46px',
+                                    height: '46px',
                                     borderRadius: '50%',
                                 }} />
                                 <Box sx={{
@@ -541,9 +549,9 @@ export default function DashboardStrategyChat() {
                                     }}>11 min ago</Typography>
                                 </Box>
                                 <Image src="/images/Goldie.png" sx={{
-                                    width: '32px',
-                                    minWidth: '32px',
-                                    height: '32px',
+                                    width: '46px',
+                                    minWidth: '46px',
+                                    height: '46px',
                                     borderRadius: '50%',
                                 }} />
                             </Box>
