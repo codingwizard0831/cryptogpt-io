@@ -611,10 +611,13 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                             }
                         </Box>
 
-                        <Box>
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1,
+                        }}>
                             <Typography variant="subtitle2" sx={{
                                 color: 'primary.main',
-                                mb: 1,
                             }}>Indicator Configure</Typography>
                             {
                                 [1, 2, 3, 4].map((item, index) => <Stack key={`key-indicator-${index}`} direction="row" alignItems='center' spacing={2} sx={{ width: '100%' }}>
@@ -660,6 +663,13 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                 </Stack>
                                 )
                             }
+                            <Box sx={{
+                                width: '100%',
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                            }}>
+                                <Button variant="contained" size="small" color="primary" startIcon={<Iconify icon="material-symbols:add" />}>Add Indicator</Button>
+                            </Box>
                         </Box>
 
                         <Box sx={{}}>
@@ -728,6 +738,7 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                             <Box sx={{
                                 display: 'flex',
                                 alignItems: 'center',
+                                flexWrap: 'wrap',
                                 gap: 1,
                             }}>
                                 {
@@ -737,8 +748,21 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                                         color="primary"
                                         sx={{
                                             position: 'relative',
+                                            flexShrink: 0,
+                                            ...(item.isSelected && {
+                                                backgroundImage: `linear-gradient(to right, ${item.startColor} 0%, ${item.endColor} 100%)`,
+                                                color: 'white',
+                                            }),
                                         }}
                                         onClick={() => handleSelectDataSource(index)}
+                                        startIcon={
+                                            <Box sx={{
+                                                width: '24px',
+                                                height: '24px',
+                                                backgroundImage: `url(${item.logo})`,
+                                                backgroundSize: 'cover',
+                                            }} />
+                                        }
                                     >
                                         {item.name}
                                         {
@@ -938,18 +962,45 @@ export default function DashboardStrategyStep1({ sx, ...other }: DashboardStrate
                 justifyContent: 'space-between',
                 gap: 1,
             }}>
-                <Button variant="outlined" color="primary" fullWidth startIcon={<Iconify icon="la:chart-line" sx={{
-                    width: '24px',
-                    height: '24px',
-                }} />}>Run Backtest</Button>
-                <Button variant="contained" color="primary" fullWidth startIcon={<Iconify icon="et:strategy" sx={{
-                    width: '24px',
-                    height: '24px',
-                }} />}>Create Strategy</Button>
-                <Button variant="outlined" color="primary" fullWidth startIcon={<Iconify icon="tabler:discount" sx={{
-                    width: '24px',
-                    height: '24px',
-                }} />}>Spin for Discount</Button>
+                <Button variant="soft" color="success" fullWidth sx={{
+                    display: 'flex',
+                    flexDirection: smUp ? "row" : 'column',
+                    alignItems: 'center',
+                    p: smUp ? 1 : 0.5,
+                    gap: 0.5,
+                }}>
+                    <Iconify icon="la:chart-line" sx={{
+                        width: '24px',
+                        height: '24px',
+                    }} />
+                    <Typography variant="body2" sx={{ fontSize: smUp ? "14px" : '10px' }}>Run Backtest</Typography>
+                </Button>
+                <Button variant="soft" color="primary" fullWidth sx={{
+                    display: 'flex',
+                    flexDirection: smUp ? "row" : 'column',
+                    alignItems: 'center',
+                    p: smUp ? 1 : 0.5,
+                    gap: 0.5,
+                }}>
+                    <Iconify icon="et:strategy" sx={{
+                        width: '24px',
+                        height: '24px',
+                    }} />
+                    <Typography variant="body2" sx={{ fontSize: smUp ? "14px" : '10px' }}>Create Strategy</Typography>
+                </Button>
+                <Button variant="soft" color="info" fullWidth sx={{
+                    display: 'flex',
+                    flexDirection: smUp ? "row" : 'column',
+                    alignItems: 'center',
+                    p: smUp ? 1 : 0.5,
+                    gap: 0.5,
+                }}>
+                    <Iconify icon="tabler:discount" sx={{
+                        width: '24px',
+                        height: '24px',
+                    }} />
+                    <Typography variant="body2" sx={{ fontSize: smUp ? "14px" : '10px' }}>Spin for Discount</Typography>
+                </Button>
             </Box>
         </Stack>
 

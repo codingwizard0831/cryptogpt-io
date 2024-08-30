@@ -1,18 +1,19 @@
 'use client';
 
 
-import { Box, Card, Link, Button } from '@mui/material';
+import { Box, Card } from '@mui/material';
 
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
 
-import DashboardStrategyContent from '../dashboard-strategy-content';
+import DashboardStrategyCardWrapper from '../dashboard-strategy-card-wrapper';
+
 
 export default function DashboardStrategyView() {
   const isShowSummary = useStrategy((state) => state.isShowSummary);
   const setIsShowSummary = useStrategy((state) => state.setIsShowSummary);
+  const smUp = useResponsive("up", 'sm');
 
   return (
     <Box
@@ -38,48 +39,8 @@ export default function DashboardStrategyView() {
           gap: 1,
         }}
       >
-        <Box sx={{
-          display: 'flex',
-          gap: 2,
+        <DashboardStrategyCardWrapper sx={{
           width: '100%',
-          overflowY: 'hidden',
-          overflowX: 'auto',
-        }}>
-          <Link href={paths.dashboard.strategy.beta} component={RouterLink}>
-            <Button variant="outlined" sx={{
-              whiteSpace: 'nowrap',
-              width: '200px',
-            }}>
-              Try in 3d? (Beta)
-            </Button>
-          </Link>
-
-          <Box sx={{
-            flex: 1,
-          }} />
-          <Button variant="outlined" onClick={() => setIsShowSummary(!isShowSummary)} sx={{
-            whiteSpace: 'nowrap',
-            minWidth: '140px',
-          }}>
-            {!isShowSummary ? "Show" : "Hide"} Summary
-          </Button>
-          <Button variant="outlined" sx={{
-            whiteSpace: 'nowrap',
-            minWidth: '160px',
-          }}>
-            Save Strategy
-          </Button>
-          <Button variant="outlined" sx={{
-            whiteSpace: 'nowrap',
-            minWidth: '140px',
-          }}>
-            Mint NFT
-          </Button>
-        </Box>
-
-        <DashboardStrategyContent sx={{
-          flex: 1,
-          height: 0,
         }} />
       </Card>
     </Box>

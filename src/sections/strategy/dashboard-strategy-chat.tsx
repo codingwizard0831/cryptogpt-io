@@ -2,12 +2,13 @@ import WaveSurfer from 'wavesurfer.js';
 import { useRef, useState, useEffect } from 'react';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
-import { Box, Chip, Grid, alpha, Stack, Button, Switch, useTheme, IconButton, Typography, FormControlLabel } from '@mui/material';
+import { Box, Chip, Grid, alpha, Stack, Button, Switch, BoxProps, useTheme, IconButton, Typography, FormControlLabel } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
+import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify/iconify';
@@ -22,7 +23,13 @@ interface DataPoint {
     action?: 'Buy' | 'Sell';
 }
 
-export default function DashboardStrategyChat() {
+interface DashboardStrategyChatProps extends BoxProps {
+}
+
+export default function DashboardStrategyChat({
+    sx,
+    ...other
+}: DashboardStrategyChatProps) {
     const smUp = useResponsive("up", 'sm');
     const isPreview = useStrategy((state) => state.isPreview);
     const setIsPreview = useStrategy((state) => state.setIsPreview);
@@ -31,6 +38,7 @@ export default function DashboardStrategyChat() {
     const isChatHistory = useBoolean(false);
     const carousel = useCarousel();
     const theme = useTheme();
+    const user_profile = getUserProfileInfo();
 
     useEffect(() => {
         fetch('/audios/voice.mp3')
@@ -81,7 +89,8 @@ export default function DashboardStrategyChat() {
     }
 
     return <Stack direction="column" spacing={2} sx={{
-        width: '100%',
+        width: isShowSummary ? '33%' : '50%',
+        flex: 1,
         backgroundColor: alpha(theme.palette.primary.main, 0.05),
         height: '100%',
         position: 'relative',
@@ -96,7 +105,8 @@ export default function DashboardStrategyChat() {
                 display: 'none',
             }
         ),
-    }}>
+        ...sx,
+    }} {...other}>
         {
             !smUp &&
             <Button size="small" variant="outlined" sx={{
@@ -137,6 +147,7 @@ export default function DashboardStrategyChat() {
                         justifyContent: 'flex-end',
                         gap: 1,
                     }}>
+                        <Button variant='contained' color='primary' size="small" sx={{ mr: 1 }}>Add AI Gneralted</Button>
                         <FormControlLabel control={<Switch checked={isAutoplay.value} onChange={isAutoplay.onToggle} />} label="Autoplay" />
                         <IconButton size="small" sx={{
                             transition: 'all 0.3s',
@@ -296,12 +307,12 @@ export default function DashboardStrategyChat() {
                                             flexDirection: 'column',
                                             gap: 1,
                                             alignItems: 'center',
-                                            width: '56px',
+                                            width: smUp ? "86px" : '56px',
                                         }} key={index}>
                                             <Image src={item.avatar} sx={{
-                                                width: '32px',
-                                                minWidth: '32px',
-                                                height: '32px',
+                                                width: smUp ? '36px' : '32px',
+                                                minWidth: smUp ? '36px' : '32px',
+                                                height: smUp ? '36px' : '32px',
                                                 borderRadius: '50%',
                                                 borderWidth: '2px',
                                                 borderStyle: 'solid',
@@ -310,7 +321,7 @@ export default function DashboardStrategyChat() {
                                             <Typography variant="caption" sx={{
                                                 color: `${item.color}.main`,
                                                 textAlign: 'center',
-                                                fontSize: '8px',
+                                                fontSize: smUp ? '12px' : '10px',
                                                 whiteSpace: 'nowrap',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
@@ -369,101 +380,101 @@ export default function DashboardStrategyChat() {
                 </Box>
 
                 {
-                    1 && [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => <>
-
-                        <Box sx={{
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                        }}>
-                            <Box sx={{
+                    1 && messageData.map((item, index) => {
+                        if (!item.isUser) {
+                            return <Box sx={{
                                 width: '100%',
-                                maxWidth: '600px',
                                 display: 'flex',
-                                gap: 2,
-                                alignItems: 'flex-start',
                                 justifyContent: 'flex-start',
-                                ':hover': {
-                                    '.action-buttons': {
-                                        opacity: 1,
-                                        visibility: 'visible',
-                                    },
-                                },
                             }}>
-                                <Image src="/images/Goldie.png" sx={{
-                                    width: '32px',
-                                    minWidth: '32px',
-                                    height: '32px',
-                                    borderRadius: '50%',
-                                }} />
                                 <Box sx={{
+                                    width: '100%',
+                                    maxWidth: '600px',
                                     display: 'flex',
-                                    flexDirection: 'column',
+                                    gap: 2,
+                                    alignItems: 'flex-start',
+                                    justifyContent: 'flex-start',
+                                    ':hover': {
+                                        '.action-buttons': {
+                                            opacity: 1,
+                                            visibility: 'visible',
+                                        },
+                                    },
                                 }}>
+                                    <Image src={modelData.find((_m) => _m.id === item.model)?.avatar || ""} sx={{
+                                        width: '46px',
+                                        minWidth: '46px',
+                                        height: '46px',
+                                        borderRadius: '50%',
+                                    }} />
                                     <Box sx={{
                                         display: 'flex',
-                                        alignItems: 'center',
-                                        // backgroundColor: alpha(theme.palette.info.main, 0.8),
-                                        backgroundImage: `linear-gradient(to right, ${theme.palette.info.main}, ${theme.palette.info.dark})`,
-                                        borderRadius: 2,
-                                        p: 1,
-                                        cursor: 'pointer',
+                                        flexDirection: 'column',
                                     }}>
-                                        <Typography variant="body2" sx={{
-                                            color: theme.palette.background.default,
+                                        <Box sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            backgroundImage: `linear-gradient(to right, ${modelData.find((_m) => _m.id === item.model)?.startColor || ""}, ${modelData.find((_m) => _m.id === item.model)?.endColor || ""})`,
+                                            borderRadius: 2,
+                                            p: 1,
+                                            cursor: 'pointer',
                                         }}>
-                                            Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well.
-                                            Remember, proper risk management is crucial
-                                        </Typography>
+                                            <Typography variant="body2" sx={{
+                                                color: theme.palette.background.default,
+                                            }}>
+                                                {messageData[0].content}
+                                            </Typography>
+                                        </Box>
+                                        <Typography variant="caption" sx={{
+                                            color: 'text.secondary',
+                                        }}>{messageData[0].timestamp}</Typography>
                                     </Box>
-                                    <Typography variant="caption" sx={{
-                                        color: 'text.secondary',
-                                    }}>11 min ago</Typography>
+                                    <Box className="action-buttons" sx={{
+                                        display: 'flex',
+                                        gap: 0.5,
+                                        alignItems: 'center',
+                                        opacity: 0,
+                                        visibility: 'hidden',
+                                        transition: 'all 0.3s',
+                                    }}>
+                                        <IconButton size="small" sx={{
+                                        }} onClick={() => handleAudioMessagePlay(item)} >
+                                            <Iconify icon="cil:audio" sx={{
+                                                color: 'primary.main',
+                                                width: '16px',
+                                                height: '16px',
+                                            }} />
+                                        </IconButton>
+                                        <IconButton size="small" sx={{
+                                        }}>
+                                            <Iconify icon="lucide:clipboard" sx={{
+                                                color: 'primary.main',
+                                                width: '16px',
+                                                height: '16px',
+                                            }} />
+                                        </IconButton>
+                                        <IconButton size="small" sx={{
+                                        }}>
+                                            <Iconify icon="ic:baseline-reply" sx={{
+                                                color: 'primary.main',
+                                                width: '16px',
+                                                height: '16px',
+                                            }} />
+                                        </IconButton>
+                                        <IconButton size="small" sx={{
+                                        }}>
+                                            <Iconify icon="material-symbols:thumb-up-outline" sx={{
+                                                color: 'primary.main',
+                                                width: '16px',
+                                                height: '16px',
+                                            }} />
+                                        </IconButton>
+                                    </Box>
                                 </Box>
-                                <Box className="action-buttons" sx={{
-                                    display: 'flex',
-                                    gap: 0.5,
-                                    alignItems: 'center',
-                                    opacity: 0,
-                                    visibility: 'hidden',
-                                    transition: 'all 0.3s',
-                                }}>
-                                    <IconButton size="small" sx={{
-                                    }} onClick={() => handleAudioMessagePlay(item)} >
-                                        <Iconify icon="cil:audio" sx={{
-                                            color: 'primary.main',
-                                            width: '16px',
-                                            height: '16px',
-                                        }} />
-                                    </IconButton>
-                                    <IconButton size="small" sx={{
-                                    }}>
-                                        <Iconify icon="lucide:clipboard" sx={{
-                                            color: 'primary.main',
-                                            width: '16px',
-                                            height: '16px',
-                                        }} />
-                                    </IconButton>
-                                    <IconButton size="small" sx={{
-                                    }}>
-                                        <Iconify icon="ic:baseline-reply" sx={{
-                                            color: 'primary.main',
-                                            width: '16px',
-                                            height: '16px',
-                                        }} />
-                                    </IconButton>
-                                    <IconButton size="small" sx={{
-                                    }}>
-                                        <Iconify icon="material-symbols:thumb-up-outline" sx={{
-                                            color: 'primary.main',
-                                            width: '16px',
-                                            height: '16px',
-                                        }} />
-                                    </IconButton>
-                                </Box>
-                            </Box>
-                        </Box>
-                        <Box sx={{
+                            </Box>;
+                        }
+
+                        return <Box sx={{
                             width: '100%',
                             display: 'flex',
                             justifyContent: 'flex-end',
@@ -523,7 +534,6 @@ export default function DashboardStrategyChat() {
                                     <Box sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        // backgroundColor: alpha(theme.palette.primary.main, 0.8),
                                         backgroundImage: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
                                         borderRadius: 2,
                                         p: 1,
@@ -532,23 +542,33 @@ export default function DashboardStrategyChat() {
                                         <Typography variant="body2" sx={{
                                             color: theme.palette.background.default,
                                         }}>
-                                            Great choice!
+                                            {item.content}
                                         </Typography>
                                     </Box>
                                     <Typography variant="caption" sx={{
                                         color: 'text.secondary',
                                         ml: 1,
-                                    }}>11 min ago</Typography>
+                                    }}>{item.timestamp}</Typography>
                                 </Box>
-                                <Image src="/images/Goldie.png" sx={{
-                                    width: '32px',
-                                    minWidth: '32px',
-                                    height: '32px',
-                                    borderRadius: '50%',
-                                }} />
+                                {
+                                    user_profile?.avatar ?
+                                        <Image src={user_profile?.avatar || ""} sx={{
+                                            width: '46px',
+                                            minWidth: '46px',
+                                            height: '46px',
+                                            borderRadius: '50%',
+                                        }} />
+                                        :
+                                        <Iconify icon="bxs:user" sx={{
+                                            width: '46px',
+                                            minWidth: '46px',
+                                            height: '46px',
+                                            borderRadius: '50%',
+                                        }} />
+                                }
                             </Box>
                         </Box>
-                    </>
+                    }
                     )
                 }
 
@@ -598,15 +618,13 @@ export default function DashboardStrategyChat() {
                                 <Box sx={{
                                     borderRadius: 1,
                                     border: `1px solid ${theme.palette.primary.main}`,
-                                    backgroundColor: alpha(theme.palette.primary.main, 0.2),
                                     p: 1,
                                     display: 'flex',
                                     gap: 1,
                                     flexDirection: 'column',
-                                    color: 'primary.main',
                                 }}>
-                                    <Iconify icon="wpf:chat" />
-                                    <Typography variant="body2">Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial</Typography>
+                                    <Iconify icon="wpf:chat" sx={{ color: 'primary.main' }} />
+                                    <Typography variant="body2" sx={{ color: 'text.primary' }}>Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial</Typography>
                                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>11 min ago</Typography>
                                 </Box>
                             </Grid>
@@ -631,23 +649,64 @@ const data: DataPoint[] = [
 
 const modelData = [
     {
+        id: 1,
         avatar: '/images/Goldie.png',
         name: 'Goldie',
         color: 'primary',
+        startColor: "#FFAB00",
+        endColor: '#B76E00',
     },
     {
+        id: 2,
         avatar: '/images/Nanami.jpg',
         name: 'Crypto Sage',
         color: 'success',
+        startColor: "#00A76F",
+        endColor: '#007867',
     },
     {
+        id: 3,
         avatar: '/images/Naoki.jpg',
         name: 'Market Maven',
         color: 'info',
+        startColor: "#00B8D9",
+        endColor: '#006C9C',
     },
     {
+        id: 4,
         avatar: '/images/Nicolas.png',
         name: 'Risk Ranger',
         color: 'error',
+        startColor: "#FF5630",
+        endColor: '#B71D18',
     },
+]
+
+const messageData = [
+    {
+        content: 'Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial',
+        timestamp: '11 min ago',
+        model: 1,
+        isUser: true,
+    }, {
+        content: 'Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial',
+        timestamp: '11 min ago',
+        model: 1,
+        isUser: false,
+    }, {
+        content: 'Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial',
+        timestamp: '11 min ago',
+        model: 2,
+        isUser: false,
+    }, {
+        content: 'Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial',
+        timestamp: '11 min ago',
+        model: 3,
+        isUser: false,
+    }, {
+        content: 'Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial',
+        timestamp: '11 min ago',
+        model: 4,
+        isUser: false,
+    }
 ]
