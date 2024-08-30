@@ -5,11 +5,10 @@ import { createCustomServerClient } from "src/utils/supabase";
 export async function POST(req: NextRequest) {
   const supabase = createCustomServerClient();
   try {
-    const { origin } = new URL(req.url)
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}/auth/jwt/supabase-oauth-callback1?`,
+        redirectTo: `https://cryptogpt.app/auth/jwt/supabase-oauth-callback1?`,
       },
     });
     console.log(data, error)
