@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { supabase } from "src/lib/supabase";
+import { createCustomServerClient } from "src/utils/supabase";
 
 function generateRandomFilename(length: number = 32): string {
   const letters = 'abcdefghijklmnopqrstuvwxyz1234567890';
@@ -68,6 +68,7 @@ const uploadImage = async (imageUrl: string) => {
 }
 
 export async function PUT(req: NextRequest) {
+  const supabase = createCustomServerClient();
   const userHeader = req.headers.get("x-user") as string;
 
   if (!userHeader) {

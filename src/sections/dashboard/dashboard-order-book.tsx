@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import { OrderBookEntry } from 'src/utils/websocket';
 import { fNumberPrice } from 'src/utils/format-number';
-import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
 
 import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
@@ -44,19 +44,19 @@ export default function DashboardOrderBook() {
   const [currentSelectedPair, setCurrentSelectedPair] = useState('BTC/USDT'); // TODO: Make pair dynamic
   const [currentSelectedExchange, setCurrentSelectedExchange] = useState('Binance');
 
-  useEffect(() => {
-    webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
+  // useEffect(() => {
+  //   webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
 
-    const interval = setInterval(() => {
-      const { priceData } = webSocketClient;
-      if (priceData) {
-        setSellOrders(priceData.asks);
-        setBuyOrders(priceData.bids);
-      }
-    }, 500);
+  //   const interval = setInterval(() => {
+  //     const { priceData } = webSocketClient;
+  //     if (priceData) {
+  //       setSellOrders(priceData.asks);
+  //       setBuyOrders(priceData.bids);
+  //     }
+  //   }, 500);
 
-    return () => clearInterval(interval);
-  }, [currentSelectedPair, currentSelectedExchange]);
+  //   return () => clearInterval(interval);
+  // }, [currentSelectedPair, currentSelectedExchange]);
 
   useEffect(() => {
     let totalSellPrice = 0;
@@ -439,13 +439,13 @@ export default function DashboardOrderBook() {
           opacity:
             currentSelectedSellOrder <
               (buySellLayout === 'BOTH' ? fixedOrderBookNumber - 1 : sellOrders.length - 1) ||
-            currentSelectedBuyOrder > 0
+              currentSelectedBuyOrder > 0
               ? 1
               : 0,
           visibility:
             currentSelectedSellOrder <
               (buySellLayout === 'BOTH' ? fixedOrderBookNumber - 1 : sellOrders.length - 1) ||
-            currentSelectedBuyOrder > 0
+              currentSelectedBuyOrder > 0
               ? 'visible'
               : 'hidden',
         }}

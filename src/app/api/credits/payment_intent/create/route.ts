@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { supabase } from 'src/lib/supabase';
+import { createCustomServerClient } from "src/utils/supabase";
+
 import { createCustomer, createPaymentIntent } from 'src/lib/stripeLib';
 
 export async function POST(req: Request) {
+  const supabase = createCustomServerClient();
   try {
     const { amount, recovery_email } = await req.json();
     console.log('recovery_email', recovery_email)

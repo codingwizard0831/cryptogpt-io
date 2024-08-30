@@ -88,6 +88,7 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
                 width: '100%',
                 overflowX: 'hidden',
                 overflowY: 'auto',
+                px: 0.25,
             }}>
                 {
                     step === "1.2.choose-pair" &&

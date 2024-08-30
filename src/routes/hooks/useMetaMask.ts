@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
+import { useState, useEffect } from 'react';
 import { useSDK } from '@metamask/sdk-react';
 
 export const useMetaMask = () => {
@@ -36,11 +36,18 @@ export const useMetaMask = () => {
   };
 
   useEffect(() => {
-    if (provider == null) {
+    if (currentAccount == null) {
       return;
     }
 
-    connect();
+    fetchBalance(currentAccount);
+
+  }, [currentAccount])
+
+  useEffect(() => {
+    if (provider == null) {
+      return;
+    }
 
     provider.on('accountsChanged', (accounts: any) => {
       if (accounts.length === 0) {
@@ -48,7 +55,6 @@ export const useMetaMask = () => {
         setCurrentBalance(null);
       } else {
         setCurrentAccount(accounts[0]);
-        connect();
       }
     });
 

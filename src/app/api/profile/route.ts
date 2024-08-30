@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { supabase } from "src/lib/supabase";
+import { createCustomServerClient } from "src/utils/supabase";
 
 export async function GET(req: NextRequest) {
+  const supabase = createCustomServerClient();
   const userHeader = req.headers.get("x-user") as string;
 
   if (!userHeader) {
@@ -29,6 +30,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = createCustomServerClient();
   const userHeader = req.headers.get("x-user") as string;
 
   if (!userHeader) {

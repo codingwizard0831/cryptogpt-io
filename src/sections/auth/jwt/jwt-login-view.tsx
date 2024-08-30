@@ -2,8 +2,6 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { useAccount } from 'wagmi';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 // import { cookies } from 'next/headers'
 import { MuiOtpInput } from 'mui-one-time-password-input';
 
@@ -22,6 +20,7 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { useMetaMask } from 'src/routes/hooks/useMetaMask';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -35,18 +34,14 @@ import { BINANCE_API, PROJECT_URL } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import { useMetaMask } from 'src/routes/hooks/useMetaMask';
 
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
-  const { open, close } = useWeb3Modal();
   const { loginWithEmailAndPassword, loginWithCodeSend, loginWithCodeVerify, loginWithMetamask } =
     useAuthContext();
   const metaMask = useMetaMask();
   const { enqueueSnackbar } = useSnackbar();
-  const { isConnected } = useAccount();
-  console.log('isConnected', isConnected);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -221,12 +216,18 @@ export default function JwtLoginView() {
 
   const handleLoginWithGoogle = async () => {
     console.log('Login with Google');
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
-      },
-    });
+    const {statusText, data} = await axios.post(endpoints.auth.loginWithGoogle);
+    if (statusText === "OK" && data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'Failed to initiate OAuth login');
+    }
+    // await supabase.auth.signInWithOAuth({
+    //   provider: 'google',
+    //   options: {
+    //     redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
+    //   },
+    // });
   };
 
   const renderHead = (
@@ -413,6 +414,25 @@ export default function JwtLoginView() {
           variant="outlined"
           color="primary"
           startIcon={
+            <Iconify
+              icon="teenyicons:face-id-outline"
+              width={24}
+              height={24}
+            />
+          }
+          loading={isSubmitting.value}
+          // onClick={() => handleLoginWithFaceId()}
+          sx={{
+            mt: 2,
+          }}
+        >
+          Continue with Face Id
+        </LoadingButton>
+        <LoadingButton
+          fullWidth
+          variant="outlined"
+          color="primary"
+          startIcon={
             <Image
               src="/assets/icons/project/logo-metamask.png"
               alt="metamask"
@@ -422,9 +442,6 @@ export default function JwtLoginView() {
           }
           loading={isSubmitting.value}
           onClick={() => handleLoginWithMetamask()}
-          sx={{
-            mt: 2,
-          }}
         >
           Continue with MetaMask
         </LoadingButton>

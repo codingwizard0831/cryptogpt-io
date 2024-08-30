@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { supabase } from 'src/lib/supabase';
+import { createCustomServerClient } from "src/utils/supabase";
+
 import { retrievePaymentIntent } from 'src/lib/stripeLib';
 
 export async function POST(req: Request) {
+  const supabase = createCustomServerClient();
   try {
     const { payment_intent_id } = await req.json();
 

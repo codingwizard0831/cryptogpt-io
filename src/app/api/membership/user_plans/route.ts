@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { supabase } from 'src/lib/supabase';
+import { createCustomServerClient } from "src/utils/supabase";
 
 export async function POST(req: Request) {
+  const supabase = createCustomServerClient();
   const userHeader = req.headers.get('x-user') as string;
 
   if (!userHeader) {

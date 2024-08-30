@@ -3,6 +3,7 @@ import { alpha, styled } from "@mui/material/styles";
 
 const StyledPopover = styled(Popover)(({ theme }) => ({
     '&.MuiPopover-root': {
+        zIndex: 101,
         '& .MuiPaper-root': {
             backdropFilter: "blur(10px)",
             backgroundColor: alpha(theme.palette.background.default, 0.1),

@@ -35,7 +35,7 @@ export const endpoints = {
     loginWithCodeSend: '/api/auth/signin-send-token/',
     loginWithCodeVerify: '/api/auth/signin-verify-token/',
 
-    loginWithOAuth: '/api/auth/signin-oauth/',
+    loginWithGoogle: '/api/auth/signin-google/',
 
     loginWithMetamaskNonce: '/api/auth/signin-metamask/nonce/',
     loginWithMetamaskSignin: '/api/auth/signin-metamask/signin/',
@@ -54,6 +54,8 @@ export const endpoints = {
     passwordUpdate: '/auth/update_password/',
 
     profileUpdate: '/auth/user/profile/update/',
+
+    registerFaceId: '/api/webauthn-register/',
   },
   membership: {
     plans: '/api/membership/plans/',
@@ -99,6 +101,7 @@ export const endpoints = {
   },
   profile: {
     index: '/api/profile',
+    setPassword: '/api/profile/set-password',
     models: '/api/profile/image/models',
     generateImage: '/api/profile/image/generate',
     updateAvatar: '/api/profile/image',
