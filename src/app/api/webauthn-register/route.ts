@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { verifyRegistrationResponse, generateRegistrationOptions } from '@simplewebauthn/server';
 
-import { supabase } from "src/lib/supabase";
+import { createCustomServerClient } from "src/utils/supabase";
 
 const rpName = 'cryptogpt';
 const rpID = 'cryptogpt.app';
 const origin = `https://${rpID}`;
 
 async function checkUserPassword(userId) {
+  const supabase = createCustomServerClient();
   const { data, error } = await supabase
     .from('auth.users')
     .select('encrypted_password')
@@ -24,6 +25,7 @@ async function checkUserPassword(userId) {
 }
 
 export async function POST(req: Request) {
+  const supabase = createCustomServerClient();
   function uuidToUint8Array(uuid: string): Uint8Array {
     return new Uint8Array(uuid.replace(/-/g, '').match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
   }
@@ -71,6 +73,7 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
+  const supabase = createCustomServerClient();
   const res = await req.json();
 
   const { attestationResponse } = res;

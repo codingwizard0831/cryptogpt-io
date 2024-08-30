@@ -1,10 +1,12 @@
 import { format } from 'date-fns';
 import { NextResponse } from "next/server";
 
-import { supabase } from 'src/lib/supabase';
+import { createCustomServerClient } from "src/utils/supabase";
+
 import { updateSubscriptionEndPeriod } from 'src/lib/stripeLib';
 
 export async function POST(req: Request) {
+  const supabase = createCustomServerClient();
   try {
     const { user_plan_id } = await req.json();
 

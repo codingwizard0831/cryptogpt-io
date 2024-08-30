@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { subHours, compareAsc } from 'date-fns';
 
-import { supabase } from 'src/lib/supabase';
+import { createCustomServerClient } from "src/utils/supabase";
+
 import { createCustomer, createSubscription, cancelSubscription, retrieveSubscription } from 'src/lib/stripeLib';
 
 export async function POST(req: Request) {
+  const supabase = createCustomServerClient();
   try {
     const { plan_id } = await req.json();
     // console.log('recovery_email', recovery_email)
