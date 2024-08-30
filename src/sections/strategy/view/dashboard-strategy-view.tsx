@@ -7,6 +7,8 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
 
+import DashboardStrategyCardWrapper from '../dashboard-strategy-card-wrapper';
+
 
 export default function DashboardStrategyView() {
   const isShowSummary = useStrategy((state) => state.isShowSummary);
@@ -37,7 +39,9 @@ export default function DashboardStrategyView() {
           gap: 1,
         }}
       >
-        Strategy Home
+        <DashboardStrategyCardWrapper sx={{
+          width: '100%',
+        }} />
       </Card>
     </Box>
   );
