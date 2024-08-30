@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server'
 
+import { createCustomServerClient } from "src/utils/supabase";
+
 export async function GET(request: Request) {
-  console.log(request)
+  const supabase = createCustomServerClient();
+
+  const requestUrl = new URL(request.url);
+  const code: any = requestUrl.searchParams.get('code');
+  const { data:  result, error: errorText } = await supabase.auth.exchangeCodeForSession(code);
+  // console.log('result, errorText', result, errorText)
   const { origin } = new URL(request.url)
-  return NextResponse.redirect(`${origin}/auth/jwt/supabase-oauth-callback`)
+  const redirectUrl = `${origin}/auth/jwt/supabase-oauth-callback/#access_token=${result?.session?.access_token}&refresh_token=${result?.session?.refresh_token}`;
+  console.log(redirectUrl)
+  return NextResponse.redirect(redirectUrl)
 }
