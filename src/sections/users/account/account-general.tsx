@@ -47,7 +47,7 @@ export default function AccountGeneral() {
 
   const { user } = useAuthContext();
   const isSubmitting = useBoolean(false);
-  const isSetPassword = useBoolean(false);
+  const isSetPassword = useBoolean(true);
 
   const [data, setData] = useState<UserType>({
     displayName: user?.displayName || '',

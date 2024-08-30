@@ -1,7 +1,8 @@
 import { format } from 'date-fns';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { supabase } from 'src/lib/supabase';
+import { createCustomServerClient } from "src/utils/supabase";
+
 import { constructWebhookEvent } from 'src/lib/stripeLib';
 
 // export const config = {
@@ -19,6 +20,7 @@ async function getOrCreateUserPlanInvoice({
   provider_id: string;
   user_plan_id: number;
 }) {
+  const supabase = createCustomServerClient();
   const { data: existUserPlanInvoice, error } = await supabase
     .from('user_plan_invoice')
     .select('*')
@@ -71,6 +73,7 @@ async function getOrCreateUserPlanInvoice({
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = createCustomServerClient();
   const sig = req.headers.get('stripe-signature');
 
   if (!sig) {
