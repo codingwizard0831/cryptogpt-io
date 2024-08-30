@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { createServerClient, createBrowserClient } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 
 import { SUPABASE_API } from 'src/config-global';
 
@@ -28,5 +28,3 @@ export function createCustomServerClient() {
     }
   )
 }
-
-export const supabase = createBrowserClient(SUPABASE_API.url, SUPABASE_API.anonKey)

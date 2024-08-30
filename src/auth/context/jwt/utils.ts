@@ -47,7 +47,7 @@ export const tokenExpired = (exp: number) => {
   clearTimeout(expiredTimer);
 
   expiredTimer = setTimeout(() => {
-    sessionStorage.removeItem('accessToken');
+    localStorage.removeItem('accessToken');
 
     window.location.href = paths.auth.jwt.login;
   }, timeLeft);
@@ -59,18 +59,18 @@ export const loadUserProfileData = async (flag: boolean = true) => {
   if (flag) {
     const response = await axios.get(endpoints.profile.index);
     if (response.data?.length) {
-      sessionStorage.setItem('userProfile', JSON.stringify(response.data[0]));
+      localStorage.setItem('userProfile', JSON.stringify(response.data[0]));
     } else {
-      sessionStorage.setItem('userProfile', JSON.stringify({}));
+      localStorage.setItem('userProfile', JSON.stringify({}));
     }
   } else {
-    sessionStorage.setItem('userProfile', JSON.stringify({}));
+    localStorage.setItem('userProfile', JSON.stringify({}));
   }
 };
 
 export const setAccessToken = async (accessToken: string | null) => {
   if (accessToken) {
-    sessionStorage.setItem('access_token', accessToken);
+    localStorage.setItem('access_token', accessToken);
 
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     axios.defaults.headers.common['Content-Type'] = `application/json`;
@@ -81,41 +81,41 @@ export const setAccessToken = async (accessToken: string | null) => {
     const { exp } = jwtDecode(accessToken); // ~3 days by minimals server
     tokenExpired(exp);
   } else {
-    sessionStorage.removeItem('access_token');
+    localStorage.removeItem('access_token');
 
     delete axios.defaults.headers.common.Authorization;
   }
 };
 
-export const getAccessToken = () => sessionStorage.getItem('access_token');
+export const getAccessToken = () => localStorage.getItem('access_token');
 
-export const getRefreshToken = () => sessionStorage.getItem('refresh_token');
+export const getRefreshToken = () => localStorage.getItem('refresh_token');
 
 
 export const setRefreshToken = (refreshToken: string | null) => {
   if (refreshToken) {
-    sessionStorage.setItem('refresh_token', refreshToken);
+    localStorage.setItem('refresh_token', refreshToken);
   } else {
-    sessionStorage.removeItem('refresh_token');
+    localStorage.removeItem('refresh_token');
   }
 }
 
 export const setUserInfo = (user: any) => {
   if (user) {
-    sessionStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
   } else {
-    sessionStorage.removeItem('user');
+    localStorage.removeItem('user');
   }
 }
 
 export const getUserInfo = () => {
-  const userInfoByString = sessionStorage.getItem('user');
+  const userInfoByString = localStorage.getItem('user');
   if (userInfoByString) return JSON.parse(userInfoByString);
   return {};
 }
 
 export const getUserProfileInfo = () => {
-  const userProfileInfoByString = sessionStorage.getItem('userProfile');
+  const userProfileInfoByString = localStorage.getItem('userProfile');
   if (userProfileInfoByString) return JSON.parse(userProfileInfoByString);
   return {};
 }
