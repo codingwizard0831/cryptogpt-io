@@ -1,18 +1,12 @@
 'use client';
 
 
-import { Box, Card, Link, Button } from '@mui/material';
-
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
+import { Box, Card } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
 
-import Iconify from 'src/components/iconify';
-
-import DashboardStrategyContent from '../dashboard-strategy-content';
 
 export default function DashboardStrategyView() {
   const isShowSummary = useStrategy((state) => state.isShowSummary);
@@ -43,52 +37,7 @@ export default function DashboardStrategyView() {
           gap: 1,
         }}
       >
-        <Box sx={{
-          display: 'flex',
-          gap: 2,
-          width: '100%',
-          overflowY: 'hidden',
-          overflowX: 'auto',
-        }}>
-          <Link href={paths.dashboard.strategy.beta} component={RouterLink}>
-            <Button variant="outlined" sx={{
-              whiteSpace: 'nowrap',
-              width: '200px',
-            }}>
-              Try in 3d? (Beta)
-            </Button>
-          </Link>
-
-          <Box sx={{
-            flex: 1,
-          }} />
-          <Button variant="outlined" onClick={() => setIsShowSummary(!isShowSummary)}
-            startIcon={<Iconify icon={!isShowSummary ? "mdi:eye-outline" : "mdi:eye-off-outline"} />}
-            sx={{
-              whiteSpace: 'nowrap',
-              minWidth: '140px',
-            }}>
-            Summary
-          </Button>
-          <Button variant="outlined" sx={{
-            whiteSpace: 'nowrap',
-            minWidth: '160px',
-            display: 'none',
-          }}>
-            Save Strategy
-          </Button>
-          <Button variant="outlined" sx={{
-            whiteSpace: 'nowrap',
-            minWidth: '140px',
-          }}>
-            Mint NFT
-          </Button>
-        </Box>
-
-        <DashboardStrategyContent sx={{
-          flex: 1,
-          height: 0,
-        }} />
+        Strategy Home
       </Card>
     </Box>
   );

@@ -618,15 +618,13 @@ export default function DashboardStrategyChat({
                                 <Box sx={{
                                     borderRadius: 1,
                                     border: `1px solid ${theme.palette.primary.main}`,
-                                    backgroundColor: alpha(theme.palette.primary.main, 0.2),
                                     p: 1,
                                     display: 'flex',
                                     gap: 1,
                                     flexDirection: 'column',
-                                    color: 'primary.main',
                                 }}>
-                                    <Iconify icon="wpf:chat" />
-                                    <Typography variant="body2">Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial</Typography>
+                                    <Iconify icon="wpf:chat" sx={{ color: 'primary.main' }} />
+                                    <Typography variant="body2" sx={{ color: 'text.primary' }}>Great choice! ETH/USDT is highly liquid. Your 4H timeframe balances noise and signals well. Remember, proper risk management is crucial</Typography>
                                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>11 min ago</Typography>
                                 </Box>
                             </Grid>
