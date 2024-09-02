@@ -114,7 +114,7 @@ export default function AccountGeneral() {
       }
       isSubmitting.onFalse();
     } catch (error) {
-      enqueueSnackbar('Error during face id registration.', { variant: 'error' });
+      enqueueSnackbar(`Error during face id registration - 1. ${error}`, { variant: 'error' });
       isSubmitting.onFalse();
     }
   };
