@@ -228,6 +228,14 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     }
 
     const handleClickOutside = (event: MouseEvent) => {
+        const targetElement = event.target as HTMLElement;
+        const specialSelector = '.MuiPopover-root';
+        const { parentElement } = targetElement;
+
+        if (parentElement && parentElement.closest(specialSelector)) {
+            return;
+        }
+
         if (
             recordingPanelRef.current &&
             !recordingPanelRef.current.contains(event.target as Node)
