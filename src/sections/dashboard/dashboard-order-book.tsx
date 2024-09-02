@@ -44,9 +44,17 @@ export default function DashboardOrderBook() {
   const [currentSelectedPair, setCurrentSelectedPair] = useState('BTC/USDT'); // TODO: Make pair dynamic
   const [currentSelectedExchange, setCurrentSelectedExchange] = useState('Binance');
 
-  useEffect(() => {
-    webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
 
+  useEffect(() => {
+    if (!webSocketClient.isConnected) {
+      webSocketClient.setOnConnectedCallback(() => {
+        webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
+      });
+      webSocketClient._connect();
+    }
+  }, [currentSelectedPair, currentSelectedExchange]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       const { priceData } = webSocketClient;
       if (priceData) {
@@ -439,13 +447,13 @@ export default function DashboardOrderBook() {
           opacity:
             currentSelectedSellOrder <
               (buySellLayout === 'BOTH' ? fixedOrderBookNumber - 1 : sellOrders.length - 1) ||
-            currentSelectedBuyOrder > 0
+              currentSelectedBuyOrder > 0
               ? 1
               : 0,
           visibility:
             currentSelectedSellOrder <
               (buySellLayout === 'BOTH' ? fixedOrderBookNumber - 1 : sellOrders.length - 1) ||
-            currentSelectedBuyOrder > 0
+              currentSelectedBuyOrder > 0
               ? 'visible'
               : 'hidden',
         }}
