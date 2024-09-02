@@ -102,7 +102,7 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.redirect(`${origin}/auth/jwt/supabase-oauth-callback/#access_token=${data.session.access_token}&refresh_token=${data.session.refresh_token}`)
+    return NextResponse.redirect(`${origin}/auth/jwt/supabase-oauth-callback`)
   } catch (error) {
     console.error('Caught unexpected error:', error);
     return new Response(JSON.stringify({ error: 'An unexpected error occurred' }), {
