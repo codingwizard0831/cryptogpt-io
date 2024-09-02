@@ -93,10 +93,14 @@ export default function AccountGeneral() {
       isSubmitting.onTrue();
       const { data: optionsResponse } = await axios.post(endpoints.auth.registerFaceId);
       const { success, options } = optionsResponse;
+      alert(`optionsResponse: ${optionsResponse}`);
+      alert(`success: ${success}`);
       if (success) {
         const attestationResponse = await startRegistration(options);
+        alert(`attestationResponse: ${attestationResponse}`);
         const { data: verificationResponse } = await axios.put(endpoints.auth.registerFaceId, { attestationResponse });
 
+        alert(`verificationResponse: ${verificationResponse}`);
         if (verificationResponse.success) {
           enqueueSnackbar('Face id registration successful!', { variant: 'success' });
           if (verificationResponse.message) {
