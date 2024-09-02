@@ -95,7 +95,7 @@ export default function AccountGeneral() {
       const { success, options } = optionsResponse;
       alert(`success: ${success}`);
       if (success) {
-        alert(`options: ${options}`);
+        alert(`options: ${options?.challenge}`);
         const attestationResponse = await startRegistration(options);
         alert(`attestationResponse: ${attestationResponse}`);
         const { data: verificationResponse } = await axios.put(endpoints.auth.registerFaceId, { attestationResponse });
