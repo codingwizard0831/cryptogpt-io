@@ -93,10 +93,14 @@ export default function AccountGeneral() {
       isSubmitting.onTrue();
       const { data: optionsResponse } = await axios.post(endpoints.auth.registerFaceId);
       const { success, options } = optionsResponse;
+      alert(`success: ${success}`);
       if (success) {
+        alert(`options: ${options?.challenge}`);
         const attestationResponse = await startRegistration(options);
+        alert(`attestationResponse: ${attestationResponse}`);
         const { data: verificationResponse } = await axios.put(endpoints.auth.registerFaceId, { attestationResponse });
 
+        alert(`verificationResponse: ${verificationResponse}`);
         if (verificationResponse.success) {
           enqueueSnackbar('Face id registration successful!', { variant: 'success' });
           if (verificationResponse.message) {
@@ -110,7 +114,7 @@ export default function AccountGeneral() {
       }
       isSubmitting.onFalse();
     } catch (error) {
-      enqueueSnackbar('Error during face id registration.', { variant: 'error' });
+      enqueueSnackbar(`Error during face id registration - 1. ${error}`, { variant: 'error' });
       isSubmitting.onFalse();
     }
   };
