@@ -31,13 +31,13 @@ export async function GET(request: NextRequest) {
     }
 
     const redirectUrl = new URL('https://cryptogpt.app/auth/jwt/supabase-oauth-callback/');
-    redirectUrl.hash = `access_token=${result.session.access_token}&refresh_token=${result.session.refresh_token}`;
+    redirectUrl.hash = `access_token=${encodeURIComponent(result.session.access_token)}&refresh_token=${encodeURIComponent(result.session.refresh_token)}`;
 
     console.log('Redirecting to:', redirectUrl.toString());
-    return new Response(null, {
-      status: 302,
+    return NextResponse.redirect(redirectUrl.toString(), {
       headers: {
-        Location: redirectUrl.toString(),
+        'Cache-Control': 'no-store, max-age=0',
+        'Pragma': 'no-cache',
       },
     });
 
