@@ -216,12 +216,18 @@ export default function JwtLoginView() {
 
   const handleLoginWithGoogle = async () => {
     console.log('Login with Google');
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
-      },
-    });
+    const {statusText, data} = await axios.post(endpoints.auth.loginWithGoogle);
+    if (statusText === "OK" && data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'Failed to initiate OAuth login');
+    }
+    // await supabase.auth.signInWithOAuth({
+    //   provider: 'google',
+    //   options: {
+    //     redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
+    //   },
+    // });
   };
 
   const renderHead = (

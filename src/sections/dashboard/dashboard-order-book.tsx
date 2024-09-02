@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import { fNumberPrice } from 'src/utils/format-number';
 import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
+import { fNumberPrice } from 'src/utils/format-number';
 
 import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 

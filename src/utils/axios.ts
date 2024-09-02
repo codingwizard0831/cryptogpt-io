@@ -35,7 +35,7 @@ export const endpoints = {
     loginWithCodeSend: '/api/auth/signin-send-token/',
     loginWithCodeVerify: '/api/auth/signin-verify-token/',
 
-    loginWithOAuth: '/api/auth/signin-oauth/',
+    loginWithGoogle: '/api/auth/signin-google/',
 
     loginWithMetamaskNonce: '/api/auth/signin-metamask/nonce/',
     loginWithMetamaskSignin: '/api/auth/signin-metamask/signin/',
