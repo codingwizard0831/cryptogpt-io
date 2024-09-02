@@ -69,38 +69,38 @@ export async function GET(request: Request) {
   console.log(request)
   try {
     const { origin } = new URL(request.url)
-    const supabase = createCustomServerClient();
-    const requestUrl = new URL(request.url);
-    const code = requestUrl.searchParams.get('code');
+    // const supabase = createCustomServerClient();
+    // const requestUrl = new URL(request.url);
+    // const code = requestUrl.searchParams.get('code');
 
-    console.log('Extracted code:', code);
+    // console.log('Extracted code:', code);
 
-    if (!code) {
-      console.error('No code provided in URL');
-      return new Response(JSON.stringify({ error: 'No code provided' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    // if (!code) {
+    //   console.error('No code provided in URL');
+    //   return new Response(JSON.stringify({ error: 'No code provided' }), {
+    //     status: 400,
+    //     headers: { 'Content-Type': 'application/json' }
+    //   });
+    // }
 
-    console.log('Attempting to exchange code for session');
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    // console.log('Attempting to exchange code for session');
+    // const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (error) {
-      console.error('Error exchanging code for session:', error);
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    // if (error) {
+    //   console.error('Error exchanging code for session:', error);
+    //   return new Response(JSON.stringify({ error: error.message }), {
+    //     status: 500,
+    //     headers: { 'Content-Type': 'application/json' }
+    //   });
+    // }
 
-    if (!data?.session) {
-      console.error('No session returned from exchangeCodeForSession');
-      return new Response(JSON.stringify({ error: 'Failed to create session' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+    // if (!data?.session) {
+    //   console.error('No session returned from exchangeCodeForSession');
+    //   return new Response(JSON.stringify({ error: 'Failed to create session' }), {
+    //     status: 500,
+    //     headers: { 'Content-Type': 'application/json' }
+    //   });
+    // }
 
     return NextResponse.redirect(`${origin}/auth/jwt/supabase-oauth-callback`)
   } catch (error) {
