@@ -34,7 +34,12 @@ export async function GET(request: NextRequest) {
     redirectUrl.hash = `access_token=${result.session.access_token}&refresh_token=${result.session.refresh_token}`;
 
     console.log('Redirecting to:', redirectUrl.toString());
-    return NextResponse.redirect(redirectUrl.toString());
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: redirectUrl.toString(),
+      },
+    });
 
   } catch (error) {
     console.error('Caught unexpected error:', error);
