@@ -18,28 +18,23 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('Attempting to exchange code for session');
-    const { data: result, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (exchangeError) {
-      console.error('Error exchanging code for session:', exchangeError);
-      return NextResponse.json({ error: exchangeError.message }, { status: 500 });
+    if (error) {
+      console.error('Error exchanging code for session:', error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    if (!result?.session) {
+    if (!data?.session) {
       console.error('No session returned from exchangeCodeForSession');
       return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
     }
 
     const redirectUrl = new URL('https://cryptogpt.app/auth/jwt/supabase-oauth-callback/');
-    redirectUrl.hash = `access_token=${encodeURIComponent(result.session.access_token)}&refresh_token=${encodeURIComponent(result.session.refresh_token)}`;
+    redirectUrl.hash = `access_token=${encodeURIComponent(data.session.access_token)}&refresh_token=${encodeURIComponent(data.session.refresh_token)}`;
 
     console.log('Redirecting to:', redirectUrl.toString());
-    return NextResponse.redirect(redirectUrl.toString(), {
-      headers: {
-        'Cache-Control': 'no-store, max-age=0',
-        'Pragma': 'no-cache',
-      },
-    });
+    return NextResponse.redirect(redirectUrl.toString(), 307);
 
   } catch (error) {
     console.error('Caught unexpected error:', error);
