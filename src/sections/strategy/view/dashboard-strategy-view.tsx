@@ -7,7 +7,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
 
-import DashboardStrategyCardWrapper from '../dashboard-strategy-card-wrapper';
+import DashboardStrategyCard from '../dashboard-strategy-card';
 
 
 export default function DashboardStrategyView() {
@@ -39,9 +39,21 @@ export default function DashboardStrategyView() {
           gap: 1,
         }}
       >
-        <DashboardStrategyCardWrapper sx={{
+        <Box sx={{
+          display: 'flex',
+          gap: 2,
           width: '100%',
-        }} />
+          overflowY: 'hidden',
+          overflowX: 'auto',
+        }}>
+          {
+            [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => <DashboardStrategyCard key={`card-key-${index}`} sx={{
+              width: '200px',
+              flexGrow: 0,
+              flexShrink: 0,
+            }} />)
+          }
+        </Box>
       </Card>
     </Box>
   );

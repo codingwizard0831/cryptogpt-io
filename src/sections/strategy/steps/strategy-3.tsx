@@ -2,11 +2,9 @@
 import { useState } from 'react';
 import { Area, XAxis, YAxis, Tooltip, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
-import { Box, Stack, Table, alpha, Button, BoxProps, MenuItem, TableRow, TextField, TableHead, TableCell, TableBody, Typography, InputLabel, FormControl } from '@mui/material';
+import { Box, Stack, Table, alpha, BoxProps, TableRow, TextField, TableHead, TableCell, TableBody, Typography } from '@mui/material';
 
-import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fNumberPrice } from 'src/utils/format-number';
@@ -14,7 +12,6 @@ import { fNumberPrice } from 'src/utils/format-number';
 import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Iconify from 'src/components/iconify';
-import Image from 'src/components/image/image';
 
 interface DataPoint {
     date: string;
@@ -30,11 +27,7 @@ interface DashboardStrategyStep3Props extends BoxProps {
 
 export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrategyStep3Props) {
     const coin1 = useStrategy((state) => state.coin1);
-    const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
-    const setCoin2 = useStrategy((state) => state.setCoin2);
-    const isCustom = useBoolean();
-    const [period, setPeriod] = useState("5m");
     const smUp = useResponsive("up", 'sm');
 
     const [filterStartDate, setFilterStartDate] = useState<Date | null>(
@@ -43,15 +36,6 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(
         new Date()
     );
-
-    const handleChangePeriod = (event: SelectChangeEvent) => {
-        setPeriod(event.target.value);
-        if (event.target.value === 'Custom') {
-            isCustom.onTrue();
-        } else {
-            isCustom.onFalse();
-        }
-    }
 
     return <Box sx={{
         flex: 1,
@@ -63,7 +47,7 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
         <Stack direction='row' alignItems="center" spacing={2} sx={{ width: '90%', mb: 2 }}>
             <Typography variant="h4" sx={{
                 whitespace: 'nowrap',
-            }}>4. Backtesting for {coin1.name}/{coin2.name}</Typography>
+            }}>2. Backtesting for {coin1.name}/{coin2.name}</Typography>
         </Stack>
 
 
@@ -76,74 +60,6 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
             overflowY: 'auto',
             overflowX: 'hidden',
         }}>
-            <Stack direction="row" alignItems='center' spacing={2} sx={{ width: '100%', mb: 1 }}>
-                <Box sx={{
-                    position: 'relative',
-                    pr: 3,
-                }}>
-                    <Image src="/images/bnb-bnb-logo.png" alt="" sx={{
-                        width: '32px',
-                        hegiht: '32px',
-                        borderRadius: '50%',
-                        border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
-                        backdropFilter: 'blur(10px)',
-                        p: 0.25,
-                    }} />
-                    <Image src="/images/tether-usdt-logo.png" alt="" sx={{
-                        width: '32px',
-                        hegiht: '32px',
-                        borderRadius: '50%',
-                        border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
-                        backdropFilter: 'blur(10px)',
-                        p: 0.25,
-                        position: 'absolute',
-                        left: '20px',
-                    }} />
-                </Box>
-
-                <FormControl sx={{
-                    minWidth: '120px',
-                    '.MuiInputBase-root': {
-                        border: 'none',
-                    },
-                }}>
-                    <InputLabel htmlFor="source-label">Source</InputLabel>
-                    <Select labelId="source-label" id="source" label="Source" size="small" value="5m" sx={{
-                        border: (theme: any) => `1px solid ${theme.palette.primary.main}`
-                    }}>
-                        <MenuItem value="Pyth">Pyth Netowork</MenuItem>
-                    </Select>
-                </FormControl>
-                <FormControl sx={{
-                    minWidth: '120px',
-                    '.MuiInputBase-root': {
-                        border: 'none',
-                    },
-                }}>
-                    <InputLabel htmlFor="period-label">Period</InputLabel>
-                    <Select labelId="period-label" id="period" label="Period" size="small" value={period}
-                        onChange={handleChangePeriod}
-                        sx={{
-                            border: (theme: any) => `1px solid ${theme.palette.primary.main}`
-                        }}>
-                        <MenuItem value="10m">10m</MenuItem>
-                        <MenuItem value="30m">30m</MenuItem>
-                        <MenuItem value="1h">1h</MenuItem>
-                        <MenuItem value="1day">1day</MenuItem>
-                        <MenuItem value="1week">1week</MenuItem>
-                        <MenuItem value="Custom">Custom</MenuItem>
-                    </Select>
-                </FormControl>
-            </Stack>
-
-            <Stack direction="row" alignItems='center' spacing={2} sx={{ width: '100%', mb: 2 }}>
-                {
-                    isCustom.value &&
-                    <TextField size="small" sx={{ minWidth: '120px' }} />
-                }
-                <Button fullWidth variant="contained" color="primary" startIcon={<Iconify icon="carbon:chart-multitype" sx={{
-                }} />}>Run</Button>
-            </Stack>
 
             <Box sx={{ width: '100%' }}>
                 <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>

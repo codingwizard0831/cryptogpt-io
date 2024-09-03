@@ -49,6 +49,21 @@ type EmojiGroupType = {
     value: string;
 }
 
+type FileType = {
+    image: string;
+    name: string;
+    percentage: number;
+    chartData: any[],
+    value: string;
+    group: string;
+}
+
+type FileGroupType = {
+    image: string;
+    name: string;
+    value: string;
+}
+
 export interface ChatInputProps extends BoxProps {
 
 }
@@ -213,6 +228,11 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     const [emojiGroup, setEmojiGroup] = useState<EmojiGroupType[]>([...emojiGroupsDummyData]);
     const [hoveredEmoji, setHoveredEmoji] = useState<any>(null);
     const [emojiGroupCollapse, setEmojiGroupCollapse] = useState<boolean[]>([]);
+    // File panel
+    const [fileData, setFileData] = useState<FileType[][]>([...fileDummyData]);
+    const [fileGroup, setFileGroup] = useState<FileGroupType[]>([...fileGroupsDummyData]);
+    const [hoveredFile, setHoveredFile] = useState<any>(null);
+    const [fileGroupCollapse, setFileGroupCollapse] = useState<boolean[]>([]);
 
     useEffect(() => {
         setEmojiGroupCollapse(emojiGroup.map(() => true));
@@ -221,6 +241,15 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
     const handleMoveEmojiGroup = (groupValue: string) => {
         if (emojiPanelRef.current) {
             const section = emojiPanelRef.current.querySelector(`.emoji-section-${groupValue}`);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
+    const handleMoveFileGroup = (groupValue: string) => {
+        if (emojiPanelRef.current) {
+            const section = emojiPanelRef.current.querySelector(`.file-section-${groupValue}`);
             if (section) {
                 section.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
@@ -671,8 +700,7 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                             display: 'none !important',
                         },
                     }}>
-                    <Tab value="gifs" label='GIFs' />
-                    <Tab value="stickers" label='Stickers' />
+                    <Tab value="file" label='My File' />
                     <Tab value="emoji" label='Emoji' />
                 </Tabs>
                 <Box sx={{
@@ -697,10 +725,11 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                 </Box>
             </Box>
 
+            {/* Emoji System section */}
             <Box sx={{
                 width: '100%',
                 maxHeight: '240px',
-                display: 'flex',
+                display: emojiTab === 'emoji' ? 'flex' : 'none',
                 flexDirection: 'row',
                 alignItems: 'stretch',
             }}>
@@ -860,6 +889,205 @@ export default function ChatInput({ sx, ...other }: ChatInputProps) {
                     </Box>
                 </Box>
             </Box>
+
+
+            {/* File System section */}
+            <Box sx={{
+                width: '100%',
+                maxHeight: '240px',
+                display: emojiTab !== 'emoji' ? 'flex' : 'none',
+                flexDirection: 'row',
+                alignItems: 'stretch',
+            }}>
+                <Box sx={{
+                    width: '48px',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    scrollbarWidth: 'none',
+                    borderColor: alpha(theme.palette.background.opposite, 0.2),
+                    borderStyle: 'solid',
+                    borderWidth: '1px 1px 0px 0px',
+                }}>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        alignItems: 'center',
+                        p: 1,
+                    }}>
+                        {
+                            fileGroup.map((item, index) => (
+                                <Box key={index}
+                                    sx={{
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: "50%",
+                                        overflow: 'hidden',
+                                        cursor: 'pointer',
+                                        color: 'text.secondary',
+                                        transition: 'all 0.3s',
+                                        "&:hover": {
+                                            borderRadius: "10px",
+                                            color: 'text.primary',
+                                        }
+                                    }}
+                                    onClick={() => handleMoveFileGroup(item.value)}
+                                >
+                                    <Image src={item.image} alt={item.value} sx={{
+                                        width: '100%',
+                                        height: '100%',
+                                    }} />
+                                </Box>
+                            ))
+                        }
+                    </Box>
+                </Box>
+
+                <Box sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}>
+                    <Box sx={{
+                        flex: 1,
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        p: 1,
+                        backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                        scrollBehavior: 'smooth',
+                    }}>
+                        {
+                            fileData.map((_filess, fileDataIndex) => (
+                                <Box key={`files-${fileDataIndex}`} className={`file-section-${fileGroup.find((item) => item.value === _filess[0].group)?.value || ""}`} sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 0.5,
+                                }}>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1,
+                                        pl: 1,
+                                        cursor: 'pointer',
+                                    }} onClick={() => setFileGroupCollapse([
+                                        ...fileGroupCollapse.slice(0, fileDataIndex),
+                                        !fileGroupCollapse[fileDataIndex],
+                                        ...fileGroupCollapse.slice(fileDataIndex + 1),
+                                    ])}>
+                                        <Image src={fileGroup.find((item) => item.value === _filess[0].group)?.image || ""} sx={{
+                                            width: '24px',
+                                            height: '24px',
+                                            borderRadius: '50%',
+                                            overflow: 'hidden',
+                                        }} />
+                                        <Typography variant="button">{fileGroup.find((item) => item.value === _filess[0].group)?.name || ""}</Typography>
+                                        <Iconify icon="fluent:chevron-down-12-filled" sx={{
+                                            transition: 'rotate 0.3s',
+                                            transform: fileGroupCollapse[fileDataIndex] ? 'rotate(0deg)' : 'rotate(-90deg)',
+                                        }} />
+                                    </Box>
+                                    <Collapse in={fileGroupCollapse[fileDataIndex]}>
+                                        <Box sx={{
+                                            display: 'flex',
+                                            flexWrap: 'wrap',
+                                            gap: 1,
+                                        }}>
+                                            {
+                                                [..._filess, ..._filess, ..._filess, ..._filess, ..._filess, ..._filess, ..._filess].map((_, fileIndex) => (
+                                                    <Box key={fileIndex} sx={{
+                                                        width: '100%',
+                                                        maxWidth: '360px',
+                                                        minWidth: '180px',
+                                                        height: '48px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        gap: 1,
+                                                        overflow: 'hidden',
+                                                        cursor: 'pointer',
+                                                        color: 'text.secondary',
+                                                        p: 1,
+                                                        backgroundColor: alpha(theme.palette.background.default, 0.5),
+                                                        border: `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
+                                                        "&:hover": {
+                                                            backgroundColor: theme.palette.background.default,
+                                                            color: 'text.primary',
+                                                        }
+                                                    }}
+                                                        onMouseEnter={() => setHoveredFile(_)}
+                                                    // onMouseLeave={() => setHoveredFile(null)}
+                                                    >
+                                                        <Image src={_.image} sx={{
+                                                            width: '36px',
+                                                            height: '36px',
+                                                        }} />
+                                                        <Typography variant="body2" sx={{
+                                                            color: 'primary.main',
+                                                            width: 0,
+                                                            flex: 1,
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            whiteSpace: 'nowrap',
+                                                        }}>{_.name}</Typography>
+                                                        <Typography variant="caption" sx={{
+                                                            color: 'success.main',
+                                                        }}>{_.percentage * 100}%</Typography>
+                                                    </Box>
+                                                ))
+                                            }
+                                        </Box>
+                                    </Collapse>
+                                </Box>
+                            ))
+                        }
+                    </Box>
+
+                    <Box sx={{
+                        display: hoveredFile ? 'flex' : 'none',
+                        alignItems: 'center',
+                        gap: 1,
+                        width: '100%',
+                        backgroundColor: alpha(theme.palette.background.default, 0.5),
+                        px: 1,
+                        py: 0.5,
+                    }}>
+                        <Image src={hoveredFile?.image || ""} sx={{
+                            width: '32px',
+                            height: '32px',
+                        }} />
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}>
+                            <Typography variant="body2" sx={{
+                                color: 'primary.main',
+                                width: '100%',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                            }}>{hoveredFile?.name}</Typography>
+                            <Typography variant="caption" sx={{
+                                color: 'success.main',
+                            }}>{hoveredFile ? (hoveredFile.percentage * 100) : 0}%</Typography>
+                        </Box>
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            flex: 1,
+                        }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: '800' }}>{hoveredFile?.value || ""}</Typography>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>from {hoveredFile?.group || ""}</Typography>
+                        </Box>
+                        <Image src={fileGroup.find((item) => item.value === hoveredFile?.group)?.image || ""} sx={{
+                            width: '32px',
+                            height: '32px',
+                        }} />
+                    </Box>
+                </Box>
+            </Box>
         </Box>
     </Box>
 }
@@ -940,6 +1168,70 @@ const emojiDummyData: EmojiType[][] = [
             image: '/images/2021-04-crypto-cataclysm.jpg',
             value: ':icon5:',
             group: 'among-us',
+        },
+    ],
+]
+
+const fileGroupsDummyData: FileGroupType[] = [
+    {
+        image: '/images/bitcoin-btc-logo.png',
+        name: 'Recent',
+        value: 'recent',
+    },
+    {
+        image: '/images/uniswap-uni-logo.png',
+        name: 'Top Strategy',
+        value: 'top-1',
+    },
+    {
+        image: '/images/dot-logo.png',
+        name: 'Among Us',
+        value: 'amount-us',
+    },
+];
+
+
+const fileDummyData: FileType[][] = [
+    [
+        {
+            image: '/images/Goldie.png',
+            name: 'strategy 1',
+            percentage: 0.5,
+            chartData: [],
+            value: ':AU_yelloflushed:',
+            group: 'top-1',
+        },
+        {
+            image: '/images/Nanami.jpg',
+            name: 'strategy 2',
+            percentage: 0.5,
+            chartData: [],
+            value: ':icon1:',
+            group: 'recent',
+        },
+        {
+            image: '/images/Naoki.jpg',
+            name: 'strategy 3',
+            percentage: 0.5,
+            chartData: [],
+            value: ':icon2:',
+            group: 'top-1',
+        },
+        {
+            image: '/images/Nicolas.png',
+            name: 'strategy 4',
+            percentage: 0.5,
+            chartData: [],
+            value: ':icon3:',
+            group: 'top-1',
+        },
+        {
+            image: '/images/what-is-trading-strategy-1000x375.jpg',
+            name: 'strategy 5',
+            percentage: 0.5,
+            chartData: [],
+            value: ':icon4:',
+            group: 'top-1',
         },
     ],
 ]
