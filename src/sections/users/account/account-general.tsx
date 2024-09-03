@@ -90,6 +90,10 @@ export default function AccountGeneral() {
 
   const handleWebAuthnRegister = async () => {
     try {
+      if (!window.PublicKeyCredential) {
+        enqueueSnackbar('WebAuthn is not supported in this browser.', { variant: 'error' });
+        return;
+      }
       isSubmitting.onTrue();
       const { data: optionsResponse } = await axios.post(endpoints.auth.registerFaceId);
       const { success, options } = optionsResponse;
@@ -114,7 +118,12 @@ export default function AccountGeneral() {
       }
       isSubmitting.onFalse();
     } catch (error) {
-      enqueueSnackbar(`Error during face id registration - 1. ${error}`, { variant: 'error' });
+      console.error('Detailed error:', error);
+      if (error.name === 'NotAllowedError') {
+        enqueueSnackbar('Face ID permission was denied. Please ensure Face ID is enabled and try again.', { variant: 'error' });
+      } else {
+        enqueueSnackbar(`Error during face id registration: ${error.message}`, { variant: 'error' });
+      }
       isSubmitting.onFalse();
     }
   };
