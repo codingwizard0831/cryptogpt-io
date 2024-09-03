@@ -24,6 +24,8 @@ export class WebSocketClient {
 
   _priceData: OrderBookUpdateResponse | null = null;
 
+  _onConnectedCallback: (() => void) | null = null;
+
   constructor() {
     // Bind functions
     this._connect = this._connect.bind(this);
@@ -48,6 +50,10 @@ export class WebSocketClient {
       socket.onopen = () => {
         this._socket = socket;
         this._connected = true;
+
+        if (this._onConnectedCallback) {
+          this._onConnectedCallback();
+        }
       };
 
       socket.onclose = () => {
@@ -115,6 +121,10 @@ export class WebSocketClient {
 
   get priceData() {
     return this._priceData;
+  }
+
+  setOnConnectedCallback(callback: () => void) {
+    this._onConnectedCallback = callback;
   }
 }
 

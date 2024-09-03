@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { OrderBookEntry } from 'src/utils/websocket';
+import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
 import { fNumberPrice } from 'src/utils/format-number';
 
 import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
@@ -44,19 +44,27 @@ export default function DashboardOrderBook() {
   const [currentSelectedPair, setCurrentSelectedPair] = useState('BTC/USDT'); // TODO: Make pair dynamic
   const [currentSelectedExchange, setCurrentSelectedExchange] = useState('Binance');
 
-  // useEffect(() => {
-  //   webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
 
-  //   const interval = setInterval(() => {
-  //     const { priceData } = webSocketClient;
-  //     if (priceData) {
-  //       setSellOrders(priceData.asks);
-  //       setBuyOrders(priceData.bids);
-  //     }
-  //   }, 500);
+  useEffect(() => {
+    if (!webSocketClient.isConnected) {
+      webSocketClient.setOnConnectedCallback(() => {
+        webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
+      });
+      webSocketClient._connect();
+    }
+  }, [currentSelectedPair, currentSelectedExchange]);
 
-  //   return () => clearInterval(interval);
-  // }, [currentSelectedPair, currentSelectedExchange]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const { priceData } = webSocketClient;
+      if (priceData) {
+        setSellOrders(priceData.asks);
+        setBuyOrders(priceData.bids);
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [currentSelectedPair, currentSelectedExchange]);
 
   useEffect(() => {
     let totalSellPrice = 0;
