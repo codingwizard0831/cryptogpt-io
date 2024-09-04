@@ -32,7 +32,7 @@ export default function JwtForgotPasswordView() {
     const handleSendRequest = async () => {
         try {
             isSubmitting.onTrue();
-            // await forgotPassword(email);
+            await forgotPassword(email);
             router.push(paths.auth.jwt.emailCheck);
         } catch (error) {
             console.error(error);
