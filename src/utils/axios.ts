@@ -32,6 +32,8 @@ export const endpoints = {
     register: '/api/auth/signup/',
     logout: '/api/auth/signout/',
     loginWithEmailAndPassword: '/api/auth/signin-email-password/',
+    apiPasswordResetRequest: '/api/auth/reset-password-request/',
+    passwordResetConfirm: '/api/auth/reset-password-confirm/',
     loginWithCodeSend: '/api/auth/signin-send-token/',
     loginWithCodeVerify: '/api/auth/signin-verify-token/',
 
@@ -50,7 +52,6 @@ export const endpoints = {
     confirmPhone: '/auth/confirm_phone/',
     passwordResetRequest: '/auth/password_reset/',
     passwordResetValidate: '/auth/password_reset/validate_token/',
-    passwordResetConfirm: '/auth/password_reset/confirm/',
     passwordUpdate: '/auth/update_password/',
 
     profileUpdate: '/auth/user/profile/update/',

@@ -1,9 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { MuiOtpInput } from 'mui-one-time-password-input';
 
-import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import { Button, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
@@ -29,12 +27,11 @@ import { useSnackbar, VariantType } from 'src/components/snackbar';
 export default function JwtResetPasswordView() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const loadFlag = useBoolean(false);
-    const [confirmFlag, setConfirm] = useState(0); // 0: loading, 1: success, 2: failed
     const { enqueueSnackbar } = useSnackbar();
     const [password, setPassword] = useState('');
-    const [code, setCode] = useState('');
+    const [rPassword, setRPassword] = useState('');
     const isShowPassword = useBoolean(false);
+    const isShowRPassword = useBoolean(false);
     const isSubmitting = useBoolean(false);
 
     const actionHandle = useCallback((color: VariantType, text: string = "") => {
@@ -43,60 +40,51 @@ export default function JwtResetPasswordView() {
         });
     }, [enqueueSnackbar]);
 
-    const resetPasswordToken = searchParams.get('token');
+    const resetPasswordToken = searchParams.get('resetToken');
+    const email = searchParams.get('email');
 
-    if (resetPasswordToken && loadFlag.value === false) {
-        // loadFlag.onTrue();
-        // const [token, id] = resetPasswordToken.split('__');
-        // (async () => {
-        //     try {
-        //         const res = await axios.post(endpoints.auth.passwordResetValidate, {
-        //             token,
-        //             id,
-        //         });
-        //         const { success, message } = res.data;
-        //         if (success) {
-        //             setConfirm(1);
-        //             actionHandle('success', message);
-        //         } else {
-        //             setConfirm(2);
-        //             actionHandle('error', message);
-        //             router.push(paths.error.somethingWrong);
-        //         }
-        //         sessionStorage.setItem('user_profile_id', id);
-        //     } catch (error) {
-        //         setConfirm(2);
-        //         actionHandle('error', error.message);
-        //         router.push(paths.error.somethingWrong);
-        //     }
-        // })();
-    }
-
-    const [errorMsg, setErrorMsg] = useState('');
-
+    const validateForm = useCallback(() => {
+        if (!password) {
+            actionHandle('error', "The password is required.");
+            return false;
+        }
+        if (password !== rPassword) {
+            actionHandle('error', "Passwords do not match.");
+            return false;
+        }
+        if (password.length < 6) {
+            actionHandle('error', "Password should be at least 6 characters long.");
+            return false;
+        }
+        return true;
+    }, [actionHandle, password, rPassword]);
 
     const onSubmit = (async () => {
-        try {
-            if (resetPasswordToken === null) {
-                throw new Error("resetPasswordToken is null");
-            }
+        if (!validateForm()) return;
 
-            const [token, id] = resetPasswordToken.split('__');
-            const res = await axios.post(endpoints.auth.passwordResetConfirm, {
-                token,
-                id,
+        if (!email || !resetPasswordToken) {
+            actionHandle('error', "Email or reset token is missing.");
+            return;
+        }
+
+        isSubmitting.onTrue();
+        try {
+            const { data, status } = await axios.post(endpoints.auth.passwordResetConfirm, {
+                resetPasswordToken,
+                email,
                 new_password: password,
             });
-            const { success, message } = res.data;
-            if (success) {
-                actionHandle('success', message);
+
+            if (status === 200) {
+                actionHandle('success', data.message);
                 router.push(paths.auth.jwt.login);
             } else {
-                actionHandle('error', message);
+                actionHandle('error', data.error);
             }
+            isSubmitting.onFalse();
         } catch (error) {
-            console.error(error);
-            setErrorMsg(typeof error === 'string' ? error : error.message);
+            isSubmitting.onFalse();
+            actionHandle('error', error.error);
         }
     });
 
@@ -112,26 +100,6 @@ export default function JwtResetPasswordView() {
 
     const renderForm = (
         <Stack spacing={2.5}>
-            <MuiOtpInput
-                autoFocus
-                gap={1}
-                length={6}
-                TextFieldsProps={{
-                    placeholder: '-',
-                }}
-                value={code}
-                onChange={(value) => setCode(value)}
-                onComplete={(value) => { console.log(value) }}
-                sx={{
-                    '& .MuiOutlinedInput-root': {
-                        height: '48px',
-                    },
-                    '& input': {
-                        textAlign: 'center',
-                    },
-                }}
-            />
-
             <TextField
                 name="password"
                 label="Password"
@@ -145,6 +113,25 @@ export default function JwtResetPasswordView() {
                         </InputAdornment>
                     ),
                 }}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value) }}
+            />
+
+            <TextField
+                name="rpassword"
+                label="Re-type Password"
+                type={isShowRPassword.value ? 'text' : 'password'}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <IconButton onClick={isShowRPassword.onToggle} edge="end">
+                                <Iconify icon={isShowRPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                            </IconButton>
+                        </InputAdornment>
+                    ),
+                }}
+                value={rPassword}
+                onChange={(e) => { setRPassword(e.target.value) }}
             />
 
             <LoadingButton
@@ -154,6 +141,7 @@ export default function JwtResetPasswordView() {
                 type="submit"
                 variant="contained"
                 loading={isSubmitting.value}
+                onClick={onSubmit}
             >
                 Update Password
             </LoadingButton>
@@ -163,12 +151,6 @@ export default function JwtResetPasswordView() {
     return (
         <>
             {renderHead}
-
-            {!!errorMsg && (
-                <Alert severity="error" sx={{ mb: 3 }}>
-                    {errorMsg}
-                </Alert>
-            )}
 
             {renderForm}
 
