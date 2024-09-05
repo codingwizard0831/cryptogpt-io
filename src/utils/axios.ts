@@ -105,6 +105,8 @@ export const endpoints = {
     models: '/api/profile/image/models',
     generateImage: '/api/profile/image/generate',
     updateAvatar: '/api/profile/image',
+    exchange: '/api/exchanges',
+    exchange_keys: '/api/exchanges/key',
   }
 };
 

@@ -49,7 +49,7 @@ export default function AccountPopover() {
   const user_profile = getUserProfileInfo();
 
   const popover = usePopover();
-  const userStatusDialogVisible = useBoolean(true);
+  const userStatusDialogVisible = useBoolean(false);
 
   const handleLogout = async () => {
     try {
@@ -113,11 +113,6 @@ export default function AccountPopover() {
           sx={{
             width: 40,
             height: 40,
-            background: (theme) => alpha(theme.palette.grey[500], 0.08),
-            ...(popover.open && {
-              background: (theme) =>
-                `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
-            }),
           }}
         >
           <Avatar
@@ -170,6 +165,7 @@ export default function AccountPopover() {
             alignItems: 'center',
             gap: 1,
           }}
+          onClick={() => userStatusDialogVisible.onTrue()}
         >
           <UserStatusItem data={USER_STATUS.status[0]} sx={{
             width: '16px',
@@ -251,7 +247,7 @@ export default function AccountPopover() {
                   }}>
                     {
                       USER_STATUS[_statusArray].map((_status) => (
-                        <UserStatusButton data={_status} sx={{
+                        <UserStatusButton key={`user-status-button-${_g_index}-${_status.id}`} data={_status} sx={{
                           width: 'calc(50% - 8px)',
                         }} />
                       ))

@@ -1,16 +1,15 @@
-import crypto from "crypto";
 import { useState, useEffect } from 'react';
 
 import { Box, alpha, Stack, Button, Dialog, Typography, ButtonBase } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import axios from 'src/utils/axios';
-
-import { BINANCE_API } from 'src/config-global';
+import axios, { endpoints } from 'src/utils/axios';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
+
+import SubaccountDetail from './subaccount/subaccount-detail';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +26,7 @@ export default function AccountSubaccounts() {
     ]);
     const [exchangeSelectedAccount, setExchangeSelectedAccount] = useState('');
     const [platformSelectedAccount, setPlatformSelectedAccount] = useState('');
+    const [apiKeysData, setApiKeysData] = useState<any>(null);
 
     useEffect(() => {
         // axios.get("https://api.binance.com/api/v3/uiKlines?symbol=BNBUSDT&interval=3m", {
@@ -55,28 +55,53 @@ export default function AccountSubaccounts() {
         //     console.log(error);
         // });
 
-        const timestamp = Date.now();
-        const queryString = `symbol=BNBUSDT&timestamp=${timestamp}`;
-        const signature = crypto
-            .createHmac('sha256', BINANCE_API.secretKey as string)
-            .update(queryString)
-            .digest('hex');
+        // const timestamp = Date.now();
+        // const queryString = `symbol=BNBUSDT&timestamp=${timestamp}`;
+        // const signature = crypto
+        //     .createHmac('sha256', BINANCE_API.secretKey as string)
+        //     .update(queryString)
+        //     .digest('hex');
 
-        console.log("signature", signature);
+        // console.log("signature", signature);
 
-        const url = `https://testnet.binance.vision/api/v3/allOrders?${queryString}&signature=${signature}`;
+        // const url = `https://testnet.binance.vision/api/v3/allOrders?${queryString}&signature=${signature}`;
 
-        axios.get('/api/binance', {
-            params: {
-                url,
-                apiKey: BINANCE_API.apiKey
-            }
+        // axios.get('/api/binance', {
+        //     params: {
+        //         url,
+        //         apiKey: BINANCE_API.apiKey
+        //     }
+        // }).then((response) => {
+        //     console.log(response.data);
+        // }).catch((error) => {
+        //     console.log(error);
+        // });
+        console.log("SubAccounts");
+        axios.get(endpoints.profile.apiKey, {
         }).then((response) => {
             console.log(response.data);
         }).catch((error) => {
             console.log(error);
         });
-    })
+    }, [])
+
+    const handleAddSubAccount = () => {
+        console.log("Add SubAccount");
+        setAuthAccounts([...authAccounts, 'new-account']);
+        if (exchangeSelectedAccount) {
+            if (authAccounts.indexOf(exchangeSelectedAccount) === -1) {
+                setAuthAccounts([...authAccounts, exchangeSelectedAccount]);
+            }
+            setExchangeSelectedAccount('');
+        }
+        if (platformSelectedAccount) {
+            if (authAccounts.indexOf(platformSelectedAccount) === -1) {
+                setAuthAccounts([...authAccounts, platformSelectedAccount]);
+            }
+            setPlatformSelectedAccount('');
+        }
+        autoOptionAddDialog.onFalse();
+    }
 
     return (
         <Box>
@@ -191,7 +216,9 @@ export default function AccountSubaccounts() {
                                     transition: 'all 0.3s',
                                     color: 'primary.main',
                                     opacity: 0,
-                                }} />
+                                }}
+                                    onClick={() => { }}
+                                />
                             </Box>
                         }
                         )
@@ -243,7 +270,7 @@ export default function AccountSubaccounts() {
                     mb: 2,
                 }}>
                     {
-                        Array.from({ length: 5 }).map((_, index) => <Box sx={{
+                        Array.from({ length: 5 }).map((_, index) => <Box key={`binance-key-${index}`} sx={{
                             display: 'flex',
                             flexDirection: 'column',
                             borderRadius: 1,
@@ -261,12 +288,12 @@ export default function AccountSubaccounts() {
                             <Typography variant="subtitle2" sx={{ color: 'primary.main', mb: 0.5 }}>Binance BTC 1</Typography>
 
                             <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5}>
-                                <Typography variant='body2' sx={{ flex: 1 }}>SECREAT KEY:</Typography>
+                                <Typography variant='body2' sx={{ flex: 1 }}>API KEY:</Typography>
                                 <Typography variant='body2'>**********</Typography>
                                 <Button color="primary" size="small">Edit</Button>
                             </Stack>
                             <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5}>
-                                <Typography variant='body2' sx={{ flex: 1 }}>SECREAT KEY:</Typography>
+                                <Typography variant='body2' sx={{ flex: 1 }}>SECRET KEY:</Typography>
                                 <Typography variant='body2'>**********</Typography>
                                 <Button color="primary" size="small">Edit</Button>
                             </Stack>
@@ -278,35 +305,7 @@ export default function AccountSubaccounts() {
 
             {
                 currentAccount !== 'binance' &&
-                <Stack direction="row" justifyContent="space-between" spacing={4}>
-                    <Stack direction='column' sx={{ width: '100%' }}>
-                        <Typography variant='subtitle2' sx={{ mb: 1 }}>Configuration</Typography>
-
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5}>
-                            <Typography variant='body2' sx={{ flex: 1 }}>API KEY:</Typography>
-                            <Typography variant='body2'>**********</Typography>
-                            <Button color="primary" size="small">Edit</Button>
-                        </Stack>
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5}>
-                            <Typography variant='body2' sx={{ flex: 1 }}>SECRET KEY:</Typography>
-                            <Typography variant='body2'>**********</Typography>
-                            <Button color="primary" size="small">Edit</Button>
-                        </Stack>
-                    </Stack>
-
-                    <Stack direction='column' sx={{ width: '100%' }} spacing={0.5}>
-                        <Typography variant='subtitle2' sx={{ mb: 1 }}>History</Typography>
-
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{}}>
-                            <Typography variant='body2'>12-12-12: </Typography>
-                            <Typography variant='body2' color="success">Login successfully</Typography>
-                        </Stack>
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{}}>
-                            <Typography variant='body2'>12-12-12: </Typography>
-                            <Typography variant='body2' color="success">Login successfully</Typography>
-                        </Stack>
-                    </Stack>
-                </Stack>
+                <SubaccountDetail />
             }
 
             <Dialog
@@ -606,7 +605,7 @@ export default function AccountSubaccounts() {
                     }
 
                     <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 2 }}>
-                        <Button variant="contained" color="primary" onClick={() => autoOptionAddDialog.onFalse()}>Add</Button>
+                        <Button variant="contained" color="primary" onClick={() => handleAddSubAccount()}>Add</Button>
                         <Button variant="outlined" color="primary" onClick={() => autoOptionAddDialog.onFalse()}>Cancel</Button>
                     </Stack>
                 </Box>

@@ -32,9 +32,11 @@ export const USER_STATUS: {
     ],
     activity: [
         { id: 'working', color: '#FF6347', label: 'Working', icon: "material-symbols:work-outline" },
-        { id: 'gaming', color: '#32CD32', label: 'Gaming', icon: "maki:gaming" },
-        { id: 'reading', color: '#FF69B4', label: 'Reading', icon: "ep:reading" },
-        { id: 'exercising', color: '#FF8C00', label: 'Exercising', icon: "healthicons:exercise-running" }
+        { id: 'ai-researching', color: '#32CD32', label: 'AI Researching', icon: "ph:brain" },
+        { id: 'backtesting', color: '#32CD32', label: 'Backtesting', icon: "tdesign:chart-combo" },
+        { id: 'exercising', color: '#FF8C00', label: 'Exercising', icon: "healthicons:exercise-running" },
+        { id: 'eating', color: '#32CD32', label: 'Eating', icon: "fluent-mdl2:eat-drink" },
+        { id: 'vacationing', color: '#FF69B4', label: 'Vacationing', icon: "icon-park-outline:vacation" },
     ]
 };
 
@@ -52,7 +54,7 @@ export default function UserStatusItem({
             height: smUp ? '28px' : '16px',
             backgroundColor: alpha(theme.palette.background.default, 0.2),
             borderRadius: '50%',
-            border: `1px solid ${theme.palette.background.default}`,
+            // border: `1px solid ${theme.palette.background.default}`,
             boxShadow: `0 0 5px 1px ${data.color}`,
             ...sx,
         }}  {...other} >
