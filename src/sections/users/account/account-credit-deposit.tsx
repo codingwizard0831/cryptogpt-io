@@ -12,6 +12,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import usePayStripeCardPayment from 'src/hooks/use-pay-stripe-card-payment';
 import usePayStripeApplePayment from 'src/hooks/use-pay-stripe-apple-payment';
 import usePayStripeGooglePayment from 'src/hooks/use-pay-stripe-google-payment';
+import usePayStripeLinkPayment from 'src/hooks/use-pay-stripe-link-payment';
 
 import axios, { endpoints } from 'src/utils/axios';
 
@@ -68,6 +69,18 @@ const GooglePayIcon = () => (
     <path fill="#FBBC04" d="M172.9,469.7c-16.5-48.9-16.5-102,0-150.9V217.2H42c-56,111.4-56,242.7,0,354.1L172.9,469.7z" />
     <path fill="#EA4335" d="M394.2,156.1c56.2-0.9,110.5,20.3,151.2,59.1L658,102.7C586.6,35.7,492.1-1.1,394.2,0
       C245.2,0,108.9,84.1,42,217.2l130.9,101.6C204.1,225.4,291.4,156.1,394.2,156.1z"/>
+  </svg>
+);
+
+const LinkPayIcon = () => (
+  <svg height="80" width="55" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 24" fill="none">
+    <title>Link</title>
+
+    <path fill="currentColor" d="M36.12 3.67683c0-1.12801.9504-2.04481 2.0688-2.04481 1.1184 0 2.0688.9216 2.0688 2.04481 0 1.1232-.9168 2.0688-2.0688 2.0688-1.152 0-2.0688-.9168-2.0688-2.0688ZM29.9808 1.92001h3.6V22.08h-3.6V1.92001ZM40.008 7.68001h-3.6288V22.08h3.6288V7.68001ZM66.096 14.3904c2.7312-1.68 4.5888-4.1808 5.3232-6.71516h-3.6288c-.9456 2.41916-3.1152 4.23836-5.5008 5.01116V1.91523h-3.6288V22.0752h3.6288V16.08c2.7696.6912 4.9584 3.0864 5.7072 5.9952h3.6528c-.5568-3.0528-2.6448-5.9088-5.5536-7.6848ZM46.44 9.29283c.9504-1.2624 2.8032-1.99681 4.3056-1.99681 2.8032 0 5.1216 2.04961 5.1264 5.14558v9.6336h-3.6288v-8.832c0-1.272-.5664-2.7408-2.4048-2.7408-2.16 0-3.4032 1.9152-3.4032 4.1568v7.4256h-3.6288V7.68962H46.44v1.60321Z" />
+    <path fill="#00D66F" d="M12 24c6.6274 0 12-5.3726 12-12 0-6.62743-5.3726-12-12-12C5.37259 0 0 5.37257 0 12c0 6.6274 5.37259 12 12 12Z" />
+
+    <path fill="#011E0F" d="M11.4479 4.80005H7.74707c.72 3.0096 2.82243 5.58235 5.45283 7.19995-2.6352 1.6176-4.73283 4.1904-5.45283 7.2h3.70083c.9168-2.784 3.456-5.2032 6.576-5.6976v-3.0095c-3.1248-.4896-5.664-2.90885-6.576-5.69285Z" />
+
   </svg>
 );
 
@@ -173,6 +186,46 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
     }
   );
 
+  const confirmPaymentMethodLink = React.useCallback(async (e: any, paymentIntent: any) => {
+    const payResult: any = await confirmCardPayment(
+      paymentIntent.client_secret,
+      {
+        payment_method: e.paymentMethod.id,
+      },
+      {
+        handleActions: false
+      }
+    )
+
+    // eslint-disable-next-line @typescript-eslint/return-await
+    return await axios.post(endpoints.credits.confirmPaymentIntent,
+      {
+        "payment_intent_id": payResult.paymentIntent.id,
+        "amount": amount
+      }
+    );
+  }, [amount, confirmCardPayment]);
+
+  const [paymentRequestLink, { createPaymentRequest: createPaymentRequestLink }] = usePayStripeLinkPayment(
+    async (value: string) => {
+      const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
+        {
+          "amount": amount,
+          "recovery_email": value
+        }
+      );
+
+      const { success, data: paymentIntent } = data;
+      return success ? paymentIntent : null;
+    },
+    confirmPaymentMethodLink,
+    () => {
+      enqueueSnackbar(`${amount} credits have been successfully purchased!`, { variant: 'success' });
+      setIsLoading(!isLoading);
+      setAmount(0);
+    }
+  );
+
   useEffect(() => {
     createPaymentRequestApple(
       'credits',
@@ -186,6 +239,13 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
       amount * 100,
     )
   }, [createPaymentRequestGoogle, amount]);
+
+  useEffect(() => {
+    createPaymentRequestLink(
+      'credits',
+      amount * 100,
+    )
+  }, [createPaymentRequestLink, amount]);
 
   const payStripeCardPayment = usePayStripeCardPayment();
 
@@ -338,6 +398,12 @@ const UIComponents = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLo
       </Stack>
 
       <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3, paddingTop: 0 }}>
+        {(paymentRequestLink && !paymentRequestGoogle) && <ApplePayButton
+          variant="contained"
+          startIcon={<LinkPayIcon />}
+          disabled={!amount}
+          onClick={() => paymentRequestLink.show()}
+        />}
         {paymentRequestApple && <ApplePayButton
           variant="contained"
           startIcon={<ApplePayIcon />}
