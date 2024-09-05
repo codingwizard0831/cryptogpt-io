@@ -37,6 +37,7 @@ export default function DashboardStrategyCard({ sx, ...other }: DashboardStrateg
     return <CardFlip
         sx={{
             height: '440px',
+            width: '300px',
             ...sx,
         }}
         frontContent={
