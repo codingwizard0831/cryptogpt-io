@@ -1,15 +1,10 @@
 // Desc: This file contains the content of the strategy dashboard.
 
 
+import { Line, LineChart, ResponsiveContainer } from 'recharts';
+
 import Link from '@mui/material/Link';
-import { ChartContainer } from '@mui/x-charts/ChartContainer';
 import { Box, Chip, Stack, Button, BoxProps, Typography } from '@mui/material';
-import {
-    LinePlot,
-    MarkPlot,
-    lineElementClasses,
-    markElementClasses,
-} from '@mui/x-charts/LineChart';
 
 import { RouterLink } from 'src/routes/components';
 
@@ -17,6 +12,12 @@ import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import CardFlip from 'src/components/card-flip/card-flip';
 
+interface DataPoint {
+    date: string;
+    price: number;
+    change: number;
+    action?: 'Buy' | 'Sell';
+}
 
 interface DashboardStrategyCardProps extends BoxProps {
 
@@ -115,6 +116,9 @@ export default function DashboardStrategyCard({ sx, ...other }: DashboardStrateg
                     borderRadius: 1.5,
                     backgroundColor: '#00000088',
                     p: 1,
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}>
                     <Box sx={{
                         display: 'flex',
@@ -122,29 +126,36 @@ export default function DashboardStrategyCard({ sx, ...other }: DashboardStrateg
                         alignItems: 'center',
                         p: 1,
                         position: 'relative',
+                        flex: 1,
                     }}>
-                        <ChartContainer
-                            width={320}
-                            height={164}
-                            series={[
-                                { type: 'line', data: [2400, 1398, 9800, 3908, 4800, 3800, 4300], color: '#FFAB00' },
-                            ]}
-                            xAxis={[{ scaleType: 'point', data: xLabels }]}
-                            sx={{
-                                [`& .${lineElementClasses.root}`]: {
-                                    strokeWidth: 6,
-                                },
-                                [`& .${markElementClasses.root}`]: {
-                                    scale: '0.6',
-                                    fill: '#fff',
-                                    strokeWidth: 6,
-                                },
-                            }}
-                            disableAxisListener
-                        >
-                            <LinePlot />
-                            <MarkPlot />
-                        </ChartContainer>
+
+                        <Box sx={{
+                            width: '100%',
+                            height: '100%',
+                            p: 1,
+                        }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={data}>
+                                    {/* <XAxis
+                                        dataKey="date"
+                                        stroke="#ddd"
+                                        tick={{ fill: '#ddd' }}
+                                    />
+                                    <YAxis
+                                        stroke="#ddd"
+                                        tick={{ fill: '#ddd' }}
+                                        domain={[0, 32000]}
+                                        ticks={[0, 7500, 15000, 22500, 30000]}
+                                    /> */}
+                                    <Line
+                                        type="monotone"
+                                        dataKey="price"
+                                        stroke="#ffd700"
+                                        strokeWidth={2}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </Box>
 
                         <Stack direction="row" spacing={2} sx={{
                             position: 'absolute',
@@ -335,3 +346,15 @@ export default function DashboardStrategyCard({ sx, ...other }: DashboardStrateg
         }
     />
 }
+
+
+const data: DataPoint[] = [
+    { date: '2023-01', price: 8500, change: 0 },
+    { date: '2023-02', price: 11000, change: 0 },
+    { date: '2023-03', price: 18500, change: -0.1, action: 'Sell' },
+    { date: '2023-04', price: 5500, change: 0.1, action: 'Buy' },
+    { date: '2023-05', price: 17500, change: 0.1 },
+    { date: '2023-06', price: 11000, change: -0.1, action: 'Sell' },
+    { date: '2023-07', price: 19500, change: 0.0 },
+    { date: '2023-08', price: 500, change: -0.1, action: 'Sell' },
+];
