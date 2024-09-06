@@ -11,6 +11,8 @@ import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader'; // Import marked
 
+import { alpha } from '@mui/system';
+
 import { fNumber } from 'src/utils/format-number';
 
 import { _socials } from 'src/_mock';
@@ -250,7 +252,12 @@ export default function ProfileHome({ info, posts }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const renderFollows = (
-    <Card sx={{ py: 3, textAlign: 'center', typography: 'h4' }}>
+    <Card sx={{
+      py: 3,
+      textAlign: 'center',
+      typography: 'h4',
+      backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
+    }}>
       <Stack
         direction="row"
         divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
@@ -273,7 +280,9 @@ export default function ProfileHome({ info, posts }: Props) {
   );
 
   const renderAbout = (
-    <Card>
+    <Card sx={{
+      backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
+    }}>
       <CardHeader title="About" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
@@ -321,7 +330,9 @@ export default function ProfileHome({ info, posts }: Props) {
   );
 
   const renderSocials = (
-    <Card>
+    <Card sx={{
+      backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
+    }}>
       <CardHeader title="Social" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
@@ -368,6 +379,7 @@ export default function ProfileHome({ info, posts }: Props) {
 
       <Grid xs={12} md={8}>
         <Card sx={{
+          backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
           p: 1,
         }}>
           <div dangerouslySetInnerHTML={{ __html: readmeHtml }} />

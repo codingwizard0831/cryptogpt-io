@@ -66,3 +66,6 @@ export const NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET =
   process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET || '';
 
 export const NEXT_PUBLIC_RUST_WEBSOCKET_URL = process.env.NEXT_PUBLIC_RUST_WEBSOCKET_URL || '';
+
+// Ecryption
+export const ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || '';

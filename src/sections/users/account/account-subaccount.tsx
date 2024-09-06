@@ -1,24 +1,26 @@
-import crypto from "crypto";
 import { useState, useEffect } from 'react';
 
 import { Box, alpha, Stack, Button, Dialog, Typography, ButtonBase } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import axios from 'src/utils/axios';
-
-import { BINANCE_API } from 'src/config-global';
+import axios, { endpoints } from 'src/utils/axios';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
+
+import SubaccountDetail from './subaccount/subaccount-detail';
+import SubaccountCardItem from './subaccount/subaccount-card-item';
 
 // ----------------------------------------------------------------------
 
 export default function AccountSubaccounts() {
     const { enqueueSnackbar } = useSnackbar();
-    const [currentAccount, setCurrentAccount] = useState('binance');
+    const [currentAccount, setCurrentAccount] = useState('1');
     const autoOptionAddDialog = useBoolean(false);
     const [accountTypeTab, setAccountTypeTab] = useState('exchange');
+    const [allServiceAccounts, setAllServiceAccounts] = useState<any[]>([]);
+    const [apiKeysData, setApiKeysData] = useState<any[]>([]);
     const [authAccounts, setAuthAccounts] = useState([
         "binance",
         "mexc",
@@ -55,28 +57,61 @@ export default function AccountSubaccounts() {
         //     console.log(error);
         // });
 
-        const timestamp = Date.now();
-        const queryString = `symbol=BNBUSDT&timestamp=${timestamp}`;
-        const signature = crypto
-            .createHmac('sha256', BINANCE_API.secretKey as string)
-            .update(queryString)
-            .digest('hex');
+        // const timestamp = Date.now();
+        // const queryString = `symbol=BNBUSDT&timestamp=${timestamp}`;
+        // const signature = crypto
+        //     .createHmac('sha256', BINANCE_API.secretKey as string)
+        //     .update(queryString)
+        //     .digest('hex');
 
-        console.log("signature", signature);
+        // console.log("signature", signature);
 
-        const url = `https://testnet.binance.vision/api/v3/allOrders?${queryString}&signature=${signature}`;
+        // const url = `https://testnet.binance.vision/api/v3/allOrders?${queryString}&signature=${signature}`;
 
-        axios.get('/api/binance', {
-            params: {
-                url,
-                apiKey: BINANCE_API.apiKey
-            }
+        // axios.get('/api/binance', {
+        //     params: {
+        //         url,
+        //         apiKey: BINANCE_API.apiKey
+        //     }
+        // }).then((response) => {
+        //     console.log(response.data);
+        // }).catch((error) => {
+        //     console.log(error);
+        // });
+        console.log("SubAccounts");
+        axios.get(endpoints.exchange.index, {
         }).then((response) => {
             console.log(response.data);
+            setAllServiceAccounts(response.data);
         }).catch((error) => {
             console.log(error);
         });
-    })
+        axios.get(endpoints.exchange.key, {
+        }).then((response) => {
+            console.log(response.data);
+            setApiKeysData(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }, [])
+
+    const handleAddSubAccount = () => {
+        console.log("Add SubAccount");
+        setAuthAccounts([...authAccounts, 'new-account']);
+        if (exchangeSelectedAccount) {
+            if (authAccounts.indexOf(exchangeSelectedAccount) === -1) {
+                setAuthAccounts([...authAccounts, exchangeSelectedAccount]);
+            }
+            setExchangeSelectedAccount('');
+        }
+        if (platformSelectedAccount) {
+            if (authAccounts.indexOf(platformSelectedAccount) === -1) {
+                setAuthAccounts([...authAccounts, platformSelectedAccount]);
+            }
+            setPlatformSelectedAccount('');
+        }
+        autoOptionAddDialog.onFalse();
+    }
 
     return (
         <Box>
@@ -97,104 +132,16 @@ export default function AccountSubaccounts() {
                     gap: 1,
                 }}>
                     {
-                        subaccountsData.map((_subaccount) => {
-                            if (authAccounts.indexOf(_subaccount.key) === -1) return null;
-                            return <Box key={`jouryney-${_subaccount.key}`} sx={{
-                                borderRadius: 1,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'space-around',
-                                gap: 1,
-                                border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.1)}`,
-                                width: '164px',
-                                p: 1.5,
-                                cursor: 'pointer',
-                                transition: 'all 0.3s',
-                                backdropFilter: 'blur(10px)',
-                                position: 'relative',
-                                ":hover": {
-                                    backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.05),
-                                    border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-                                    color: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-                                    '& span': {
-                                        backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.4),
-                                    },
-                                    '& svg': {
-                                        color: (theme: any) => alpha(theme.palette.primary.main, 0.4),
-                                    },
-                                    '& h6': {
-                                        color: (theme: any) => alpha(theme.palette.primary.main, 0.8),
-                                    },
-                                    '& p': {
-                                        color: (theme: any) => alpha(theme.palette.primary.main, 0.8),
-                                    },
-                                    "& .remove-btn": {
-                                        opacity: 1,
-                                        color: 'primary.main',
-                                    },
-                                },
-                                ...(_subaccount.key === currentAccount && {
-                                    backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.08),
-                                    border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-                                    color: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.8)}`,
-                                    "& .remove-btn": {
-                                        opacity: 1,
-                                    },
-                                }),
-                            }}
-                                onClick={() => {
-                                    setCurrentAccount(_subaccount.key);
-                                }}
-                            >
-                                <Box component="span" sx={{
-                                    position: 'absolute',
-                                    left: '6px',
-                                    top: '6px',
-                                    width: '14px',
-                                    height: '14px',
-                                    borderRadius: '50%',
-                                    transition: 'all 0.3s',
-                                    backgroundColor: 'transparent',
-                                    ...(_subaccount.key === currentAccount && {
-                                        backgroundColor: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                    }),
-                                }} />
-                                <Iconify icon={_subaccount.icon} sx={{
-                                    width: '36px',
-                                    height: '36px',
-                                    transition: 'all 0.3s',
-                                    color: (theme: any) => alpha(theme.palette.text.primary, 0.5),
-                                    ...(_subaccount.key === currentAccount && {
-                                        color: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                    }),
-                                }} />
-                                <Typography variant='subtitle2' sx={{
-                                    transition: 'all 0.3s',
-                                    fontWeight: 'bold',
-                                    ...(_subaccount.key === currentAccount && {
-                                        color: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                    }),
-                                }}>{_subaccount.label}</Typography>
-                                <Typography variant='body2' sx={{
-                                    transition: 'all 0.3s',
-                                    fontSize: '12px',
-                                    ...(_subaccount.key === currentAccount && {
-                                        color: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                    }),
-                                }}>{_subaccount.link}</Typography>
-
-                                <Iconify icon="ph:trash-bold" className="remove-btn" sx={{
-                                    position: 'absolute',
-                                    right: '6px',
-                                    top: '6px',
-                                    transition: 'all 0.3s',
-                                    color: 'primary.main',
-                                    opacity: 0,
-                                }} />
-                            </Box>
-                        }
-                        )
+                        allServiceAccounts.map((_subaccount) => {
+                            if (!apiKeysData.find((_key) => _key.exchange_id === _subaccount.id)) return null;
+                            return <SubaccountCardItem
+                                key={`allServiceAccounts-${_subaccount.id}`}
+                                data={_subaccount}
+                                isSelected={_subaccount.id === currentAccount}
+                                handleSelect={(key) => setCurrentAccount(key)}
+                                handleRemove={() => console.log("Remove")}
+                            />
+                        })
                     }
                     <Box sx={{
                         borderRadius: 1,
@@ -234,79 +181,13 @@ export default function AccountSubaccounts() {
             </Box>
 
             {
-                currentAccount === 'binance' &&
-                <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: 2,
-                    flexWrap: 'wrap',
-                    mb: 2,
-                }}>
-                    {
-                        Array.from({ length: 5 }).map((_, index) => <Box sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            borderRadius: 1,
-                            border: (theme: any) => `1px solid ${alpha(theme.palette.background.opposite, 0.2)}`,
-                            width: '100%',
-                            maxWidth: '320px',
-                            px: 2,
-                            py: 1,
-                            transition: 'border-color 0.25s',
-                            cursor: 'pointer',
-                            "&:hover": {
-                                border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
-                            },
-                        }}>
-                            <Typography variant="subtitle2" sx={{ color: 'primary.main', mb: 0.5 }}>Binance BTC 1</Typography>
-
-                            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5}>
-                                <Typography variant='body2' sx={{ flex: 1 }}>SECREAT KEY:</Typography>
-                                <Typography variant='body2'>**********</Typography>
-                                <Button color="primary" size="small">Edit</Button>
-                            </Stack>
-                            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5}>
-                                <Typography variant='body2' sx={{ flex: 1 }}>SECREAT KEY:</Typography>
-                                <Typography variant='body2'>**********</Typography>
-                                <Button color="primary" size="small">Edit</Button>
-                            </Stack>
-                        </Box>
-                        )
-                    }
-                </Box>
-            }
-
-            {
-                currentAccount !== 'binance' &&
-                <Stack direction="row" justifyContent="space-between" spacing={4}>
-                    <Stack direction='column' sx={{ width: '100%' }}>
-                        <Typography variant='subtitle2' sx={{ mb: 1 }}>Configuration</Typography>
-
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5}>
-                            <Typography variant='body2' sx={{ flex: 1 }}>API KEY:</Typography>
-                            <Typography variant='body2'>**********</Typography>
-                            <Button color="primary" size="small">Edit</Button>
-                        </Stack>
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5}>
-                            <Typography variant='body2' sx={{ flex: 1 }}>SECRET KEY:</Typography>
-                            <Typography variant='body2'>**********</Typography>
-                            <Button color="primary" size="small">Edit</Button>
-                        </Stack>
-                    </Stack>
-
-                    <Stack direction='column' sx={{ width: '100%' }} spacing={0.5}>
-                        <Typography variant='subtitle2' sx={{ mb: 1 }}>History</Typography>
-
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{}}>
-                            <Typography variant='body2'>12-12-12: </Typography>
-                            <Typography variant='body2' color="success">Login successfully</Typography>
-                        </Stack>
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{}}>
-                            <Typography variant='body2'>12-12-12: </Typography>
-                            <Typography variant='body2' color="success">Login successfully</Typography>
-                        </Stack>
-                    </Stack>
-                </Stack>
+                allServiceAccounts.map((_subaccount) => {
+                    if (_subaccount.id !== currentAccount) return null;
+                    return <SubaccountDetail
+                        key={`SubaccountDetail-${_subaccount.id}`}
+                        apiKeys={apiKeysData.filter((_key) => _key.exchange_id === _subaccount.id)}
+                    />
+                })
             }
 
             <Dialog
@@ -396,100 +277,13 @@ export default function AccountSubaccounts() {
                                 maxHeight: '300px',
                             }}>
                                 {
-                                    exchangesData.map((_subaccount) => <Box key={`jouryney-${_subaccount.key}`} sx={{
-                                        borderRadius: 1,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-around',
-                                        gap: 1,
-                                        border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.1)}`,
-                                        width: '190px',
-                                        p: 1.5,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s',
-                                        backdropFilter: 'blur(10px)',
-                                        position: 'relative',
-                                        ":hover": {
-                                            backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.05),
-                                            border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-                                            color: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-                                            '& span': {
-                                                backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.4),
-                                            },
-                                            '& svg': {
-                                                color: (theme: any) => alpha(theme.palette.primary.main, 0.4),
-                                            },
-                                            '& h6': {
-                                                color: (theme: any) => alpha(theme.palette.primary.main, 0.8),
-                                            },
-                                            '& p': {
-                                                color: (theme: any) => alpha(theme.palette.primary.main, 0.8),
-                                            },
-                                            "& .remove-btn": {
-                                                opacity: 1,
-                                                color: 'primary.main',
-                                            },
-                                        },
-                                        ...((_subaccount.key === exchangeSelectedAccount || authAccounts.indexOf(_subaccount.key) !== -1) && {
-                                            backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.08),
-                                            border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-                                            color: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.8)}`,
-                                            "& .remove-btn": {
-                                                opacity: 1,
-                                            },
-                                        }),
-                                    }}
-                                        onClick={() => {
-                                            setExchangeSelectedAccount(_subaccount.key);
-                                        }}
-                                    >
-                                        <Box component="span" sx={{
-                                            position: 'absolute',
-                                            left: '6px',
-                                            top: '6px',
-                                            width: '14px',
-                                            height: '14px',
-                                            borderRadius: '50%',
-                                            transition: 'all 0.3s',
-                                            backgroundColor: 'transparent',
-                                            ...(_subaccount.key === exchangeSelectedAccount && {
-                                                backgroundColor: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                            }),
-                                        }} />
-                                        <Iconify icon={_subaccount.icon} sx={{
-                                            width: '36px',
-                                            height: '36px',
-                                            transition: 'all 0.3s',
-                                            color: (theme: any) => alpha(theme.palette.text.primary, 0.5),
-                                            ...(_subaccount.key === exchangeSelectedAccount && {
-                                                color: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                            }),
-                                        }} />
-                                        <Typography variant='subtitle2' sx={{
-                                            transition: 'all 0.3s',
-                                            fontWeight: 'bold',
-                                            ...(_subaccount.key === exchangeSelectedAccount && {
-                                                color: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                            }),
-                                        }}>{_subaccount.label}</Typography>
-                                        <Typography variant='body2' sx={{
-                                            transition: 'all 0.3s',
-                                            fontSize: '12px',
-                                            ...(_subaccount.key === exchangeSelectedAccount && {
-                                                color: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                            }),
-                                        }}>{_subaccount.link}</Typography>
-
-                                        <Iconify icon="ep:select" className="remove-btn" sx={{
-                                            position: 'absolute',
-                                            right: '6px',
-                                            top: '6px',
-                                            transition: 'all 0.3s',
-                                            color: 'primary.main',
-                                            opacity: 0,
-                                        }} />
-                                    </Box>
+                                    allServiceAccounts.filter((_service) => _service.is_exchange === true).map((_subaccount) => <SubaccountCardItem
+                                        key={`exchange-${_subaccount.id}`}
+                                        data={_subaccount}
+                                        isSelected={_subaccount.id === exchangeSelectedAccount}
+                                        handleSelect={(key) => setExchangeSelectedAccount(key)}
+                                        handleRemove={() => console.log("Remove")}
+                                    />
                                     )
                                 }
                             </Box>
@@ -506,107 +300,20 @@ export default function AccountSubaccounts() {
                                 maxHeight: '300px',
                             }}>
                                 {
-                                    platformsData.map((_subaccount) => <Box key={`jouryney-${_subaccount.key}`} sx={{
-                                        borderRadius: 1,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-around',
-                                        gap: 1,
-                                        border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.1)}`,
-                                        width: '190px',
-                                        p: 1.5,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s',
-                                        backdropFilter: 'blur(10px)',
-                                        position: 'relative',
-                                        ":hover": {
-                                            backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.05),
-                                            border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-                                            color: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-                                            '& span': {
-                                                backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.4),
-                                            },
-                                            '& svg': {
-                                                color: (theme: any) => alpha(theme.palette.primary.main, 0.4),
-                                            },
-                                            '& h6': {
-                                                color: (theme: any) => alpha(theme.palette.primary.main, 0.8),
-                                            },
-                                            '& p': {
-                                                color: (theme: any) => alpha(theme.palette.primary.main, 0.8),
-                                            },
-                                            "& .remove-btn": {
-                                                opacity: 1,
-                                                color: 'primary.main',
-                                            },
-                                        },
-                                        ...((_subaccount.key === platformSelectedAccount || authAccounts.indexOf(_subaccount.key) !== -1) && {
-                                            backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.08),
-                                            border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
-                                            color: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.8)}`,
-                                            "& .remove-btn": {
-                                                opacity: 1,
-                                            },
-                                        }),
-                                    }}
-                                        onClick={() => {
-                                            setPlatformSelectedAccount(_subaccount.key);
-                                        }}
-                                    >
-                                        <Box component="span" sx={{
-                                            position: 'absolute',
-                                            left: '6px',
-                                            top: '6px',
-                                            width: '14px',
-                                            height: '14px',
-                                            borderRadius: '50%',
-                                            transition: 'all 0.3s',
-                                            backgroundColor: 'transparent',
-                                            ...(_subaccount.key === platformSelectedAccount && {
-                                                backgroundColor: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                            }),
-                                        }} />
-                                        <Iconify icon={_subaccount.icon} sx={{
-                                            width: '36px',
-                                            height: '36px',
-                                            transition: 'all 0.3s',
-                                            color: (theme: any) => alpha(theme.palette.text.primary, 0.5),
-                                            ...(_subaccount.key === platformSelectedAccount && {
-                                                color: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                            }),
-                                        }} />
-                                        <Typography variant='subtitle2' sx={{
-                                            transition: 'all 0.3s',
-                                            fontWeight: 'bold',
-                                            ...(_subaccount.key === platformSelectedAccount && {
-                                                color: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                            }),
-                                        }}>{_subaccount.label}</Typography>
-                                        <Typography variant='body2' sx={{
-                                            transition: 'all 0.3s',
-                                            fontSize: '12px',
-                                            ...(_subaccount.key === platformSelectedAccount && {
-                                                color: (theme: any) => `${alpha(theme.palette.primary.main, 0.8)}!important`,
-                                            }),
-                                        }}>{_subaccount.link}</Typography>
-
-                                        <Iconify icon="ep:select" className="remove-btn" sx={{
-                                            position: 'absolute',
-                                            right: '6px',
-                                            top: '6px',
-                                            transition: 'all 0.3s',
-                                            color: 'primary.main',
-                                            opacity: 0,
-                                        }} />
-                                    </Box>
+                                    allServiceAccounts.filter((_service) => _service.is_exchange === false).map((_subaccount) => <SubaccountCardItem
+                                        key={`platform-${_subaccount.id}`}
+                                        data={_subaccount}
+                                        isSelected={_subaccount.id === platformSelectedAccount}
+                                        handleSelect={(key) => setPlatformSelectedAccount(key)}
+                                        handleRemove={() => console.log("Remove")}
+                                    />
                                     )
                                 }
                             </Box>
                     }
 
                     <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 2 }}>
-                        <Button variant="contained" color="primary" onClick={() => autoOptionAddDialog.onFalse()}>Add</Button>
+                        <Button variant="contained" color="primary" onClick={() => handleAddSubAccount()}>Add</Button>
                         <Button variant="outlined" color="primary" onClick={() => autoOptionAddDialog.onFalse()}>Cancel</Button>
                     </Stack>
                 </Box>
@@ -614,102 +321,3 @@ export default function AccountSubaccounts() {
         </Box>
     );
 }
-
-const subaccountsData = [
-    {
-        key: 'apple',
-        icon: 'material-symbols:public',
-        label: 'Apple',
-        link: 'apple.com',
-    },
-    {
-        key: 'binance',
-        icon: 'fluent:inprivate-account-28-regular',
-        label: 'Binance',
-        link: 'binance.com',
-    },
-    {
-        key: 'mexc',
-        icon: 'carbon:friendship',
-        label: 'Mexc',
-        link: 'mexc.com',
-    },
-    {
-        key: 'slack',
-        icon: 'carbon:friendship',
-        label: 'Slack',
-        link: 'slack.com',
-    },
-    {
-        key: 'github',
-        icon: 'carbon:friendship',
-        label: 'Github',
-        link: 'github.com',
-    },
-    {
-        key: 'okx',
-        icon: 'carbon:friendship',
-        label: 'Okx',
-        link: 'okx.com',
-    },
-    {
-        key: 'gitlab',
-        icon: 'carbon:friendship',
-        label: 'Gitlab',
-        link: 'gitlab.com',
-    },
-    {
-        key: 'telegram',
-        icon: 'carbon:friendship',
-        label: 'Telegram',
-        link: 'telegram.com',
-    },
-];
-
-const exchangesData = [
-    {
-        key: 'binance',
-        icon: 'fluent:inprivate-account-28-regular',
-        label: 'Binance',
-        link: 'binance.com',
-    },
-    {
-        key: 'mexc',
-        icon: 'carbon:friendship',
-        label: 'Mexc',
-        link: 'mexc.com',
-    },
-    {
-        key: 'okx',
-        icon: 'carbon:friendship',
-        label: 'Okx',
-        link: 'okx.com',
-    },
-];
-
-const platformsData = [
-    {
-        key: 'slack',
-        icon: 'carbon:friendship',
-        label: 'Slack',
-        link: 'slack.com',
-    },
-    {
-        key: 'github',
-        icon: 'carbon:friendship',
-        label: 'Github',
-        link: 'github.com',
-    },
-    {
-        key: 'gitlab',
-        icon: 'carbon:friendship',
-        label: 'Gitlab',
-        link: 'gitlab.com',
-    },
-    {
-        key: 'telegram',
-        icon: 'carbon:friendship',
-        label: 'Telegram',
-        link: 'telegram.com',
-    },
-];
