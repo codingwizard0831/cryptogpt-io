@@ -6,14 +6,16 @@ import Image from 'src/components/image/image';
 
 interface SubaccountCardItemProps extends BoxProps {
     data: any;
-    isSelected: boolean;
+    isSelected?: boolean;
+    isActive?: boolean;
     handleSelect: (data: any) => void;
     handleRemove: (data: any) => void;
 }
 
 export default function SubaccountCardItem({
     data,
-    isSelected,
+    isSelected = false,
+    isActive = false,
     handleSelect,
     handleRemove,
     sx,
@@ -31,7 +33,6 @@ export default function SubaccountCardItem({
         p: 1.5,
         cursor: 'pointer',
         transition: 'all 0.3s',
-        backdropFilter: 'blur(10px)',
         position: 'relative',
         ":hover": {
             backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.05),
@@ -54,8 +55,16 @@ export default function SubaccountCardItem({
                 color: 'primary.main',
             },
         },
+        ...(isActive && {
+            backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.05),
+            border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
+            color: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.8)}`,
+            "& .remove-btn": {
+                opacity: 1,
+            },
+        }),
         ...(isSelected && {
-            backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.08),
+            backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.05),
             border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.2)}`,
             color: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.8)}`,
             "& .remove-btn": {
@@ -87,7 +96,7 @@ export default function SubaccountCardItem({
             height: '36px',
             transition: 'all 0.3s',
             opacity: 0.5,
-            ...(isSelected && {
+            ...((isSelected || isActive) && {
                 opacity: 1,
             }),
         }} />
