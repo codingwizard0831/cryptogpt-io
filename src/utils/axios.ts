@@ -107,6 +107,10 @@ export const endpoints = {
     updateAvatar: '/api/profile/image',
     exchange: '/api/exchanges',
     exchange_keys: '/api/exchanges/key',
-  }
+  },
+  exchange: {
+    index: '/api/exchanges',
+    key: '/api/exchanges/key',
+  },
 };
 
