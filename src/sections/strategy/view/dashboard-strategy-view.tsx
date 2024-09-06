@@ -1,14 +1,17 @@
 'use client';
 
 
-import Slider from "react-slick";
 
-import { Box, Card } from '@mui/material';
+import { Box, Card, Link, alpha, Stack, Button, Typography } from '@mui/material';
+
+import { paths } from "src/routes/paths";
+import { RouterLink } from "src/routes/components";
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
 
+import Iconify from 'src/components/iconify';
 import Carousel, { useCarousel } from 'src/components/carousel';
 
 import DashboardStrategyCard from '../dashboard-strategy-card';
@@ -42,7 +45,6 @@ export default function DashboardStrategyView() {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
         gap: 2,
         pb: 2,
       }}
@@ -57,41 +59,165 @@ export default function DashboardStrategyView() {
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          gap: 1,
+          gap: 2,
         }}
       >
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}>
+          <Link href={paths.dashboard.strategy.create} component={RouterLink}>
+            <Button variant="contained" size='small' color="primary">New Strategy</Button>
+          </Link>
+        </Box>
 
-        <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
-          {
-            [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => <Box key={`key-${index}`} sx={{
-              px: 0.5,
-              width: '300px',
+        <Box>
+          <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
+            {
+              [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => <Box key={`key-${index}`} sx={{
+                px: 0.5,
+                width: '300px',
+              }}>
+                <DashboardStrategyCard />
+              </Box>)
+            }
+          </Carousel>
+        </Box>
+
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+        }}>
+          <Typography variant="h6">TOP Strategies</Typography>
+
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            cursor: 'pointer',
+          }}>
+            <Box sx={{
+              borderRadius: 1,
+              p: 1.5,
+              backgroundColor: theme => alpha(theme.palette.primary.main, 0.08),
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              position: 'relative',
             }}>
-              <DashboardStrategyCard />
-            </Box>)
-          }
-        </Carousel>
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}>
+                <Typography variant="subtitle1" sx={{
+                  color: 'primary.main',
+                }}>Stratege 1</Typography>
+                <Typography variant="body1" sx={{
+                  color: 'success.main',
+                }}>+90%</Typography>
+              </Box>
+              <Typography variant="body2" sx={{
+                color: 'text.primary',
+              }}>Success Rate: 78%</Typography>
+              <Typography variant="body1" sx={{
+                color: 'text.primary',
+              }}>Assets: BTC/USDT</Typography>
 
-        <Slider {...settings}>
-          <div style={{ width: 100 }}>
-            <p>100</p>
-          </div>
-          <div style={{ width: 200 }}>
-            <p>200</p>
-          </div>
-          <div style={{ width: 75 }}>
-            <p>75</p>
-          </div>
-          <div style={{ width: 300 }}>
-            <p>300</p>
-          </div>
-          <div style={{ width: 225 }}>
-            <p>225</p>
-          </div>
-          <div style={{ width: 175 }}>
-            <p>175</p>
-          </div>
-        </Slider>
+
+              <Box
+                sx={{
+                  width: '240px',
+                  p: 1,
+                  borderRadius: 1,
+                  backgroundColor: (theme) => alpha(theme.palette.background.default, 0.8),
+                  border: (theme) => `1px solid ${theme.palette.primary.main}`,
+                  transition: 'all 0.3s',
+                  position: 'absolute',
+                  right: '16px',
+                  bottom: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1,
+                }}
+              >
+                <Stack direction="row" alignItems="center">
+                  <Iconify
+                    icon="hugeicons:chart-average"
+                    sx={{
+                      color: (theme) => theme.palette.primary.main,
+                      mr: 1,
+                    }}
+                  />
+                  <Typography variant="caption" color="text.secondary">
+                    Avg.Price:
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'block',
+                      flexGrow: 1,
+                      textAlign: 'right',
+                    }}
+                  >
+                    ≈ $0
+                  </Typography>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <Iconify
+                    icon="mdi:bitcoin"
+                    sx={{
+                      color: (theme) => theme.palette.primary.main,
+                      mr: 1,
+                    }}
+                  />
+                  <Typography variant="caption" color="text.secondary">
+                    Sum BTC:
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    color="success"
+                    sx={{
+                      display: 'block',
+                      flexGrow: 1,
+                      textAlign: 'right',
+                    }}
+                  >
+                    0.0
+                  </Typography>
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <Iconify
+                    icon="token:usdt"
+                    sx={{
+                      color: (theme) => theme.palette.primary.main,
+                      mr: 1,
+                    }}
+                  />
+                  <Typography variant="caption" color="text.secondary">
+                    Sum USDT:
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    color="success"
+                    sx={{
+                      display: 'block',
+                      flexGrow: 1,
+                      textAlign: 'right',
+                    }}
+                  >
+                    0
+                  </Typography>
+                </Stack>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+
+        <Typography variant="h6">My Strategies</Typography>
       </Card>
     </Box>
   );
