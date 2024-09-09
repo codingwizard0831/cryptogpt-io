@@ -2,7 +2,7 @@
 
 
 
-import { Box, Card, Link, Grid, alpha, Stack, Button, Typography } from '@mui/material';
+import { Box, Card, Link, Grid, alpha, Stack, Button, TextField, Typography } from '@mui/material';
 
 import { paths } from "src/routes/paths";
 import { RouterLink } from "src/routes/components";
@@ -67,15 +67,57 @@ export default function DashboardStrategyView() {
       >
         <Box sx={{
           display: 'flex',
-          justifyContent: 'flex-end',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          gap: 1,
         }}>
+          <Box sx={{
+            width: '56px',
+            height: '56px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 1,
+            backgroundColor: theme => alpha(theme.palette.primary.main, 0.08),
+            border: theme => `1px solid ${alpha(theme.palette.primary.main, 0.6)}`,
+          }}>
+            <Iconify icon="et:strategy" sx={{
+              width: '36px',
+              height: '36px',
+              color: 'primary.main',
+            }} />
+          </Box>
+          <TextField multiline sx={{ flex: 1 }} size="small" />
+
           <Link href={paths.dashboard.strategy.create} component={RouterLink}>
-            <Button variant="contained" size='small' color="primary">New Strategy</Button>
+            <Button variant="contained" size='small' color="primary">New Ai Strategy</Button>
           </Link>
+          <Button variant="contained" size='small' color="primary">Upgrade</Button>
         </Box>
 
         <Box sx={{
         }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>Risk Level</Typography>
+
+          <Box sx={{
+            display: 'flex',
+            borderRadius: '20px',
+            backgroundColor: theme => alpha(theme.palette.primary.main, 0.08),
+            p: 0.5,
+          }}>
+            <Box sx={{
+              width: '50%',
+              backgroundImage: theme => `linear-gradient(to right, ${theme.palette.success.main}, ${theme.palette.warning.main})`,
+              borderRadius: '20px',
+              p: 0.75,
+            }} />
+          </Box>
+        </Box>
+
+        <Box sx={{
+        }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>Market Sentiment</Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} lg={3}>
               <Box sx={{
