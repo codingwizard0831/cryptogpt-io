@@ -24,15 +24,18 @@ export class WebSocketClient {
 
   _priceData: OrderBookUpdateResponse | null = null;
 
-  _onConnectedCallback: (() => void) | null = null;
+  _pendingRequests: Array<() => void> = [];
+
+  _onMessageCallback: ((data: OrderBookUpdateResponse) => void) | null = null;
 
   constructor() {
-    // Bind functions
     this._connect = this._connect.bind(this);
+    this.requestOrderBookData = this.requestOrderBookData.bind(this);
+    this._onMessage = this._onMessage.bind(this);
   }
 
   static _createOrderBookRequest(pair: string, exchange: string): OrderBookRequest | null {
-    if (pair == null || exchange == null) {
+    if (!pair || !exchange) {
       console.error('[WS] Could not create order book request: invalid request body');
       return null;
     }
@@ -44,75 +47,84 @@ export class WebSocketClient {
   }
 
   _connect() {
-    if (!this._connected) {
-      const socket = new WebSocket(wsUrl);
+    if (this._connected || this._socket) return; // Prevent duplicate connections
 
-      socket.onopen = () => {
-        this._socket = socket;
-        this._connected = true;
+    this._socket = new WebSocket(wsUrl);
 
-        if (this._onConnectedCallback) {
-          this._onConnectedCallback();
-        }
+    this._socket.onopen = () => {
+      console.log('[WS] Connected');
+      this._connected = true;
+
+      // Process pending requests
+      this._pendingRequests.forEach((callback) => callback());
+      this._pendingRequests = [];
+    };
+
+    this._socket.onmessage = this._onMessage; // Use the bound onMessage handler
+
+    this._socket.onclose = () => {
+      console.warn('[WS] WebSocket closed. Attempting to reconnect...');
+      this._connected = false;
+      this._socket = null;
+      setTimeout(() => this._connect(), 1000); // Reconnect after delay
+    };
+
+    this._socket.onerror = (error) => {
+      console.error('[WS] WebSocket error:', error);
+      if (this._socket) {
+        this._socket.close();  // Close socket and attempt reconnect
+      }
+    };
+  }
+
+  _onMessage(event: MessageEvent) {
+    try {
+      const response = JSON.parse(event.data);
+
+      const orderBookUpdate: OrderBookUpdateResponse = {
+        eventTime: response.event_time,
+        bids: response.bids.map((entry: { price: string; quantity: string }) => ({
+          price: parseFloat(entry.price),
+          quantity: parseFloat(entry.quantity),
+        })),
+        asks: response.asks.map((entry: { price: string; quantity: string }) => ({
+          price: parseFloat(entry.price),
+          quantity: parseFloat(entry.quantity),
+        })),
       };
 
-      socket.onclose = () => {
-        setTimeout(() => this._connect(), 1000);
-        this._socket = null;
-        this._connected = false;
-      };
+      this._priceData = orderBookUpdate;
 
-      socket.onerror = (error) => {
-        socket.close();
-        this._socket = null;
-        this._connected = false;
-      };
-
-      socket.onmessage = ({ data }) => {
-        try {
-          const response = JSON.parse(data);
-
-          const orderBookUpdate: OrderBookUpdateResponse = {
-            eventTime: response.event_time,
-            bids: response.bids.map((entry: { price: string; quantity: string }) => ({
-              price: parseFloat(entry.price),
-              quantity: parseFloat(entry.quantity),
-            })),
-            asks: response.asks.map((entry: { price: string; quantity: string }) => ({
-              price: parseFloat(entry.price),
-              quantity: parseFloat(entry.quantity),
-            })),
-          };
-
-          this._priceData = orderBookUpdate;
-        } catch (ex) {
-          console.error('[WS] Failed to parse OrderBookUpdateResponse: ', ex);
-          this._priceData = null;
-        }
-      };
+      if (this._onMessageCallback) {
+        this._onMessageCallback(orderBookUpdate);
+      }
+    } catch (ex) {
+      console.error('[WS] Failed to parse order book data:', ex);
+      this._priceData = null;
     }
   }
 
-  disconnect() {
-    if (this._socket && this._connected) {
-      this._socket.close();
-      this._socket = null;
-      this._connected = false;
-    }
+  setOnMessageCallback(callback: (data: OrderBookUpdateResponse) => void) {
+    this._onMessageCallback = callback;
   }
 
   requestOrderBookData(pair: string, exchange: string) {
-    if (this._socket == null || !this._connected) {
-      console.error('[WS] Cannot request order book data, WebSocket is not open');
+    if (!this._socket || !this._connected) {
+      console.error('[WS] Cannot request order book data, WebSocket is not open yet. Queueing request.');
+
+      this._pendingRequests.push(() => this.requestOrderBookData(pair, exchange));
       return;
     }
 
     const request = WebSocketClient._createOrderBookRequest(pair, exchange);
-    if (request == null) {
-      return;
-    }
+    if (request == null) return;
 
-    this._socket.send(JSON.stringify(request));
+    try {
+      this._socket.send(JSON.stringify(request));
+      console.log(`[WS] Requested order book for ${pair} on ${exchange}`);
+    } catch (error) {
+      console.error('[WS] Error sending request:', error);
+    }
   }
 
   get isConnected() {
@@ -121,10 +133,6 @@ export class WebSocketClient {
 
   get priceData() {
     return this._priceData;
-  }
-
-  setOnConnectedCallback(callback: () => void) {
-    this._onConnectedCallback = callback;
   }
 }
 
