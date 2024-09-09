@@ -71,38 +71,6 @@ export default function AccountPopover() {
       <Box sx={{
         position: 'relative',
       }}>
-        <UserStatusItem data={USER_STATUS.status[0]} sx={{
-          position: 'absolute',
-          width: '16px',
-          height: '16px',
-          top: '-4px',
-          left: '-4px',
-          zIndex: 1000,
-        }} />
-        <UserStatusItem data={USER_STATUS.status[1]} sx={{
-          position: 'absolute',
-          width: '16px',
-          height: '16px',
-          top: '-4px',
-          right: '-4px',
-          zIndex: 1000,
-        }} />
-        <UserStatusItem data={USER_STATUS.status[2]} sx={{
-          position: 'absolute',
-          width: '16px',
-          height: '16px',
-          bottom: '-4px',
-          left: '-4px',
-          zIndex: 1000,
-        }} />
-        <UserStatusItem data={USER_STATUS.status[3]} sx={{
-          position: 'absolute',
-          width: '16px',
-          height: '16px',
-          bottom: '-4px',
-          right: '-4px',
-          zIndex: 1000,
-        }} />
 
         <IconButton
           component={m.button}
@@ -131,6 +99,35 @@ export default function AccountPopover() {
             {user_profile?.user_name?.charAt(0).toUpperCase() || 'J'}
           </Avatar>
         </IconButton>
+
+        <Box sx={{
+          position: 'absolute',
+          bottom: -32,
+          right: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          p: 1,
+          backgroundColor: theme => alpha(theme.palette.background.default, 0.8),
+          borderRadius: 2,
+        }}>
+          <UserStatusItem data={USER_STATUS.status[0]} sx={{
+            width: '16px',
+            height: '16px',
+          }} />
+          <UserStatusItem data={USER_STATUS.status[1]} sx={{
+            width: '16px',
+            height: '16px',
+          }} />
+          <UserStatusItem data={USER_STATUS.status[2]} sx={{
+            width: '16px',
+            height: '16px',
+          }} />
+          <UserStatusItem data={USER_STATUS.status[3]} sx={{
+            width: '16px',
+            height: '16px',
+          }} />
+        </Box>
       </Box>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
@@ -189,7 +186,18 @@ export default function AccountPopover() {
             flexDirection: 'column',
             alignItems: 'center',
             py: 2,
+            position: 'relative',
           }}>
+            <IconButton sx={{
+              position: 'absolute',
+              top: 2,
+              right: 2,
+            }}>
+              <Iconify icon="eva:close-outline" sx={{
+                color: 'primary.main',
+              }} onClick={() => userStatusDialogVisible.onFalse()} />
+            </IconButton>
+
             <Box sx={{
               position: 'relative',
             }}>

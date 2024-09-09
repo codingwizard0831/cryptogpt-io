@@ -142,6 +142,8 @@ export default function AccountSubaccounts() {
             <Box sx={{
                 display: (serviceLoading || apiKeysLoading) ? 'none' : 'block',
             }}>
+                <Typography variant='h6' sx={{ mb: 2 }}>CRYPTO GPT OFFICIAL PARTNERS</Typography>
+
                 <Box sx={{
                     position: 'relative',
                     width: '100%',
