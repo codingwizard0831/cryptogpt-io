@@ -66,3 +66,8 @@ export const NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET =
   process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET || '';
 
 export const NEXT_PUBLIC_RUST_WEBSOCKET_URL = process.env.NEXT_PUBLIC_RUST_WEBSOCKET_URL || '';
+
+export const MEXC_API = {
+  accessKey: process.env.NEXT_PUBLIC_MEXC_ACCESS_KEY,
+  secretKey: process.env.NEXT_PUBLIC_MEXC_SECRET_KEY,
+};
