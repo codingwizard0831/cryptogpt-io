@@ -106,7 +106,7 @@ export default function AccountSubaccounts() {
             enqueueSnackbar("Please select the new exchange", { variant: 'error' });
             return;
         }
-        if (apiKeysData.find((_key) => _key.exchange_id !== exchangeSelectedAccount)) {
+        if (!apiKeysData.find((_key) => _key.exchange_id === exchangeSelectedAccount)) {
             enqueueSnackbar("Please add the first keys", { variant: 'success' });
             addKeysDialogVisible.onTrue();
         }
