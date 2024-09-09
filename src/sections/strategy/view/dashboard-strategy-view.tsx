@@ -86,7 +86,7 @@ export default function DashboardStrategyView() {
 
         <Box sx={{
         }}>
-          <Grid container spacing={2}>
+          <Grid container spacing={1}>
             <Grid item xs={12} sm={6} lg={3}>
               <Box sx={{
                 backgroundColor: theme => alpha(theme.palette.error.main, 0.08),

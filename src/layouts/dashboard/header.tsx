@@ -5,6 +5,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import Logo from 'src/components/logo/logo';
 import { useSettingsContext } from 'src/components/settings';
 
 import SettingsButton from '../common/settings-button';
@@ -29,7 +30,11 @@ export default function Header({ onOpenNav }: Props) {
 
   const renderContent = (
     <>
-      <SearchBarGoldie />
+      <Logo />
+
+      <SearchBarGoldie sx={{
+        mx: 2,
+      }} />
 
       <Stack
         flexGrow={1}

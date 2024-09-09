@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Stack, alpha, IconButton, Typography } from '@mui/material';
+import { Stack, alpha, IconButton, Typography, StackProps } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
@@ -8,7 +8,13 @@ import { useChatbot } from "src/store/chatbox/useChatbot";
 
 import Iconify from 'src/components/iconify';
 
-export default function SearchBarGoldie() {
+interface SearchBarGoldieProps extends StackProps {
+}
+
+export default function SearchBarGoldie({
+    sx,
+    ...other
+}: SearchBarGoldieProps) {
     const smUp = useResponsive("up", 'sm');
 
     const setIsShow = useChatbot((state) => state.setIsShow);
@@ -18,7 +24,9 @@ export default function SearchBarGoldie() {
             backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
             boxShadown: theme => `0px 0px 10px 3px ${alpha(theme.palette.background.opposite, 0.2)}`,
             cursor: 'pointer',
+            ...sx,
         }}
+        {...other}
         onClick={() => setIsShow(true)}
     >
         <IconButton>
