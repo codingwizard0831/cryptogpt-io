@@ -2,7 +2,7 @@
 
 
 
-import { Box, Card, Link, alpha, Stack, Button, Typography } from '@mui/material';
+import { Box, Card, Link, Grid, alpha, Stack, Button, Typography } from '@mui/material';
 
 import { paths } from "src/routes/paths";
 import { RouterLink } from "src/routes/components";
@@ -215,6 +215,64 @@ export default function DashboardStrategyView() {
               </Box>
             </Box>
           </Box>
+        </Box>
+
+        <Box sx={{
+        }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} lg={3}>
+              <Box sx={{
+                backgroundColor: theme => alpha(theme.palette.error.main, 0.08),
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+                <Typography variant="h6">BITCOIN</Typography>
+                <Typography variant="body2">Sentiment: Bullish</Typography>
+                <Typography variant="body2">Value: 0.75</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} lg={3}>
+              <Box sx={{
+                backgroundColor: theme => alpha(theme.palette.info.main, 0.08),
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+                <Typography variant="h6">BITCOIN</Typography>
+                <Typography variant="body2">Sentiment: Bullish</Typography>
+                <Typography variant="body2">Value: 0.75</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} lg={3}>
+              <Box sx={{
+                backgroundColor: theme => alpha(theme.palette.success.main, 0.08),
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+                <Typography variant="h6">BITCOIN</Typography>
+                <Typography variant="body2">Sentiment: Bullish</Typography>
+                <Typography variant="body2">Value: 0.75</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} lg={3}>
+              <Box sx={{
+                backgroundColor: theme => alpha(theme.palette.warning.main, 0.08),
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+                <Typography variant="h6">BITCOIN</Typography>
+                <Typography variant="body2">Sentiment: Bullish</Typography>
+                <Typography variant="body2">Value: 0.75</Typography>
+              </Box>
+            </Grid>
+          </Grid>
         </Box>
 
         <Typography variant="h6">My Strategies</Typography>
