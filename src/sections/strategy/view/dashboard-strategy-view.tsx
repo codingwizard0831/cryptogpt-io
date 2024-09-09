@@ -2,12 +2,16 @@
 
 
 
+import { useState, useEffect } from 'react';
+
 import { Box, Card, Link, Grid, alpha, Stack, Button, TextField, Typography } from '@mui/material';
 
 import { paths } from "src/routes/paths";
 import { RouterLink } from "src/routes/components";
 
 import { useResponsive } from 'src/hooks/use-responsive';
+
+import axios, { endpoints } from 'src/utils/axios';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
 
@@ -22,6 +26,8 @@ export default function DashboardStrategyView() {
   const isShowSummary = useStrategy((state) => state.isShowSummary);
   const setIsShowSummary = useStrategy((state) => state.setIsShowSummary);
   const smUp = useResponsive("up", 'sm');
+  const [text, setText] = useState('');
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   const carousel = useCarousel({
     infinite: true,
@@ -38,6 +44,33 @@ export default function DashboardStrategyView() {
     slidesToShow: 1,
     slidesToScroll: 1,
     variableWidth: true
+  };
+
+  useEffect(() => {
+    axios.get(endpoints.strategy.initial_prompt).then((response) => {
+      setText(response.data.prompt);
+    });
+  }, []);
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newText = e.target.value;
+    setText(newText);
+
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    const id = setTimeout(() => {
+      axios.post(endpoints.strategy.initial_prompt, {
+        prompt: newText
+      }).then((response) => {
+        console.log('response', response);
+      }).catch((error) => {
+        console.error('Error saving data:', error);
+      });
+    }, 2000);
+
+    setTimeoutId(id);
   };
 
   return (
@@ -88,7 +121,7 @@ export default function DashboardStrategyView() {
               color: 'primary.main',
             }} />
           </Box>
-          <TextField multiline sx={{ flex: 1 }} size="small" />
+          <TextField multiline size="small" value={text} onChange={handleTextChange} sx={{ flex: 1 }} />
 
           <Link href={paths.dashboard.strategy.create} component={RouterLink}>
             <Button variant="contained" size='small' color="primary">New Ai Strategy</Button>

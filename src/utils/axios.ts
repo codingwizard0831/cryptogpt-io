@@ -113,5 +113,9 @@ export const endpoints = {
     index: '/api/exchanges',
     key: '/api/exchanges/key',
   },
+  strategy: {
+    index: '/api/strategies',
+    initial_prompt: '/api/strategies/initial-prompt',
+  },
 };
 
