@@ -14,6 +14,7 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 import Iconify from 'src/components/iconify';
 import Carousel, { useCarousel } from 'src/components/carousel';
 
+import StrategyCrgptBuyCard from '../strategy-crgpt-buy-card';
 import DashboardStrategyCard from '../dashboard-strategy-card';
 
 
@@ -153,10 +154,18 @@ export default function DashboardStrategyView() {
               [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => <Box key={`key-${index}`} sx={{
                 px: 0.5,
                 width: '300px',
+                height: '100%',
               }}>
                 <DashboardStrategyCard />
               </Box>)
             }
+            <Box sx={{
+              px: 0.5,
+              width: '300px',
+              height: '100%',
+            }}>
+              <StrategyCrgptBuyCard />
+            </Box>
           </Carousel>
         </Box>
 
