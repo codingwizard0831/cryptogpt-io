@@ -60,6 +60,8 @@ export default function DashboardStrategyView() {
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
+          overflowX: 'hidden',
+          overflowY: 'auto',
         }}
       >
         <Box sx={{
@@ -71,22 +73,9 @@ export default function DashboardStrategyView() {
           </Link>
         </Box>
 
-        <Box>
-          <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
-            {
-              [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => <Box key={`key-${index}`} sx={{
-                px: 0.5,
-                width: '300px',
-              }}>
-                <DashboardStrategyCard />
-              </Box>)
-            }
-          </Carousel>
-        </Box>
-
         <Box sx={{
         }}>
-          <Grid container spacing={1}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={6} lg={3}>
               <Box sx={{
                 backgroundColor: theme => alpha(theme.palette.error.main, 0.08),
@@ -95,6 +84,7 @@ export default function DashboardStrategyView() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 borderRadius: 1,
+                boxShadow: theme => `0px 0px 10px 0px ${theme.palette.error.main}`,
               }}>
                 <Typography variant="h6" sx={{
                   color: 'primary.main',
@@ -111,6 +101,7 @@ export default function DashboardStrategyView() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 borderRadius: 1,
+                boxShadow: theme => `0px 0px 10px 0px ${theme.palette.info.main}`,
               }}>
                 <Typography variant="h6" sx={{
                   color: 'primary.main',
@@ -127,6 +118,7 @@ export default function DashboardStrategyView() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 borderRadius: 1,
+                boxShadow: theme => `0px 0px 10px 0px ${theme.palette.success.main}`,
               }}>
                 <Typography variant="h6" sx={{
                   color: 'primary.main',
@@ -143,6 +135,7 @@ export default function DashboardStrategyView() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 borderRadius: 1,
+                boxShadow: theme => `0px 0px 10px 0px ${theme.palette.warning.main}`,
               }}>
                 <Typography variant="h6" sx={{
                   color: 'primary.main',
@@ -152,6 +145,19 @@ export default function DashboardStrategyView() {
               </Box>
             </Grid>
           </Grid>
+        </Box>
+
+        <Box>
+          <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
+            {
+              [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => <Box key={`key-${index}`} sx={{
+                px: 0.5,
+                width: '300px',
+              }}>
+                <DashboardStrategyCard />
+              </Box>)
+            }
+          </Carousel>
         </Box>
 
         <Box sx={{
@@ -175,6 +181,14 @@ export default function DashboardStrategyView() {
               flexDirection: 'column',
               gap: 1,
               position: 'relative',
+              transition: 'all 0.3s',
+              '&:hover': {
+                backgroundColor: theme => alpha(theme.palette.primary.main, 0.1),
+                '& .summary-hover-panel': {
+                  visibility: 'visible',
+                  opacity: 1,
+                },
+              },
             }}>
               <Box sx={{
                 display: 'flex',
@@ -196,6 +210,7 @@ export default function DashboardStrategyView() {
 
 
               <Box
+                className="summary-hover-panel"
                 sx={{
                   width: '240px',
                   p: 1,
@@ -209,6 +224,8 @@ export default function DashboardStrategyView() {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 1,
+                  visibility: 'hidden',
+                  opacity: 0,
                 }}
               >
                 <Stack direction="row" alignItems="center">
