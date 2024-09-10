@@ -109,6 +109,10 @@ export const endpoints = {
     exchange: '/api/exchanges',
     exchange_keys: '/api/exchanges/key',
   },
+  history: {
+    crgptToken: '/api/history/crgpt-token',
+    confirmPaymentIntent: '/api/history/crgpt-token/confirm',
+  },
   exchange: {
     index: '/api/exchanges',
     key: '/api/exchanges/key',
