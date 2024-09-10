@@ -20,7 +20,7 @@ export const TokenSection: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const tokenParam = searchParams.get('token');
-        console.log('tokenParam', tokenParam);
+        // console.log('tokenParam', tokenParam);
         async function verifyToken() {
             if (tokenParam) {
                 try {
@@ -32,7 +32,7 @@ export const TokenSection: React.FC<{ children: React.ReactNode }> = ({ children
                     );
                     if (data?.success) {
                         const { access_token, user } = data.data;
-                        console.log(access_token, user)
+                        // console.log(access_token, user)
                         await setUser(user, access_token);
                         setVisible(true);
                     } else {

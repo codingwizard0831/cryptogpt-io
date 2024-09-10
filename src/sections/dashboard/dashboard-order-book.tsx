@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
 import { fNumberPrice } from 'src/utils/format-number';
+import { OrderBookEntry, webSocketClient } from 'src/utils/websocket';
 
 import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
@@ -24,49 +24,52 @@ import Iconify from 'src/components/iconify';
 const fixedOrderBookNumber = 11;
 
 export default function DashboardOrderBook() {
-  const [sellOrders, setSellOrders] = useState<OrderBookEntry[] | []>([]);
-  const [buyOrders, setBuyOrders] = useState<OrderBookEntry[] | []>([]);
+  const [sellOrders, setSellOrders] = useState<OrderBookEntry[]>([]);
+  const [buyOrders, setBuyOrders] = useState<OrderBookEntry[]>([]);
   const orderBookContainer = useRef<HTMLDivElement>(null);
-  const [currentSelectedSellOrder, setCurrentSelectedSellOrder] = useState(sellOrders.length - 1);
-  const [currentSelectedBuyOrder, setCurrentSelectedBuyOrder] = useState(0);
-  const [averagePrice, setAveragePrice] = useState(0);
-  const [sumBTC, setSumBTC] = useState(0);
-  const [sumUSDT, setSumUSDT] = useState(0);
-  const [topOfInfoModal, setTopOfInfoModal] = useState('calc(50% - 47px)');
+  const [currentSelectedSellOrder, setCurrentSelectedSellOrder] = useState<number>(0);
+  const [currentSelectedBuyOrder, setCurrentSelectedBuyOrder] = useState<number>(0);
+  const [averagePrice, setAveragePrice] = useState<number>(0);
+  const [sumBTC, setSumBTC] = useState<number>(0);
+  const [sumUSDT, setSumUSDT] = useState<number>(0);
+  const [topOfInfoModal, setTopOfInfoModal] = useState<string>('calc(50% - 47px)');
   const [buySellLayout, setBuySellLayout] = useState<'SELL' | 'BUY' | 'BOTH'>('BOTH');
 
-  const [buyPercentage, setBuyPercentage] = useState(50);
-  const [sellPercentage, setSellPercentage] = useState(50);
-  const [marketPrice, setMarketPrice] = useState(0);
-  const [marketPriceDirection, setMarketPriceDirection] = useState('down');
+  const [buyPercentage, setBuyPercentage] = useState<number>(50);
+  const [sellPercentage, setSellPercentage] = useState<number>(50);
+  const [marketPrice, setMarketPrice] = useState<number>(0);
+  const [marketPriceDirection, setMarketPriceDirection] = useState<'up' | 'down'>('down');
 
-  // Get real-time price updates from trading system
-  const [currentSelectedPair, setCurrentSelectedPair] = useState('BTC/USDT'); // TODO: Make pair dynamic
-  const [currentSelectedExchange, setCurrentSelectedExchange] = useState('Binance');
-
+  const [currentSelectedPair] = useState<string>('BTC/USDT'); // TODO: Make pair dynamic
+  const [currentSelectedExchange] = useState<string>('Binance');
 
   useEffect(() => {
-    if (!webSocketClient.isConnected) {
-      webSocketClient.setOnConnectedCallback(() => {
-        webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
-      });
-      webSocketClient._connect();
-    }
-  }, [currentSelectedPair, currentSelectedExchange]);
+    const delay = 2000;
+
+    const timeoutId = setTimeout(() => {
+      webSocketClient.requestOrderBookData(currentSelectedPair, currentSelectedExchange);
+    }, delay);
+
+    return () => clearTimeout(timeoutId);
+  }, [currentSelectedExchange, currentSelectedPair]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const { priceData } = webSocketClient;
-      if (priceData) {
-        setSellOrders(priceData.asks);
-        setBuyOrders(priceData.bids);
-      }
-    }, 500);
+    webSocketClient.setOnMessageCallback((data) => {
+      setSellOrders(data.asks);
+      setBuyOrders(data.bids);
 
-    return () => clearInterval(interval);
-  }, [currentSelectedPair, currentSelectedExchange]);
+      const bestBidPrice = data.bids[0]?.price || 0;
+      const bestAskPrice = data.asks[0]?.price || 0;
+      const currentMarketPrice = (bestBidPrice + bestAskPrice) / 2;
+
+      setMarketPriceDirection(currentMarketPrice > marketPrice ? 'up' : 'down');
+      setMarketPrice(currentMarketPrice);
+    });
+  }, [marketPrice]);
 
   useEffect(() => {
+    if (!sellOrders.length && !buyOrders.length) return;
+
     let totalSellPrice = 0;
     let totalBuyPrice = 0;
     let totalSellBTC = 0;
@@ -101,27 +104,9 @@ export default function DashboardOrderBook() {
     const sumA = totalSellBTC + totalBuyBTC;
     const sumB = totalSellUSDT + totalBuyUSDT;
 
-    // Calculate the buy-sell ratio
     const ratio = totalSellUSDT !== 0 ? totalBuyUSDT / totalSellUSDT : 1;
-
     const currentBuyPercentage = (ratio / (1 + ratio)) * 100;
-    const currentSellPercentage = 100 - buyPercentage;
-
-    if (buyOrders.length > 0 && sellOrders.length > 0) {
-      const bestBidPrice = buyOrders[0].price; // Highest bid (first buy order)
-      const bestAskPrice = sellOrders[0].price; // Lowest ask (first sell order)
-      const currentMarketPrice = (bestBidPrice + bestAskPrice) / 2;
-
-      if (currentMarketPrice > marketPrice) {
-        setMarketPriceDirection('up');
-      } else if (currentMarketPrice < marketPrice) {
-        setMarketPriceDirection('down');
-      }
-
-      setMarketPrice(currentMarketPrice);
-    }
-
-    // Determine the direction of the price movement
+    const currentSellPercentage = 100 - currentBuyPercentage;
 
     setBuyPercentage(currentBuyPercentage);
     setSellPercentage(currentSellPercentage);
@@ -129,15 +114,7 @@ export default function DashboardOrderBook() {
     setAveragePrice(avgPrice);
     setSumBTC(sumA);
     setSumUSDT(sumB);
-  }, [
-    currentSelectedSellOrder,
-    currentSelectedBuyOrder,
-    sellOrders,
-    buyOrders,
-    buyPercentage,
-    sellPercentage,
-    marketPrice,
-  ]);
+  }, [currentSelectedSellOrder, currentSelectedBuyOrder, sellOrders, buyOrders]);
 
   const handleMouseEnterSellOrder = (e: React.MouseEvent, orderIndex: number) => {
     setCurrentSelectedSellOrder(orderIndex);
