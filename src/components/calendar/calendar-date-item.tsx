@@ -37,6 +37,13 @@ export function CalendarDateItem({
                 flexDirection: 'column',
                 alignItems: 'center',
                 cursor: 'pointer',
+                position: 'relative',
+                '&:hover': {
+                    '& > div:last-child': {
+                        opacity: 1,
+                        visibility: 'visible',
+                    }
+                },
                 ...(disabled && {
                     cursor: 'not-allowed',
                 }),
@@ -110,6 +117,24 @@ export function CalendarDateItem({
                 }
             </>
                 }</Typography>
-        </Box >
+
+            <Box sx={{
+                position: 'absolute',
+                bottom: 32,
+                left: 32,
+                backgroundColor: (theme) => alpha(theme.palette.background.opposite, 0.1),
+                backdropFilter: 'blur(10px)',
+                border: (theme) => `1px solid ${theme.palette.primary.main}`,
+                transition: 'all 0.3s',
+                opacity: 0,
+                invisility: 'hidden',
+                width: '200px',
+            }}>
+                <Typography variant="caption" sx={{
+                    fontSize: '8px',
+                    color: 'text.disabled',
+                }}>Hoever Detail</Typography>
+            </Box>
+        </Box>
     );
 }
