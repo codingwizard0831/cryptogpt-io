@@ -106,6 +106,10 @@ export const endpoints = {
     models: '/api/profile/image/models',
     generateImage: '/api/profile/image/generate',
     updateAvatar: '/api/profile/image',
+  },
+  history: {
+    crgptToken: '/api/history/crgpt-token',
+    confirmPaymentIntent: '/api/history/crgpt-token/confirm',
   }
 };
 

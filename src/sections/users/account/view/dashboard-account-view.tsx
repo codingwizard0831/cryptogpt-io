@@ -15,12 +15,13 @@ import { useSettingsContext } from 'src/components/settings';
 
 import AccountCredit from '../account-credit';
 import AccountGeneral from '../account-general';
+import QRCodeGenerator from '../account-qr-code';
+import AccountBuyCRGPT from '../account-buy-crgpt';
 import AccountMembership from '../account-membership';
 import AccountSubaccounts from '../account-subaccount';
 import AccountSocialLinks from '../account-social-links';
 import AccountNotifications from '../account-notifications';
 import AccountChangePassword from '../account-change-password';
-import QRCodeGenerator from '../account-qr-code';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,11 @@ const TABS = [
         value: 'credit',
         label: 'Credit',
         icon: <Iconify icon="mdi:bank" width={24} />,
+    },
+    {
+        value: 'crgpt',
+        label: 'Buy CRGPT',
+        icon: <Iconify icon="arcticons:crypto-prices" width={24} />,
     },
     {
         value: 'notifications',
@@ -118,6 +124,8 @@ export default function DashboardProfileView() {
                 {currentTab === 'membership' && <AccountMembership />}
 
                 {currentTab === 'credit' && <AccountCredit />}
+
+                {currentTab === 'crgpt' && <AccountBuyCRGPT />}
 
                 {currentTab === 'notifications' && <AccountNotifications />}
 
