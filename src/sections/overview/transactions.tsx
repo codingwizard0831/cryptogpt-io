@@ -50,7 +50,7 @@ const Transactions: React.FC = () => {
     return (
         <Card sx={{ color: 'text.primary', p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom>
-                Current Balance: 50000 CRGPT
+                Current Balance: 0 CRGPT
             </Typography>
 
             <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 3 }}>
