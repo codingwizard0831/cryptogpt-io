@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
-import { Box, Card } from '@mui/material';
+import { Box, Card, alpha } from '@mui/material';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -108,7 +108,7 @@ export default function DashboardProfileView() {
         }}>
             <Card sx={{
                 width: '100%',
-                maxWidth: settings.themeStretch ? false : 'lg',
+                // maxWidth: settings.themeStretch ? false : 'lg',
                 p: smUp ? 2 : 1,
                 flex: 1,
                 borderRadius: 1,
@@ -120,13 +120,14 @@ export default function DashboardProfileView() {
                     sx={{
                         mb: 3,
                         height: 290,
+                        backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
                     }}
                 >
                     <ProfileCover
                         role={_userAbout.role}
                         name={user_profile?.user_name}
                         avatarUrl={user_profile?.avatar}
-                        coverUrl={_userAbout.coverUrl}
+                        coverUrl=""
                     />
 
                     <Tabs
@@ -144,17 +145,39 @@ export default function DashboardProfileView() {
                                     md: 'flex-end',
                                 },
                             },
+                            "& .MuiTabs-indicator": {
+                                backgroundColor: 'primary.main',
+                            },
                             '& .MuiTab-root': {
                                 fontSize: '14px',
+                                px: 1,
+                                py: 0.5,
+                                width: {
+                                    md: '96px',
+                                    sm: 'auto',
+                                },
+                                height: {
+                                    md: '86px',
+                                    sm: 'auto',
+                                },
                                 ".MuiTab-iconWrapper": {
                                     mr: 0.25,
-                                }
+                                    fontSize: '28px',
+                                },
+                                "&.Mui-selected": {
+                                    color: 'primary.main',
+                                    backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
+                                    borderRadius: '4px 4px 0px 0px',
+                                    "& .MuiTab-iconWrapper": {
+                                        color: 'primary.main',
+                                    },
+                                },
                             }
                         }}
                     >
                         {
                             TABS.map((tab) => (
-                                <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+                                <Tab key={tab.value} value={tab.value} icon={tab.icon} iconPosition={smUp ? "top" : 'start'} label={tab.label} />
                             ))
                         }
                     </Tabs>

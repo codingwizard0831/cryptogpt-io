@@ -106,10 +106,20 @@ export const endpoints = {
     models: '/api/profile/image/models',
     generateImage: '/api/profile/image/generate',
     updateAvatar: '/api/profile/image',
+    exchange: '/api/exchanges',
+    exchange_keys: '/api/exchanges/key',
   },
   history: {
     crgptToken: '/api/history/crgpt-token',
     confirmPaymentIntent: '/api/history/crgpt-token/confirm',
-  }
+  },
+  exchange: {
+    index: '/api/exchanges',
+    key: '/api/exchanges/key',
+  },
+  strategy: {
+    index: '/api/strategies',
+    initial_prompt: '/api/strategies/initial-prompt',
+  },
 };
 
