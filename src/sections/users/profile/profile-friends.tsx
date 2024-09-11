@@ -110,6 +110,7 @@ function FriendCard({ friend }: FriendCardProps) {
           position: 'relative',
           alignItems: 'center',
           flexDirection: 'column',
+          backdropFilter: 'none',
         }}
       >
         <Avatar alt={name} src={avatarUrl} sx={{ width: 64, height: 64, mb: 3 }} />

@@ -124,7 +124,7 @@ export default function DashboardTrackingSummary({
                                 <Typography variant="caption">Profit: 30</Typography>
                                 <Typography variant="caption">Loss: 30</Typography>
                             </Box>
-                            <Button variant="soft" color="primary" size="small">See transaction</Button>
+                            <Button variant="soft" color="primary" size="small">Detail View</Button>
 
                             <Box sx={{
                                 display: 'flex',

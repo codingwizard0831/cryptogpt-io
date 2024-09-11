@@ -80,6 +80,7 @@ function FollowerItem({ follower, selected, onSelected }: FollowerItemProps) {
         display: 'flex',
         alignItems: 'center',
         p: (theme) => theme.spacing(3, 2, 3, 3),
+        backdropFilter: 'none',
       }}
     >
       <Avatar alt={name} src={avatarUrl} sx={{ width: 48, height: 48, mr: 2 }} />

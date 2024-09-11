@@ -20,6 +20,7 @@ import ProfileCover from '../profile-cover';
 import ProfilePosts from '../profile-posts';
 import ProfileFriends from '../profile-friends';
 import ProfileFollowers from '../profile-followers';
+import ProfileStrategies from '../profile-strategies';
 
 // ---------------------------------------------------------------------
 
@@ -184,6 +185,8 @@ export default function DashboardProfileView() {
                 </Card>
 
                 {currentTab === 'profile' && <ProfileHome info={_userAbout} posts={_userFeeds} />}
+
+                {currentTab === 'strategies' && <ProfileStrategies />}
 
                 {currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />}
 
