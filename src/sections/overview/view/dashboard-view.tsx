@@ -4,6 +4,7 @@ import { Box, Grid } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import Transactions from '../transactions';
 import OverviewCredit from '../overview-credit';
 import OverviewMyAgents from '../overview-my-agents';
 import OverviewMyModels from '../overview-my-models';
@@ -11,6 +12,7 @@ import OverviewPlanUsage from '../overview-plan-usage';
 import OverviewMediaStorage from '../overview-media-storage';
 import OverviewFilesStats from '../overview-chart-files-stats';
 import OverviewInterfaceStats from '../overview-chart-interface-stats';
+import { setUserInfo, setAccessToken, setRefreshToken, getUserProfileInfo } from 'src/auth/context/jwt/utils';
 
 export default function DashboardView() {
     const smUp = useResponsive("up", "sm")
@@ -44,6 +46,9 @@ export default function DashboardView() {
                 </Grid>
             </Grid>
             <Grid container spacing={2}>
+                <Grid item xs={12} md={12}>
+                    <Transactions />
+                </Grid>
                 <Grid item xs={12} md={12}>
                     <OverviewFilesStats />
                 </Grid>
