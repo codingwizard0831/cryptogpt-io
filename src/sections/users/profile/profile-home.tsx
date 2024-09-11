@@ -220,27 +220,6 @@ Deadline-driven and committed to excellence, I strive to remain at the cutting e
   </tr>
 </table>
 
-
-## Language
-
-[![My Skills](https://skillicons.dev/icons?i=js,html,css,js,ts,python,php,c,cpp,cs,solidity)](https://skillicons.dev)
-
-## Frameworks & Experience
-[![My Skills](https://skillicons.dev/icons?i=react,next,solidjs,vue,nuxt,angular,svelte)](https://skillicons.dev)
-
-[![My Skills](https://skillicons.dev/icons?i=nodejs,nestjs,laravel,django,flask,fastapi)](https://skillicons.dev)
-
-## Library & Experience
-[![My Skills](https://skillicons.dev/icons?i=tailwind,mui,vuetify,gatsby,bootstrap,jquery,sass,less,threejs,d3,redux,regex)](https://skillicons.dev)
-[![My Skills](https://skillicons.dev/icons?i=supabase,prisma,sequelize,vite,jest,cypress,electron,tensorflow,opencv,graphql,firebase,ipfs)](https://skillicons.dev)
-
-
-## Database & Experience
-[![My Skills](https://skillicons.dev/icons?i=mysql,mongodb,sqlite,postgresql,redis,dynamodb)](https://skillicons.dev)
-
-## Dev Ops
-[![My Skills](https://skillicons.dev/icons?i=aws,gcp,vercel,netlify,nginx,docker,ubuntu,linux,heroku,npm,yarn,github,gitlab,bitbucket)](https://skillicons.dev)
-
 `;
 
 type Props = {
