@@ -12,7 +12,6 @@ import OverviewPlanUsage from '../overview-plan-usage';
 import OverviewMediaStorage from '../overview-media-storage';
 import OverviewFilesStats from '../overview-chart-files-stats';
 import OverviewInterfaceStats from '../overview-chart-interface-stats';
-import { setUserInfo, setAccessToken, setRefreshToken, getUserProfileInfo } from 'src/auth/context/jwt/utils';
 
 export default function DashboardView() {
     const smUp = useResponsive("up", "sm")
