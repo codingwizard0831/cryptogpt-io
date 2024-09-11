@@ -305,7 +305,6 @@ export function AuthProvider({ children }: Props) {
         await setAccessToken(token);
       }
       if (user) {
-        console.log('user', user);
         setUserInfo(user);
       }
 
