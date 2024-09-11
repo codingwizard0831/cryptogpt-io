@@ -104,6 +104,42 @@ export default function DashboardTrackingSummary({
                 ]}
                 dateClick={handleDateClick}
                 select={handleSelect}
+                dayCellContent={(arg) => {
+                    console.log('dayCellContent', arg);
+                    return (
+                        <Box sx={{
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-end',
+                            gap: 1,
+                        }}>
+                            <Typography variant="caption">{arg.dayNumberText}</Typography>
+                            <Typography variant="caption">{arg.dayNumber}</Typography>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                            }}>
+                                <Typography variant="caption">Profit: 30</Typography>
+                                <Typography variant="caption">Loss: 30</Typography>
+                            </Box>
+                            <Button variant="soft" color="primary" size="small">Detail View</Button>
+
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                flexDirection: 'column',
+                                gap: 1,
+                            }}>
+                                <Typography variant="caption">Strategy 1</Typography>
+                                <Typography variant="caption">Strategy 2</Typography>
+                                <Typography variant="caption">Strategy 3</Typography>
+                            </Box>
+                        </Box>
+                    )
+                }
+                }
             />
 
             <StyledDialog open={detailDialigVisible.value} onClose={detailDialigVisible.onFalse}>

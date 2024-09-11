@@ -17,7 +17,12 @@ import { IUserProfileCover } from 'src/types/user';
 
 // ----------------------------------------------------------------------
 
-export default function ProfileCover({ name = "John Deo", avatarUrl, role, coverUrl }: IUserProfileCover) {
+export default function ProfileCover({
+  name = 'John Deo',
+  avatarUrl,
+  role,
+  coverUrl,
+}: IUserProfileCover) {
   const theme = useTheme();
   const smUp = useResponsive('up', 'sm');
   const status = useUserProfile((state) => state.status);
@@ -33,34 +38,40 @@ export default function ProfileCover({ name = "John Deo", avatarUrl, role, cover
         color: 'common.white',
       }}
     >
-      <Box sx={{
-        position: 'absolute',
-        left: '-16px',
-        top: '-16px',
-      }}>
-        <Iconify icon="material-symbols:privacy-tip-outline" sx={{
-          width: '128px',
-          height: '128px',
-          color: alpha(theme.palette.primary.main, 0.8),
-        }} />
-      </Box>
+      {/* <Box
+        sx={{
+          position: 'absolute',
+          left: '-16px',
+          top: '-16px',
+        }}
+      >
+        <Iconify
+          icon="material-symbols:privacy-tip-outline"
+          sx={{
+            width: '128px',
+            height: '128px',
+            color: alpha(theme.palette.primary.main, 0.8),
+          }}
+        />
+      </Box> */}
 
       <Stack
         direction={{ xs: 'column', md: 'row' }}
         alignItems={{ xs: 'center', md: 'flex-end' }}
         spacing={2}
         sx={{
-          left: { md: 24 },
-          bottom: { md: 24 },
+          left: { md: 12 },
+          bottom: { md: 12 },
           zIndex: { md: 10 },
           pt: { xs: 6, md: 0 },
           position: { md: 'absolute' },
         }}
       >
-
-        <Box sx={{
-          position: 'relative',
-        }}>
+        <Box
+          sx={{
+            position: 'relative',
+          }}
+        >
           <Avatar
             alt={name}
             src={avatarUrl || ''}
@@ -77,36 +88,46 @@ export default function ProfileCover({ name = "John Deo", avatarUrl, role, cover
             {name?.charAt(0).toUpperCase()}
           </Avatar>
 
-          <UserStatus data={USER_STATUS.status[0]} sx={{
-            position: 'absolute',
-            top: '-8px',
-            left: '-8px',
-          }} />
-          <UserStatus data={USER_STATUS.status[1]} sx={{
-            position: 'absolute',
-            top: '-8px',
-            right: '-8px',
-          }} />
-          <UserStatus data={USER_STATUS.status[2]} sx={{
-            position: 'absolute',
-            bottom: '-8px',
-            left: '-8px',
-          }} />
-          <UserStatus data={USER_STATUS.status[3]} sx={{
-            position: 'absolute',
-            bottom: '-8px',
-            right: '-8px',
-          }} />
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.25,
+            }}
+          >
+            <UserStatus
+              data={USER_STATUS.status[0]}
+              sx={{
+              }}
+            />
+            <UserStatus
+              data={USER_STATUS.status[1]}
+              sx={{
+              }}
+            />
+            <UserStatus
+              data={USER_STATUS.status[2]}
+              sx={{
+              }}
+            />
+            <UserStatus
+              data={USER_STATUS.status[3]}
+              sx={{
+              }}
+            />
+          </Box>
         </Box>
 
-        <Box sx={{
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <Typography variant="caption">DevOps Engineer</Typography>
           <Typography variant="h4">John Deo</Typography>
         </Box>
       </Stack>
-    </Box >
+    </Box>
   );
 }
