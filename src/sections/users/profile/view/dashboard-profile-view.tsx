@@ -21,6 +21,7 @@ import ProfilePosts from '../profile-posts';
 import ProfileFriends from '../profile-friends';
 import ProfileFollowers from '../profile-followers';
 import ProfileStrategies from '../profile-strategies';
+import ProfileRewards from '../profile-rewards';
 
 // ---------------------------------------------------------------------
 
@@ -188,17 +189,20 @@ export default function DashboardProfileView() {
 
                 {currentTab === 'strategies' && <ProfileStrategies />}
 
-                {currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />}
+                {currentTab === 'followers' && <ProfileFollowers />}
+                {/* {currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />} */}
 
                 {currentTab === 'friends' && (
                     <ProfileFriends
-                        friends={_userFriends}
+                        // friends={_userFriends}
                         searchFriends={searchFriends}
                         onSearchFriends={handleSearchFriends}
                     />
                 )}
 
                 {currentTab === 'posts' && <ProfilePosts />}
+
+                {currentTab === 'rewards' && <ProfileRewards />}
             </Card>
         </Box >
     );
