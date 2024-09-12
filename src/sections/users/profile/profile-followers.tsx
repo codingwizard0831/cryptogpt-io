@@ -1,21 +1,22 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
+
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import Iconify from 'src/components/iconify';
 import SearchNotFound from 'src/components/search-not-found';
 
 import { IUserProfileFollower } from 'src/types/user';
-import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 

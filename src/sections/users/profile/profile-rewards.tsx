@@ -1,6 +1,4 @@
-import { Box, Card, BoxProps, Typography, alpha, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { useResponsive } from 'src/hooks/use-responsive';
+import { Box, Card, Table, BoxProps, TableRow, TableHead, TableBody, TableCell, Typography } from '@mui/material';
 
 interface ProfileRewardsProps extends BoxProps { }
 
@@ -11,9 +9,6 @@ interface RewardType {
 }
 
 export default function ProfileRewards({ sx, ...other }: ProfileRewardsProps) {
-    const smUp = useResponsive('up', 'sm');
-    const theme = useTheme();
-
 
     const rewards: RewardType[] = [
         { name: 'Strategy Perfomance', amount: 1000 },

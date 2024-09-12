@@ -4,12 +4,9 @@ import Avatar from '@mui/material/Avatar';
 import { Typography } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 
-import { useResponsive } from 'src/hooks/use-responsive';
-
 import { bgGradient } from 'src/theme/css';
 import { useUserProfile } from 'src/store/user/userProfile';
 
-import Iconify from 'src/components/iconify/iconify';
 import UserStatus from 'src/components/user-status/user-status';
 import { USER_STATUS } from 'src/components/user-status/user-status-item';
 
@@ -24,7 +21,6 @@ export default function ProfileCover({
   coverUrl,
 }: IUserProfileCover) {
   const theme = useTheme();
-  const smUp = useResponsive('up', 'sm');
   const status = useUserProfile((state) => state.status);
 
   return (

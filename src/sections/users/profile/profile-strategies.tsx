@@ -1,19 +1,15 @@
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import { alpha, Box, CardProps, Card, Rating, Typography, useTheme, Button, TextField } from '@mui/material';
-import { Pie, Line, Area, Cell, XAxis, YAxis, Tooltip, PieChart, LineChart, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
-import Image from 'src/components/image/image';
-
-import Iconify from 'src/components/iconify';
-import StrategyListCard from 'src/sections/strategy/dashboard-strategy-list-card';
 import { useState, useEffect } from 'react';
+
+import Autocomplete from '@mui/material/Autocomplete';
+import { Box, Card, Rating, CardProps, TextField, Typography } from '@mui/material';
+
 import { useResponsive } from 'src/hooks/use-responsive';
 
-interface DataPoint {
-  date: string;
-  price: number;
-  change: number;
-  action?: 'Buy' | 'Sell';
-}
+import Iconify from 'src/components/iconify';
+import Image from 'src/components/image/image';
+
+import StrategyListCard from 'src/sections/strategy/dashboard-strategy-list-card';
+
 
 interface Strategy {
   value: string;
@@ -22,13 +18,11 @@ interface Strategy {
   description: string;
 }
 
-const filter = createFilterOptions<Strategy>();
 
 interface ProfileStrategiesProps extends CardProps { }
 
 export default function ProfileStrategies({ sx, ...other }: ProfileStrategiesProps) {
   const smUp = useResponsive('up', 'sm');
-  const theme = useTheme();
   const [strategySearchValue, setStrategySearchValue] = useState<Strategy | null>(null);
   const [strategySearchInputValue, setStrategySearchInputValue] = useState('');
   const [strategies, setStrategies] = useState<Strategy[]>([]);
@@ -205,17 +199,6 @@ export default function ProfileStrategies({ sx, ...other }: ProfileStrategiesPro
     </Box>
   );
 }
-
-const data: DataPoint[] = [
-  { date: '2023-01', price: 16500, change: 0 },
-  { date: '2023-02', price: 21000, change: 0 },
-  { date: '2023-03', price: 18500, change: -0.1, action: 'Sell' },
-  { date: '2023-04', price: 15500, change: 0.1, action: 'Buy' },
-  { date: '2023-05', price: 17500, change: 0.1 },
-  { date: '2023-06', price: 11000, change: -0.1, action: 'Sell' },
-  { date: '2023-07', price: 19500, change: 0.0 },
-  { date: '2023-08', price: 16500, change: -0.1, action: 'Sell' },
-];
 
 const strategyDummyData: Strategy[] = [
   {
