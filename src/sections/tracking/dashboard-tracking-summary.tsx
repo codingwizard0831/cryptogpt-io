@@ -5,7 +5,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 
-import { Box, alpha, Button, useTheme, BoxProps, Typography, IconButton } from "@mui/material";
+import { Box, alpha, Button, Select, useTheme, BoxProps, MenuItem, Checkbox, TextField, Typography, IconButton, FormControlLabel } from "@mui/material";
 
 import { useBoolean } from 'src/hooks/use-boolean'
 
@@ -22,6 +22,7 @@ export default function DashboardTrackingSummary({
 }: DashboardTrackingSummaryProps) {
     const theme = useTheme();
     const detailDialigVisible = useBoolean(false);
+    const addEventDialogVisible = useBoolean(false);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const calendarRef = useRef<FullCalendar>(null);
 
@@ -37,15 +38,25 @@ export default function DashboardTrackingSummary({
     };
 
     const handleAddEvent = () => {
+        addEventDialogVisible.onTrue();
+    };
+
+    const handleAddEventSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const newEvent = {
+            title: formData.get('eventTitle'),
+            start: formData.get('dateTime'),
+            description: formData.get('eventDescription'),
+            // Add other fields as needed
+        };
+
         const calendarApi = calendarRef.current?.getApi();
         if (calendarApi) {
-            calendarApi.addEvent({
-                title: 'New Event',
-                start: new Date(),
-                end: new Date(),
-                allDay: true,
-            });
+            calendarApi.addEvent(newEvent as any);
         }
+
+        addEventDialogVisible.onFalse();
     };
 
     return (
@@ -222,6 +233,67 @@ export default function DashboardTrackingSummary({
                         }
                     </Box>
 
+                </Box>
+            </StyledDialog>
+
+            <StyledDialog open={addEventDialogVisible.value} onClose={addEventDialogVisible.onFalse}>
+                <Box component="form" onSubmit={handleAddEventSubmit} sx={{
+                    width: '400px',
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                }}>
+                    <Typography variant="h6">Add New Event</Typography>
+                    <TextField name="eventTitle" label="Event Title" fullWidth required />
+                    <TextField name="eventDescription" label="Event Description" multiline rows={3} fullWidth />
+                    <TextField name="dateTime" label="Date and Time" type="datetime-local" fullWidth required InputLabelProps={{ shrink: true }} />
+                    <Select name="recurrence" defaultValue="" label="Recurrence">
+                        <MenuItem value="">None</MenuItem>
+                        <MenuItem value="daily">Daily</MenuItem>
+                        <MenuItem value="weekly">Weekly</MenuItem>
+                        <MenuItem value="monthly">Monthly</MenuItem>
+                    </Select>
+                    <FormControlLabel
+                        control={<Checkbox name="emailNotification" />}
+                        label={
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Iconify icon="mdi:email" sx={{ color: 'primary.main', mr: 1 }} />
+                                Email Notification
+                            </Box>
+                        }
+                    />
+                    <FormControlLabel
+                        control={<Checkbox name="smsNotification" />}
+                        label={
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Iconify icon="mdi:message" sx={{ color: 'primary.main', mr: 1 }} />
+                                SMS Notification
+                            </Box>
+                        }
+                    />
+                    <FormControlLabel
+                        control={<Checkbox name="appNotification" />}
+                        label={
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Iconify icon="mdi:bell" sx={{ color: 'primary.main', mr: 1 }} />
+                                App Notification
+                            </Box>
+                        }
+                    />
+                    <Select name="strategy" defaultValue="" label="Strategy to Review">
+                        <MenuItem value="">None</MenuItem>
+                        <MenuItem value="strategy1">Strategy 1</MenuItem>
+                        <MenuItem value="strategy2">Strategy 2</MenuItem>
+                    </Select>
+                    <Select name="cryptoPair" defaultValue="" label="Crypto Pair/Asset">
+                        <MenuItem value="">None</MenuItem>
+                        <MenuItem value="BTC/USDT">BTC/USDT</MenuItem>
+                        <MenuItem value="ETH/USDT">ETH/USDT</MenuItem>
+                    </Select>
+                    <TextField name="priceThreshold" label="Price Threshold Alert" type="number" fullWidth />
+                    <TextField name="notes" label="Notes/Comments" multiline rows={3} fullWidth />
+                    <Button type="submit" variant="contained" color="primary">Add Event</Button>
                 </Box>
             </StyledDialog>
         </Box>
