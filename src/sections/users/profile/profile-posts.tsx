@@ -1,24 +1,24 @@
 'use client';
 
 import { useRef } from 'react';
-import { Avatar, AvatarGroup, avatarGroupClasses, BoxProps, CardHeader, Checkbox, FormControlLabel, IconButton, Link } from '@mui/material';
+
 import Fab from '@mui/material/Fab';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
-import Grid from '@mui/material/Unstable_Grid2';
+import { Box, Avatar, BoxProps, Checkbox, Typography, IconButton, AvatarGroup, FormControlLabel, avatarGroupClasses } from '@mui/material';
+
+import { useMockedUser } from 'src/hooks/use-mocked-user';
+
+import { fDate } from 'src/utils/format-time';
+import { fShortenNumber } from 'src/utils/format-number';
 
 import { _userFeeds } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 
-import { Box, Typography } from '@mui/material';
-import { IUserProfilePost } from 'src/types/user';
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-import { fShortenNumber } from 'src/utils/format-number';
-import { fDate } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -32,7 +32,10 @@ export default function ProfilePosts({ sx, ...other }: BoxProps) {
     };
 
     const renderPostInput = (
-        <Card sx={{ p: 3 }}>
+        <Card sx={{
+            backdropFilter: 'none',
+            p: 2,
+        }}>
             <InputBase
                 multiline
                 fullWidth
@@ -134,8 +137,8 @@ const PostListItem = ({
                     {user?.displayName?.charAt(0).toUpperCase()}
                 </Avatar>
                 <Box>
-                    <Typography variant="body2">{user?.displayName}</Typography>
-                    <Typography variant="body2">{fDate(post.createdAt)}</Typography>
+                    <Typography variant="body2" sx={{ color: 'text.primary' }}>{user?.displayName}</Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>{fDate(post.createdAt)}</Typography>
                 </Box>
             </Stack>
 

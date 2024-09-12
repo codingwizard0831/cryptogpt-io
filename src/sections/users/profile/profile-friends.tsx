@@ -1,17 +1,21 @@
+import { useState, useEffect, useCallback } from 'react';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import InputAdornment from '@mui/material/InputAdornment';
-import Divider from '@mui/material/Divider';
-import Button from '@mui/material/Button';
+
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import { _socials } from 'src/_mock';
 
@@ -20,9 +24,6 @@ import SearchNotFound from 'src/components/search-not-found';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 import { IUserProfileFriend } from 'src/types/user';
-import { useResponsive } from 'src/hooks/use-responsive';
-import { useState, useEffect, useCallback } from 'react';
-import { useTheme } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +34,6 @@ export default function ProfileFriends() {
   const [followed, setFollowed] = useState<string[]>([]);
 
   const smUp = useResponsive('up', 'sm');
-  const theme = useTheme();
   const [friendSearchValue, setFriendSearchValue] = useState<any>(null);
   const [friendSearchInputValue, setFriendSearchInputValue] = useState('');
 
@@ -184,119 +184,119 @@ export default function ProfileFriends() {
       )}
     </>
   );
+}
 
-  // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
-  type FriendCardProps = {
-    friend: IUserProfileFriend;
-    followed: boolean;
-    onFollow: () => void;
+type FriendCardProps = {
+  friend: IUserProfileFriend;
+  followed: boolean;
+  onFollow: () => void;
+};
+
+function FriendCard({ friend, followed, onFollow }: FriendCardProps) {
+  const { name, role, avatarUrl } = friend;
+
+  const popover = usePopover();
+
+  const handleDelete = () => {
+    popover.onClose();
+    console.info('DELETE', name);
   };
 
-  function FriendCard({ friend, followed, onFollow }: FriendCardProps) {
-    const { name, role, avatarUrl } = friend;
+  const handleEdit = () => {
+    popover.onClose();
+    console.info('EDIT', name);
+  };
 
-    const popover = usePopover();
+  return (
+    <>
+      <Card
+        sx={{
+          py: 5,
+          display: 'flex',
+          position: 'relative',
+          alignItems: 'center',
+          flexDirection: 'column',
+          backdropFilter: 'none',
+        }}
+      >
+        <Avatar alt={name} src={avatarUrl} sx={{ width: 64, height: 64, mb: 3 }} />
 
-    const handleDelete = () => {
-      popover.onClose();
-      console.info('DELETE', name);
-    };
+        <Link variant="subtitle1" color="text.primary">
+          {name}
+        </Link>
 
-    const handleEdit = () => {
-      popover.onClose();
-      console.info('EDIT', name);
-    };
+        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1, mt: 0.5 }}>
+          {role}
+        </Typography>
 
-    return (
-      <>
-        <Card
-          sx={{
-            py: 5,
-            display: 'flex',
-            position: 'relative',
-            alignItems: 'center',
-            flexDirection: 'column',
-            backdropFilter: 'none',
-          }}
+        <Button
+          size="small"
+          variant={followed ? 'text' : 'outlined'}
+          color={followed ? 'success' : 'inherit'}
+          onClick={onFollow}
+          sx={{ mt: 1 }}
         >
-          <Avatar alt={name} src={avatarUrl} sx={{ width: 64, height: 64, mb: 3 }} />
+          {followed ? 'Followed' : 'Follow'}
+        </Button>
 
-          <Link variant="subtitle1" color="text.primary">
-            {name}
-          </Link>
+        <Stack alignItems="center" justifyContent="center" direction="row" sx={{ mt: 2 }}>
+          {_socials.map((social) => (
+            <IconButton
+              key={social.name}
+              sx={{
+                color: social.color,
+                '&:hover': {
+                  bgcolor: alpha(social.color, 0.08),
+                },
+              }}
+            >
+              <Iconify icon={social.icon} />
+            </IconButton>
+          ))}
+        </Stack>
 
-          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1, mt: 0.5 }}>
-            {role}
-          </Typography>
-
-          <Button
-            size="small"
-            variant={followed ? 'text' : 'outlined'}
-            color={followed ? 'success' : 'inherit'}
-            onClick={onFollow}
-            sx={{ mt: 1 }}
-          >
-            {followed ? 'Followed' : 'Follow'}
-          </Button>
-
-          <Stack alignItems="center" justifyContent="center" direction="row" sx={{ mt: 2 }}>
-            {_socials.map((social) => (
-              <IconButton
-                key={social.name}
-                sx={{
-                  color: social.color,
-                  '&:hover': {
-                    bgcolor: alpha(social.color, 0.08),
-                  },
-                }}
-              >
-                <Iconify icon={social.icon} />
-              </IconButton>
-            ))}
-          </Stack>
-
-          <IconButton
-            color={popover.open ? 'inherit' : 'default'}
-            onClick={popover.onOpen}
-            sx={{ top: 8, right: 8, position: 'absolute' }}
-          >
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </Card>
-
-        <CustomPopover
-          open={popover.open}
-          onClose={popover.onClose}
-          arrow="right-top"
-          sx={{ width: 140 }}
+        <IconButton
+          color={popover.open ? 'inherit' : 'default'}
+          onClick={popover.onOpen}
+          sx={{ top: 8, right: 8, position: 'absolute' }}
         >
-          <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
+          <Iconify icon="eva:more-vertical-fill" />
+        </IconButton>
+      </Card>
 
-          <MenuItem onClick={handleEdit}>
-            <Iconify icon="solar:pen-bold" />
-            Edit
-          </MenuItem>
-        </CustomPopover>
-      </>
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 140 }}
+      >
+        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
+          <Iconify icon="solar:trash-bin-trash-bold" />
+          Delete
+        </MenuItem>
+
+        <MenuItem onClick={handleEdit}>
+          <Iconify icon="solar:pen-bold" />
+          Edit
+        </MenuItem>
+      </CustomPopover>
+    </>
+  );
+}
+
+// ----------------------------------------------------------------------
+
+function applyFilter({ inputData, query }: {
+  inputData: IUserProfileFriend[];
+  query: string
+}) {
+  if (query) {
+    return inputData.filter(
+      (friend) => friend.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
 
-  // ----------------------------------------------------------------------
-
-  function applyFilter({ inputData, query }: {
-    inputData: IUserProfileFriend[];
-    query: string
-  }) {
-    if (query) {
-      return inputData.filter(
-        (friend) => friend.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
-      );
-    }
-
-    return inputData;
-  }
+  return inputData;
 }
