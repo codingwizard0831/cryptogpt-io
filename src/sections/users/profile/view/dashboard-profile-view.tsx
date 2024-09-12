@@ -9,8 +9,8 @@ import Tabs, { tabsClasses } from '@mui/material/Tabs';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { _userAbout, _userFeeds } from 'src/_mock';
 import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
-import { _userAbout, _userFeeds, _userFriends, _userFollowers } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -19,9 +19,9 @@ import ProfileHome from '../profile-home';
 import ProfileCover from '../profile-cover';
 import ProfilePosts from '../profile-posts';
 import ProfileFriends from '../profile-friends';
+import ProfileRewards from '../profile-rewards';
 import ProfileFollowers from '../profile-followers';
 import ProfileStrategies from '../profile-strategies';
-import ProfileRewards from '../profile-rewards';
 
 // ---------------------------------------------------------------------
 
@@ -194,9 +194,9 @@ export default function DashboardProfileView() {
 
                 {currentTab === 'friends' && (
                     <ProfileFriends
-                        // friends={_userFriends}
-                        searchFriends={searchFriends}
-                        onSearchFriends={handleSearchFriends}
+                    // friends={_userFriends}
+                    // searchFriends={searchFriends}
+                    // onSearchFriends={handleSearchFriends}
                     />
                 )}
 
