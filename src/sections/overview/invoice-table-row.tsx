@@ -1,7 +1,6 @@
-import Button from '@mui/material/Button';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import Typography from '@mui/material/Typography';
+import LoadingButton from '@mui/lab/LoadingButton';
 import ListItemText from '@mui/material/ListItemText';
 
 import { fDate } from 'src/utils/format-time';
@@ -13,13 +12,21 @@ import Label from 'src/components/label';
 type Props = {
   row: any;
   index: number;
+  onApprove: (id: any) => void;
+  loading: boolean;
 };
 
 export default function InvoiceTableRow({
   row,
-  index
+  index,
+  onApprove,
+  loading = false
 }: Props) {
-  const { address, amount, created_at, status } = row;
+  const { id, address, amount, created_at, status } = row;
+
+  const handleApprove = () => {
+    onApprove(id);
+  };
 
   return (
     <TableRow hover>
@@ -60,13 +67,16 @@ export default function InvoiceTableRow({
         </Label>
       </TableCell>
       <TableCell>
-        <Button
+        <LoadingButton
+          loading={loading}
           variant="contained"
           color="primary"
           sx={{ bgcolor: (theme) => theme.palette.primary.main, color: 'text.primary' }}
+          onClick={handleApprove}
+          disabled={status !== "admin_waiting"}
         >
           Approve
-        </Button>
+        </LoadingButton>
       </TableCell>
     </TableRow>
   );
