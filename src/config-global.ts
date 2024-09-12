@@ -43,16 +43,15 @@ export const MAPBOX_API = process.env.NEXT_PUBLIC_MAPBOX_API;
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
 
-export const PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL;
-
 export const WEB3_WALLET_CONNECT_PROJECT_ID =
   process.env.NEXT_PUBLIC_WEB3_WALLET_CONNECT_PROJECT_ID;
 
-export const BINANCE_API = {
-  clientId: process.env.NEXT_PUBLIC_BINANCE_CLIENT_ID,
-  clientSecret: process.env.NEXT_PUBLIC_BINANCE_SECRET_KEY,
-  apiKey: process.env.NEXT_PUBLIC_BINANCE_TEST_API_KEY,
-  secretKey: process.env.NEXT_PUBLIC_BINANCE_TEST_SECRET_KEY,
+export const BINANCE_OAUTH_CREDENTIALS = {
+  clientId: process.env.NEXT_PUBLIC_BINANCE_CLIENT_ID || '',
+  clientSecret: process.env.NEXT_PUBLIC_BINANCE_SECRET_KEY || '',
+  loginUri: process.env.NEXT_PUBLIC_BINANCE_LOGIN_URI || '',
+  redirectUri: process.env.NEXT_PUBLIC_BINANCE_REDIRECT_URI || '',
+  accessTokenUri: process.env.NEXT_PUBLIC_BINANCE_ACCESS_TOKEN_URI || ''
 };
 
 export const TAAPI_API_KEY = process.env.NEXT_PUBLIC_TAAPI_API_KEY;
