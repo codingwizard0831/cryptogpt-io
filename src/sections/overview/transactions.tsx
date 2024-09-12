@@ -29,6 +29,7 @@ const Transactions: React.FC = () => {
     const table = useTable({ defaultOrderBy: 'No' });
 
     const [tableData, setTableData] = useState([]);
+    const [balance, setBalance] = useState(0);
     
     const { enqueueSnackbar } = useSnackbar();
 
@@ -44,13 +45,27 @@ const Transactions: React.FC = () => {
             }
         };
 
+        const fetchBalance = async () => {
+            try {
+                const response = await axios.post(endpoints.history.balance);
+                console.log('response', response.data?.balance)
+                if (response.data?.balance) {
+                    setBalance(response.data?.balance);
+                }
+            } catch (err) {
+                enqueueSnackbar(`Failed to fetch user CRGPT token history.`, { variant: 'error' });
+                console.error('Error fetching user profile:', err);
+            }
+        };
+
         fetchHistory();
+        fetchBalance();
     }, [enqueueSnackbar]);
 
     return (
         <Card sx={{ color: 'text.primary', p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom>
-                Current Balance: 0 CRGPT
+                Current Balance: {balance} CRGPT
             </Typography>
 
             <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 3 }}>

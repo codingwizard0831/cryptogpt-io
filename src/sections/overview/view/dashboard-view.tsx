@@ -4,6 +4,8 @@ import { Box, Grid } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
+
 import Transactions from '../transactions';
 import OverviewCredit from '../overview-credit';
 import OverviewMyAgents from '../overview-my-agents';
@@ -15,6 +17,8 @@ import OverviewInterfaceStats from '../overview-chart-interface-stats';
 
 export default function DashboardView() {
     const smUp = useResponsive("up", "sm")
+    const user_profile = getUserProfileInfo();
+    const is_admin = user_profile?.is_admin || false;
 
     return (
         <Box sx={{
@@ -45,9 +49,9 @@ export default function DashboardView() {
                 </Grid>
             </Grid>
             <Grid container spacing={2}>
-                <Grid item xs={12} md={12}>
+                {is_admin && <Grid item xs={12} md={12}>
                     <Transactions />
-                </Grid>
+                </Grid>}
                 <Grid item xs={12} md={12}>
                     <OverviewFilesStats />
                 </Grid>
