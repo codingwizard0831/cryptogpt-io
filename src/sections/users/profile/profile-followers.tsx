@@ -135,7 +135,10 @@ export default function ProfileFollowers() {
               }}
             />
           )}
-          sx={{ width: 280 }}
+          sx={{
+            width: '100%',
+            maxWidth: '500px',
+          }}
         />
       </Box>
 

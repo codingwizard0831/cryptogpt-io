@@ -118,6 +118,10 @@ export default function ProfileCover({
           sx={{
             display: 'flex',
             flexDirection: 'column',
+            alignItems: {
+              sm: 'center',
+              md: 'flex-end',
+            }
           }}
         >
           <Typography variant="caption">DevOps Engineer</Typography>
