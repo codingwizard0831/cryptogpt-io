@@ -1,22 +1,15 @@
-import { Box, BoxProps, Rating, Typography, useTheme } from '@mui/material';
-import Image from 'src/components/image/image';
 import {
-  Pie,
   Line,
-  Area,
-  Cell,
   XAxis,
   YAxis,
-  Tooltip,
-  PieChart,
   LineChart,
-  AreaChart,
-  CartesianGrid,
-  ReferenceLine,
   ResponsiveContainer,
 } from 'recharts';
 
+import { Box, Rating, BoxProps, useTheme, Typography } from '@mui/material';
+
 import Iconify from 'src/components/iconify';
+import Image from 'src/components/image/image';
 
 interface DataPoint {
   date: string;
@@ -25,9 +18,12 @@ interface DataPoint {
   action?: 'Buy' | 'Sell';
 }
 
-interface StrategyListCardProps extends BoxProps {}
+interface StrategyListCardProps extends BoxProps { }
 
-export default function StrategyListCard({}: StrategyListCardProps) {
+export default function StrategyListCard({
+  sx,
+  ...other
+}: StrategyListCardProps) {
   const theme = useTheme();
 
   return (
@@ -38,10 +34,12 @@ export default function StrategyListCard({}: StrategyListCardProps) {
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 1,
+        ...sx,
       }}
+      {...other}
     >
       <Image
-        src={'/images/goldie.png'}
+        src="/images/goldie.png"
         sx={{
           width: '32px',
           height: '32px',
@@ -54,9 +52,9 @@ export default function StrategyListCard({}: StrategyListCardProps) {
           flexDirection: 'column',
         }}
       >
-        <Typography variant="subtitle2">{'option.name'}</Typography>
+        <Typography variant="subtitle2">option.name</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {'option.description'}
+          option.description
         </Typography>
       </Box>
 
