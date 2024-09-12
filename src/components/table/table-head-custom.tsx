@@ -28,6 +28,7 @@ type Props = {
   headLabel: any[];
   rowCount?: number;
   numSelected?: number;
+  excludeSort?: string[];
   onSort?: (id: string) => void;
   onSelectAllRows?: (checked: boolean) => void;
   sx?: SxProps<Theme>;
@@ -41,6 +42,7 @@ export default function TableHeadCustom({
   numSelected = 0,
   onSort,
   onSelectAllRows,
+  excludeSort,
   sx,
 }: Props) {
   return (
@@ -65,7 +67,7 @@ export default function TableHeadCustom({
             sortDirection={orderBy === headCell.id ? order : false}
             sx={{ width: headCell.width, minWidth: headCell.minWidth }}
           >
-            {onSort ? (
+            {onSort && !excludeSort?.includes(headCell.id) ? (
               <TableSortLabel
                 hideSortIcon
                 active={orderBy === headCell.id}

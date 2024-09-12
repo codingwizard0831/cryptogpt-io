@@ -41,12 +41,12 @@ export default function DashboardView() {
                 <Grid item xs={12} md={6}>
                     <OverviewMyAgents />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                {/* <Grid item xs={12} md={6}>
                     <OverviewMyModels />
                 </Grid>
                 <Grid item xs={12}>
                     <OverviewCredit />
-                </Grid>
+                </Grid> */}
             </Grid>
             <Grid container spacing={2}>
                 {is_admin && <Grid item xs={12} md={12}>

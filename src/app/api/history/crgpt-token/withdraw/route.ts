@@ -99,9 +99,6 @@ export async function POST(req: Request) {
 
     const url = `https://api.mexc.com/api/v3/capital/withdraw?${queryString}&signature=${signature}`;
 
-    console.log('Request URL:', url);
-    console.log('Request Body:', finalParams);
-
     const response = await axios({
       method: 'post',
       url,
@@ -112,6 +109,16 @@ export async function POST(req: Request) {
       }
     });
 
+    if (response.data?.id) {
+      const { error: updateTransactionError }: any = await supabase.from("user_crgpt_token_history").update({ status: "paid" }).eq("id", transaction_id);
+
+      if (updateTransactionError)
+        return NextResponse.json(
+          { code: updateTransactionError.code, error: updateTransactionError.message },
+          { status: 500 }
+        );
+    }
+    
     return NextResponse.json(response.data, { status: 200 });
   } catch (error) {
     // console.error('Error:', error);

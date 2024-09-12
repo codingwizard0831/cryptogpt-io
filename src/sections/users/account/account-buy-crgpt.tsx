@@ -10,6 +10,9 @@ import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import TableContainer from '@mui/material/TableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
 
 import usePayStripeCardPayment from 'src/hooks/use-pay-stripe-card-payment';
 
@@ -24,6 +27,7 @@ import {
   useTable,
   emptyRows,
   TableNoData,
+  getComparator,
   TableEmptyRows,
   TableHeadCustom,
   TablePaginationCustom,
@@ -32,7 +36,7 @@ import {
 import InvoiceTableRow from './invoice-table-row';
 
 const TABLE_HEAD = [
-  { id: 'no', label: 'No' },
+  { id: 'no', label: 'No', align: 'center' },
   { id: 'amount', label: 'Amount' },
   { id: 'address', label: 'Address' },
   { id: 'date', label: 'Date' },
@@ -40,13 +44,14 @@ const TABLE_HEAD = [
 ];
 
 const UIComponents = () => {
-  const table = useTable({ defaultOrderBy: 'No' });
+  const table = useTable({ defaultOrderBy: 'date' });
 
   const [tableData, setTableData] = useState([]);
+  const [filteredTableData, setFilteredTableData] = useState([]);
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState("");
   const [currentPrice, setCurrentPrice] = useState(0.0728);
@@ -76,6 +81,19 @@ const UIComponents = () => {
       complete
     });
   }, [setCardElementState]);
+  
+  const fetchHistory = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(endpoints.history.crgptToken);
+      setTableData(response.data);
+    } catch (err) {
+      enqueueSnackbar(`Failed to fetch user CRGPT token history.`, { variant: 'error' });
+      console.error('Error fetching user profile:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [enqueueSnackbar]);
 
   const _OnContinue = useCallback(async () => {
     if (amount < 10) {
@@ -115,18 +133,17 @@ const UIComponents = () => {
           name: ''
         }
         );
-        // console.log('payResult', payResult)
         try {
           if (payResult && payResult.paymentIntent && payResult.paymentIntent.status === 'succeeded') {
             await axios.post(endpoints.history.confirmPaymentIntent,
               {
                 "payment_intent_id": payResult.paymentIntent.id,
-                "amount": amount,
+                "amount": (amount / currentPrice).toFixed(1),
                 "address": address
               }
             );
             enqueueSnackbar(`Your request has been successfully submitted to the administrator. Please wait for the administrator to approve it.`, { variant: 'success' });
-            setIsLoading(!isLoading);
+            setIsLoading(true);
             setAmount(0);
             setAddress("");
             setDepositState({
@@ -134,6 +151,7 @@ const UIComponents = () => {
               error: '',
               success: '',
             });
+            fetchHistory();
           }
         } catch (err) {
           console.error(err)
@@ -174,24 +192,30 @@ const UIComponents = () => {
         errorMessage: e.message
       });
     }
-  }, [amount, address, enqueueSnackbar, payStripeCardPayment, setIsLoading, isLoading]);
+  }, [amount, address, enqueueSnackbar, payStripeCardPayment, currentPrice, fetchHistory]);
 
   const isDepositButtonDisabled = !!cardElementState.errorMessage || !!cardPaymentState.errorMessage || !cardElementState.complete || !amount;
 
   useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const response = await axios.get(endpoints.history.crgptToken);
-        console.log('response', response.data)
-        setTableData(response.data);
-      } catch (err) {
-        enqueueSnackbar(`Failed to fetch user CRGPT token history.`, { variant: 'error' });
-        console.error('Error fetching user profile:', err);
-      }
-    };
-
     fetchHistory();
-  }, [isLoading, enqueueSnackbar]);
+  }, [fetchHistory]);
+
+  useEffect(() => {
+    if (tableData?.length) {
+      const comparator = getComparator(table.order, table.orderBy);
+      const stabilizedThis = tableData.map((el, index) => [el, index] as const);
+
+      stabilizedThis.sort((a, b) => {
+        const order = comparator(a[0], b[0]);
+        if (order !== 0) return order;
+        return a[1] - b[1];
+      });
+      const sortedData = stabilizedThis.map((el) => el[0]);
+      setFilteredTableData(sortedData);
+    } else {
+      setFilteredTableData([]);
+    }
+  }, [tableData, table.order, table.orderBy]);
 
   return (
     <Grid xs={12} md={12}>
@@ -272,28 +296,42 @@ const UIComponents = () => {
           <Table size="medium" sx={{ minWidth: 800 }}>
             <TableHeadCustom
               headLabel={TABLE_HEAD}
+              order={table.order}
+              orderBy={table.orderBy}
+              onSort={table.onSort}
+              excludeSort={['no']}
               sx={{ "th": { color: 'white !important' }, ".MuiTableCell-root.MuiTableCell-head:first-child": { textAlign: "center" } }}
             />
 
             <TableBody>
-              {tableData
-                .slice(
-                  table.page * table.rowsPerPage,
-                  table.page * table.rowsPerPage + table.rowsPerPage
-                )
-                .map((row, index) => (
-                  <InvoiceTableRow
-                    key={index}
-                    row={row}
-                    index={index}
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center">
+                    <CircularProgress />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <>
+                  {filteredTableData
+                    .slice(
+                      table.page * table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
+                    )
+                    .map((row, index) => (
+                      <InvoiceTableRow
+                        key={index}
+                        row={row}
+                        index={index}
+                      />
+                    ))}
+
+                  <TableEmptyRows
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, filteredTableData.length)}
                   />
-                ))}
 
-              <TableEmptyRows
-                emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-              />
-
-              <TableNoData notFound={!tableData.length} sx={{ ".MuiTypography-root": { color: 'white' } }} />
+                  <TableNoData notFound={!filteredTableData.length} sx={{ ".MuiTypography-root": { color: 'white' } }} />
+                </>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
