@@ -32,7 +32,10 @@ export default function ProfilePosts({ sx, ...other }: BoxProps) {
     };
 
     const renderPostInput = (
-        <Card sx={{ p: 3 }}>
+        <Card sx={{
+            backdropFilter: 'none',
+            p: 2,
+        }}>
             <InputBase
                 multiline
                 fullWidth
@@ -134,8 +137,8 @@ const PostListItem = ({
                     {user?.displayName?.charAt(0).toUpperCase()}
                 </Avatar>
                 <Box>
-                    <Typography variant="body2">{user?.displayName}</Typography>
-                    <Typography variant="body2">{fDate(post.createdAt)}</Typography>
+                    <Typography variant="body2" sx={{ color: 'text.primary' }}>{user?.displayName}</Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>{fDate(post.createdAt)}</Typography>
                 </Box>
             </Stack>
 
