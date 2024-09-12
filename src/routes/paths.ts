@@ -64,6 +64,10 @@ export const paths = {
     },
   },
 
+  user: {
+    profile: (id: string) => `${ROOTS.DASHBOARD}/user/${id}`,
+  },
+
   error: {
     somethingWrong: "/something-wrong",
   },
