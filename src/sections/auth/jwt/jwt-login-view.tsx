@@ -410,7 +410,7 @@ export default function JwtLoginView() {
           overflow: 'hidden',
         }}
       >
-        <LoadingButton
+        {/* <LoadingButton
           fullWidth
           variant="outlined"
           color="primary"
@@ -428,7 +428,7 @@ export default function JwtLoginView() {
           }}
         >
           Continue with Face Id
-        </LoadingButton>
+        </LoadingButton> */}
         <LoadingButton
           fullWidth
           variant="outlined"
