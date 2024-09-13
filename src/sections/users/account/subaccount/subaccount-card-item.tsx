@@ -28,6 +28,7 @@ export default function SubaccountCardItem({
         alignItems: 'center',
         justifyContent: 'space-around',
         gap: 1,
+        backgroundColor: (theme: any) => alpha(theme.palette.primary.main, 0.03),
         border: (theme: any) => `solid 1px ${alpha(theme.palette.primary.main, 0.1)}`,
         width: '190px',
         p: 1.5,

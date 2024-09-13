@@ -10,6 +10,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 import FormProvider from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
+import { alpha } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -77,7 +78,10 @@ export default function AccountNotifications() {
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+      <Stack component={Card} spacing={3} sx={{
+        p: 3,
+        backdropFilter: 'none',
+      }}>
         {NOTIFICATIONS.map((notification) => (
           <Grid key={notification.subheader} container spacing={3}>
             <Grid xs={12} md={4}>
@@ -90,7 +94,12 @@ export default function AccountNotifications() {
             </Grid>
 
             <Grid xs={12} md={8}>
-              <Stack spacing={1} sx={{ p: 3, borderRadius: 2, bgcolor: 'background.neutral' }}>
+              <Stack spacing={1} sx={{
+                p: 3,
+                borderRadius: 2,
+                backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
+                backdropFilter: 'none',
+              }}>
                 <Controller
                   name="selected"
                   control={control}

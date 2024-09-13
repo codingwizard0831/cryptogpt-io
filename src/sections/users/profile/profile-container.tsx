@@ -45,21 +45,21 @@ const TABS = [
         label: 'Friends',
         icon: <Iconify icon="tabler:friends" width={24} />,
     },
-    {
-        value: 'team',
-        label: 'Team',
-        icon: <Iconify icon="fluent:people-team-16-filled" width={24} />,
-    },
-    {
-        value: 'group',
-        label: 'Group',
-        icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
-    },
-    {
-        value: 'organization',
-        label: 'Organization',
-        icon: <Iconify icon="clarity:organization-line" width={24} />,
-    },
+    // {
+    //     value: 'team',
+    //     label: 'Team',
+    //     icon: <Iconify icon="fluent:people-team-16-filled" width={24} />,
+    // },
+    // {
+    //     value: 'group',
+    //     label: 'Group',
+    //     icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
+    // },
+    // {
+    //     value: 'organization',
+    //     label: 'Organization',
+    //     icon: <Iconify icon="clarity:organization-line" width={24} />,
+    // },
     {
         value: 'rewards',
         label: 'Rewards',
