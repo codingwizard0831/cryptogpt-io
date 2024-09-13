@@ -34,7 +34,7 @@ const OPTIONS = [
     linkTo: paths.dashboard.user.profile,
   },
   {
-    label: 'Account',
+    label: 'Setting',
     linkTo: paths.dashboard.user.account,
   },
 ];
