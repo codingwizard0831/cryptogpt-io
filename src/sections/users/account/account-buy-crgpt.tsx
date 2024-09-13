@@ -44,7 +44,7 @@ const TABLE_HEAD = [
 ];
 
 const UIComponents = () => {
-  const table = useTable({ defaultOrderBy: 'date' });
+  const table = useTable({ defaultOrderBy: 'date', defaultOrder: 'desc' });
 
   const [tableData, setTableData] = useState([]);
   const [filteredTableData, setFilteredTableData] = useState([]);
@@ -54,7 +54,7 @@ const UIComponents = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState("");
-  const [currentPrice, setCurrentPrice] = useState(0.0728);
+  const [currentPrice, setCurrentPrice] = useState(0);
   const [cardPaymentState, setCardPaymentState] = useState({
     errorMessage: ''
   });
@@ -92,6 +92,16 @@ const UIComponents = () => {
       console.error('Error fetching user profile:', err);
     } finally {
       setIsLoading(false);
+    }
+  }, [enqueueSnackbar]);
+
+  const fetchPrice = useCallback(async () => {
+    try {
+      const response = await axios.post(endpoints.history.price);
+      setCurrentPrice(parseFloat(response.data.price));
+    } catch (err) {
+      enqueueSnackbar(`Failed to fetch current CRGPT price.`, { variant: 'error' });
+      console.error('Error fetching price:', err);
     }
   }, [enqueueSnackbar]);
 
@@ -198,7 +208,14 @@ const UIComponents = () => {
 
   useEffect(() => {
     fetchHistory();
-  }, [fetchHistory]);
+    fetchPrice();
+
+    const intervalId = setInterval(() => {
+      fetchPrice();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [fetchHistory, fetchPrice]);
 
   useEffect(() => {
     if (tableData?.length) {
@@ -223,7 +240,7 @@ const UIComponents = () => {
         <CardHeader title="Buy CRGPT Token" />
 
         <Typography variant="subtitle1" gutterBottom sx={{ width: "100%", p: 3, pb: 0 }}>
-          Current Price: ${currentPrice} per CRGPT
+          Current Price: ${currentPrice.toFixed(4)} per CRGPT
         </Typography>
 
         <Stack direction="column" sx={{ width: "100%", p: 3 }}>
