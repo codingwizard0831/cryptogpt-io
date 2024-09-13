@@ -260,9 +260,9 @@ export default function AccountGeneral() {
               }
             </Box>
 
-            <LoadingButton variant="contained" color="primary" sx={{ mt: 3, width: 235, mx: 'auto', color: "white" }} onClick={handleWebAuthnRegister} loading={isSubmitting.value}>
+            {/* <LoadingButton variant="contained" color="primary" sx={{ mt: 3, width: 235, mx: 'auto', color: "white" }} onClick={handleWebAuthnRegister} loading={isSubmitting.value}>
               Register Face Id
-            </LoadingButton>
+            </LoadingButton> */}
 
             <Button variant="contained" color="error" sx={{ mt: 1, width: 235, mx: 'auto' }} disabled={isSubmitting.value}>
               Delete User
