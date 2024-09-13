@@ -114,6 +114,7 @@ export const endpoints = {
     confirmPaymentIntent: '/api/history/crgpt-token/confirm',
     balance: '/api/history/crgpt-token/balance',
     approve: '/api/history/crgpt-token/withdraw',
+    price: '/api/history/crgpt-token/price',
   },
   exchange: {
     index: '/api/exchanges',
