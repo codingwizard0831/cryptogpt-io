@@ -48,7 +48,10 @@ export default function AccountSocialLinks({ socialLinks }: Props) {
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+      <Stack component={Card} spacing={3} sx={{
+        p: 3,
+        backdropFilter: 'none',
+      }}>
         {Object.keys(socialLinks).map((link) => (
           <RHFTextField
             key={link}

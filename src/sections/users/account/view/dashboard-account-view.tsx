@@ -11,7 +11,6 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { _userAbout } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
-import { useSettingsContext } from 'src/components/settings';
 
 import AccountCredit from '../account-credit';
 import AccountGeneral from '../account-general';
@@ -76,7 +75,6 @@ const TABS = [
 
 export default function DashboardProfileView() {
     const smUp = useResponsive('up', 'sm');
-    const settings = useSettingsContext();
 
     const [currentTab, setCurrentTab] = useState('general');
 
@@ -99,7 +97,6 @@ export default function DashboardProfileView() {
         }}>
             <Card sx={{
                 width: '100%',
-                maxWidth: settings.themeStretch ? false : 'lg',
                 p: smUp ? 2 : 1,
                 flex: 1,
                 borderRadius: 1,
