@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react';
 
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push(PATH_AFTER_LOGIN);
+    router.push(paths.home);
   }, [router]);
 
   return null;
