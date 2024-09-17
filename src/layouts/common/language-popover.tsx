@@ -15,17 +15,18 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 export default function LanguagePopover() {
   const user_profile = getUserProfileInfo();
-  const allLangs: any = useMemo(() => user_profile?.languages || [], [user_profile?.languages]);
+  const allLangs = useMemo(() => user_profile?.languages || [], [user_profile?.languages]);
   const popover = usePopover();
-  const [currentLang, setCurrentLang] = useState<any>([]);
+  const [currentLang, setCurrentLang] = useState<any>(null);
 
   useEffect(() => {
-    if (allLangs.length > 0) {
+    if (allLangs.length > 0 && !currentLang) {
       setCurrentLang(allLangs[0]);
     }
-  }, [allLangs]);
+  }, [allLangs, currentLang]);
 
   const handleChangeLang = useCallback((lang: typeof allLangs[0]) => {
+    console.log('lang', lang);
     setCurrentLang(lang);
     popover.onClose();
   }, [popover]);
@@ -46,11 +47,11 @@ export default function LanguagePopover() {
           }),
         }}
       >
-        <Iconify icon={flags[currentLang?.code].icon} sx={{ borderRadius: 0.65, width: 28 }} />
+        <Iconify icon={flags[currentLang.code].icon} sx={{ borderRadius: 0.65, width: 28 }} />
       </IconButton>}
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 160 }}>
-        {allLangs?.length > 0 && allLangs?.map((option) => (
+        {allLangs.length > 0 && allLangs.map((option) => (
           <MenuItem
             key={option.code}
             selected={option.code === currentLang?.code}
