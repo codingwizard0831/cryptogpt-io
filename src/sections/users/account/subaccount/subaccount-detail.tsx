@@ -79,7 +79,7 @@ export default function SubaccountDetail({
                 secret_key: secretkeyText[index],
                 name: nameText[index],
             };
-            handleSetAllApiKeys([...updatedApiKeys]);
+            handleSetAllApiKeys([...updatedAllApiKeys]);
             enqueueSnackbar('Updated successfully', { variant: 'success' });
         }).catch((error) => {
             console.error(error);
