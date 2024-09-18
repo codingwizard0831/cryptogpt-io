@@ -21,6 +21,10 @@ export const paths = {
       forgotPassword: `${ROOTS.AUTH}/jwt/forgot-password`,
     },
   },
+
+  // HOME
+  home: "/home",
+
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,

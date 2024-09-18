@@ -108,6 +108,7 @@ export const endpoints = {
     updateAvatar: '/api/profile/image',
     exchange: '/api/exchanges',
     exchange_keys: '/api/exchanges/key',
+    status: '/api/profile/status',
   },
   history: {
     crgptToken: '/api/history/crgpt-token',
