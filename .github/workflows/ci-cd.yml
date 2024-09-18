@@ -35,6 +35,8 @@ jobs:
           set +a
 
       - name: Build
+      env:
+          NODE_ENV: production
         run: yarn build
 
   deploy:
