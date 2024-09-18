@@ -32,6 +32,8 @@ export const endpoints = {
     register: '/api/auth/signup/',
     logout: '/api/auth/signout/',
     loginWithEmailAndPassword: '/api/auth/signin-email-password/',
+    apiPasswordResetRequest: '/api/auth/reset-password-request/',
+    passwordResetConfirm: '/api/auth/reset-password-confirm/',
     loginWithCodeSend: '/api/auth/signin-send-token/',
     loginWithCodeVerify: '/api/auth/signin-verify-token/',
 
@@ -50,7 +52,6 @@ export const endpoints = {
     confirmPhone: '/auth/confirm_phone/',
     passwordResetRequest: '/auth/password_reset/',
     passwordResetValidate: '/auth/password_reset/validate_token/',
-    passwordResetConfirm: '/auth/password_reset/confirm/',
     passwordUpdate: '/auth/update_password/',
 
     profileUpdate: '/auth/user/profile/update/',
@@ -105,6 +106,23 @@ export const endpoints = {
     models: '/api/profile/image/models',
     generateImage: '/api/profile/image/generate',
     updateAvatar: '/api/profile/image',
-  }
+    exchange: '/api/exchanges',
+    exchange_keys: '/api/exchanges/key',
+  },
+  history: {
+    crgptToken: '/api/history/crgpt-token',
+    confirmPaymentIntent: '/api/history/crgpt-token/confirm',
+    balance: '/api/history/crgpt-token/balance',
+    approve: '/api/history/crgpt-token/withdraw',
+    price: '/api/history/crgpt-token/price',
+  },
+  exchange: {
+    index: '/api/exchanges',
+    key: '/api/exchanges/key',
+  },
+  strategy: {
+    index: '/api/strategies',
+    initial_prompt: '/api/strategies/initial-prompt',
+  },
 };
 

@@ -172,6 +172,14 @@ export function AuthProvider({ children }: Props) {
     });
   }, []);
 
+  const forgotPassword = useCallback(async (email: string) => {
+    const playloadData = {
+      email,
+    };
+
+    await axios.post(endpoints.auth.apiPasswordResetRequest, playloadData);
+  }, []);
+
   // LOGIN WITH CODE SEND - EMAIL OR PHONE
   const loginWithCodeSend = useCallback(async (email: string, phone: string) => {
     const playloadData = {
@@ -297,7 +305,6 @@ export function AuthProvider({ children }: Props) {
         await setAccessToken(token);
       }
       if (user) {
-        console.log('user', user);
         setUserInfo(user);
       }
 
@@ -385,6 +392,7 @@ export function AuthProvider({ children }: Props) {
       unauthenticated: status === 'unauthenticated',
       //
       loginWithEmailAndPassword,
+      forgotPassword,
       loginWithCodeSend,
       loginWithCodeVerify,
       loginWithMetamask,
@@ -395,6 +403,7 @@ export function AuthProvider({ children }: Props) {
     }),
     [
       loginWithEmailAndPassword,
+      forgotPassword,
       loginWithCodeSend,
       loginWithCodeVerify,
       loginWithMetamask,

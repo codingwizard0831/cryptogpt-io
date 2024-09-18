@@ -30,7 +30,7 @@ import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
 import { supabase } from 'src/lib/supabase';
 import { useAuthContext } from 'src/auth/hooks';
-import { BINANCE_API, PROJECT_URL } from 'src/config-global';
+import { BINANCE_OAUTH_CREDENTIALS } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -206,28 +206,29 @@ export default function JwtLoginView() {
     }
   };
 
-  const handleLoginWithTest = async () => {
-    try {
-      window.location.href = `https://accounts.binance.com/en/oauth/authorize?response_type=code&client_id=${BINANCE_API.clientId}&redirect_uri=${PROJECT_URL}/auth/jwt/binance-oauth-callback&scope=user:openId`;
-    } catch (error) {
-      console.error(error);
-    }
+  const handleLoginWithBinance = async () => {
+    // Redirect to Binance
+    const uriParams = `response_type=code&client_id=${encodeURIComponent(BINANCE_OAUTH_CREDENTIALS.clientId)}&redirect_uri=${encodeURIComponent(BINANCE_OAUTH_CREDENTIALS.redirectUri)}&scope=user:openId`;
+
+    console.log(`${BINANCE_OAUTH_CREDENTIALS.loginUri}${uriParams}`);
+
+    window.location.href = `${BINANCE_OAUTH_CREDENTIALS.loginUri}${uriParams}`;
   };
 
   const handleLoginWithGoogle = async () => {
     console.log('Login with Google');
-    const {statusText, data} = await axios.post(endpoints.auth.loginWithGoogle);
-    if (statusText === "OK" && data.url) {
-      window.location.href = data.url;
-    } else {
-      throw new Error(data.error || 'Failed to initiate OAuth login');
-    }
-    // await supabase.auth.signInWithOAuth({
-    //   provider: 'google',
-    //   options: {
-    //     redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
-    //   },
-    // });
+    // const {statusText, data} = await axios.post(endpoints.auth.loginWithGoogle);
+    // if (statusText === "OK" && data.url) {
+    //   window.location.href = data.url;
+    // } else {
+    //   throw new Error(data.error || 'Failed to initiate OAuth login');
+    // }
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/jwt/supabase-oauth-callback1?`,
+      },
+    });
   };
 
   const renderHead = (
@@ -409,7 +410,7 @@ export default function JwtLoginView() {
           overflow: 'hidden',
         }}
       >
-        <LoadingButton
+        {/* <LoadingButton
           fullWidth
           variant="outlined"
           color="primary"
@@ -427,7 +428,7 @@ export default function JwtLoginView() {
           }}
         >
           Continue with Face Id
-        </LoadingButton>
+        </LoadingButton> */}
         <LoadingButton
           fullWidth
           variant="outlined"
@@ -458,7 +459,7 @@ export default function JwtLoginView() {
             />
           }
           loading={isSubmitting.value}
-          onClick={() => handleLoginWithTest()}
+          onClick={() => handleLoginWithBinance()}
         >
           Continue with Binance
         </LoadingButton>

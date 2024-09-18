@@ -3,9 +3,9 @@
 import Timeline from '@mui/lab/Timeline';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineContent from '@mui/lab/TimelineContent';
-import { Box, alpha, IconButton } from '@mui/material';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
+import { Box, alpha, BoxProps, IconButton } from '@mui/material';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -17,19 +17,30 @@ import Iconify from 'src/components/iconify/iconify';
 import DashboardStrategyAccordion from './dashboard-strategy-accordion';
 
 
-export default function DashboardStrategySummary() {
+interface DashboardStrategySummaryProps extends BoxProps {
+}
+
+export default function DashboardStrategySummary(
+    {
+        sx,
+        ...other
+    }: DashboardStrategySummaryProps
+) {
     const smUp = useResponsive("up", 'sm');
     const isShowSummary = useStrategy((state) => state.isShowSummary);
     const setIsShowSummary = useStrategy((state) => state.setIsShowSummary);
 
     return <Box
         sx={{
-            width: isShowSummary ? 1 : 0,
+            width: isShowSummary ? '33%' : 0,
             height: '100%',
             backgroundColor: theme => alpha(theme.palette.primary.main, 0.05),
             transition: 'all 0.3s',
             overflowX: 'hidden',
             overflowY: 'auto',
+            ...(isShowSummary && {
+                flex: 1,
+            }),
             ...(
                 (!isShowSummary && !smUp) && {
                     display: 'none',

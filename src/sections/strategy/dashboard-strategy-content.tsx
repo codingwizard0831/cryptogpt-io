@@ -51,7 +51,8 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
         <DashboardStrategyChat />
 
         <Box sx={{
-            width: '100%',
+            width: isShowSummary ? '33%' : '50%',
+            flex: 1,
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
@@ -109,6 +110,7 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
             </Box>
         </Box>
 
-        <DashboardStrategySummary />
+        <DashboardStrategySummary sx={{
+        }} />
     </Box>
 }

@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 import { supabase } from 'src/lib/supabase';
 
 export async function middleware(request: NextRequest) {
-    console.log('Middleware executed for path:', request.nextUrl.pathname);
+    // console.log('Middleware executed for path:', request.nextUrl.pathname);
 
     if (request.method === 'OPTIONS') {
         return NextResponse.next();

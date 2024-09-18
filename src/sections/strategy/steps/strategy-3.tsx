@@ -2,15 +2,16 @@
 import { useState } from 'react';
 import { Area, XAxis, YAxis, Tooltip, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { Box, Stack, Table, Button, BoxProps, MenuItem, TableRow, TextField, TableHead, TableCell, TableBody, Typography, InputLabel, FormControl } from '@mui/material';
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
+import { Box, Stack, Table, alpha, BoxProps, TableRow, TextField, TableHead, TableCell, TableBody, Typography } from '@mui/material';
 
-import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
+
+import { fNumberPrice } from 'src/utils/format-number';
 
 import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Iconify from 'src/components/iconify';
-import Image from 'src/components/image/image';
 
 interface DataPoint {
     date: string;
@@ -20,25 +21,21 @@ interface DataPoint {
 }
 
 
-interface DashboardStrategyStep1Props extends BoxProps {
+interface DashboardStrategyStep3Props extends BoxProps {
 
 };
 
-export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrategyStep1Props) {
+export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrategyStep3Props) {
     const coin1 = useStrategy((state) => state.coin1);
-    const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
-    const setCoin2 = useStrategy((state) => state.setCoin2);
-    const isCustom = useBoolean();
-    const [period, setPeriod] = useState("5m");
-    const handleChangePeriod = (event: SelectChangeEvent) => {
-        setPeriod(event.target.value);
-        if (event.target.value === 'Custom') {
-            isCustom.onTrue();
-        } else {
-            isCustom.onFalse();
-        }
-    }
+    const smUp = useResponsive("up", 'sm');
+
+    const [filterStartDate, setFilterStartDate] = useState<Date | null>(
+        new Date('2018-01-01T00:00:00.000Z')
+    );
+    const [filterEndDate, setFilterEndDate] = useState<Date | null>(
+        new Date()
+    );
 
     return <Box sx={{
         flex: 1,
@@ -50,7 +47,7 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
         <Stack direction='row' alignItems="center" spacing={2} sx={{ width: '90%', mb: 2 }}>
             <Typography variant="h4" sx={{
                 whitespace: 'nowrap',
-            }}>4. Backtesting for {coin1.name}/{coin2.name}</Typography>
+            }}>2. Backtesting for {coin1.name}/{coin2.name}</Typography>
         </Stack>
 
 
@@ -63,74 +60,6 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
             overflowY: 'auto',
             overflowX: 'hidden',
         }}>
-            <Stack direction="row" alignItems='center' spacing={2} sx={{ width: '100%', mb: 1 }}>
-                <Box sx={{
-                    position: 'relative',
-                    pr: 3,
-                }}>
-                    <Image src="/images/bnb-bnb-logo.png" alt="" sx={{
-                        width: '32px',
-                        hegiht: '32px',
-                        borderRadius: '50%',
-                        border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
-                        backdropFilter: 'blur(10px)',
-                        p: 0.25,
-                    }} />
-                    <Image src="/images/tether-usdt-logo.png" alt="" sx={{
-                        width: '32px',
-                        hegiht: '32px',
-                        borderRadius: '50%',
-                        border: (theme: any) => `1px solid ${theme.palette.primary.main}`,
-                        backdropFilter: 'blur(10px)',
-                        p: 0.25,
-                        position: 'absolute',
-                        left: '20px',
-                    }} />
-                </Box>
-
-                <FormControl sx={{
-                    minWidth: '120px',
-                    '.MuiInputBase-root': {
-                        border: 'none',
-                    },
-                }}>
-                    <InputLabel htmlFor="source-label">Source</InputLabel>
-                    <Select labelId="source-label" id="source" label="Source" size="small" value="5m" sx={{
-                        border: (theme: any) => `1px solid ${theme.palette.primary.main}`
-                    }}>
-                        <MenuItem value="Pyth">Pyth Netowork</MenuItem>
-                    </Select>
-                </FormControl>
-                <FormControl sx={{
-                    minWidth: '120px',
-                    '.MuiInputBase-root': {
-                        border: 'none',
-                    },
-                }}>
-                    <InputLabel htmlFor="period-label">Period</InputLabel>
-                    <Select labelId="period-label" id="period" label="Period" size="small" value={period}
-                        onChange={handleChangePeriod}
-                        sx={{
-                            border: (theme: any) => `1px solid ${theme.palette.primary.main}`
-                        }}>
-                        <MenuItem value="10m">10m</MenuItem>
-                        <MenuItem value="30m">30m</MenuItem>
-                        <MenuItem value="1h">1h</MenuItem>
-                        <MenuItem value="1day">1day</MenuItem>
-                        <MenuItem value="1week">1week</MenuItem>
-                        <MenuItem value="Custom">Custom</MenuItem>
-                    </Select>
-                </FormControl>
-            </Stack>
-
-            <Stack direction="row" alignItems='center' spacing={2} sx={{ width: '100%', mb: 2 }}>
-                {
-                    isCustom.value &&
-                    <TextField size="small" sx={{ minWidth: '120px' }} />
-                }
-                <Button fullWidth variant="contained" color="primary" startIcon={<Iconify icon="carbon:chart-multitype" sx={{
-                }} />}>Run</Button>
-            </Stack>
 
             <Box sx={{ width: '100%' }}>
                 <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
@@ -142,42 +71,180 @@ export default function DashboardStrategyStep3({ sx, ...other }: DashboardStrate
                     <Typography variant="h6" sx={{ color: 'primary.main' }}>Backtesting Data</Typography>
                 </Stack>
 
-                <Table sx={{
+                <Box sx={{
                     width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Period</TableCell>
-                            <TableCell>Price</TableCell>
-                            <TableCell>Order</TableCell>
-                            <TableCell>Order Price</TableCell>
-                            <TableCell>Pro</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>2023-01</TableCell>
-                            <TableCell>$16500</TableCell>
-                            <TableCell>Buy</TableCell>
-                            <TableCell>$16500</TableCell>
-                            <TableCell>0%</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>2023-01</TableCell>
-                            <TableCell>$16500</TableCell>
-                            <TableCell>Buy</TableCell>
-                            <TableCell>$16500</TableCell>
-                            <TableCell>0%</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>2023-01</TableCell>
-                            <TableCell>$16500</TableCell>
-                            <TableCell>Buy</TableCell>
-                            <TableCell>$16500</TableCell>
-                            <TableCell>0%</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexDirection: smUp ? 'row' : 'column',
+                        gap: 1,
+                    }}>
+                        <TextField
+                            label="Search"
+                            type="text"
+                            sx={{
+                                width: '100%',
+                            }}
+                        />
+                        <Box sx={{
+                            display: 'flex',
+                            gap: 1,
+                            width: smUp ? 'auto' : '100%',
+                        }}>
+                            <MobileDateTimePicker
+                                value={filterStartDate}
+                                label="Start Date"
+                                onChange={(newValue) => {
+                                    setFilterStartDate(newValue);
+                                }}
+                                slotProps={{
+                                    textField: {
+                                        margin: 'none',
+                                    },
+                                }}
+                                sx={{
+                                    minWidth: '190px',
+                                    width: smUp ? 'auto' : '100%',
+                                }}
+                            />
+
+                            <MobileDateTimePicker
+                                value={filterEndDate}
+                                label="End Date"
+                                onChange={(newValue) => {
+                                    setFilterEndDate(newValue);
+                                }}
+                                slotProps={{
+                                    textField: {
+                                        margin: 'none',
+                                    },
+                                }}
+                                sx={{
+                                    minWidth: '190px',
+                                    width: smUp ? 'auto' : '100%',
+                                }}
+                            />
+                        </Box>
+
+                    </Box>
+                    <Box sx={{
+                        flex: 1,
+                        width: '100%',
+                        overflowY: 'auto',
+                    }}>
+                        <Table sx={{
+                            "& tr": {
+                                px: 1,
+                            },
+                            "& td,th": {
+                                fontSize: '10px',
+                                py: 0.5,
+                                px: 2,
+                            },
+                            "& tbody tr": {
+                                py: 0.5,
+                                transition: 'background-color 0.3s',
+                                "&:hover": {
+                                    backgroundColor: theme => alpha(theme.palette.background.opposite, 0.1)
+                                },
+                            },
+                        }}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>
+                                        <Typography variant="caption" sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}>Start Date</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="caption" sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}>End Date</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="caption" sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}>Initial Capitial</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="caption" sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}>Asset</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="caption" sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}>Indicator Parameters</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="caption" sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}>Buy condition</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="caption" sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}>Sell condition</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="caption" sx={{
+                                            whiteSpace: 'nowrap',
+                                        }}>Warm up period</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+
+                            <TableBody>
+                                {
+                                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((_data, _index) => (
+                                        <TableRow key={`latest-row-key-${_index}`}>
+                                            <TableCell>
+                                                <Typography variant="caption">8/Mar</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="caption">8/Mar</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: 1,
+                                                }}>
+                                                    <Typography variant="caption">${fNumberPrice(21340, 0)}</Typography>
+                                                    <Typography variant="caption" sx={{ color: 'success.main' }}>0.1</Typography>
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="caption">BTC/USD</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="caption">SMO</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="caption">Stop less</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="caption">Stop less</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="caption" sx={{
+                                                    py: 0.5,
+                                                    px: 1,
+                                                    borderRadius: '10px',
+                                                    backgroundColor: theme => alpha(theme.palette.info.main, 0.3),
+                                                    whiteSpace: 'nowrap',
+                                                }}>1d 4h 23m</Typography>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                }
+                            </TableBody>
+                        </Table>
+                    </Box>
+                </Box>
             </Box>
         </Box>
 

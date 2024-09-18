@@ -1,15 +1,21 @@
 'use client';
 
-import { useRef } from 'react';
 import * as marked from 'marked';
+import { useRef, useMemo, useState } from 'react';
 
 import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Tabs from '@mui/material/Tabs';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Unstable_Grid2';
-import CardHeader from '@mui/material/CardHeader'; // Import marked
+import CardHeader from '@mui/material/CardHeader';
+import { alpha, TextField, IconButton } from '@mui/material';
+
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import { fNumber } from 'src/utils/format-number';
 
@@ -22,224 +28,6 @@ import { IUserProfile, IUserProfilePost } from 'src/types/user';
 
 // ----------------------------------------------------------------------
 
-const README_CONTENT = `
-<h1 align="center">
-  <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28">
-    Welcome
-  <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28">
-</h1>
-
-<p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com/?lines=Creative,%20enthusiastic%20and%20Results-driven%20Full%20Stack%20Developer;%2B6%20years%20of%20hands-on%20experience;&center=true&width=800&height=45">
-</p>
-
-<p align="center">
-With a proven track record as a full-stack developer, I specialize in delivering innovative solutions that drive reliable results. My professional journey is marked by efficient execution and the development of high-quality software that meets and exceeds project objectives. As a dedicated professional, I bring a thorough understanding of technology stacks to each challenge, ensuring a holistic approach to problem-solving.
-
-I am recognized for my ability to communicate complex concepts effectively to all stakeholders, ensuring alignment and understanding across diverse teams. This skill has made me an enthusiastic collaborator and a key contributor to successful projects.
-
-Deadline-driven and committed to excellence, I strive to remain at the cutting edge of technology, constantly integrating the latest innovations into my work to enhance outcomes. My commitment to this dynamic field is fueled by a passion for creating software solutions that not only perform exceptionally but also deliver significant value to users.
-</p>
-
-<h3 align="center">🏆 Github Profile Trophy</h3>
-
-
-<table>
-<td>
-
-![](http://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=codingenchanter725&theme=blueberry)
-</td>
-<td>
-
-![](http://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=codingenchanter725&theme=blueberry)
-</td>
-</tr>
-</table>
-
-
-
-</div>
-
-<h3 align="center">Tech & Tools</h3>
-
-<table>
-  <tr>
-    <td valign="center"><b>*<b></td>
-  </tr>
-  <tr>
-    <td valign="center" align="center">
-      <img src="https://img.shields.io/badge/8+hours per day-blue" />
-      <img src="https://img.shields.io/badge/Attention to detail-blue" />
-      <img src="https://img.shields.io/badge/Willingness to learn-blue" />
-      <img src="https://img.shields.io/badge/Collaborative mindset-blue" />
-      <img src="https://img.shields.io/badge/Customer centric approach-blue" />
-      <img src="https://img.shields.io/badge/Dedication to quzlity-blue" />
-      <img src="https://img.shields.io/badge/String work ethic-blue" />
-      <img src="https://img.shields.io/badge/Creative problem solving skills-blue" />
-    </td>
-  </tr>
-</table>
-
-<table>
-  <tr>
-    <td valign="center" width="200px"><b>Language<b></td>
-    <td valign="center" width="200px"><b>Sepcial<b></td>
-  </tr>
-  <tr>
-    <td valign="center" align="center" width="400px">
-      <img src="https://img.shields.io/badge/HTML-blue" /> 
-      <img src="https://img.shields.io/badge/CSS-blue" /> 
-      <img src="https://img.shields.io/badge/JavaScript-blue" /> 
-      <img src="https://img.shields.io/badge/TypeScript-blue" /> 
-      <img src="https://img.shields.io/badge/PHP-blue" /> 
-      <img src="https://img.shields.io/badge/Python-blue" /> 
-      <img src="https://img.shields.io/badge/C-blue" /> 
-      <img src="https://img.shields.io/badge/C++-blue" /> 
-      <img src="https://img.shields.io/badge/Liquid-blue" /> 
-      <img src="https://img.shields.io/badge/Solidity-blue" /> 
-      <img src="https://img.shields.io/badge/Rust-blue" /> 
-    </td>      
-    <td valign="center" align="center" width="400px">
-      <img src="https://img.shields.io/badge/WebRTC-blue" />
-      <img src="https://img.shields.io/badge/Socket.io-blue" />
-      <img src="https://img.shields.io/badge/websocket-blue" />
-      <img src="https://img.shields.io/badge/ChatGPT-blue" />
-      <img src="https://img.shields.io/badge/Web Scrapping-blue" />
-      <img src="https://img.shields.io/badge/Firebase-blue" />
-      <img src="https://img.shields.io/badge/Graphql-blue" />
-      <img src="https://img.shields.io/badge/Convex-blue" />
-    </td>
-  </tr>
-</table>
-<table>
-  <tr>
-    <td valign="center" width="100px"><b>Frontend<b></td>
-    <td valign="center" width="100px"><b>Backend<b></td>
-    <td valign="center" width="100px"><b>Mobile<b></td>
-  </tr>
-  <tr>
-    <td valign="center" align="center" width="300px">
-      <img src="https://img.shields.io/badge/React-blue" /> 
-      <img src="https://img.shields.io/badge/Next-blue" /> 
-      <img src="https://img.shields.io/badge/Vue-blue" /> 
-      <img src="https://img.shields.io/badge/Nuxt-blue" /> 
-      <img src="https://img.shields.io/badge/Angular-blue" /> 
-      <img src="https://img.shields.io/badge/Svelte-blue" /> 
-      <img src="https://img.shields.io/badge/Solidjs-blue" /> 
-      <img src="https://img.shields.io/badge/Bootstrap-blue" /> 
-      <img src="https://img.shields.io/badge/Tailwind-blue" />
-      <img src="https://img.shields.io/badge/MUI-blue" /> 
-      <img src="https://img.shields.io/badge/Chart.js-blue" />
-      <img src="https://img.shields.io/badge/Jquery-blue" />
-      <img src="https://img.shields.io/badge/Antd-blue" />
-      <img src="https://img.shields.io/badge/Headless-blue" />
-    </td>      
-    <td valign="center" align="center" width="300px">
-      <img src="https://img.shields.io/badge/Node.js-blue" /> 
-      <img src="https://img.shields.io/badge/Express-blue" /> 
-      <img src="https://img.shields.io/badge/Laravel-blue" /> 
-      <img src="https://img.shields.io/badge/Django-blue" /> 
-      <img src="https://img.shields.io/badge/Flask-blue" /> 
-      <img src="https://img.shields.io/badge/Fastapi-blue" /> 
-      <img src="https://img.shields.io/badge/Nest-blue" /> 
-      <img src="https://img.shields.io/badge/ASP.NET-blue" /> 
-      <img src="https://img.shields.io/badge/Spring Boot-blue" /> 
-    </td>
-    <td valign="center" align="center" width="300px">
-      <img src="https://img.shields.io/badge/Flutter-blue" /> 
-      <img src="https://img.shields.io/badge/React Native-blue" /> 
-      <img src="https://img.shields.io/badge/React Ionic-blue" /> 
-      <img src="https://img.shields.io/badge/Angular Ionic-blue" /> 
-      <img src="https://img.shields.io/badge/Swift-blue" /> 
-    </td>
-  </tr>
-</table>
-
-<table>
-  <tr>
-    <td valign="center"><b>AI & Bot & Automation<b></td>
-    <td valign="center"><b>Interesting<b></td>
-  </tr>
-  <tr>
-    <td valign="center" align="center">
-      <img src="https://img.shields.io/badge/AI Chatbot-blue" />
-      <img src="https://img.shields.io/badge/ChatGPT-blue" />
-      <img src="https://img.shields.io/badge/Telegram Bot-blue" />
-      <img src="https://img.shields.io/badge/Langchain-blue" />
-      <img src="https://img.shields.io/badge/Deep learning-blue" />
-      <img src="https://img.shields.io/badge/OpenCV-blue" />
-      <img src="https://img.shields.io/badge/Machine Learning-blue" />
-      <img src="https://img.shields.io/badge/TensorFlow-blue" />
-      <img src="https://img.shields.io/badge/LLM Prompt Engineering-blue" />
-      <img src="https://img.shields.io/badge/Generative AI Prompt Engineering-blue" />
-    </td>
-    <td valign="center" align="center">
-      <img src="https://img.shields.io/badge/Ruby-blue" />
-      <img src="https://img.shields.io/badge/Golang-blue" />
-      <img src="https://img.shields.io/badge/Unity-blue" />
-    </td>
-  </tr>
-</table>
-  
- <table>
-  <tr>
-    <td valign="center" width="100px"><b>Blockchain<b></td>
-    <td valign="center" width="100px"><b>DEV OPS<b></td>
-    <td valign="center" width="100px"><b>Database<b></td>
-  </tr>
-  <tr>
-    <td valign="center" align="center" width="300px">
-      <img src="https://img.shields.io/badge/Web3.js-blue" /> 
-      <img src="https://img.shields.io/badge/Ethers.js-blue" /> 
-      <img src="https://img.shields.io/badge/Solidity-blue" />
-      <img src="https://img.shields.io/badge/Smart Contract-blue" /> 
-      <img src="https://img.shields.io/badge/Bitcoin-blue" />
-      <img src="https://img.shields.io/badge/NFT Marketplace/Auction-blue" />
-      <img src="https://img.shields.io/badge/Launchpad/DEX/CEX/Defi-blue" />
-    </td>
-    <td valign="center" align="center" width="300px">
-      <img src="https://img.shields.io/badge/AWS-blue" /> 
-      <img src="https://img.shields.io/badge/GCP-blue" /> 
-      <img src="https://img.shields.io/badge/Heroku-blue" /> 
-      <img src="https://img.shields.io/badge/Netlify-blue" /> 
-      <img src="https://img.shields.io/badge/Vercel-blue" />
-      <img src="https://img.shields.io/badge/Hostinger-blue" />
-      <img src="https://img.shields.io/badge/CI/CD-blue" />
-      <img src="https://img.shields.io/badge/Docker-blue" />
-    </td>
-    <td valign="center" align="center" width="300px">
-      <img src="https://img.shields.io/badge/MongoDB-blue" /> 
-      <img src="https://img.shields.io/badge/PostgreSQL-blue" />
-      <img src="https://img.shields.io/badge/MySQL-blue" /> 
-      <img src="https://img.shields.io/badge/Redis-blue" /> 
-      <img src="https://img.shields.io/badge/SQLite-blue" /> 
-      <img src="https://img.shields.io/badge/Dynamodb-blue" /> 
-    </td>
-  </tr>
-</table>
-
-
-## Language
-
-[![My Skills](https://skillicons.dev/icons?i=js,html,css,js,ts,python,php,c,cpp,cs,solidity)](https://skillicons.dev)
-
-## Frameworks & Experience
-[![My Skills](https://skillicons.dev/icons?i=react,next,solidjs,vue,nuxt,angular,svelte)](https://skillicons.dev)
-
-[![My Skills](https://skillicons.dev/icons?i=nodejs,nestjs,laravel,django,flask,fastapi)](https://skillicons.dev)
-
-## Library & Experience
-[![My Skills](https://skillicons.dev/icons?i=tailwind,mui,vuetify,gatsby,bootstrap,jquery,sass,less,threejs,d3,redux,regex)](https://skillicons.dev)
-[![My Skills](https://skillicons.dev/icons?i=supabase,prisma,sequelize,vite,jest,cypress,electron,tensorflow,opencv,graphql,firebase,ipfs)](https://skillicons.dev)
-
-
-## Database & Experience
-[![My Skills](https://skillicons.dev/icons?i=mysql,mongodb,sqlite,postgresql,redis,dynamodb)](https://skillicons.dev)
-
-## Dev Ops
-[![My Skills](https://skillicons.dev/icons?i=aws,gcp,vercel,netlify,nginx,docker,ubuntu,linux,heroku,npm,yarn,github,gitlab,bitbucket)](https://skillicons.dev)
-
-`;
 
 type Props = {
   info: IUserProfile;
@@ -248,9 +36,17 @@ type Props = {
 
 export default function ProfileHome({ info, posts }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const isEditSummary = useBoolean();
+  const [readmeHtml, setReadmeHtml] = useState(README_CONTENT);
+  const [activeTab, setActiveTab] = useState(0);
 
   const renderFollows = (
-    <Card sx={{ py: 3, textAlign: 'center', typography: 'h4' }}>
+    <Card sx={{
+      py: 3,
+      textAlign: 'center',
+      typography: 'h4',
+      backdropFilter: 'none',
+    }}>
       <Stack
         direction="row"
         divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
@@ -273,7 +69,9 @@ export default function ProfileHome({ info, posts }: Props) {
   );
 
   const renderAbout = (
-    <Card>
+    <Card sx={{
+      backdropFilter: 'none',
+    }}>
       <CardHeader title="About" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
@@ -321,7 +119,9 @@ export default function ProfileHome({ info, posts }: Props) {
   );
 
   const renderSocials = (
-    <Card>
+    <Card sx={{
+      backdropFilter: 'none',
+    }}>
       <CardHeader title="Social" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
@@ -352,7 +152,11 @@ export default function ProfileHome({ info, posts }: Props) {
     </Card>
   );
 
-  const readmeHtml = marked.parse(README_CONTENT);
+  const renderReadme = useMemo(() => marked.parse(readmeHtml), [readmeHtml]);
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
 
   return (
     <Grid container spacing={3}>
@@ -368,11 +172,151 @@ export default function ProfileHome({ info, posts }: Props) {
 
       <Grid xs={12} md={8}>
         <Card sx={{
+          backdropFilter: 'none',
           p: 1,
+          position: 'relative',
         }}>
-          <div dangerouslySetInnerHTML={{ __html: readmeHtml }} />
+          {
+            !isEditSummary.value && <Box>
+              <IconButton onClick={isEditSummary.onTrue} size="small" sx={{
+                position: 'absolute', top: 4, right: 4,
+                color: theme => theme.palette.text.primary,
+                backgroundColor: theme => alpha(theme.palette.primary.main, 0.2),
+                '&:hover': {
+                  backgroundColor: theme => alpha(theme.palette.primary.main, 0.8),
+                },
+              }}>
+                <Iconify icon="mdi:pencil" />
+              </IconButton>
+              {
+                renderReadme.toString().trim().length > 0
+                  ?
+                  <Box dangerouslySetInnerHTML={{ __html: renderReadme }} sx={{
+                    minHeight: 200,
+                  }} />
+                  :
+                  <Box sx={{
+                    minHeight: 200,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                    color: 'text.secondary',
+                  }}>
+                    No Preview
+                  </Box>
+              }
+            </Box>
+          }
+
+          {
+            isEditSummary.value && (
+              <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Tabs value={activeTab} onChange={handleTabChange}>
+                    <Tab label="Edit" />
+                    <Tab label="Preview" />
+                  </Tabs>
+                  <Button variant="soft" color="primary" onClick={isEditSummary.onFalse}>OK</Button>
+                </Box>
+                {activeTab === 0 && (
+                  <TextField
+                    fullWidth
+                    multiline
+                    minRows={3}
+                    maxRows={200}
+                    value={readmeHtml}
+                    placeholder="Write your readme here..."
+                    onChange={(e) => {
+                      if (e.target.value.length < 1000) {
+                        setReadmeHtml(e.target.value);
+                      }
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
+                    InputProps={{
+                      style: { resize: 'none' },
+                    }}
+                  />
+                )}
+                {activeTab === 1 && (
+                  renderReadme.toString().trim().length > 0
+                    ?
+                    <Box dangerouslySetInnerHTML={{ __html: renderReadme }} sx={{
+                      minHeight: 200,
+                    }} />
+                    :
+                    <Box sx={{
+                      minHeight: 200,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 24,
+                      fontWeight: 'bold',
+                      color: 'text.secondary',
+                    }}>
+                      No Preview
+                    </Box>
+                )
+                }
+              </Box>
+            )
+          }
         </Card>
       </Grid>
     </Grid>
   );
 }
+
+const README_CONTENT = `
+
+<p align="center">
+With a proven track record as a full-stack developer, I specialize in delivering innovative solutions that drive reliable results. My professional journey is marked by efficient execution and the development of high-quality software that meets and exceeds project objectives. As a dedicated professional, I bring a thorough understanding of technology stacks to each challenge, ensuring a holistic approach to problem-solving.
+
+I am recognized for my ability to communicate complex concepts effectively to all stakeholders, ensuring alignment and understanding across diverse teams. This skill has made me an enthusiastic collaborator and a key contributor to successful projects.
+
+Deadline-driven and committed to excellence, I strive to remain at the cutting edge of technology, constantly integrating the latest innovations into my work to enhance outcomes. My commitment to this dynamic field is fueled by a passion for creating software solutions that not only perform exceptionally but also deliver significant value to users.
+</p>
+
+<h3 align="center">🏆 Github Profile Trophy</h3>
+<h3 align="center">Tech & Tools</h3>
+
+ <table>
+  <tr>
+    <td valign="center" width="100px"><b>Blockchain<b></td>
+    <td valign="center" width="100px"><b>DEV OPS<b></td>
+    <td valign="center" width="100px"><b>Database<b></td>
+  </tr>
+  <tr>
+    <td valign="center" align="center" width="300px">
+      <img src="https://img.shields.io/badge/Web3.js-blue" /> 
+      <img src="https://img.shields.io/badge/Ethers.js-blue" /> 
+      <img src="https://img.shields.io/badge/Solidity-blue" />
+      <img src="https://img.shields.io/badge/Smart Contract-blue" /> 
+      <img src="https://img.shields.io/badge/Bitcoin-blue" />
+      <img src="https://img.shields.io/badge/NFT Marketplace/Auction-blue" />
+      <img src="https://img.shields.io/badge/Launchpad/DEX/CEX/Defi-blue" />
+    </td>
+    <td valign="center" align="center" width="300px">
+      <img src="https://img.shields.io/badge/AWS-blue" /> 
+      <img src="https://img.shields.io/badge/GCP-blue" /> 
+      <img src="https://img.shields.io/badge/Heroku-blue" /> 
+      <img src="https://img.shields.io/badge/Netlify-blue" /> 
+      <img src="https://img.shields.io/badge/Vercel-blue" />
+      <img src="https://img.shields.io/badge/Hostinger-blue" />
+      <img src="https://img.shields.io/badge/CI/CD-blue" />
+      <img src="https://img.shields.io/badge/Docker-blue" />
+    </td>
+    <td valign="center" align="center" width="300px">
+      <img src="https://img.shields.io/badge/MongoDB-blue" /> 
+      <img src="https://img.shields.io/badge/PostgreSQL-blue" />
+      <img src="https://img.shields.io/badge/MySQL-blue" /> 
+      <img src="https://img.shields.io/badge/Redis-blue" /> 
+      <img src="https://img.shields.io/badge/SQLite-blue" /> 
+      <img src="https://img.shields.io/badge/Dynamodb-blue" /> 
+    </td>
+  </tr>
+</table>
+
+`;

@@ -14,6 +14,7 @@ import Carousel, { useCarousel } from 'src/components/carousel';
 import { DashboardAIChat } from 'src/sections/dashboard/dashboard-ai-chat';
 
 import DashboardTrackingHistory from '../dashboard-tracking-history';
+import DashboardTrackingSummary from '../dashboard-tracking-summary';
 import DashboardTrackingDetailDrawer from '../dashboard-tracking-detail-drawer';
 import DashboardTrackingOverviewCalendar from '../dashboard-tracking-overview-calendar';
 
@@ -102,9 +103,7 @@ export default function DashboardTrackingView() {
                                 currentTab === 'overview' && <DashboardTrackingOverviewCalendar selectedDate={selectedDate} handlechangeSelectedDate={handleChangleSelectedDate} />
                             }
                             {
-                                currentTab === 'summary' && <Box>
-                                    Content
-                                </Box>
+                                currentTab === 'summary' && <DashboardTrackingSummary />
                             }
                         </Box>
                     </Stack>

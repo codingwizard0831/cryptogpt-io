@@ -90,13 +90,21 @@ export default function AccountGeneral() {
 
   const handleWebAuthnRegister = async () => {
     try {
+      if (!window.PublicKeyCredential) {
+        enqueueSnackbar('WebAuthn is not supported in this browser.', { variant: 'error' });
+        return;
+      }
       isSubmitting.onTrue();
       const { data: optionsResponse } = await axios.post(endpoints.auth.registerFaceId);
       const { success, options } = optionsResponse;
+      alert(`success: ${success}`);
       if (success) {
+        alert(`options: ${options?.challenge}`);
         const attestationResponse = await startRegistration(options);
+        alert(`attestationResponse: ${attestationResponse}`);
         const { data: verificationResponse } = await axios.put(endpoints.auth.registerFaceId, { attestationResponse });
 
+        alert(`verificationResponse: ${verificationResponse}`);
         if (verificationResponse.success) {
           enqueueSnackbar('Face id registration successful!', { variant: 'success' });
           if (verificationResponse.message) {
@@ -110,7 +118,12 @@ export default function AccountGeneral() {
       }
       isSubmitting.onFalse();
     } catch (error) {
-      enqueueSnackbar('Error during face id registration.', { variant: 'error' });
+      console.error('Detailed error:', error);
+      if (error.name === 'NotAllowedError') {
+        enqueueSnackbar('Face ID permission was denied. Please ensure Face ID is enabled and try again.', { variant: 'error' });
+      } else {
+        enqueueSnackbar(`Error during face id registration: ${error.message}`, { variant: 'error' });
+      }
       isSubmitting.onFalse();
     }
   };
@@ -144,6 +157,7 @@ export default function AccountGeneral() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+            backdropFilter: 'none',
           }}>
             <UploadAvatar
               maxSize={3145728}
@@ -247,9 +261,9 @@ export default function AccountGeneral() {
               }
             </Box>
 
-            <LoadingButton variant="contained" color="primary" sx={{ mt: 3, width: 235, mx: 'auto', color: "white" }} onClick={handleWebAuthnRegister} loading={isSubmitting.value}>
+            {/* <LoadingButton variant="contained" color="primary" sx={{ mt: 3, width: 235, mx: 'auto', color: "white" }} onClick={handleWebAuthnRegister} loading={isSubmitting.value}>
               Register Face Id
-            </LoadingButton>
+            </LoadingButton> */}
 
             <Button variant="contained" color="error" sx={{ mt: 1, width: 235, mx: 'auto' }} disabled={isSubmitting.value}>
               Delete User
@@ -260,6 +274,7 @@ export default function AccountGeneral() {
         <Grid xs={12} md={8}>
           <Card sx={{
             p: 3,
+            backdropFilter: 'none',
           }}>
             <Box
               rowGap={3}

@@ -34,6 +34,7 @@ export const paths = {
     strategy: {
       root: `${ROOTS.DASHBOARD}/strategy`,
       beta: `${ROOTS.DASHBOARD}/strategy/beta`,
+      create: `${ROOTS.DASHBOARD}/strategy/create`,
     },
     profile: `${ROOTS.DASHBOARD}/profile`,
     avatarCreate: `${ROOTS.DASHBOARD}/user/profile-voice-avatar`,
@@ -61,6 +62,10 @@ export const paths = {
       connection: `${ROOTS.DASHBOARD}/user/connection`,
       security: `${ROOTS.DASHBOARD}/user/security`,
     },
+  },
+
+  user: {
+    profile: (id: string) => `${ROOTS.DASHBOARD}/user/${id}`,
   },
 
   error: {

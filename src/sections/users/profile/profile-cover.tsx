@@ -1,17 +1,27 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import ListItemText from '@mui/material/ListItemText';
+import { Typography } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { bgGradient } from 'src/theme/css';
+import { useUserProfile } from 'src/store/user/userProfile';
+
+import UserStatus from 'src/components/user-status/user-status';
+import { USER_STATUS } from 'src/components/user-status/user-status-item';
 
 import { IUserProfileCover } from 'src/types/user';
 
 // ----------------------------------------------------------------------
 
-export default function ProfileCover({ name, avatarUrl, role, coverUrl }: IUserProfileCover) {
+export default function ProfileCover({
+  name = 'John Deo',
+  avatarUrl,
+  role,
+  coverUrl,
+}: IUserProfileCover) {
   const theme = useTheme();
+  const status = useUserProfile((state) => state.status);
 
   return (
     <Box
@@ -24,48 +34,99 @@ export default function ProfileCover({ name, avatarUrl, role, coverUrl }: IUserP
         color: 'common.white',
       }}
     >
+      {/* <Box
+        sx={{
+          position: 'absolute',
+          left: '-16px',
+          top: '-16px',
+        }}
+      >
+        <Iconify
+          icon="material-symbols:privacy-tip-outline"
+          sx={{
+            width: '128px',
+            height: '128px',
+            color: alpha(theme.palette.primary.main, 0.8),
+          }}
+        />
+      </Box> */}
+
       <Stack
         direction={{ xs: 'column', md: 'row' }}
+        alignItems={{ xs: 'center', md: 'flex-end' }}
+        spacing={2}
         sx={{
-          left: { md: 24 },
-          bottom: { md: 24 },
+          left: { md: 12 },
+          bottom: { md: 12 },
           zIndex: { md: 10 },
           pt: { xs: 6, md: 0 },
           position: { md: 'absolute' },
         }}
       >
-        <Avatar
-          alt={name}
-          src={avatarUrl}
+        <Box
           sx={{
-            mx: 'auto',
-            width: { xs: 64, md: 128 },
-            height: { xs: 64, md: 128 },
-            border: `solid 2px ${theme.palette.common.white}`,
+            position: 'relative',
           }}
         >
-          {name?.charAt(0).toUpperCase()}
-        </Avatar>
+          <Avatar
+            alt={name}
+            src={avatarUrl || ''}
+            sx={{
+              mx: 'auto',
+              width: { xs: 64, md: 128 },
+              height: { xs: 64, md: 128 },
+              fontSize: { xs: 32, md: 64 },
+              backgroundColor: alpha(theme.palette.background.default, 0.2),
+              color: 'primary.main',
+              border: `solid 2px ${theme.palette.primary.main}`,
+            }}
+          >
+            {name?.charAt(0).toUpperCase()}
+          </Avatar>
 
-        <ListItemText
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.25,
+            }}
+          >
+            <UserStatus
+              data={USER_STATUS.status[0]}
+              sx={{
+              }}
+            />
+            <UserStatus
+              data={USER_STATUS.status[1]}
+              sx={{
+              }}
+            />
+            <UserStatus
+              data={USER_STATUS.status[2]}
+              sx={{
+              }}
+            />
+            <UserStatus
+              data={USER_STATUS.status[3]}
+              sx={{
+              }}
+            />
+          </Box>
+        </Box>
+
+        <Box
           sx={{
-            mt: 3,
-            ml: { md: 3 },
-            textAlign: { xs: 'center', md: 'unset' },
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: {
+              sm: 'center',
+              md: 'flex-end',
+            }
           }}
-          primary={name}
-          secondary={role}
-          primaryTypographyProps={{
-            typography: 'h4',
-          }}
-          secondaryTypographyProps={{
-            mt: 0.5,
-            color: 'inherit',
-            component: 'span',
-            typography: 'body2',
-            sx: { opacity: 0.48 },
-          }}
-        />
+        >
+          <Typography variant="caption">DevOps Engineer</Typography>
+          <Typography variant="h4">John Deo</Typography>
+        </Box>
       </Stack>
     </Box>
   );
