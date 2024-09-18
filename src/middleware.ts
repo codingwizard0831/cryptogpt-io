@@ -3,14 +3,19 @@ import type { NextRequest } from 'next/server';
 
 import { supabase } from 'src/lib/supabase';
 
+const publicEndpoints = [
+    '/api/auth/',
+    '/api/profile/status/',
+]
+
 export async function middleware(request: NextRequest) {
-    // console.log('Middleware executed for path:', request.nextUrl.pathname);
+    console.log('Middleware executed for path:', request.nextUrl.pathname);
 
     if (request.method === 'OPTIONS') {
         return NextResponse.next();
     }
 
-    if (request.nextUrl.pathname.startsWith('/api/') && !request.nextUrl.pathname.startsWith('/api/auth/')) {
+    if (request.nextUrl.pathname.startsWith('/api/') && !publicEndpoints.includes(request.nextUrl.pathname)) {
         const token = request.headers.get('Authorization')?.split('Bearer ')[1];
 
         if (!token) {
