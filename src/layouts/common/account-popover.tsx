@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
 import { m } from 'framer-motion';
+import { useMemo, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -15,6 +15,8 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+
+import axios, { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useUserProfile } from 'src/store/user/userProfile';
@@ -69,6 +71,23 @@ export default function AccountPopover() {
   }, {}), [StatusData, status]);
   console.log("renderedUserStatusData", renderedUserStatusData);
 
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const response = await axios.get(endpoints.profile.index);
+        console.log("data", response.data);
+        if (response.data.length > 0) {
+          setStatus(response.data[0].status.split(','));
+        } else {
+          setStatus([]);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchStatus();
+  }, [setStatus])
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -87,12 +106,29 @@ export default function AccountPopover() {
   const handleChangeUserStatus = (_status: UserStatusType) => {
     console.log(_status);
     const needReplaceStatus = status.map((item) => StatusData.find(_item => _item.id === item)).findIndex(item => item?.type === _status.type);
+    const currentStatusString = status.join(',');
+    let newStatusString = "";
     if (needReplaceStatus !== -1) {
       const newStatus = [...status];
       newStatus[needReplaceStatus] = _status.id;
       setStatus([...newStatus]);
+      newStatusString = newStatus.join(',');
     } else {
       setStatus([...status, _status.id]);
+      newStatusString = [...status, _status.id].join(',');
+    }
+    try {
+      if (newStatusString !== currentStatusString) {
+        axios.put(endpoints.profile.status, { status: newStatusString })
+          .then((response) => {
+            console.log("response", response);
+          })
+          .catch((error) => {
+            console.error(error);
+          })
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
   console.log("status", status);
@@ -191,7 +227,7 @@ export default function AccountPopover() {
           }}
           onClick={() => userStatusDialogVisible.onTrue()}
         >
-          <UserStatusItem data={StatusData[0]} sx={{
+          <UserStatusItem data={StatusData.find(item => item.id === status[0]) || StatusData[0]} sx={{
             width: '16px',
             height: '16px',
           }} onClick={() => userStatusDialogVisible.onTrue()} />
@@ -199,7 +235,7 @@ export default function AccountPopover() {
             flex: 1,
             textAlign: 'left',
           }}>
-            Online
+            {(StatusData.find(item => item.id === status[0]) || StatusData[0]).label}
           </Typography>
 
           <IconButton size="small">

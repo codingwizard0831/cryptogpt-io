@@ -4,6 +4,12 @@ import { supabase } from "src/lib/supabase";
 
 export async function POST(req: NextRequest) {
     try {
+        const userHeader = req.headers.get("x-user") as string;
+        if (!userHeader) {
+            return NextResponse.json({ success: false, error: "User not authenticated" }, { status: 401 });
+        }
+        const user = JSON.parse(userHeader);
+
         const body = await req.json();
         console.log('body', body);
 
@@ -49,15 +55,19 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
     try {
+        const token = req.headers.get('Authorization')?.split('Bearer ')[1];
+        const { data: { user } } = await supabase.auth.getUser(token);
+        console.log('user', user);
+
         const body = await req.json();
         console.log('body', body);
 
-        const { id, label, type, color, icon } = body;
+        const { status } = body;
 
         const { data, error } = await supabase
-            .from('user_status')
-            .update({ label, type, color, icon })
-            .eq('value', id)
+            .from('users_profile')
+            .update({ status })
+            .eq('user_id', user?.id)
             .select();
 
         if (error) {
