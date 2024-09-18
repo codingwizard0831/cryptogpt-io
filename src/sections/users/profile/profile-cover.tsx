@@ -8,7 +8,6 @@ import { bgGradient } from 'src/theme/css';
 import { useUserProfile } from 'src/store/user/userProfile';
 
 import UserStatus from 'src/components/user-status/user-status';
-import { USER_STATUS } from 'src/components/user-status/user-status-item';
 
 import { IUserProfileCover } from 'src/types/user';
 
@@ -21,6 +20,7 @@ export default function ProfileCover({
   coverUrl,
 }: IUserProfileCover) {
   const theme = useTheme();
+  const StatusData = useUserProfile(state => state.statusData);
   const status = useUserProfile((state) => state.status);
 
   return (
@@ -92,22 +92,17 @@ export default function ProfileCover({
             }}
           >
             <UserStatus
-              data={USER_STATUS.status[0]}
+              data={StatusData.find(item => item.id === status[0]) || StatusData[0]}
               sx={{
               }}
             />
             <UserStatus
-              data={USER_STATUS.status[1]}
+              data={StatusData.find(item => item.id === status[1]) || StatusData[0]}
               sx={{
               }}
             />
             <UserStatus
-              data={USER_STATUS.status[2]}
-              sx={{
-              }}
-            />
-            <UserStatus
-              data={USER_STATUS.status[3]}
+              data={StatusData.find(item => item.id === status[2]) || StatusData[0]}
               sx={{
               }}
             />
