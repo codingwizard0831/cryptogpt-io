@@ -1,4 +1,5 @@
 import { m } from 'framer-motion';
+import { useMemo, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -15,7 +16,10 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import axios, { endpoints } from 'src/utils/axios';
+
 import { useAuthContext } from 'src/auth/hooks';
+import { useUserProfile } from 'src/store/user/userProfile';
 import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
 
 import Iconify from 'src/components/iconify';
@@ -24,7 +28,7 @@ import { StyledDialog } from 'src/components/styled-component';
 import UserStatus from 'src/components/user-status/user-status';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import UserStatusButton from 'src/components/user-status/user-status-button';
-import UserStatusItem, { USER_STATUS } from 'src/components/user-status/user-status-item';
+import UserStatusItem, { UserStatusType } from 'src/components/user-status/user-status-item';
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +55,39 @@ export default function AccountPopover() {
   const popover = usePopover();
   const userStatusDialogVisible = useBoolean(false);
 
+  const StatusData = useUserProfile(state => state.statusData);
+  const status = useUserProfile((state) => state.status);
+  const setStatus = useUserProfile((state) => state.setStatus);
+
+  const renderedUserStatusData = useMemo(() => StatusData.reduce((acc, _status) => {
+    if (!acc[_status.type]) {
+      acc[_status.type] = [];
+    }
+    acc[_status.type].push({
+      ..._status,
+      isSelected: status.includes(_status.type)
+    });
+    return acc;
+  }, {}), [StatusData, status]);
+  console.log("renderedUserStatusData", renderedUserStatusData);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const response = await axios.get(endpoints.profile.index);
+        console.log("data", response.data);
+        if (response.data.length > 0) {
+          setStatus(response.data[0].status.split(','));
+        } else {
+          setStatus([]);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchStatus();
+  }, [setStatus])
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -65,6 +102,36 @@ export default function AccountPopover() {
     popover.onClose();
     router.push(path);
   };
+
+  const handleChangeUserStatus = (_status: UserStatusType) => {
+    console.log(_status);
+    const needReplaceStatus = status.map((item) => StatusData.find(_item => _item.id === item)).findIndex(item => item?.type === _status.type);
+    const currentStatusString = status.join(',');
+    let newStatusString = "";
+    if (needReplaceStatus !== -1) {
+      const newStatus = [...status];
+      newStatus[needReplaceStatus] = _status.id;
+      setStatus([...newStatus]);
+      newStatusString = newStatus.join(',');
+    } else {
+      setStatus([...status, _status.id]);
+      newStatusString = [...status, _status.id].join(',');
+    }
+    try {
+      if (newStatusString !== currentStatusString) {
+        axios.put(endpoints.profile.status, { status: newStatusString })
+          .then((response) => {
+            console.log("response", response);
+          })
+          .catch((error) => {
+            console.error(error);
+          })
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  console.log("status", status);
 
   return (
     <>
@@ -111,19 +178,15 @@ export default function AccountPopover() {
           backgroundColor: theme => alpha(theme.palette.background.default, 0.8),
           borderRadius: 2,
         }}>
-          <UserStatusItem data={USER_STATUS.status[0]} sx={{
+          <UserStatusItem data={StatusData.find(item => item.id === status[0]) || StatusData[0]} sx={{
             width: '16px',
             height: '16px',
           }} />
-          <UserStatusItem data={USER_STATUS.status[1]} sx={{
+          <UserStatusItem data={StatusData.find(item => item.id === status[1]) || StatusData[0]} sx={{
             width: '16px',
             height: '16px',
           }} />
-          <UserStatusItem data={USER_STATUS.status[2]} sx={{
-            width: '16px',
-            height: '16px',
-          }} />
-          <UserStatusItem data={USER_STATUS.status[3]} sx={{
+          <UserStatusItem data={StatusData.find(item => item.id === status[2]) || StatusData[0]} sx={{
             width: '16px',
             height: '16px',
           }} />
@@ -164,7 +227,7 @@ export default function AccountPopover() {
           }}
           onClick={() => userStatusDialogVisible.onTrue()}
         >
-          <UserStatusItem data={USER_STATUS.status[0]} sx={{
+          <UserStatusItem data={StatusData.find(item => item.id === status[0]) || StatusData[0]} sx={{
             width: '16px',
             height: '16px',
           }} onClick={() => userStatusDialogVisible.onTrue()} />
@@ -172,7 +235,7 @@ export default function AccountPopover() {
             flex: 1,
             textAlign: 'left',
           }}>
-            Online
+            {(StatusData.find(item => item.id === status[0]) || StatusData[0]).label}
           </Typography>
 
           <IconButton size="small">
@@ -217,30 +280,24 @@ export default function AccountPopover() {
                 {user_profile?.user_name?.charAt(0).toUpperCase() || 'J'}
               </Avatar>
 
-              <UserStatus data={USER_STATUS.status[0]} sx={{
-                position: 'absolute',
-                top: '-8px',
-                left: '-8px',
-              }} />
-              <UserStatus data={USER_STATUS.status[1]} sx={{
-                position: 'absolute',
-                top: '-8px',
-                right: '-8px',
-              }} />
-              <UserStatus data={USER_STATUS.status[2]} sx={{
-                position: 'absolute',
-                bottom: '-8px',
-                left: '-8px',
-              }} />
-              <UserStatus data={USER_STATUS.status[3]} sx={{
-                position: 'absolute',
-                bottom: '-8px',
-                right: '-8px',
-              }} />
+              <Box sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 1,
+              }}>
+                <UserStatus data={StatusData.find(item => item.id === status[0]) || StatusData[0]} sx={{
+                }} />
+                <UserStatus data={StatusData.find(item => item.id === status[1]) || StatusData[0]} sx={{
+                }} />
+                <UserStatus data={StatusData.find(item => item.id === status[2]) || StatusData[0]} sx={{
+                }} />
+              </Box>
+
             </Box>
 
             {
-              Object.keys(USER_STATUS).map((_statusArray, _g_index) => (
+              Object.keys(renderedUserStatusData).map((_statusArray, _g_index) => (
                 <Stack key={`status-group-${_g_index}`} direction='column' alignItem="center" spacing={2} sx={{
                   p: 2,
                 }}>
@@ -254,10 +311,15 @@ export default function AccountPopover() {
                     width: '400px',
                   }}>
                     {
-                      USER_STATUS[_statusArray].map((_status) => (
-                        <UserStatusButton key={`user-status-button-${_g_index}-${_status.id}`} data={_status} sx={{
-                          width: 'calc(50% - 8px)',
-                        }} />
+                      renderedUserStatusData[_statusArray].map((_status) => (
+                        <UserStatusButton key={`user-status-button-${_g_index}-${_status.id}`}
+                          data={_status}
+                          isSelected={status.includes(_status.id)}
+                          onClick={() => handleChangeUserStatus(_status)}
+                          sx={{
+                            width: 'calc(50% - 8px)',
+                          }}
+                        />
                       ))
                     }
                   </Stack>

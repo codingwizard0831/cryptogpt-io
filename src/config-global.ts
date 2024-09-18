@@ -72,3 +72,7 @@ export const MEXC_API = {
 };
 // Ecryption
 export const ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || '';
+
+// RUST
+
+export const RUST_WEBSOCKET_URL = process.env.NEXT_PUBLIC_RUST_WEBSOCKET_URL || '';

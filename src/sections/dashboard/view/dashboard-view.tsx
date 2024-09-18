@@ -148,6 +148,7 @@ export default function DashboardView() {
                             p: 2,
                             height: '100%',
                             transition: 'aspect-ratio 0.5s',
+                            flexShrink: 0,
                             aspectRatio: isAIChatWindowFull.value ? `${chatAreaFullWidth}/309` : '2/1',
                             backdropFilter: 'none',
                         }}>
@@ -156,6 +157,7 @@ export default function DashboardView() {
 
                         <Card sx={{
                             height: '100%',
+                            flexShrink: 0,
                             aspectRatio: '1.2/1',
                         }}>
                             <DashboardTradeHome onBlockResize={() => isTradeWindowFull.onToggle()} />
@@ -164,6 +166,7 @@ export default function DashboardView() {
                         <Card sx={{
                             p: 2,
                             height: '100%',
+                            flexShrink: 0,
                             aspectRatio: '1.2/1',
                         }}>
                             <DashboardTracker />
@@ -172,6 +175,7 @@ export default function DashboardView() {
                         <Card sx={{
                             p: 2,
                             height: '100%',
+                            flexShrink: 0,
                             aspectRatio: '2/1',
                         }}>
                             <DashboardTopMover />
@@ -187,6 +191,7 @@ export default function DashboardView() {
                             p: 1,
                             height: '100%',
                             transition: 'aspect-ratio 0.5s',
+                            flexShrink: 0,
                             aspectRatio: isAIChatWindowFull.value ? `${chatAreaFullWidth}/309` : '2/1',
                             backdropFilter: 'none',
                         }}>
@@ -195,6 +200,8 @@ export default function DashboardView() {
 
                         <Card sx={{
                             height: '100%',
+                            flexShrink: 0,
+                            aspectRatio: '1.2/1',
                         }}>
                             <DashboardTradeHome onBlockResize={() => isTradeWindowFull.onToggle()} />
                         </Card>
@@ -202,6 +209,8 @@ export default function DashboardView() {
                         <Card sx={{
                             p: 1,
                             height: '100%',
+                            flexShrink: 0,
+                            aspectRatio: '1.2/1',
                         }}>
                             <DashboardTracker />
                         </Card>

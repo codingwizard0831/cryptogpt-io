@@ -1,4 +1,6 @@
-const wsUrl = process.env.NEXT_PUBLIC_RUST_WEBSOCKET_URL || '';
+import { RUST_WEBSOCKET_URL } from 'src/config-global';
+
+const wsUrl = RUST_WEBSOCKET_URL;
 
 type OrderBookRequest = {
   id: string;
