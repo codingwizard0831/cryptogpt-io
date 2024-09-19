@@ -35,6 +35,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_JWT_SECRET: "8S2/kqNKGJk+kbHcnSffB55NnI8Dm0eMmFxrNYQGFAJigdUUstruoQHbvONgdF9Xn9BmcRzmGNX3QfQ3DX2Usg=="
           NEXT_PUBLIC_STRIPE_SECRET_API_KEY: "sk_test_51PVCmpP0ydzVB4dg8Be2HBlmGFbcMpCJRWuIvPeHlDLlkyOgMVFWW7IWAi4SycTIZv8dm7cNAcY5v292XIa0xVFy00TQ9d7Ilj"
           NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET: "whsec_3vf3vmW4vXSY70DsEMPfYiEqnayXshAD"
+          NEXT_PUBLIC_ENCRYPTION_KEY: "5ebe2294ecd0e0f08eab7690d2a6ee69f9e4e3f6aa8f1d53f4a9f97e1baffbff"
         run: yarn build
 
   deploy:
