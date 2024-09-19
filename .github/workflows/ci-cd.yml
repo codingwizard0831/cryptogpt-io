@@ -27,16 +27,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --network-timeout 100000000
 
-      - name: Load environment variables
-        run: |
-          echo "Loading .env.production"
-          set -a
-          source .env.production
-          set +a
-
       - name: Build
-        env:
-          NODE_ENV: production
         run: yarn build
 
   deploy:
