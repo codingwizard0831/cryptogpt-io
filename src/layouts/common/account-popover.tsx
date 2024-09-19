@@ -56,10 +56,10 @@ export default function AccountPopover() {
   const userStatusDialogVisible = useBoolean(false);
 
   const StatusData = useUserProfile(state => state.statusData);
+  const setStatusData = useUserProfile((state) => state.setStatusData);
   const status = useUserProfile((state) => state.status);
   const setStatus = useUserProfile((state) => state.setStatus);
-  const setStatusData = useUserProfile((state) => state.setStatusData);
-
+  const setUserInfo = useUserProfile((state) => state.setUserInfo);
 
   const renderedUserStatusData = useMemo(() => StatusData.reduce((acc, _status) => {
     if (!acc[_status.type]) {
@@ -78,7 +78,10 @@ export default function AccountPopover() {
       try {
         const response = await axios.get(endpoints.profile.status);
         if (response.data.length > 0) {
-          setStatusData(response.data);
+          setStatusData(response.data.map((item) => ({
+            ...item,
+            id: item.value,
+          })));
         } else {
           setStatusData([]);
         }
@@ -88,6 +91,25 @@ export default function AccountPopover() {
     }
     fetchStatusData();
   }, [setStatusData])
+
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(endpoints.profile.index);
+        console.log("data", response.data);
+        if (response.data.length > 0) {
+          setUserInfo(response.data);
+          setStatus(response.data[0].status.split(','));
+        } else {
+          console.error("No user info found");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchUserInfo();
+  }, [setUserInfo, setStatus])
 
   const handleLogout = async () => {
     try {
