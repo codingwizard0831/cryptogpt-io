@@ -9,35 +9,6 @@ on:
       - staging
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      # Set up Node.js (example for a Node.js app, modify for your stack)
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.14.0'
-
-      # Install dependencies and run build
-      - name: Install dependencies
-        run: yarn install --network-timeout 100000000
-
-      - name: Build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: "https://gbkiwgwvldochsmghhji.supabase.co"
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2l3Z3d2bGRvY2hzbWdoaGppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTc5NjY5NTgsImV4cCI6MjAzMzU0Mjk1OH0.FQKpHWfcizbV7Kr8pQr_ncKGlPtDKHA6cYi0vb4Y6Bw"
-          NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2l3Z3d2bGRvY2hzbWdoaGppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxNzk2Njk1OCwiZXhwIjoyMDMzNTQyOTU4fQ.PN9DEmNWX-P8LozchtnOMflV8kp8pq_cyEY5Im1ca8k"
-          NEXT_PUBLIC_SUPABASE_JWT_SECRET: "8S2/kqNKGJk+kbHcnSffB55NnI8Dm0eMmFxrNYQGFAJigdUUstruoQHbvONgdF9Xn9BmcRzmGNX3QfQ3DX2Usg=="
-          NEXT_PUBLIC_STRIPE_SECRET_API_KEY: "sk_test_51PVCmpP0ydzVB4dg8Be2HBlmGFbcMpCJRWuIvPeHlDLlkyOgMVFWW7IWAi4SycTIZv8dm7cNAcY5v292XIa0xVFy00TQ9d7Ilj"
-          NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET: "whsec_3vf3vmW4vXSY70DsEMPfYiEqnayXshAD"
-          NEXT_PUBLIC_ENCRYPTION_KEY: "5ebe2294ecd0e0f08eab7690d2a6ee69f9e4e3f6aa8f1d53f4a9f97e1baffbff"
-        run: yarn build
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
