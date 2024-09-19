@@ -28,4 +28,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          ssh -i ~/.ssh/id_rsa ec2-user@3.112.253.250 "cd /home/ubuntu/cryptogpt-io && git pull && yarn install --network-timeout 100000000 && yarn build && pm2 restart all"
+          ssh -i /home/ubuntu/.ssh/id_rsa ubuntu@3.112.253.250 "cd /home/ubuntu/cryptogpt-io && git pull && yarn install --network-timeout 100000000 && yarn build && pm2 restart all"
