@@ -29,10 +29,10 @@ jobs:
 
       - name: Build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ""
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ""
-          NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: ""
-          NEXT_PUBLIC_SUPABASE_JWT_SECRET: ""
+          NEXT_PUBLIC_SUPABASE_URL: "https://gbkiwgwvldochsmghhji.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2l3Z3d2bGRvY2hzbWdoaGppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTc5NjY5NTgsImV4cCI6MjAzMzU0Mjk1OH0.FQKpHWfcizbV7Kr8pQr_ncKGlPtDKHA6cYi0vb4Y6Bw"
+          NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdia2l3Z3d2bGRvY2hzbWdoaGppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxNzk2Njk1OCwiZXhwIjoyMDMzNTQyOTU4fQ.PN9DEmNWX-P8LozchtnOMflV8kp8pq_cyEY5Im1ca8k"
+          NEXT_PUBLIC_SUPABASE_JWT_SECRET: "8S2/kqNKGJk+kbHcnSffB55NnI8Dm0eMmFxrNYQGFAJigdUUstruoQHbvONgdF9Xn9BmcRzmGNX3QfQ3DX2Usg=="
         run: yarn build
 
   deploy:
