@@ -8,8 +8,6 @@ import { Box, Card } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { _userAbout } from 'src/_mock';
-
 import Iconify from 'src/components/iconify';
 
 import AccountCredit from '../account-credit';
@@ -126,7 +124,7 @@ export default function DashboardProfileView() {
 
                 {currentTab === 'notifications' && <AccountNotifications />}
 
-                {currentTab === 'social' && <AccountSocialLinks socialLinks={_userAbout.socialLinks} />}
+                {currentTab === 'social' && <AccountSocialLinks />}
 
                 {currentTab === 'security' && <AccountChangePassword />}
 
