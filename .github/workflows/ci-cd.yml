@@ -21,6 +21,15 @@ jobs:
       - name: Install AWS CLI
         run: sudo apt-get install awscli -y
 
+      - name: Add SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          name: id_rsa
+          known_hosts: |
+            github.com
+            3.112.253.250
+
       # Deploy to EC2 instance via SSH (requires your SSH private key in secrets)
       - name: Deploy to EC2
         env:
@@ -28,4 +37,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          ssh -i /home/ubuntu/.ssh/id_rsa ubuntu@3.112.253.250 "cd /home/ubuntu/cryptogpt-io && git pull && yarn install --network-timeout 100000000 && yarn build && pm2 restart all"
+          ssh -o StrictHostKeyChecking=no ubuntu@3.112.253.250 "cd /home/ubuntu/cryptogpt-io && git pull && yarn install --network-timeout 100000000 && yarn build && pm2 restart all"
