@@ -13,28 +13,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code again
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Install AWS CLI
       - name: Install AWS CLI
         run: sudo apt-get install awscli -y
 
-      - name: Add SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          name: id_rsa
-          known_hosts: |
-            github.com
-            3.112.253.250
-
-      # Deploy to EC2 instance via SSH (requires your SSH private key in secrets)
-      - name: Deploy to EC2
+      - name: Deploy to Server via SSH
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@3.112.253.250 "cd /home/ubuntu/cryptogpt-io && git pull && yarn install --network-timeout 100000000 && yarn build && pm2 restart all"
+          # Create the .ssh directory and set permissions
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          # Start the SSH agent and add the key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+
+          # Add the server to known_hosts to prevent verification prompts
+          ssh-keyscan -H 3.112.253.250 >> ~/.ssh/known_hosts
+
+          # Use rsync with SSH to deploy the files (excluding unnecessary folders)
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa" --exclude=node_modules --exclude=.git ./ ubuntu@3.112.253.250:/home/ubuntu/cryptogpt-io
+
+          # SSH into the EC2 instance and complete post-deployment tasks
+          ssh -o StrictHostKeyChecking=no ubuntu@3.112.253.250 << 'EOF'
+            cd /home/ubuntu/cryptogpt-io
+            git pull
+            yarn install --network-timeout 100000000
+            yarn build
+            pm2 restart all
+          EOF
