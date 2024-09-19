@@ -13,17 +13,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install AWS CLI
-        run: sudo apt-get install awscli -y
-
-      - name: Deploy to Server via SSH
+      # Create the .ssh directory and set permissions
+      - name: Add SSH key
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          # Create the .ssh directory and set permissions
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
@@ -32,13 +30,13 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa
 
-          # Add the server to known_hosts to prevent verification prompts
+          # Add the EC2 instance to known_hosts
           ssh-keyscan -H 3.112.253.250 >> ~/.ssh/known_hosts
 
-          # Use rsync with SSH to deploy the files (excluding unnecessary folders)
+          # Deploy the project using rsync or SSH
           rsync -avz -e "ssh -i ~/.ssh/id_rsa" --exclude=node_modules --exclude=.git ./ ubuntu@3.112.253.250:/home/ubuntu/cryptogpt-io
 
-          # SSH into the EC2 instance and complete post-deployment tasks
+          # Connect to EC2 instance and run commands
           ssh -o StrictHostKeyChecking=no ubuntu@3.112.253.250 << 'EOF'
             cd /home/ubuntu/cryptogpt-io
             git pull
