@@ -28,6 +28,8 @@ jobs:
         run: yarn install --network-timeout 100000000
 
       - name: Build
+        env:
+          SUPABASE_URL: "https://cryptogpt-io.supabase.co"
         run: yarn build
 
   deploy:
