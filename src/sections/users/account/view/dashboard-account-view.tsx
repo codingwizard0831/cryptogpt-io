@@ -1,12 +1,16 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { Box, Card } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
+
+import axios, { endpoints } from 'src/utils/axios';
+
+import { useUserProfile } from 'src/store/user/userProfile';
 
 import Iconify from 'src/components/iconify';
 
@@ -79,6 +83,26 @@ export default function DashboardProfileView() {
     const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
         setCurrentTab(newValue);
     }, []);
+
+    const setStatus = useUserProfile((state) => state.setStatus);
+    const setUserInfo = useUserProfile((state) => state.setUserInfo);
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const response = await axios.get(endpoints.profile.index);
+                console.log("data", response.data);
+                if (response.data.length > 0) {
+                    setUserInfo(response.data);
+                    setStatus(response.data[0].status.split(','));
+                } else {
+                    console.error("No user info found");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchUserInfo();
+    }, [setUserInfo, setStatus])
 
     return (
         <Box sx={{

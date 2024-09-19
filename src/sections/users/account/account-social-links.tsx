@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -9,57 +9,49 @@ import { Select, MenuItem, TextField, IconButton } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import axios, { endpoints } from 'src/utils/axios';
+
+import { useUserProfile } from 'src/store/user/userProfile';
+
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 
 
 // ----------------------------------------------------------------------
 
-const SOCIAL_LINKS = [
-  {
-    name: 'facebook',
-    icon: 'eva:facebook-fill',
-    color: '#1877F2',
-  },
-  {
-    name: 'instagram',
-    icon: 'ant-design:instagram-filled',
-    color: '#DF3E30',
-  },
-  {
-    name: 'linkedin',
-    icon: 'eva:linkedin-fill',
-    color: '#006097',
-  },
-  {
-    name: 'twitter',
-    icon: 'eva:twitter-fill',
-    color: '#1C9CEA',
-  }
-]
-
 export default function AccountSocialLinks() {
   const { enqueueSnackbar } = useSnackbar();
-  const [socialLinks, setSocialLinks] = useState<{
-    [key: string]: string;
-  }[]>([
-    {
-      name: 'facebook',
-      value: "socialLinks.facebook",
-    },
-    {
-      name: 'instagram',
-      value: 'socialLinks.instagram',
-    },
-  ]);
+
+  const socialLinksData = useUserProfile((state) => state.socialLinksData);
+  const setSocialLinksData = useUserProfile((state) => state.setSocialLinksData);
+
+  const setSocialLinks = useUserProfile((state) => state.setSocialLinks);
+  const socialLinks = useUserProfile((state) => state.socialLinks);
+
+  const isAddingPartVisible = useBoolean();
   const [newSocialSite, setNewSocialSite] = useState<string>('');
   const [newSocialLink, setNewSocialLink] = useState<string>('');
   const restSocialLinks = useMemo(() => {
-    const updatedRestSocialLinks = SOCIAL_LINKS.filter((social) => !socialLinks.find((_link) => _link.name === social.name));
+    const updatedRestSocialLinks = socialLinksData.filter((social) => !socialLinks.find((_link) => _link.name === social.name));
     setNewSocialSite(updatedRestSocialLinks[0]?.name || '');
     return updatedRestSocialLinks;
-  }, [socialLinks]);
-  const isAddingPartVisible = useBoolean();
+  }, [socialLinksData, socialLinks]);
+  const isSaveLoading = useBoolean();
+
+  useEffect(() => {
+    const fetchSocialLinks = async () => {
+      try {
+        const response = await axios.get(endpoints.profile.social);
+        console.log(response.data);
+        if (response.data) {
+          setSocialLinksData(response.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchSocialLinks();
+  }, [setSocialLinksData]);
 
   const handleSaveNewSocialLink = () => {
     setSocialLinks([...socialLinks, {
@@ -84,8 +76,22 @@ export default function AccountSocialLinks() {
     isAddingPartVisible.onFalse();
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log(socialLinks);
+    try {
+      isSaveLoading.onTrue();
+      const response = await axios.put(endpoints.profile.social, {
+        social_links: socialLinks
+      });
+      if (response.data) {
+        enqueueSnackbar('Social links updated successfully', { variant: 'success' });
+      }
+      console.log(response.data);
+      isSaveLoading.onFalse();
+    } catch (error) {
+      console.error(error);
+      isSaveLoading.onFalse();
+    }
   }
 
   return (
@@ -93,7 +99,7 @@ export default function AccountSocialLinks() {
       p: 3,
       backdropFilter: 'none',
     }}>
-      {SOCIAL_LINKS.map((social) => {
+      {socialLinksData.map((social) => {
         const link = socialLinks.find((_link) => _link.name === social.name);
         if (!link) {
           return null;
@@ -109,7 +115,7 @@ export default function AccountSocialLinks() {
                 <Iconify
                   width={24}
                   icon={
-                    social.icon || ''
+                    social.logo || ''
                   }
                   color={
                     social.color || ''
@@ -160,7 +166,7 @@ export default function AccountSocialLinks() {
                 >
                   {
                     restSocialLinks.map((social) => <MenuItem key={social.name} value={social.name}>
-                      <Iconify icon={social.icon} width={24} color={social.color} />
+                      <Iconify icon={social.logo} width={24} color={social.color} />
                     </MenuItem>
                     )}
                 </Select>
@@ -186,14 +192,14 @@ export default function AccountSocialLinks() {
       <Stack direction="row" justifyContent="flex-end" spacing={2}>
 
         {
-          socialLinks.length !== SOCIAL_LINKS.length && !isAddingPartVisible.value && (
+          socialLinks.length !== socialLinksData.length && !isAddingPartVisible.value && (
             <LoadingButton type="submit" variant="contained" onClick={isAddingPartVisible.onTrue}>
               Add
             </LoadingButton>
           )
         }
 
-        <LoadingButton type="submit" variant="contained" onClick={handleSubmit}>
+        <LoadingButton type="submit" variant="contained" onClick={handleSubmit} loading={isSaveLoading.value}>
           Save Changes
         </LoadingButton>
       </Stack>

@@ -58,6 +58,8 @@ export default function AccountPopover() {
   const StatusData = useUserProfile(state => state.statusData);
   const status = useUserProfile((state) => state.status);
   const setStatus = useUserProfile((state) => state.setStatus);
+  const setStatusData = useUserProfile((state) => state.setStatusData);
+
 
   const renderedUserStatusData = useMemo(() => StatusData.reduce((acc, _status) => {
     if (!acc[_status.type]) {
@@ -72,21 +74,20 @@ export default function AccountPopover() {
   console.log("renderedUserStatusData", renderedUserStatusData);
 
   useEffect(() => {
-    const fetchStatus = async () => {
+    const fetchStatusData = async () => {
       try {
-        const response = await axios.get(endpoints.profile.index);
-        console.log("data", response.data);
+        const response = await axios.get(endpoints.profile.status);
         if (response.data.length > 0) {
-          setStatus(response.data[0].status.split(','));
+          setStatusData(response.data);
         } else {
-          setStatus([]);
+          setStatusData([]);
         }
       } catch (error) {
         console.error(error);
       }
     }
-    fetchStatus();
-  }, [setStatus])
+    fetchStatusData();
+  }, [setStatusData])
 
   const handleLogout = async () => {
     try {
