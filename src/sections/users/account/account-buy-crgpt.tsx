@@ -135,11 +135,11 @@ const UIComponents = () => {
       enqueueSnackbar(`You must purchase over $10.`, { variant: 'error' });
       return;
     }
-    if (!address) {
-      enqueueSnackbar(`You must enter your ERC20 token address.`, { variant: 'error' });
-      return;
-    }
-    if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+    // if (!address) {
+    //   enqueueSnackbar(`You must enter your ERC20 token address.`, { variant: 'error' });
+    //   return;
+    // }
+    if (address && !/^(0x)?[0-9a-f]{40}$/i.test(address)) {
       enqueueSnackbar(`Please enter a valid ERC20 token address.`, { variant: 'error' });
       return;
     }
@@ -262,7 +262,7 @@ const UIComponents = () => {
   const {
     confirmCardPayment,
   } = useStripe();
-  
+
   const confirmPaymentMethodApple = React.useCallback(async (e: any, paymentIntent: any) => {
     const payResult: any = await confirmCardPayment(
       paymentIntent.client_secret,
@@ -322,38 +322,38 @@ const UIComponents = () => {
         </Typography>
 
         <Stack direction="column" sx={{ width: "100%", p: 3 }}>
-          <TextField
-            variant="outlined"
-            fullWidth
-            type="number"
-            label="Amount(USD)"
-            value={amount}
-            InputLabelProps={{ shrink: true }}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              const value = parseFloat(event.target.value);
-              if (Number.isNaN(value) || value < 0) {
-                setAmount(0);
-              } else {
-                setAmount(value);
-              }
-            }}
-          />
+          <Stack direction="row" sx={{ width: "100%", gap: 2 }}>
+            <TextField
+              variant="outlined"
+              sx={{ width: "200px" }}
+              type="number"
+              label="Amount(USD)"
+              value={amount}
+              InputLabelProps={{ shrink: true }}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                const value = parseFloat(event.target.value);
+                if (Number.isNaN(value) || value < 0) {
+                  setAmount(0);
+                } else {
+                  setAmount(value);
+                }
+              }}
+              placeholder='Please enter the amount in USD.'
+            />
+            <TextField
+              variant="outlined"
+              fullWidth
+              type="text"
+              label="ERC20 Address(optional)"
+              InputLabelProps={{ shrink: true }}
+              placeholder='Please enter your erc20 address for receiving CRGPT.'
+              value={address}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
+            />
+          </Stack>
           <Typography variant="caption" sx={{ width: "100%", pt: 2 }}>
             You will receive {(amount / currentPrice).toFixed(1)} CRGPT.
           </Typography>
-        </Stack>
-
-        <Stack direction="column" sx={{ width: "100%", p: 3, pt: 0 }}>
-          <TextField
-            variant="outlined"
-            fullWidth
-            type="text"
-            label="ERC20 Address"
-            InputLabelProps={{ shrink: true }}
-            placeholder='Please enter your erc20 address for receiving CRGPT.'
-            value={address}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
-          />
         </Stack>
 
         <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' }, ".InputElement": { color: "white" } }}>
