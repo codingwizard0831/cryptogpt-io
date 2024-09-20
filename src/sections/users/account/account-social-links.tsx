@@ -42,7 +42,6 @@ export default function AccountSocialLinks() {
     const fetchSocialLinks = async () => {
       try {
         const response = await axios.get(endpoints.profile.social);
-        console.log(response.data);
         if (response.data) {
           setSocialLinksData(response.data);
         }

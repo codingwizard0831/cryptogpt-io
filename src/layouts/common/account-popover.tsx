@@ -71,7 +71,6 @@ export default function AccountPopover() {
     });
     return acc;
   }, {}), [StatusData, status]);
-  console.log("renderedUserStatusData", renderedUserStatusData);
 
   useEffect(() => {
     const fetchStatusData = async () => {

@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { NextRequest, NextResponse } from 'next/server';
+
 import { signToken } from 'src/lib/utils';
 import { supabase, supabaseServiceRole } from 'src/lib/supabase';
 
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
     if (!authUser) {
       const { data: newUser, error: newUserError } =
         await supabaseServiceRole.auth.admin.createUser({
-          email: '',
+          email: `${address}@cryptogpt.io`,
           user_metadata: { address },
           email_confirm: true,
         });

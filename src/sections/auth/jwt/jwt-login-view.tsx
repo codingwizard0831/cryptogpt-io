@@ -25,7 +25,6 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import axios, { endpoints } from 'src/utils/axios';
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
 import { supabase } from 'src/lib/supabase';
@@ -105,20 +104,7 @@ export default function JwtLoginView() {
     isSubmitting.onTrue();
     try {
       await loginWithEmailAndPassword(email, password);
-      try {
-        const response = await axios.get(endpoints.profile.index);
-        console.log('test', response.data);
-        console.log('test', !response.data?.length);
-        console.log('test', !response.data[0]?.terms);
-        if (!response.data?.length || !response.data[0]?.terms) {
-          router.push(paths.dashboard.user.profileSetup);
-        } else {
-          router.push(returnTo || paths.dashboard.root);
-        }
-      } catch (err) {
-        console.error('Error fetching user profile:', err);
-        setErrorMsg(`Error fetching user profile: ${err}`);
-      }
+      enqueueSnackbar('Login successful', { variant: 'success' });
       isSubmitting.onFalse();
     } catch (error) {
       console.error(error);
@@ -397,6 +383,9 @@ export default function JwtLoginView() {
             />
           }
           onClick={isShowLoginOptions.onToggle}
+          sx={{
+            mb: 2,
+          }}
         >
           More options
         </Button>
