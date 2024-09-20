@@ -109,6 +109,7 @@ export const endpoints = {
     exchange: '/api/exchanges',
     exchange_keys: '/api/exchanges/key',
     status: '/api/profile/status',
+    social: '/api/profile/social',
   },
   history: {
     crgptToken: '/api/history/crgpt-token',
