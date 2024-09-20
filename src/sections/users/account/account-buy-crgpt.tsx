@@ -1,24 +1,28 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { styled } from '@mui/system';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import SvgIcon from '@mui/material/SvgIcon';
+import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
+import TableCell from '@mui/material/TableCell';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
 
 import usePayStripeCardPayment from 'src/hooks/use-pay-stripe-card-payment';
+import usePayStripeApplePayment from 'src/hooks/use-pay-stripe-apple-payment';
 
 import axios, { endpoints } from 'src/utils/axios';
 
-import Stripe from 'src/provider/Stripe';
+import Stripe, { useStripe } from 'src/provider/Stripe';
 
 import Label from 'src/components/label';
 import CardElement from 'src/components/stripe-card';
@@ -42,6 +46,27 @@ const TABLE_HEAD = [
   { id: 'date', label: 'Date' },
   { id: 'status', label: 'Status' },
 ];
+
+const ApplePayButton = styled(Button)(() => ({
+  display: 'flex',
+  width: "120px",
+  textAlign: 'center',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '#000',
+  color: 'white',
+  '&:disabled ': {
+    backgroundColor: 'gray',
+  },
+  height: "50px",
+  borderRadius: '8px',
+}));
+
+const ApplePayIcon: React.FC = () => (
+  <SvgIcon viewBox="0 0 55 23" sx={{ width: 55, height: 23 }}>
+    <path d="M10.7479 4.82745C9.41143 4.82745 8.33331 5.63605 7.63702 5.63605C6.90704 5.63605 5.92999 4.87238 4.77325 4.87238C2.57207 4.87238 0.337212 6.70294 0.337212 10.1282C0.337212 12.2733 1.16827 14.5306 2.19024 16.0018C3.05499 17.2259 3.82989 18.2366 4.93047 18.2366C6.01983 18.2366 6.50274 17.5179 7.86163 17.5179C9.23174 17.5179 9.5462 18.2142 10.7479 18.2142C11.9495 18.2142 12.7469 17.1248 13.4993 16.0467C14.3304 14.8001 14.6898 13.5872 14.701 13.5311C14.6336 13.5086 12.3426 12.5765 12.3426 9.94855C12.3426 7.67999 14.1395 6.66925 14.2405 6.59064C13.0613 4.87238 11.2532 4.82745 10.7479 4.82745ZM10.1302 3.37872C10.6692 2.71613 11.0511 1.81769 11.0511 0.90802C11.0511 0.784485 11.0398 0.66095 11.0174 0.559875C10.1414 0.593567 9.06329 1.14386 8.42315 1.8963C7.92901 2.46906 7.45733 3.37872 7.45733 4.28839C7.45733 4.42316 7.47979 4.56915 7.49102 4.61407C7.54717 4.62531 7.63702 4.63654 7.72686 4.63654C8.52422 4.63654 9.53497 4.09747 10.1302 3.37872ZM19.1155 1.82892V18.0345H22.013V12.7225H25.5281C28.8074 12.7225 31.0984 10.5213 31.0984 7.30939C31.0984 4.04132 28.886 1.82892 25.6516 1.82892H19.1155ZM22.013 4.2547H24.888C26.9768 4.2547 28.156 5.32159 28.156 7.30939C28.156 9.24103 26.9431 10.3192 24.8767 10.3192H22.013V4.2547ZM36.5349 16.0467C35.2995 16.0467 34.4123 15.429 34.4123 14.3958C34.4123 13.3963 35.1423 12.8348 36.7033 12.7337L39.4773 12.554V13.5311C39.4773 14.9573 38.2195 16.0467 36.5349 16.0467ZM35.7151 18.2366C37.321 18.2366 38.6687 17.5403 39.3537 16.3499H39.5447V18.0345H42.2287V9.64532C42.2287 7.03986 40.4543 5.50128 37.2986 5.50128C34.3786 5.50128 32.3459 6.88263 32.1213 9.05011H34.7492C35.0075 8.21906 35.8835 7.76984 37.1638 7.76984C38.6687 7.76984 39.4773 8.44366 39.4773 9.64532V10.6785L36.3103 10.8694C33.323 11.0491 31.6496 12.3294 31.6496 14.553C31.6496 16.7991 33.3454 18.2366 35.7151 18.2366ZM45.3293 22.493C48.0808 22.493 49.3947 21.4822 50.4392 18.4276L54.8752 5.74835H51.9328L49.069 15.3392H48.8781L46.0031 5.74835H42.9484L47.3395 18.0906L47.1935 18.6297C46.8342 19.764 46.1716 20.2132 44.9924 20.2132C44.8015 20.2132 44.3859 20.202 44.2287 20.1683V22.4481C44.4084 22.4818 45.1608 22.493 45.3293 22.493Z" fill="currentColor" />
+  </SvgIcon>
+);
 
 const UIComponents = () => {
   const table = useTable({ defaultOrderBy: 'date', defaultOrder: 'desc' });
@@ -81,7 +106,7 @@ const UIComponents = () => {
       complete
     });
   }, [setCardElementState]);
-  
+
   const fetchHistory = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -234,6 +259,59 @@ const UIComponents = () => {
     }
   }, [tableData, table.order, table.orderBy]);
 
+  const {
+    confirmCardPayment,
+  } = useStripe();
+  
+  const confirmPaymentMethodApple = React.useCallback(async (e: any, paymentIntent: any) => {
+    const payResult: any = await confirmCardPayment(
+      paymentIntent.client_secret,
+      {
+        payment_method: e.paymentMethod.id,
+      },
+      {
+        handleActions: false
+      }
+    )
+
+    // eslint-disable-next-line @typescript-eslint/return-await
+    return await axios.post(endpoints.history.confirmPaymentIntent,
+      {
+        "payment_intent_id": payResult.paymentIntent.id,
+        "amount": (amount / currentPrice).toFixed(1),
+        "address": address
+      }
+    );
+  }, [address, amount, confirmCardPayment, currentPrice]);
+
+  const [paymentRequestApple, { createPaymentRequest: createPaymentRequestApple }] = usePayStripeApplePayment(
+    async () => {
+      const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
+        {
+          "amount": amount
+        }
+      );
+
+      const { success, data: paymentIntent } = data;
+      return success ? paymentIntent : null;
+    },
+    confirmPaymentMethodApple,
+    () => {
+      enqueueSnackbar(`Your request has been successfully submitted to the administrator. Please wait for the administrator to approve it.`, { variant: 'success' });
+      setIsLoading(true);
+      setAmount(0);
+      setAddress("");
+      fetchHistory();
+    }
+  );
+
+  useEffect(() => {
+    createPaymentRequestApple(
+      'Buy CRGPT',
+      amount * 100,
+    )
+  }, [createPaymentRequestApple, amount]);
+
   return (
     <Grid xs={12} md={12}>
       <Card sx={{ marginTop: 3 }}>
@@ -296,6 +374,12 @@ const UIComponents = () => {
         </Stack>
 
         <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3, paddingTop: 0 }}>
+          {paymentRequestApple && <ApplePayButton
+            variant="contained"
+            startIcon={<ApplePayIcon />}
+            disabled={!amount}
+            onClick={() => paymentRequestApple.show()}
+          />}
           <LoadingButton
             size="medium"
             sx={{ paddingLeft: 5, paddingRight: 5 }}
