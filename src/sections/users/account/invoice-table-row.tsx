@@ -55,11 +55,22 @@ export default function InvoiceTableRow({
           color={
             (status === 'paid' && 'success') ||
             (status === "admin_waiting" && 'warning') ||
-            (status === 'overdue' && 'error') ||
+            (status === 'address_waiting' && 'error') ||
             'default'
           }
         >
-          {status === "admin_waiting" ? "Pending" : status}
+          {(() => {
+            switch (status) {
+              case "admin_waiting":
+                return "pending delivery";
+              case "address_waiting":
+                return "Awaiting address";
+              case "paid":
+                return "PAID & DELIVERED";
+              default:
+                return status;
+            }
+          })()}
         </Label>
       </TableCell>
     </TableRow>

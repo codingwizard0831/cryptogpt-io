@@ -68,6 +68,33 @@ const ApplePayIcon: React.FC = () => (
   </SvgIcon>
 );
 
+const GooglePayIcon = () => (
+  <svg height="80" width="55" viewBox="0 0 2387.3 948" xmlns="http://www.w3.org/2000/svg">
+    <g>
+      <path
+        fill="#ffffff"
+        d="M1129.1,463.2V741h-88.2V54.8h233.8c56.4-1.2,110.9,20.2,151.4,59.4c41,36.9,64.1,89.7,63.2,144.8
+          c1.2,55.5-21.9,108.7-63.2,145.7c-40.9,39-91.4,58.5-151.4,58.4L1129.1,463.2L1129.1,463.2z M1129.1,139.3v239.6h147.8
+          c32.8,1,64.4-11.9,87.2-35.5c46.3-45,47.4-119.1,2.3-165.4c-0.8-0.8-1.5-1.6-2.3-2.3c-22.5-24.1-54.3-37.3-87.2-36.4L1129.1,139.3
+          L1129.1,139.3z M1692.5,256.2c65.2,0,116.6,17.4,154.3,52.2c37.7,34.8,56.5,82.6,56.5,143.2V741H1819v-65.2h-3.8
+          c-36.5,53.7-85.1,80.5-145.7,80.5c-51.7,0-95-15.3-129.8-46c-33.8-28.5-53-70.7-52.2-115c0-48.6,18.4-87.2,55.1-115.9
+          c36.7-28.7,85.7-43.1,147.1-43.1c52.3,0,95.5,9.6,129.3,28.7v-20.2c0.2-30.2-13.2-58.8-36.4-78c-23.3-21-53.7-32.5-85.1-32.1
+          c-49.2,0-88.2,20.8-116.9,62.3l-77.6-48.9C1545.6,286.8,1608.8,256.2,1692.5,256.2L1692.5,256.2z M1578.4,597.3
+          c-0.1,22.8,10.8,44.2,29.2,57.5c19.5,15.3,43.7,23.5,68.5,23c37.2-0.1,72.9-14.9,99.2-41.2c29.2-27.5,43.8-59.7,43.8-96.8
+          c-27.5-21.9-65.8-32.9-115-32.9c-35.8,0-65.7,8.6-89.6,25.9C1590.4,550.4,1578.4,571.7,1578.4,597.3L1578.4,597.3z M2387.3,271.5
+          L2093,948h-91l109.2-236.7l-193.6-439.8h95.8l139.9,337.3h1.9l136.1-337.3L2387.3,271.5z"
+      />
+    </g>
+    <path fill="#4285F4" d="M772.8,403.2c0-26.9-2.2-53.7-6.8-80.2H394.2v151.8h212.9c-8.8,49-37.2,92.3-78.7,119.8v98.6h127.1
+      C729.9,624.7,772.8,523.2,772.8,403.2L772.8,403.2z"/>
+    <path fill="#34A853" d="M394.2,788.5c106.4,0,196-34.9,261.3-95.2l-127.1-98.6c-35.4,24-80.9,37.7-134.2,37.7
+      c-102.8,0-190.1-69.3-221.3-162.7H42v101.6C108.9,704.5,245.2,788.5,394.2,788.5z"/>
+    <path fill="#FBBC04" d="M172.9,469.7c-16.5-48.9-16.5-102,0-150.9V217.2H42c-56,111.4-56,242.7,0,354.1L172.9,469.7z" />
+    <path fill="#EA4335" d="M394.2,156.1c56.2-0.9,110.5,20.3,151.2,59.1L658,102.7C586.6,35.7,492.1-1.1,394.2,0
+      C245.2,0,108.9,84.1,42,217.2l130.9,101.6C204.1,225.4,291.4,156.1,394.2,156.1z"/>
+  </svg>
+);
+
 const UIComponents = () => {
   const table = useTable({ defaultOrderBy: 'date', defaultOrder: 'desc' });
 
@@ -135,11 +162,11 @@ const UIComponents = () => {
       enqueueSnackbar(`You must purchase over $10.`, { variant: 'error' });
       return;
     }
-    if (!address) {
-      enqueueSnackbar(`You must enter your ERC20 token address.`, { variant: 'error' });
-      return;
-    }
-    if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+    // if (!address) {
+    //   enqueueSnackbar(`You must enter your ERC20 token address.`, { variant: 'error' });
+    //   return;
+    // }
+    if (address && !/^(0x)?[0-9a-f]{40}$/i.test(address)) {
       enqueueSnackbar(`Please enter a valid ERC20 token address.`, { variant: 'error' });
       return;
     }
@@ -262,7 +289,7 @@ const UIComponents = () => {
   const {
     confirmCardPayment,
   } = useStripe();
-  
+
   const confirmPaymentMethodApple = React.useCallback(async (e: any, paymentIntent: any) => {
     const payResult: any = await confirmCardPayment(
       paymentIntent.client_secret,
@@ -312,6 +339,55 @@ const UIComponents = () => {
     )
   }, [createPaymentRequestApple, amount]);
 
+  const confirmPaymentMethodGoogle = React.useCallback(async (e: any, paymentIntent: any) => {
+    const payResult: any = await confirmCardPayment(
+      paymentIntent.client_secret,
+      {
+        payment_method: e.paymentMethod.id,
+      },
+      {
+        handleActions: false
+      }
+    )
+
+    // eslint-disable-next-line @typescript-eslint/return-await
+    return await axios.post(endpoints.history.confirmPaymentIntent,
+      {
+        "payment_intent_id": payResult.paymentIntent.id,
+        "amount": (amount / currentPrice).toFixed(1),
+        "address": address
+      }
+    );
+  }, [address, amount, confirmCardPayment, currentPrice]);
+
+  const [paymentRequestGoogle, { createPaymentRequest: createPaymentRequestGoogle }] = usePayStripeApplePayment(
+    async () => {
+      const { data }: { success: boolean, data: any } = await axios.post(endpoints.credits.createPaymentIntent,
+        {
+          "amount": amount
+        }
+      );
+
+      const { success, data: paymentIntent } = data;
+      return success ? paymentIntent : null;
+    },
+    confirmPaymentMethodGoogle,
+    () => {
+      enqueueSnackbar(`Your request has been successfully submitted to the administrator. Please wait for the administrator to approve it.`, { variant: 'success' });
+      setIsLoading(true);
+      setAmount(0);
+      setAddress("");
+      fetchHistory();
+    }
+  );
+
+  useEffect(() => {
+    createPaymentRequestGoogle(
+      'credits',
+      amount * 100,
+    )
+  }, [createPaymentRequestGoogle, amount]);
+
   return (
     <Grid xs={12} md={12}>
       <Card sx={{ marginTop: 3 }}>
@@ -322,38 +398,38 @@ const UIComponents = () => {
         </Typography>
 
         <Stack direction="column" sx={{ width: "100%", p: 3 }}>
-          <TextField
-            variant="outlined"
-            fullWidth
-            type="number"
-            label="Amount(USD)"
-            value={amount}
-            InputLabelProps={{ shrink: true }}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              const value = parseFloat(event.target.value);
-              if (Number.isNaN(value) || value < 0) {
-                setAmount(0);
-              } else {
-                setAmount(value);
-              }
-            }}
-          />
+          <Stack direction="row" sx={{ width: "100%", gap: 2 }}>
+            <TextField
+              variant="outlined"
+              sx={{ width: "200px" }}
+              type="number"
+              label="Amount(USD)"
+              value={amount}
+              InputLabelProps={{ shrink: true }}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                const value = parseFloat(event.target.value);
+                if (Number.isNaN(value) || value < 0) {
+                  setAmount(0);
+                } else {
+                  setAmount(value);
+                }
+              }}
+              placeholder='Please enter the amount in USD.'
+            />
+            <TextField
+              variant="outlined"
+              fullWidth
+              type="text"
+              label="ERC20 Address(optional)"
+              InputLabelProps={{ shrink: true }}
+              placeholder='Please enter your erc20 address for receiving CRGPT.'
+              value={address}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
+            />
+          </Stack>
           <Typography variant="caption" sx={{ width: "100%", pt: 2 }}>
             You will receive {(amount / currentPrice).toFixed(1)} CRGPT.
           </Typography>
-        </Stack>
-
-        <Stack direction="column" sx={{ width: "100%", p: 3, pt: 0 }}>
-          <TextField
-            variant="outlined"
-            fullWidth
-            type="text"
-            label="ERC20 Address"
-            InputLabelProps={{ shrink: true }}
-            placeholder='Please enter your erc20 address for receiving CRGPT.'
-            value={address}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
-          />
         </Stack>
 
         <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' }, ".InputElement": { color: "white" } }}>
@@ -379,6 +455,12 @@ const UIComponents = () => {
             startIcon={<ApplePayIcon />}
             disabled={!amount}
             onClick={() => paymentRequestApple.show()}
+          />}
+          {paymentRequestGoogle && <ApplePayButton
+            variant="contained"
+            startIcon={<GooglePayIcon />}
+            disabled={!amount}
+            onClick={() => paymentRequestGoogle.show()}
           />}
           <LoadingButton
             size="medium"
