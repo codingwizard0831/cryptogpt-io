@@ -58,7 +58,7 @@ export const loadUserProfileData = async (flag: boolean = true) => {
   if (flag) {
     const response = await axios.get(endpoints.profile.index);
     if (response.data?.length) {
-      localStorage.setItem('userProfile', JSON.stringify(response.data[0]));
+      localStorage.setItem('userProfile', JSON.stringify(response.data));
     } else {
       localStorage.setItem('userProfile', JSON.stringify({}));
     }

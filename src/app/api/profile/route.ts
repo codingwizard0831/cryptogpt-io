@@ -12,16 +12,43 @@ export async function GET(req: NextRequest) {
   const user = JSON.parse(userHeader);
   console.log("userId", user)
   try {
-    // Get all profiles
-    const { data, error } = await supabase.from("users_profile").select("*").eq("user_id", user?.id);
-    if (error)
+    // Get profile from users_profile table
+    const { data: profileData, error: profileError } = await supabase
+      .from("users_profile")
+      .select("*")
+      .eq("user_id", user?.id)
+      .single();
+
+    if (profileError) {
       return NextResponse.json(
-        { code: error.code, error: error.message },
+        { code: profileError.code, error: profileError.message },
         { status: 500 }
       );
-    return NextResponse.json(data);
+    }
+
+    // Get user info from auth_users table
+    const { data: authData, error: authError } = await supabase
+      .from("auth_users")
+      .select("raw_app_meta_data, raw_user_meta_data")
+      .eq("id", user?.id)
+      .single();
+
+    if (authError) {
+      return NextResponse.json(
+        { code: authError.code, error: authError.message },
+        { status: 500 }
+      );
+    }
+
+    // Combine the data
+    const combinedData = {
+      ...profileData,
+      auth_info: authData
+    };
+
+    return NextResponse.json(combinedData);
   } catch (error) {
-    console.error("Error fetching user profiles:", error);
+    console.error("Error fetching user profile:", error);
     return NextResponse.json(
       { error: "Failed to fetch profile data" },
       { status: 500 }
