@@ -48,7 +48,7 @@ interface UserProfileState {
 }
 
 export const useUserProfile = create<UserProfileState>((set, get) => ({
-    status: ["online", "focused", "working"],
+    status: ["offline", "offline", "offline"],
     statusData: USER_STATUS,
     socialLinks: [
         {
