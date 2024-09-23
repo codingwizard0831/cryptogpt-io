@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import { styled } from '@mui/system';
 import Card from '@mui/material/Card';
+import Modal from '@mui/material/Modal';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -107,6 +108,7 @@ const UIComponents = () => {
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState("");
   const [currentPrice, setCurrentPrice] = useState(0);
+  const [isModalOpened, setIsModalOpened] = useState(false);
   const [cardPaymentState, setCardPaymentState] = useState({
     errorMessage: ''
   });
@@ -388,146 +390,228 @@ const UIComponents = () => {
     )
   }, [createPaymentRequestGoogle, amount]);
 
+  const handleUpdateAddress = async () => {
+    if (address && !/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+      enqueueSnackbar('Please enter a valid ERC20 token address.', { variant: 'error' });
+      return;
+    }
+
+    try {
+      const response = await axios.post(endpoints.history.updateAddress, { address });
+      if (response.data.success) {
+        enqueueSnackbar('Address updated successfully', { variant: 'success' });
+        setIsModalOpened(false);
+        fetchHistory();
+      } else {
+        enqueueSnackbar(response.data.error, { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar('Failed to update address', { variant: 'error' });
+    }
+  };
+
   return (
-    <Grid xs={12} md={12}>
-      <Card sx={{ marginTop: 3 }}>
-        <CardHeader title="Buy CRGPT Token" />
+    <>
+      <Grid xs={12} md={12}>
+        <Card sx={{ marginTop: 3 }}>
+          <CardHeader title="Buy CRGPT Token" />
 
-        <Typography variant="subtitle1" gutterBottom sx={{ width: "100%", p: 3, pb: 0 }}>
-          Current Price: ${currentPrice.toFixed(4)} per CRGPT
-        </Typography>
+          <Typography variant="subtitle1" gutterBottom sx={{ width: "100%", p: 3, pb: 0 }}>
+            Current Price: ${currentPrice.toFixed(4)} per CRGPT
+          </Typography>
 
-        <Stack direction="column" sx={{ width: "100%", p: 3 }}>
-          <Stack direction="row" sx={{ width: "100%", gap: 2 }}>
-            <TextField
-              variant="outlined"
-              sx={{ width: "200px" }}
-              type="number"
-              label="Amount(USD)"
-              value={amount}
-              InputLabelProps={{ shrink: true }}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const value = parseFloat(event.target.value);
-                if (Number.isNaN(value) || value < 0) {
-                  setAmount(0);
-                } else {
-                  setAmount(value);
-                }
-              }}
-              placeholder='Please enter the amount in USD.'
+          <Stack direction="column" sx={{ width: "100%", p: 3 }}>
+            <Stack direction="row" sx={{ width: "100%", gap: 2 }}>
+              <TextField
+                variant="outlined"
+                sx={{ width: "200px" }}
+                type="number"
+                label="Amount(USD)"
+                value={amount}
+                InputLabelProps={{ shrink: true }}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  const value = parseFloat(event.target.value);
+                  if (Number.isNaN(value) || value < 0) {
+                    setAmount(0);
+                  } else {
+                    setAmount(value);
+                  }
+                }}
+                placeholder='Please enter the amount in USD.'
+              />
+              <TextField
+                variant="outlined"
+                fullWidth
+                type="text"
+                label="ERC20 Address(optional)"
+                InputLabelProps={{ shrink: true }}
+                placeholder='Please enter your erc20 address for receiving CRGPT.'
+                value={address}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
+              />
+            </Stack>
+            <Typography variant="caption" sx={{ width: "100%", pt: 2 }}>
+              You will receive {(amount / currentPrice).toFixed(1)} CRGPT.
+            </Typography>
+          </Stack>
+
+          <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' }, ".InputElement": { color: "white" } }}>
+            <CardElement
+              onChange={_OnCardElementChange}
             />
+            {(cardElementState.errorMessage || cardPaymentState.errorMessage) && <Label
+              color="error"
+              sx={{
+                background: 'transparent',
+                justifyContent: 'left',
+                padding: 0,
+                marginTop: 1
+              }}
+            >
+              {cardElementState.errorMessage || cardPaymentState.errorMessage || <>&nbsp;</>}
+            </Label>}
+          </Stack>
+
+          <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3, paddingTop: 0 }}>
+            {paymentRequestApple && <ApplePayButton
+              variant="contained"
+              startIcon={<ApplePayIcon />}
+              disabled={!amount}
+              onClick={() => paymentRequestApple.show()}
+            />}
+            {paymentRequestGoogle && <ApplePayButton
+              variant="contained"
+              startIcon={<GooglePayIcon />}
+              disabled={!amount}
+              onClick={() => paymentRequestGoogle.show()}
+            />}
+            <LoadingButton
+              size="medium"
+              sx={{ paddingLeft: 5, paddingRight: 5 }}
+              onClick={_OnContinue}
+              loading={depositState.submitting}
+              variant="contained"
+              disabled={isDepositButtonDisabled}
+            >
+              Buy CRGPT
+            </LoadingButton>
+          </Stack>
+        </Card >
+        <Card sx={{ mt: 3 }}>
+          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+            <Table size="medium" sx={{ minWidth: 800 }}>
+              <TableHeadCustom
+                headLabel={TABLE_HEAD}
+                order={table.order}
+                orderBy={table.orderBy}
+                onSort={table.onSort}
+                excludeSort={['no']}
+                sx={{ "th": { color: 'white !important' }, ".MuiTableCell-root.MuiTableCell-head:first-child": { textAlign: "center" } }}
+              />
+
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center">
+                      <CircularProgress />
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  <>
+                    {filteredTableData
+                      .slice(
+                        table.page * table.rowsPerPage,
+                        table.page * table.rowsPerPage + table.rowsPerPage
+                      )
+                      .map((row, index) => (
+                        <InvoiceTableRow
+                          key={index}
+                          row={row}
+                          index={index}
+                          setIsModalOpened={setIsModalOpened}
+                        />
+                      ))}
+
+                    <TableEmptyRows
+                      emptyRows={emptyRows(table.page, table.rowsPerPage, filteredTableData.length)}
+                    />
+
+                    <TableNoData notFound={!filteredTableData.length} sx={{ ".MuiTypography-root": { color: 'white' } }} />
+                  </>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <TablePaginationCustom
+            count={tableData.length}
+            page={table.page}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
+        </Card>
+      </Grid>
+      <Modal
+        open={isModalOpened}
+        aria-labelledby="update-address-modal"
+        aria-describedby="modal-to-update-address-profile"
+      >
+        <Card
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 'auto',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            borderRadius: 2,
+            outline: 'none',
+            p: 3,
+            maxWidth: 400,
+            minWidth: 360,
+            margin: 'auto',
+            mt: 5
+          }}
+        >
+          <Typography variant="h4" align="center" gutterBottom sx={{ color: theme => theme.palette.primary.main }}>
+            Add Your ERC20 Address
+          </Typography>
+
+          <Stack spacing={3} mt={3}>
             <TextField
-              variant="outlined"
               fullWidth
-              type="text"
-              label="ERC20 Address(optional)"
-              InputLabelProps={{ shrink: true }}
-              placeholder='Please enter your erc20 address for receiving CRGPT.'
+              label="Address"
+              name="address"
               value={address}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
             />
+            <Stack direction="row" spacing={2}>
+              <Button
+                fullWidth
+                size="large"
+                variant="outlined"
+                sx={{ width: '50%' }}
+                onClick={() => setIsModalOpened(false)}
+              >
+                Cancel
+              </Button>
+              <LoadingButton
+                fullWidth
+                size="large"
+                type="submit"
+                variant="contained"
+                sx={{ width: '50%' }}
+                onClick={handleUpdateAddress}
+              >
+                Update
+              </LoadingButton>
+            </Stack>
           </Stack>
-          <Typography variant="caption" sx={{ width: "100%", pt: 2 }}>
-            You will receive {(amount / currentPrice).toFixed(1)} CRGPT.
-          </Typography>
-        </Stack>
-
-        <Stack direction="column" sx={{ width: "100%", p: 3, "#card-element": { width: '100%' }, ".InputElement": { color: "white" } }}>
-          <CardElement
-            onChange={_OnCardElementChange}
-          />
-          {(cardElementState.errorMessage || cardPaymentState.errorMessage) && <Label
-            color="error"
-            sx={{
-              background: 'transparent',
-              justifyContent: 'left',
-              padding: 0,
-              marginTop: 1
-            }}
-          >
-            {cardElementState.errorMessage || cardPaymentState.errorMessage || <>&nbsp;</>}
-          </Label>}
-        </Stack>
-
-        <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3, paddingTop: 0 }}>
-          {paymentRequestApple && <ApplePayButton
-            variant="contained"
-            startIcon={<ApplePayIcon />}
-            disabled={!amount}
-            onClick={() => paymentRequestApple.show()}
-          />}
-          {paymentRequestGoogle && <ApplePayButton
-            variant="contained"
-            startIcon={<GooglePayIcon />}
-            disabled={!amount}
-            onClick={() => paymentRequestGoogle.show()}
-          />}
-          <LoadingButton
-            size="medium"
-            sx={{ paddingLeft: 5, paddingRight: 5 }}
-            onClick={_OnContinue}
-            loading={depositState.submitting}
-            variant="contained"
-            disabled={isDepositButtonDisabled}
-          >
-            Buy CRGPT
-          </LoadingButton>
-        </Stack>
-      </Card >
-      <Card sx={{ mt: 3 }}>
-        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-          <Table size="medium" sx={{ minWidth: 800 }}>
-            <TableHeadCustom
-              headLabel={TABLE_HEAD}
-              order={table.order}
-              orderBy={table.orderBy}
-              onSort={table.onSort}
-              excludeSort={['no']}
-              sx={{ "th": { color: 'white !important' }, ".MuiTableCell-root.MuiTableCell-head:first-child": { textAlign: "center" } }}
-            />
-
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    <CircularProgress />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                <>
-                  {filteredTableData
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row, index) => (
-                      <InvoiceTableRow
-                        key={index}
-                        row={row}
-                        index={index}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, filteredTableData.length)}
-                  />
-
-                  <TableNoData notFound={!filteredTableData.length} sx={{ ".MuiTypography-root": { color: 'white' } }} />
-                </>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <TablePaginationCustom
-          count={tableData.length}
-          page={table.page}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-        />
-      </Card>
-    </Grid>
+        </Card>
+      </Modal>
+    </>
   );
 }
 
