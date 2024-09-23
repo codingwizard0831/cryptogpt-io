@@ -2,6 +2,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
+import Button from '@mui/material/Button';
 
 import { fDate } from 'src/utils/format-time';
 
@@ -12,11 +13,13 @@ import Label from 'src/components/label';
 type Props = {
   row: any;
   index: number;
+  setIsModalOpened: (value: boolean) => void;
 };
 
 export default function InvoiceTableRow({
   row,
-  index
+  index,
+  setIsModalOpened
 }: Props) {
   const { address, amount, created_at, status } = row;
 
@@ -49,7 +52,7 @@ export default function InvoiceTableRow({
 
       <TableCell>{fDate(created_at)}</TableCell>
 
-      <TableCell>
+      <TableCell sx={{ width: '160px', textAlign: 'center' }}>
         <Label
           variant="soft"
           color={
@@ -72,6 +75,13 @@ export default function InvoiceTableRow({
             }
           })()}
         </Label>
+      </TableCell>
+      <TableCell sx={{ width: '100px', textAlign: 'center' }}>
+        {status === 'address_waiting' && (
+          <Button variant="contained" color="primary" size="small" sx={{ ml: 1 }} onClick={() => setIsModalOpened(true)}>
+            Edit
+          </Button>
+        )}
       </TableCell>
     </TableRow>
   );
