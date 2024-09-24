@@ -4,13 +4,13 @@ import { LogoutOptions, PopupLoginOptions, RedirectLoginOptions } from '@auth0/a
 
 export type ActionMapType<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
-    ? {
-        type: Key;
-      }
-    : {
-        type: Key;
-        payload: M[Key];
-      };
+  ? {
+    type: Key;
+  }
+  : {
+    type: Key;
+    payload: M[Key];
+  };
 };
 
 export type AuthUserType = null | Record<string, any>;

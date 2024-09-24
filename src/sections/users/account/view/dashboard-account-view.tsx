@@ -8,8 +8,6 @@ import { Box, Card } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { useUserProfile } from 'src/store/user/userProfile';
-
 import Iconify from 'src/components/iconify';
 
 import AccountCredit from '../account-credit';
@@ -77,9 +75,6 @@ export default function DashboardProfileView() {
     const smUp = useResponsive('up', 'sm');
 
     const [currentTab, setCurrentTab] = useState('general');
-
-    const userInfo = useUserProfile(state => state.userInfo);
-    console.log("userInfo", userInfo);
 
     const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
         setCurrentTab(newValue);

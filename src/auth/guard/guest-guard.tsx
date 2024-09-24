@@ -3,7 +3,7 @@ import { useEffect, useCallback } from 'react';
 import { paths } from 'src/routes/paths';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
-import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
+import { getUserProfileData } from 'src/auth/context/jwt/utils';
 
 import { SplashScreen } from 'src/components/loading-screen';
 
@@ -36,7 +36,7 @@ function Container({ children }: Props) {
     if (authenticated) {
       console.log("authenticated-guest-guard", authenticated);
 
-      const user_profile = getUserProfileInfo();
+      const user_profile = getUserProfileData();
       // console.log('user_profile-oauth', user_profile)
       if (user_profile?.terms) {
         router.replace(returnTo);

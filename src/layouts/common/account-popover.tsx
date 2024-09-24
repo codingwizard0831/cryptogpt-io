@@ -19,7 +19,6 @@ import axios, { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useUserProfile } from 'src/store/user/userProfile';
-import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
 
 import Iconify from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
@@ -55,8 +54,7 @@ export default function AccountPopover() {
   const setStatusData = useUserProfile((state) => state.setStatusData);
   const status = useUserProfile((state) => state.status);
   const setStatus = useUserProfile((state) => state.setStatus);
-  const userInfo = useUserProfile((state) => state.userInfo);
-  const setUserInfo = useUserProfile((state) => state.setUserInfo);
+  const userProfileInfo = useUserProfile((state) => state.userProfileInfo);
   const [defaultStatus, setDefaultStatus] = useState<string[]>([]);
 
   const renderedUserStatusData = useMemo(() => StatusData.reduce((acc, _status) => {
@@ -92,28 +90,12 @@ export default function AccountPopover() {
 
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const userInfoData = getUserProfileInfo();
-        if (userInfoData && userInfoData.user_id) {
-          setUserInfo(userInfoData);
-
-          if (userInfoData.status) {
-            setStatus(userInfoData.status.split(','));
-          } else {
-            console.log("defaultStatus", defaultStatus);
-            setStatus(defaultStatus);
-          }
-
-        } else {
-          console.error("No user info found");
-        }
-      } catch (error) {
-        // console.error(error);
-      }
+    if (userProfileInfo.status) {
+      setStatus(userProfileInfo.status.split(','));
+    } else {
+      setStatus(defaultStatus);
     }
-    fetchUserInfo();
-  }, [setUserInfo, setStatus, defaultStatus])
+  }, [defaultStatus, userProfileInfo, setStatus])
 
   const handleLogout = async () => {
     try {
@@ -131,7 +113,6 @@ export default function AccountPopover() {
   };
 
   const handleChangeUserStatus = (_status: UserStatusType) => {
-    console.log(_status);
     const needReplaceStatus = status.map((item) => StatusData.find(_item => _item.id === item)).findIndex(item => item?.type === _status.type);
     const currentStatusString = status.join(',');
     let newStatusString = "";
@@ -148,7 +129,7 @@ export default function AccountPopover() {
       if (newStatusString !== currentStatusString) {
         axios.put(endpoints.profile.status, { status: newStatusString })
           .then((response) => {
-            console.log("response", response);
+            // console.log("response", response);
           })
           .catch((error) => {
             console.error(error);
@@ -158,7 +139,6 @@ export default function AccountPopover() {
       console.error(error);
     }
   }
-  console.log("status", status);
 
   return (
     <>
@@ -178,8 +158,8 @@ export default function AccountPopover() {
           }}
         >
           <Avatar
-            alt={userInfo?.user_name || ""}
-            src={userInfo?.avatar || ''}
+            alt={userProfileInfo?.user_name || ""}
+            src={userProfileInfo?.avatar || ''}
             sx={{
               mx: 'auto',
               width: 36,
@@ -190,7 +170,7 @@ export default function AccountPopover() {
               border: theme => `solid 1px ${theme.palette.primary.main}`,
             }}
           >
-            {userInfo?.user_name?.charAt(0).toUpperCase() || 'J'}
+            {userProfileInfo?.user_name?.charAt(0).toUpperCase() || 'J'}
           </Avatar>
         </IconButton>
 
@@ -223,7 +203,7 @@ export default function AccountPopover() {
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {userInfo?.user_name}
+            {userProfileInfo?.user_name}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
@@ -292,8 +272,8 @@ export default function AccountPopover() {
               position: 'relative',
             }}>
               <Avatar
-                alt={userInfo?.user_name || ""}
-                src={userInfo?.avatar || ''}
+                alt={userProfileInfo?.user_name || ""}
+                src={userProfileInfo?.avatar || ''}
                 sx={{
                   mx: 'auto',
                   width: { xs: 64, md: 96 },
@@ -304,7 +284,7 @@ export default function AccountPopover() {
                   border: theme => `solid 2px ${theme.palette.primary.main}`,
                 }}
               >
-                {userInfo?.user_name?.charAt(0).toUpperCase() || 'J'}
+                {userProfileInfo?.user_name?.charAt(0).toUpperCase() || 'J'}
               </Avatar>
 
               <Box sx={{

@@ -56,16 +56,39 @@ export const tokenExpired = (exp: number) => {
 
 export const loadUserProfileData = async (flag: boolean = true) => {
   if (flag) {
-    const response = await axios.get(endpoints.profile.index);
-    if (response.data?.length) {
-      localStorage.setItem('userProfile', JSON.stringify(response.data));
-    } else {
+    try {
+      const response = await axios.get(endpoints.profile.index);
+      if (response.data) {
+        localStorage.setItem('userProfile', JSON.stringify(response.data));
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
       localStorage.setItem('userProfile', JSON.stringify({}));
+      return {};
     }
-  } else {
-    localStorage.setItem('userProfile', JSON.stringify({}));
+  }
+  localStorage.setItem('userProfile', JSON.stringify({}));
+  return {};
+};
+
+export const loadUserData = async (accessToken) => {
+  try {
+    const response = await axios.get(`${endpoints.auth.me}?token=${accessToken}`);
+    localStorage.setItem('user', JSON.stringify(response.data.data.user));
+    return response.data.data.user;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    localStorage.setItem('user', JSON.stringify({}));
+    return {};
   }
 };
+
+export const getUserProfileData = () => {
+  const userProfileInfoByString = localStorage.getItem('userProfile');
+  if (userProfileInfoByString) return JSON.parse(userProfileInfoByString);
+  return {};
+}
 
 export const setAccessToken = async (accessToken: string | null) => {
   if (accessToken) {
@@ -74,16 +97,19 @@ export const setAccessToken = async (accessToken: string | null) => {
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     axios.defaults.headers.common['Content-Type'] = `application/json`;
 
-    await loadUserProfileData();
+    const userProfileInfo = await loadUserProfileData();
+    const userInfo = await loadUserData(accessToken);
 
     // This function below will handle when token is expired
     const { exp } = jwtDecode(accessToken); // ~3 days by minimals server
     tokenExpired(exp);
-  } else {
-    localStorage.removeItem('access_token');
 
-    delete axios.defaults.headers.common.Authorization;
+    return { userInfo, userProfileInfo };
   }
+
+  localStorage.removeItem('access_token');
+  delete axios.defaults.headers.common.Authorization;
+  return { userInfo: {}, userProfileInfo: {} };
 };
 
 export const getAccessToken = () => localStorage.getItem('access_token');
@@ -110,11 +136,5 @@ export const setUserInfo = (user: any) => {
 export const getUserInfo = () => {
   const userInfoByString = localStorage.getItem('user');
   if (userInfoByString) return JSON.parse(userInfoByString);
-  return {};
-}
-
-export const getUserProfileInfo = () => {
-  const userProfileInfoByString = localStorage.getItem('userProfile');
-  if (userProfileInfoByString) return JSON.parse(userProfileInfoByString);
   return {};
 }

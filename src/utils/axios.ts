@@ -28,7 +28,7 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 export const endpoints = {
   chat: '/api/chat',
   auth: {
-    me: '/api/check-auth/',
+    me: '/api/auth/me',
     register: '/api/auth/signup/',
     logout: '/api/auth/signout/',
     loginWithEmailAndPassword: '/api/auth/signin-email-password/',

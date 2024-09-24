@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: false, error: "User not authenticated" }, { status: 401 });
   }
   const user = JSON.parse(userHeader);
-  console.log("userId", user)
+
   try {
     // Get profile from users_profile table
     const { data: profileData, error: profileError } = await supabase
@@ -26,27 +26,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Get user info from auth_users table
-    const { data: authData, error: authError } = await supabase
-      .from("auth_users")
-      .select("raw_app_meta_data, raw_user_meta_data")
-      .eq("id", user?.id)
-      .single();
-
-    if (authError) {
-      return NextResponse.json(
-        { code: authError.code, error: authError.message },
-        { status: 500 }
-      );
-    }
-
-    // Combine the data
-    const combinedData = {
-      ...profileData,
-      auth_info: authData
-    };
-
-    return NextResponse.json(combinedData);
+    return NextResponse.json(profileData);
   } catch (error) {
     console.error("Error fetching user profile:", error);
     return NextResponse.json(

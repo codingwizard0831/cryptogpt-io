@@ -45,6 +45,8 @@ interface UserProfileState {
     }[]) => void,
     userInfo: any,
     setUserInfo: (v: any) => void,
+    userProfileInfo: any,
+    setUserProfileInfo: (v: any) => void,
 }
 
 export const useUserProfile = create<UserProfileState>((set, get) => ({
@@ -94,6 +96,13 @@ export const useUserProfile = create<UserProfileState>((set, get) => ({
         set((state) => ({
             ...state,
             userInfo: { ..._data }
+        }))
+    }),
+    userProfileInfo: {},
+    setUserProfileInfo: ((_data: any) => {
+        set((state) => ({
+            ...state,
+            userProfileInfo: { ..._data }
         }))
     })
 }))

@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 
 import { flags } from 'src/assets/data';
-import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
+import { getUserProfileData } from 'src/auth/context/jwt/utils';
 
 import Iconify from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
@@ -14,7 +14,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function LanguagePopover() {
-  const user_profile = getUserProfileInfo();
+  const user_profile = getUserProfileData();
   const allLangs = useMemo(() => user_profile?.languages || [], [user_profile?.languages]);
   const popover = usePopover();
   const [currentLang, setCurrentLang] = useState<any>(null);

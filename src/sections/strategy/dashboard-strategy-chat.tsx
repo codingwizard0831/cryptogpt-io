@@ -8,7 +8,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { useStrategy } from 'src/store/strategy/useStrategy';
-import { getUserProfileInfo } from 'src/auth/context/jwt/utils';
+import { getUserProfileData } from 'src/auth/context/jwt/utils';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify/iconify';
@@ -38,7 +38,7 @@ export default function DashboardStrategyChat({
     const isChatHistory = useBoolean(false);
     const carousel = useCarousel();
     const theme = useTheme();
-    const user_profile = getUserProfileInfo();
+    const user_profile = getUserProfileData();
 
     useEffect(() => {
         fetch('/audios/voice.mp3')

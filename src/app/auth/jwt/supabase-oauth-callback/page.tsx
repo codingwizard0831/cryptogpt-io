@@ -4,7 +4,7 @@ import React from 'react';
 
 import { GuestGuard } from 'src/auth/guard';
 import { supabase } from "src/lib/supabase";
-import { setUserInfo, setAccessToken, setRefreshToken, getUserProfileInfo } from 'src/auth/context/jwt/utils';
+import { setUserInfo, setAccessToken, setRefreshToken, getUserProfileData } from 'src/auth/context/jwt/utils';
 
 export default function OAuthPage() {
   // React.useEffect(() => {
@@ -38,7 +38,7 @@ export default function OAuthPage() {
           await setAccessToken(accessToken);
           setUserInfo(user);
           if (refreshToken) setRefreshToken(refreshToken);
-          const user_profile = getUserProfileInfo();
+          const user_profile = getUserProfileData();
           console.log('user_profile-oauth', user_profile)
           if (user_profile?.terms) {
             window.location.href = `${window.location.origin}/dashboard`;
