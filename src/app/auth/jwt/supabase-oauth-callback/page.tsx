@@ -2,8 +2,9 @@
 
 import React from 'react';
 
+import { supabase } from 'src/utils/supabaseClient';
+
 import { GuestGuard } from 'src/auth/guard';
-import { supabase } from "src/lib/supabase";
 import { setUserInfo, setAccessToken, setRefreshToken, getUserProfileData } from 'src/auth/context/jwt/utils';
 
 export default function OAuthPage() {

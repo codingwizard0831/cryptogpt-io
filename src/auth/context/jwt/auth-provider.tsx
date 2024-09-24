@@ -3,6 +3,7 @@
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
+import { supabase } from "src/utils/supabaseClient";
 
 import { useUserProfile } from 'src/store/user/userProfile';
 
@@ -268,6 +269,10 @@ export function AuthProvider({ children }: Props) {
       throw new Error(error);
     } else {
       if (token) {
+        await supabase.auth.setSession({
+          access_token: token,
+          refresh_token: token,
+        });
         await setAccessToken(token);
       }
 
