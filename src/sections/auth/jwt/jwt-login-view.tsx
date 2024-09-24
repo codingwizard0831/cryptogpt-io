@@ -287,7 +287,12 @@ export default function JwtLoginView() {
         {isEmailWithPasswordCase.value && (
           <Stack spacing={1}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="subtitle2" sx={{ color: 'primary.main' }}>
+              <Typography variant="subtitle2" sx={{
+                color: 'primary.main',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
                 {email || 'Email'}
               </Typography>
               <IconButton onClick={isEmailWithPasswordCase.onToggle}>
