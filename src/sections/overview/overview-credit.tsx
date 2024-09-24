@@ -1,15 +1,15 @@
 import Image from 'next/image';
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Line, XAxis, YAxis, Tooltip, LineChart, ResponsiveContainer } from 'recharts';
 
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
   Box,
-  Card,
-  Table,
   Tab,
+  Card,
   Tabs,
+  Table,
   alpha,
   Button,
   TableRow,
@@ -167,11 +167,11 @@ const OverviewCredit: React.FC = () => {
     }
   }, [prices]);
 
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(fetchPrices, 20000);
-    return () => clearInterval(interval);
-  }, [fetchPrices]);
+  // useEffect(() => {
+  //   fetchPrices();
+  //   // const interval = setInterval(fetchPrices, 20000000) //  realtime 20000;;
+  //   // return () => clearInterval(interval);
+  // }, [fetchPrices]);
 
   const getChartDomain = (token: string) => {
     if (token === 'USDT' || token === 'USDC') {
