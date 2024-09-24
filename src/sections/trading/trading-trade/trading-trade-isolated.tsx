@@ -6,24 +6,23 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { TradeInput } from 'src/components/trade-input';
 
-import DashboardTradeMethod from './dashboard-trade-method';
+import TradingTradeMethod from './trading-trade-method';
 
 
-export function DashboardTradeCross() {
-    const [currentCrossTab, setCurrentCrossTab] = useState('limit');
+export function TradingTradeIsolated() {
+    const [currentIsolatedTab, setCurrentIsolatedTab] = useState('limit');
     const [spotMarket, setSpotMarket] = useState('Amount');
     const [currentMode, setCurrentMode] = useState('normal');
     const [currentTradeType, setCurrentTradeType] = useState<"BUY" | "SELL">('BUY');
     const smUp = useResponsive('up', 'sm');
 
-
-    const handleChangeCrossTab = (event: React.SyntheticEvent, newValue: string) => {
-        setCurrentCrossTab(newValue);
+    const handleChangeIsolatedTab = (event: React.SyntheticEvent, newValue: string) => {
+        setCurrentIsolatedTab(newValue);
     };
 
     return <Box>
         {
-            !smUp && <DashboardTradeMethod tradeType={currentTradeType} onChangeTradeType={(type) => setCurrentTradeType(type)} />
+            !smUp && <TradingTradeMethod tradeType={currentTradeType} onChangeTradeType={(type) => setCurrentTradeType(type)} />
         }
 
         <Box sx={{
@@ -32,7 +31,7 @@ export function DashboardTradeCross() {
             justifyContent: 'flex-start',
             mb: 2,
         }}>
-            <Tabs value={currentCrossTab} onChange={handleChangeCrossTab} sx={{
+            <Tabs value={currentIsolatedTab} onChange={handleChangeIsolatedTab} sx={{
                 backgroundColor: theme => alpha(theme.palette.background.default, 0.2),
                 border: theme => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
                 p: 0.5,
@@ -67,8 +66,7 @@ export function DashboardTradeCross() {
 
         <Stack direction="row" spacing={2}>
             {
-                (smUp || currentTradeType === "BUY") &&
-                <TradeModeTabs currentMode={currentMode} onChangleCurrentMode={(v) => setCurrentMode(v)} sx={{
+                (smUp || currentTradeType === "BUY") && <TradeModeTabs currentMode={currentMode} onChangleCurrentMode={(v) => setCurrentMode(v)} sx={{
                     maxWidth: smUp ? '300px' : '100%',
                     width: '100%',
                 }} />
@@ -81,7 +79,7 @@ export function DashboardTradeCross() {
             }
         </Stack>
         {
-            currentCrossTab === 'limit' && <Stack direction="row" spacing={2}>
+            currentIsolatedTab === 'limit' && <Stack direction="row" spacing={2}>
                 {
                     (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
                         maxWidth: smUp ? '300px' : '100%',
@@ -132,7 +130,7 @@ export function DashboardTradeCross() {
         }
 
         {
-            currentCrossTab === 'market' && <Stack direction="row" spacing={2}>
+            currentIsolatedTab === 'market' && <Stack direction="row" spacing={2}>
                 {
                     (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
                         maxWidth: smUp ? '300px' : '100%',
@@ -183,7 +181,7 @@ export function DashboardTradeCross() {
 
 
         {
-            currentCrossTab === 'stop-limit' && <Stack direction="row" spacing={2}>
+            currentIsolatedTab === 'stop-limit' && <Stack direction="row" spacing={2}>
                 {
                     (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
                         maxWidth: smUp ? '300px' : '100%',
@@ -235,7 +233,7 @@ export function DashboardTradeCross() {
         }
 
         {
-            currentCrossTab === 'trailing-limit' && <Stack direction="row" spacing={2}>
+            currentIsolatedTab === 'trailing-limit' && <Stack direction="row" spacing={2}>
                 {
                     (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
                         maxWidth: smUp ? '300px' : '100%',
@@ -323,7 +321,7 @@ export function DashboardTradeCross() {
         }
 
         {
-            currentCrossTab === 'oco' && <Stack direction="row" spacing={2}>
+            currentIsolatedTab === 'oco' && <Stack direction="row" spacing={2}>
                 {
                     (smUp || currentTradeType === "BUY") && <Stack direction="column" spacing={1} sx={{
                         maxWidth: smUp ? '300px' : '100%',

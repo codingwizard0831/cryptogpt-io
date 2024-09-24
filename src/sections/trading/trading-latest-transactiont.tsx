@@ -8,10 +8,10 @@ import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
 import Iconify from 'src/components/iconify';
 
-interface DashboardLatestTransactionProps extends BoxProps {
+interface TradingLatestTransactionProps extends BoxProps {
 }
 
-export default function DashboardLatestTransaction({ sx, ...other }: DashboardLatestTransactionProps) {
+export default function TradingLatestTransaction({ sx, ...other }: TradingLatestTransactionProps) {
     const smUp = useResponsive('up', 'sm');
 
     return (

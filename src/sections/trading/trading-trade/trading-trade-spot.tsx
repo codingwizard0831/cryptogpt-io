@@ -6,10 +6,10 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { TradeInput } from 'src/components/trade-input';
 
-import DashboardTradeMethod from './dashboard-trade-method';
+import TradingTradeMethod from './trading-trade-method';
 
 
-export function DashboardTradeSpot() {
+export function TradingTradeSpot() {
     const [currentSpotTab, setCurrentSpotTab] = useState('limit');
     const [spotMarket, setSpotMarket] = useState('Amount');
     const smUp = useResponsive('up', 'sm');
@@ -21,7 +21,7 @@ export function DashboardTradeSpot() {
 
     return <Box>
         {
-            !smUp && <DashboardTradeMethod tradeType={currentTradeType} onChangeTradeType={(type) => setCurrentTradeType(type)} />
+            !smUp && <TradingTradeMethod tradeType={currentTradeType} onChangeTradeType={(type) => setCurrentTradeType(type)} />
         }
 
         <Box sx={{

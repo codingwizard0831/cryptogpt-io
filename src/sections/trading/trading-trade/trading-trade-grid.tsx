@@ -11,10 +11,10 @@ import { TradeInput } from 'src/components/trade-input';
 import { usePopover } from 'src/components/custom-popover';
 import { StyledDialog, StyledPopover } from 'src/components/styled-component';
 
-import DashboardTradeGridPopularStrategy from './dashboard-trade-grid-popular-strategy';
+import TradingTradeGridPopularStrategy from './trading-trade-grid-popular-strategy';
 
 
-export function DashboardTradeGrid() {
+export function TradingTradeGrid() {
     const theme = useTheme();
     const [currentGridTab, setCurrentGridTab] = useState('ai');
     const [currentAiPeriod, setCurrentAiPeriod] = useState('3d');
@@ -284,7 +284,7 @@ export function DashboardTradeGrid() {
                                 width: smUp ? '660px' : '100%',
                             }}>
                                 {
-                                    Array.from({ length: 10 }).map((_, i) => <DashboardTradeGridPopularStrategy key={`grid-popular-key-${i}`} sx={{
+                                    Array.from({ length: 10 }).map((_, i) => <TradingTradeGridPopularStrategy key={`grid-popular-key-${i}`} sx={{
                                         ...(smUp ? {} : {
                                             maxWidth: '100%',
                                         })
@@ -306,7 +306,7 @@ export function DashboardTradeGrid() {
                     maxHeight: '204px',
                 }}>
                     {
-                        Array.from({ length: 10 }).map((_, i) => <DashboardTradeGridPopularStrategy key={`grid-popular-key-${i}`} sx={{
+                        Array.from({ length: 10 }).map((_, i) => <TradingTradeGridPopularStrategy key={`grid-popular-key-${i}`} sx={{
                             ...(smUp ? {} : {
                                 maxWidth: '100%',
                             })

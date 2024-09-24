@@ -8,11 +8,11 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 
-interface DashboardNewsTopicProps extends BoxProps {
+interface TradingNewsTopicProps extends BoxProps {
     onMoveLeft?: () => void;
 }
 
-export default function DashboardNewsTopic({ sx, onMoveLeft, ...other }: DashboardNewsTopicProps) {
+export default function TradingNewsTopic({ sx, onMoveLeft, ...other }: TradingNewsTopicProps) {
     const theme = useTheme();
     const smUp = useResponsive("up", "sm");
 

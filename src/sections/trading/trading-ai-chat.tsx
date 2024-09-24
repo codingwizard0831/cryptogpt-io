@@ -26,12 +26,12 @@ const Textarea = styled(BaseTextareaAutosize)(
 `,
 );
 
-interface DashboardAIChatProps extends BoxProps {
+interface TradingAIChatProps extends BoxProps {
     isMinimized?: boolean;
     onBlockResize?: () => void;
 }
 
-export function DashboardAIChat({ sx, isMinimized = true, onBlockResize, ...other }: DashboardAIChatProps) {
+export function TradingAIChat({ sx, isMinimized = true, onBlockResize, ...other }: TradingAIChatProps) {
     const smUp = useResponsive('up', 'sm');
     const [text, setText] = useState('');
 

@@ -8,16 +8,16 @@ import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
 import Carousel, { useCarousel } from 'src/components/carousel';
 
-import DashboardNewsTopic from './dashboard-news-topic';
-import DashboardNewsContent from './dashboard-news-content';
+import TradingNewsTopic from './trading-news-topic';
+import TradingNewsContent from './trading-news-content';
 
 
 // ----------------------------------------------------------------------
 
-interface DashboardLineChartProps extends BoxProps {
+interface TradingNewsProps extends BoxProps {
 }
 
-export default function DashboardNews({ sx, ...other }: DashboardLineChartProps) {
+export default function TradingNews({ sx, ...other }: TradingNewsProps) {
     const theme = useTheme();
     const smUp = useResponsive("up", "sm");
 
@@ -32,15 +32,15 @@ export default function DashboardNews({ sx, ...other }: DashboardLineChartProps)
             {
                 smUp &&
                 <Stack direction="row" spacing={2} justifyContent="space-between" sx={{ height: '100%' }}>
-                    <DashboardNewsContent />
-                    <DashboardNewsTopic />
+                    <TradingNewsContent />
+                    <TradingNewsTopic />
                 </Stack>
             }
             {
                 !smUp &&
                 <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
-                    <DashboardNewsContent onMoveRight={carousel.onNext} />
-                    <DashboardNewsTopic onMoveLeft={carousel.onPrev} />
+                    <TradingNewsContent onMoveRight={carousel.onNext} />
+                    <TradingNewsTopic onMoveLeft={carousel.onPrev} />
                 </Carousel>
             }
         </Box >

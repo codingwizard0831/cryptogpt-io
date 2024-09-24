@@ -1,14 +1,14 @@
 import { Box, alpha, BoxProps } from '@mui/material';
 
-interface DashboardTrackerStrategyStatusProps extends BoxProps {
+interface TradingTrackerStrategyStatusProps extends BoxProps {
     value?: number;
 }
 
-export default function DashboardTrackerStrategyStatus({
+export default function TradingTrackerStrategyStatus({
     value = 30,
     sx,
     ...other
-}: DashboardTrackerStrategyStatusProps) {
+}: TradingTrackerStrategyStatusProps) {
     return <Box sx={{
         display: 'flex',
         height: '16px',

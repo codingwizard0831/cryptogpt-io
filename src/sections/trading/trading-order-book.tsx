@@ -23,7 +23,7 @@ import Iconify from 'src/components/iconify';
 
 const fixedOrderBookNumber = 11;
 
-export default function DashboardOrderBook() {
+export default function TradingOrderBook() {
   const [sellOrders, setSellOrders] = useState<OrderBookEntry[]>([]);
   const [buyOrders, setBuyOrders] = useState<OrderBookEntry[]>([]);
   const orderBookContainer = useRef<HTMLDivElement>(null);

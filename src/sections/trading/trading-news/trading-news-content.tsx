@@ -14,11 +14,11 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import Iconify from 'src/components/iconify';
 
-interface DashboardNewsContentProps extends BoxProps {
+interface TradingNewsContentProps extends BoxProps {
     onMoveRight?: () => void;
 }
 
-export default function DashboardNewsContent({ sx, onMoveRight, ...other }: DashboardNewsContentProps) {
+export default function TradingNewsContent({ sx, onMoveRight, ...other }: TradingNewsContentProps) {
     const theme = useTheme();
     const [filterOption, setFilterOption] = useState('all');
     const smUp = useResponsive("up", "sm");

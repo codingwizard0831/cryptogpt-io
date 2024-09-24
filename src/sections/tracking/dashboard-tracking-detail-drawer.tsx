@@ -11,7 +11,7 @@ import { fDate } from 'src/utils/format-time';
 import Iconify from 'src/components/iconify';
 import { Calendar } from 'src/components/calendar';
 
-import DashboardTrackerStrategyStatus from '../dashboard/dashboard-tracker/dashboard-tracker-strategy-status';
+import DashboardTrackerStrategyStatus from '../trading/trading-tracker/trading-tracker-strategy-status';
 
 interface DashboardTrackingDetailDrawerProps {
     isShow?: boolean;

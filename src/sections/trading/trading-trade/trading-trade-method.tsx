@@ -2,17 +2,17 @@ import { useState } from 'react';
 
 import { Box, alpha, BoxProps } from '@mui/material';
 
-interface DashboardTradeMethodProps extends BoxProps {
+interface TradingTradeMethodProps extends BoxProps {
     tradeType: 'BUY' | 'SELL';
     onChangeTradeType: (type: 'BUY' | 'SELL') => void;
 }
 
-export default function DashboardTradeMethod({
+export default function TradingTradeMethod({
     tradeType = 'BUY',
     onChangeTradeType,
     sx,
     ...other
-}: DashboardTradeMethodProps) {
+}: TradingTradeMethodProps) {
     const [currentTradeType, setCurrentTradeType] = useState(tradeType);
 
     const handleChangeTradeType = (type: 'BUY' | 'SELL') => {

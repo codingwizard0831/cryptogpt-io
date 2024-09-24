@@ -11,7 +11,7 @@ import { NAV, HEADER, SPACING } from 'src/layouts/config-layout';
 
 import Carousel, { useCarousel } from 'src/components/carousel';
 
-import { DashboardAIChat } from 'src/sections/dashboard/dashboard-ai-chat';
+import { DashboardAIChat } from 'src/sections/trading/trading-ai-chat';
 
 import DashboardTrackingHistory from '../dashboard-tracking-history';
 import DashboardTrackingSummary from '../dashboard-tracking-summary';

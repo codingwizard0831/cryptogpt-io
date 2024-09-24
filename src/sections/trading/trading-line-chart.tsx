@@ -6,11 +6,11 @@ import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-interface DashboardLineChartProps extends BoxProps {
+interface TradingLineChartProps extends BoxProps {
     data?: number[]
 }
 
-export default function DashboardLineChart({ data = dummyData, sx, ...other }: DashboardLineChartProps) {
+export default function TradingLineChart({ data = dummyData, sx, ...other }: TradingLineChartProps) {
     const chartOptions = useChart({
         xaxis: {
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],

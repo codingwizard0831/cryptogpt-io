@@ -6,20 +6,20 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import Iconify from 'src/components/iconify';
 
-import { DashboardTradeSpot } from './dashboard-trade-spot';
-import { DashboardTradeGrid } from './dashboard-trade-grid';
-import { DashboardTradeCross } from './dashboard-trade-cross';
-import { DashboardTradeIsolated } from './dashboard-trade-isolated';
+import { TradingTradeSpot } from './trading-trade-spot';
+import { TradingTradeGrid } from './trading-trade-grid';
+import { TradingTradeCross } from './trading-trade-cross';
+import { TradingTradeIsolated } from './trading-trade-isolated';
 
-interface DashboardTradeProps extends BoxProps {
+interface TradingTradeProps extends BoxProps {
     onBlockResize?: () => void;
 }
 
-export default function DashboardTrade({
+export default function TradingTrade({
     onBlockResize,
     sx,
     ...other
-}: DashboardTradeProps) {
+}: TradingTradeProps) {
     const [currentTypeTab, setCurrentTypeTab] = useState('spot');
     const smUp = useResponsive('up', 'sm');
 
@@ -83,16 +83,16 @@ export default function DashboardTrade({
             backgroundImage: theme => `linear-gradient(to bottom, ${alpha(theme.palette.primary.main, 0.05)}, transparent)`,
         }}>
             {
-                currentTypeTab === 'spot' && <DashboardTradeSpot />
+                currentTypeTab === 'spot' && <TradingTradeSpot />
             }
             {
-                currentTypeTab === 'cross' && <DashboardTradeCross />
+                currentTypeTab === 'cross' && <TradingTradeCross />
             }
             {
-                currentTypeTab === 'isolated' && <DashboardTradeIsolated />
+                currentTypeTab === 'isolated' && <TradingTradeIsolated />
             }
             {
-                currentTypeTab === 'grid' && <DashboardTradeGrid />
+                currentTypeTab === 'grid' && <TradingTradeGrid />
             }
         </Box>
     </Box>;

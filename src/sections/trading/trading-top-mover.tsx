@@ -9,12 +9,10 @@ import { fNumberPrice } from 'src/utils/format-number';
 import Iconify from 'src/components/iconify';
 
 
-
-
-interface DashboardTopMoverProps extends BoxProps {
+interface TradingTopMoverProps extends BoxProps {
 }
 
-export function DashboardTopMover({ sx, ...other }: DashboardTopMoverProps) {
+export function TradingTopMover({ sx, ...other }: TradingTopMoverProps) {
 
     const [currentTab, setCurrentTab] = useState('all');
 

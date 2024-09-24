@@ -13,13 +13,13 @@ import { fDate } from 'src/utils/format-time';
 import Iconify from 'src/components/iconify';
 import { Calendar } from 'src/components/calendar';
 
-import DashboardTrackerStrategyStatus from './dashboard-tracker-strategy-status';
+import TradingTrackerStrategyStatus from './trading-tracker-strategy-status';
 
 
-interface DashboardTrackerProps extends BoxProps {
+interface TradingTrackerProps extends BoxProps {
 }
 
-export function DashboardTracker({ sx, ...other }: DashboardTrackerProps) {
+export function TradingTracker({ sx, ...other }: TradingTrackerProps) {
     const trackerDetailDrawer = useBoolean(false);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [currentTab, setCurrentTab] = useState('book');
@@ -209,7 +209,7 @@ export function DashboardTracker({ sx, ...other }: DashboardTrackerProps) {
 
                                 <Box>
                                     <Typography variant="caption" sx={{ display: 'block' }}>100%</Typography>
-                                    <DashboardTrackerStrategyStatus value={70} />
+                                    <TradingTrackerStrategyStatus value={70} />
                                     <Typography variant="caption" sx={{ display: 'block', color: "primary.main" }}>Completed</Typography>
                                 </Box>
                             </Stack>

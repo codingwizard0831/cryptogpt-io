@@ -11,17 +11,17 @@ import { NAV, HEADER, SPACING, MAIN_CHART_PANEL } from 'src/layouts/config-layou
 
 import Carousel, { useCarousel } from 'src/components/carousel';
 
-import { DashboardNews } from '../dashboard-news';
-import { DashboardAIChat } from '../dashboard-ai-chat';
-import { DashboardTracker } from '../dashboard-tracker';
-import DashboardLineChart from '../dashboard-line-chart';
-import DashboardOrderBook from '../dashboard-order-book';
-import { DashboardTopMover } from '../dashboard-top-mover';
-import DashBoardTradingChart from '../dashboard-trading-chart';
-import { DashboardTrade, DashboardTradeHome } from '../dashboard-trade';
-import DashboardLatestTransaction from '../dashboard-latest-transactiont';
+import { TradingNews } from '../trading-news';
+import { TradingAIChat } from '../trading-ai-chat';
+import { TradingTracker } from '../trading-tracker';
+import TradingLineChart from '../trading-line-chart';
+import TradingOrderBook from '../trading-order-book';
+import { TradingTopMover } from '../trading-top-mover';
+import TradingTradingChart from '../trading-trading-chart';
+import { TradingTrade, TradingTradeHome } from '../trading-trade';
+import TradingLatestTransaction from '../trading-latest-transactiont';
 
-export default function DashboardView() {
+export default function TradingView() {
     const [currentTab, setCurrentTab] = useState('candle');
     const smUp = useResponsive('up', 'sm');
     const [currentWidth, setCurrentWidth] = useState(0);
@@ -93,19 +93,19 @@ export default function DashboardView() {
                             flex: 1,
                         }}>
                             {
-                                currentTab === 'candle' && <DashBoardTradingChart />
+                                currentTab === 'candle' && <TradingTradingChart />
                             }
                             {
-                                currentTab === 'line' && <DashboardLineChart />
+                                currentTab === 'line' && <TradingLineChart />
                             }
                             {
-                                currentTab === 'news' && <DashboardNews />
+                                currentTab === 'news' && <TradingNews />
                             }
                             {
-                                currentTab === 'order-book' && <DashboardOrderBook />
+                                currentTab === 'order-book' && <TradingOrderBook />
                             }
                             {
-                                currentTab === 'transactions' && <DashboardLatestTransaction />
+                                currentTab === 'transactions' && <TradingLatestTransaction />
                             }
                         </Box>
                     </Stack>
@@ -119,7 +119,7 @@ export default function DashboardView() {
                         borderRadius: 1,
                         overflow: 'visible',
                     }}>
-                        <DashboardOrderBook />
+                        <TradingOrderBook />
                     </Card>
                 }
             </Stack>
@@ -152,7 +152,7 @@ export default function DashboardView() {
                             aspectRatio: isAIChatWindowFull.value ? `${chatAreaFullWidth}/309` : '2/1',
                             backdropFilter: 'none',
                         }}>
-                            <DashboardAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
+                            <TradingAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
                         </Card>
 
                         <Card sx={{
@@ -160,7 +160,7 @@ export default function DashboardView() {
                             flexShrink: 0,
                             aspectRatio: '1.2/1',
                         }}>
-                            <DashboardTradeHome onBlockResize={() => isTradeWindowFull.onToggle()} />
+                            <TradingTradeHome onBlockResize={() => isTradeWindowFull.onToggle()} />
                         </Card>
 
                         <Card sx={{
@@ -169,7 +169,7 @@ export default function DashboardView() {
                             flexShrink: 0,
                             aspectRatio: '1.2/1',
                         }}>
-                            <DashboardTracker />
+                            <TradingTracker />
                         </Card>
 
                         <Card sx={{
@@ -178,7 +178,7 @@ export default function DashboardView() {
                             flexShrink: 0,
                             aspectRatio: '2/1',
                         }}>
-                            <DashboardTopMover />
+                            <TradingTopMover />
                         </Card>
                     </Stack>
                 }
@@ -195,7 +195,7 @@ export default function DashboardView() {
                             aspectRatio: isAIChatWindowFull.value ? `${chatAreaFullWidth}/309` : '2/1',
                             backdropFilter: 'none',
                         }}>
-                            <DashboardAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
+                            <TradingAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
                         </Card>
 
                         <Card sx={{
@@ -203,7 +203,7 @@ export default function DashboardView() {
                             flexShrink: 0,
                             aspectRatio: '1.2/1',
                         }}>
-                            <DashboardTradeHome onBlockResize={() => isTradeWindowFull.onToggle()} />
+                            <TradingTradeHome onBlockResize={() => isTradeWindowFull.onToggle()} />
                         </Card>
 
                         <Card sx={{
@@ -212,14 +212,14 @@ export default function DashboardView() {
                             flexShrink: 0,
                             aspectRatio: '1.2/1',
                         }}>
-                            <DashboardTracker />
+                            <TradingTracker />
                         </Card>
 
                         <Card sx={{
                             p: 1,
                             height: '100%',
                         }}>
-                            <DashboardTopMover />
+                            <TradingTopMover />
                         </Card>
                     </Carousel>
                 }
@@ -244,7 +244,7 @@ export default function DashboardView() {
                     height: '100%',
                     borderRadius: 1,
                 }}>
-                    <DashboardAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
+                    <TradingAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
                 </Card>
             </Box>
 
@@ -261,7 +261,7 @@ export default function DashboardView() {
                     width: '100%',
                     borderRadius: 1,
                 }}>
-                    <DashboardTrade onBlockResize={() => isTradeWindowFull.onToggle()} />
+                    <TradingTrade onBlockResize={() => isTradeWindowFull.onToggle()} />
                 </Card>
             </Box>
         </Box>

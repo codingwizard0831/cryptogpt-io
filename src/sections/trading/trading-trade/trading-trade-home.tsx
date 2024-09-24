@@ -8,15 +8,15 @@ import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 
 
-interface DashboardTradeProps extends BoxProps {
+interface TradingTradeProps extends BoxProps {
     onBlockResize?: () => void;
 }
 
-export default function DashboardTradeHome({
+export default function TradingTradeHome({
     onBlockResize,
     sx,
     ...other
-}: DashboardTradeProps) {
+}: TradingTradeProps) {
     const smUp = useResponsive('up', 'sm');
 
     const handleBlockResize = () => {

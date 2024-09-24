@@ -4,11 +4,11 @@ import { Box, Stack, alpha, Button, useTheme, BoxProps, Typography } from '@mui/
 
 import Iconify from 'src/components/iconify';
 
-interface DashboardTradeGridPopularStrategyProps extends BoxProps {
+interface TradingTradeGridPopularStrategyProps extends BoxProps {
 
 }
 
-export default function DashboardTradeGridPopularStrategy({ sx, ...other }: DashboardTradeGridPopularStrategyProps) {
+export default function TradingTradeGridPopularStrategy({ sx, ...other }: TradingTradeGridPopularStrategyProps) {
     const theme = useTheme();
 
     return (<Box sx={{
