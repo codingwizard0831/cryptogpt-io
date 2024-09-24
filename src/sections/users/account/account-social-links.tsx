@@ -42,7 +42,6 @@ export default function AccountSocialLinks() {
     const fetchSocialLinks = async () => {
       try {
         const response = await axios.get(endpoints.profile.social);
-        console.log(response.data);
         if (response.data) {
           setSocialLinksData(response.data);
         }
@@ -77,7 +76,6 @@ export default function AccountSocialLinks() {
   }
 
   const handleSubmit = async () => {
-    console.log(socialLinks);
     try {
       isSaveLoading.onTrue();
       const response = await axios.put(endpoints.profile.social, {
@@ -86,7 +84,6 @@ export default function AccountSocialLinks() {
       if (response.data) {
         enqueueSnackbar('Social links updated successfully', { variant: 'success' });
       }
-      console.log(response.data);
       isSaveLoading.onFalse();
     } catch (error) {
       console.error(error);

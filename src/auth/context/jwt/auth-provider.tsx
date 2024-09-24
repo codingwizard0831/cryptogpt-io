@@ -4,11 +4,11 @@ import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
 
+import { useUserProfile } from 'src/store/user/userProfile';
+
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
 import {
-  getUserInfo,
-  setUserInfo,
   isValidToken,
   getAccessToken,
   setAccessToken,
@@ -91,21 +91,24 @@ type Props = {
 
 export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const setUserInfo = useUserProfile((_state) => _state.setUserInfo);
+  const setUserProfileInfo = useUserProfile((_state) => _state.setUserProfileInfo);
 
   const initialize = useCallback(async () => {
     try {
       const accessToken = getAccessToken();
-      // console.log('accessToken', accessToken);
 
       if (accessToken !== 'undefined' && accessToken && isValidToken(accessToken)) {
-        setAccessToken(accessToken);
-        const user = getUserInfo();
+        const { userInfo, userProfileInfo } = await setAccessToken(accessToken);
+        // const user = getUserInfo();
+        setUserInfo(userInfo);
+        setUserProfileInfo(userProfileInfo);
 
         dispatch({
           type: Types.INITIAL,
           payload: {
             user: {
-              ...user,
+              ...userInfo,
               accessToken,
             },
           },
@@ -127,7 +130,7 @@ export function AuthProvider({ children }: Props) {
         },
       });
     }
-  }, []);
+  }, [setUserInfo, setUserProfileInfo]);
 
   useEffect(() => {
     initialize();
@@ -154,10 +157,6 @@ export function AuthProvider({ children }: Props) {
     if (session) {
       await setAccessToken(access_token);
       setRefreshToken(refresh_token);
-    }
-    if (user) {
-      console.log('user', user);
-      setUserInfo(user);
     }
 
     dispatch({
@@ -194,7 +193,6 @@ export function AuthProvider({ children }: Props) {
       const { message } = error;
       throw new Error(message || 'Send code failed');
     }
-    console.log('data', data);
   }, []);
 
   // LOGIN WITH CODE VERIFY - EMAIL OR PHONE
@@ -220,10 +218,6 @@ export function AuthProvider({ children }: Props) {
     if (session) {
       await setAccessToken(access_token);
       setRefreshToken(refresh_token);
-    }
-    if (user) {
-      console.log('user', user);
-      setUserInfo(user);
     }
 
     dispatch({
@@ -276,9 +270,6 @@ export function AuthProvider({ children }: Props) {
       if (token) {
         await setAccessToken(token);
       }
-      if (user) {
-        setUserInfo(user);
-      }
 
       dispatch({
         type: Types.LOGIN,
@@ -303,9 +294,6 @@ export function AuthProvider({ children }: Props) {
       const { user, token } = responseData.data;
       if (token) {
         await setAccessToken(token);
-      }
-      if (user) {
-        setUserInfo(user);
       }
 
       dispatch({
@@ -336,7 +324,6 @@ export function AuthProvider({ children }: Props) {
     }
 
     const { user } = data;
-    console.log('user', user);
 
     if (!user) {
       throw new Error("Can't register user");
@@ -345,7 +332,6 @@ export function AuthProvider({ children }: Props) {
 
   const setUser = useCallback(async (user: any, access_token: string) => {
     await setAccessToken(access_token);
-    setUserInfo(user);
 
     dispatch({
       type: Types.LOGIN,
@@ -365,17 +351,19 @@ export function AuthProvider({ children }: Props) {
       setAccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
+      setUserProfileInfo(null);
       loadUserProfileData(false);
     } catch (error) {
       setAccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
+      setUserProfileInfo(null);
       loadUserProfileData(false);
     }
     dispatch({
       type: Types.LOGOUT,
     });
-  }, []);
+  }, [setUserInfo, setUserProfileInfo]);
 
   // ----------------------------------------------------------------------
 
