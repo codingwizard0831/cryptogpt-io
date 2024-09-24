@@ -185,7 +185,7 @@ const Edge: React.FC<{ startX: number; startY: number; endX: number; endY: numbe
         </>
     );
 
-const DashboardStrategyGraph1: React.FC = () => {
+const StrategyGraph1: React.FC = () => {
     const [nodes, setNodes] = useState<NodeType[]>([
         { id: 'trading', type: 'concept', text: 'Crypto Trading', color: COLORS.CYAN_NEON, position: { x: 0, y: 0 }, finalPosition: { x: 0, y: 0 } },
         { id: 'btc', type: 'asset', text: 'Bitcoin', color: COLORS.GOLD_NEON, position: { x: 0, y: 0 }, finalPosition: { x: 0, y: 0 } },
@@ -350,4 +350,4 @@ const DashboardStrategyGraph1: React.FC = () => {
     );
 };
 
-export default DashboardStrategyGraph1;
+export default StrategyGraph1;

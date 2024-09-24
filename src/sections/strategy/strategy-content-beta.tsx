@@ -7,10 +7,10 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 import Iconify from 'src/components/iconify/iconify';
 import MobileMenu from 'src/components/mobile-tab/mobile-tab';
 
-import DashboardStrategyStep1Beta from './steps/strategy-1-beta';
-import DashboardStrategyStep2Beta from './steps/strategy-2-beta';
-import DashboardStrategyStep3Beta from './steps/strategy-3-beta';
-import DashboardStrategyStep4Beta from './steps/strategy-4-beta';
+import StrategyStep1Beta from './steps/strategy-1-beta';
+import StrategyStep2Beta from './steps/strategy-2-beta';
+import StrategyStep3Beta from './steps/strategy-3-beta';
+import StrategyStep4Beta from './steps/strategy-4-beta';
 
 
 interface MenuButton {
@@ -25,11 +25,11 @@ const menuButtons: MenuButton[] = [
     { icon: <Iconify icon="vaadin:chart-3d" />, id: '5.review' },
 ];
 
-interface DashboardStrategyContentBetaProps extends BoxProps {
+interface StrategyContentBetaProps extends BoxProps {
 
 }
 
-export default function DashboardStrategyContentBeta({ sx, ...other }: DashboardStrategyContentBetaProps) {
+export default function StrategyContentBeta({ sx, ...other }: StrategyContentBetaProps) {
     const step = useStrategy(state => state.step);
     const setStep = useStrategy(state => state.setStep);
 
@@ -47,19 +47,19 @@ export default function DashboardStrategyContentBeta({ sx, ...other }: Dashboard
     }} {...other}>
         {
             step === "1.2.choose-pair" &&
-            <DashboardStrategyStep1Beta />
+            <StrategyStep1Beta />
         }
         {
             step === "3.detail" &&
-            <DashboardStrategyStep2Beta />
+            <StrategyStep2Beta />
         }
         {
             step === "4.backtesting" &&
-            <DashboardStrategyStep3Beta />
+            <StrategyStep3Beta />
         }
         {
             step === "5.review" &&
-            <DashboardStrategyStep4Beta />
+            <StrategyStep4Beta />
         }
 
 

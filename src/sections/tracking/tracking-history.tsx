@@ -6,7 +6,7 @@ import { MAIN_CHART_PANEL } from 'src/layouts/config-layout';
 
 import Iconify from 'src/components/iconify';
 
-export default function DashboardTrackingHistory() {
+export default function TrackingHistory() {
     return <Box sx={{
         display: 'flex',
         flexDirection: 'column',

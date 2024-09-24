@@ -14,17 +14,17 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 
 import Iconify from 'src/components/iconify/iconify';
 
-import DashboardStrategyAccordion from './dashboard-strategy-accordion';
+import StrategyAccordion from './strategy-accordion';
 
 
-interface DashboardStrategySummaryProps extends BoxProps {
+interface StrategySummaryProps extends BoxProps {
 }
 
-export default function DashboardStrategySummary(
+export default function StrategySummary(
     {
         sx,
         ...other
-    }: DashboardStrategySummaryProps
+    }: StrategySummaryProps
 ) {
     const smUp = useResponsive("up", 'sm');
     const isShowSummary = useStrategy((state) => state.isShowSummary);
@@ -82,7 +82,7 @@ export default function DashboardStrategySummary(
                                 width: "100%",
                             }}>
                                 <Box>
-                                    <DashboardStrategyAccordion />
+                                    <StrategyAccordion />
                                 </Box>
                             </TimelineContent>
                         </TimelineItem>

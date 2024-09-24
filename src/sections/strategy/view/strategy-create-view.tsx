@@ -12,9 +12,9 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 
 import Iconify from 'src/components/iconify';
 
-import DashboardStrategyContent from '../dashboard-strategy-content';
+import StrategyContent from '../strategy-content';
 
-export default function DashboardStrategyCreateView() {
+export default function StrategyCreateView() {
     const isShowSummary = useStrategy((state) => state.isShowSummary);
     const setIsShowSummary = useStrategy((state) => state.setIsShowSummary);
     const smUp = useResponsive("up", 'sm');
@@ -85,7 +85,7 @@ export default function DashboardStrategyCreateView() {
                     </Button>
                 </Box>
 
-                <DashboardStrategyContent sx={{
+                <StrategyContent sx={{
                     flex: 1,
                     height: 0,
                 }} />

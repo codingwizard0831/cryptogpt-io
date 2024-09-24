@@ -19,10 +19,10 @@ import Iconify from 'src/components/iconify';
 import Carousel, { useCarousel } from 'src/components/carousel';
 
 import StrategyCrgptBuyCard from '../strategy-crgpt-buy-card';
-import DashboardStrategyCard from '../dashboard-strategy-card';
+import StrategyCard from '../strategy-card';
 
 
-export default function DashboardStrategyView() {
+export default function StrategyView() {
   const isShowSummary = useStrategy((state) => state.isShowSummary);
   const setIsShowSummary = useStrategy((state) => state.setIsShowSummary);
   const smUp = useResponsive("up", 'sm');
@@ -231,7 +231,7 @@ export default function DashboardStrategyView() {
                 width: '300px',
                 height: '100%',
               }}>
-                <DashboardStrategyCard />
+                <StrategyCard />
               </Box>)
             }
             <Box sx={{

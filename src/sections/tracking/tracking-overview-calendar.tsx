@@ -13,7 +13,7 @@ import { CalendarDateItem } from "src/components/calendar/calendar-date-item";
 
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-interface DashboardTrackingOverviewCalendarProps extends BoxProps {
+interface TrackingOverviewCalendarProps extends BoxProps {
     date?: Date;
     selectedDate?: Date;
     handlechangeSelectedDate?: (date: Date) => void;
@@ -21,7 +21,7 @@ interface DashboardTrackingOverviewCalendarProps extends BoxProps {
     isShowWeekDay?: boolean;
 }
 
-export default function DashboardTrackingOverviewCalendar({
+export default function TrackingOverviewCalendar({
     date: defaultDate = new Date(),
     selectedDate: defaultSelectedDate = new Date(),
     handleChangeDate,
@@ -29,7 +29,7 @@ export default function DashboardTrackingOverviewCalendar({
     isShowWeekDay = false,
     sx,
     ...other
-}: DashboardTrackingOverviewCalendarProps) {
+}: TrackingOverviewCalendarProps) {
     const [currentDate, setCurrentDate] = useState(defaultDate);
     const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
 

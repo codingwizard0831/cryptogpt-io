@@ -19,7 +19,7 @@ interface TeacherProps {
     [key: string]: any; // For additional props
 }
 
-export default function DashboardStrategyTeacher({ teacher, ...props }: TeacherProps) {
+export default function StrategyTeacher({ teacher, ...props }: TeacherProps) {
     const groupRef = useRef<Group<any> | null>(null);
     // const { scene } = useGLTF(`/models/Teacher_${teacher}.glb`);
     const { scene } = useGLTF(`/models/crgptgirl.glb`);

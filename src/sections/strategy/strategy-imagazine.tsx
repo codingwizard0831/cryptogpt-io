@@ -1,13 +1,13 @@
 import { Box, BoxProps } from "@mui/material";
 
-interface DashboardStrategyImaganizeProps extends BoxProps {
+interface StrategyImaganizeProps extends BoxProps {
 
 }
 
-export default function DashboardStrategyImaganize({
+export default function StrategyImaganize({
     sx,
     ...other
-}: DashboardStrategyImaganizeProps) {
+}: StrategyImaganizeProps) {
     return <Box sx={{
         height: '100%',
         width: '100%',

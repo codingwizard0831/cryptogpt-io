@@ -12,14 +12,14 @@ import { useBoolean } from 'src/hooks/use-boolean'
 import Iconify from 'src/components/iconify'
 import { StyledDialog } from 'src/components/styled-component'
 
-interface DashboardTrackingSummaryProps extends BoxProps {
+interface TrackingSummaryProps extends BoxProps {
 
 }
 
-export default function DashboardTrackingSummary({
+export default function TrackingSummary({
     sx,
     ...other
-}: DashboardTrackingSummaryProps) {
+}: TrackingSummaryProps) {
     const theme = useTheme();
     const detailDialigVisible = useBoolean(false);
     const addEventDialogVisible = useBoolean(false);

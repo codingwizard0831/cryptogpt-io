@@ -20,11 +20,11 @@ interface DataPoint {
     action?: 'Buy' | 'Sell';
 }
 
-interface DashboardStrategyCardProps extends BoxProps {
+interface StrategyCardProps extends BoxProps {
 
 };
 
-export default function DashboardStrategyCard({ sx, ...other }: DashboardStrategyCardProps) {
+export default function StrategyCard({ sx, ...other }: StrategyCardProps) {
     const [currentTab, setCurrentTab] = useState("qrcode");
 
     const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {

@@ -11,15 +11,15 @@ import { NAV, HEADER, SPACING } from 'src/layouts/config-layout';
 
 import Carousel, { useCarousel } from 'src/components/carousel';
 
-import { DashboardAIChat } from 'src/sections/trading/trading-ai-chat';
+import { TradingAIChat } from 'src/sections/trading/trading-ai-chat';
 
-import DashboardTrackingHistory from '../dashboard-tracking-history';
-import DashboardTrackingSummary from '../dashboard-tracking-summary';
-import DashboardTrackingDetailDrawer from '../dashboard-tracking-detail-drawer';
-import DashboardTrackingOverviewCalendar from '../dashboard-tracking-overview-calendar';
+import TrackingHistory from '../tracking-history';
+import TrackingSummary from '../tracking-summary';
+import TrackingDetailDrawer from '../tracking-detail-drawer';
+import TrackingOverviewCalendar from '../tracking-overview-calendar';
 
 
-export default function DashboardTrackingView() {
+export default function TrackingView() {
     const [currentTab, setCurrentTab] = useState('overview');
     const smUp = useResponsive('up', 'sm');
     const [currentWidth, setCurrentWidth] = useState(0);
@@ -100,10 +100,10 @@ export default function DashboardTrackingView() {
                             flex: 1,
                         }}>
                             {
-                                currentTab === 'overview' && <DashboardTrackingOverviewCalendar selectedDate={selectedDate} handlechangeSelectedDate={handleChangleSelectedDate} />
+                                currentTab === 'overview' && <TrackingOverviewCalendar selectedDate={selectedDate} handlechangeSelectedDate={handleChangleSelectedDate} />
                             }
                             {
-                                currentTab === 'summary' && <DashboardTrackingSummary />
+                                currentTab === 'summary' && <TrackingSummary />
                             }
                         </Box>
                     </Stack>
@@ -134,7 +134,7 @@ export default function DashboardTrackingView() {
                             height: '100%',
                             p: 2,
                         }}>
-                            <DashboardTrackingHistory />
+                            <TrackingHistory />
                         </Card>
 
                         <Card sx={{
@@ -144,7 +144,7 @@ export default function DashboardTrackingView() {
                             aspectRatio: isAIChatWindowFull.value ? `${chatAreaFullWidth}/309` : '2/1',
                             p: 2,
                         }}>
-                            <DashboardAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
+                            <TradingAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
                         </Card>
                     </Stack>
                 }
@@ -157,7 +157,7 @@ export default function DashboardTrackingView() {
                             p: 1,
                             height: '100%',
                         }}>
-                            <DashboardTrackingHistory />
+                            <TrackingHistory />
                         </Card>
 
                         <Card sx={{
@@ -167,7 +167,7 @@ export default function DashboardTrackingView() {
                             aspectRatio: isAIChatWindowFull.value ? `${chatAreaFullWidth}/309` : '2/1',
                             backdropFilter: 'none',
                         }}>
-                            <DashboardAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
+                            <TradingAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
                         </Card>
                     </Carousel>
                 }
@@ -192,11 +192,11 @@ export default function DashboardTrackingView() {
                     height: '100%',
                     borderRadius: 1,
                 }}>
-                    <DashboardAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
+                    <TradingAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
                 </Card>
             </Box>
 
-            <DashboardTrackingDetailDrawer
+            <TrackingDetailDrawer
                 isShow={trackerDetailDrawer.value}
                 handleClose={() => trackerDetailDrawer.onFalse()}
                 selectedDate={selectedDate}

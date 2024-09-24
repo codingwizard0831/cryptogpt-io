@@ -10,12 +10,12 @@ import { useStrategy } from 'src/store/strategy/useStrategy';
 import Iconify from 'src/components/iconify/iconify';
 import MobileMenu from 'src/components/mobile-tab/mobile-tab';
 
-import DashboardStrategyStep1 from './steps/strategy-1';
-import DashboardStrategyStep2 from './steps/strategy-2';
-import DashboardStrategyStep3 from './steps/strategy-3';
-import DashboardStrategyStep4 from './steps/strategy-4';
-import DashboardStrategyChat from './dashboard-strategy-chat';
-import DashboardStrategySummary from './dashboard-strategy-summary';
+import StrategyStep1 from './steps/strategy-1';
+import StrategyStep2 from './steps/strategy-2';
+import StrategyStep3 from './steps/strategy-3';
+import StrategyStep4 from './steps/strategy-4';
+import StrategyChat from './strategy-chat';
+import StrategySummary from './strategy-summary';
 
 interface MenuButton {
     icon: React.ReactNode;
@@ -29,11 +29,11 @@ const menuButtons: MenuButton[] = [
     { icon: <Iconify icon="vaadin:chart-3d" />, id: '5.review' },
 ];
 
-interface DashboardStrategyContentProps extends BoxProps {
+interface StrategyContentProps extends BoxProps {
 
 }
 
-export default function DashboardStrategyContent({ sx, ...other }: DashboardStrategyContentProps) {
+export default function StrategyContent({ sx, ...other }: StrategyContentProps) {
     const step = useStrategy(state => state.step);
     const setStep = useStrategy(state => state.setStep);
     const smUp = useResponsive("up", 'sm');
@@ -48,7 +48,7 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
         gap: 2,
         ...sx,
     }} {...other}>
-        <DashboardStrategyChat />
+        <StrategyChat />
 
         <Box sx={{
             width: isShowSummary ? '33%' : '50%',
@@ -93,24 +93,24 @@ export default function DashboardStrategyContent({ sx, ...other }: DashboardStra
             }}>
                 {
                     step === "1.2.choose-pair" &&
-                    <DashboardStrategyStep1 />
+                    <StrategyStep1 />
                 }
                 {
                     step === "3.detail" &&
-                    <DashboardStrategyStep2 />
+                    <StrategyStep2 />
                 }
                 {
                     step === "4.backtesting" &&
-                    <DashboardStrategyStep3 />
+                    <StrategyStep3 />
                 }
                 {
                     step === "5.review" &&
-                    <DashboardStrategyStep4 />
+                    <StrategyStep4 />
                 }
             </Box>
         </Box>
 
-        <DashboardStrategySummary sx={{
+        <StrategySummary sx={{
         }} />
     </Box>
 }

@@ -11,21 +11,21 @@ import { fDate } from 'src/utils/format-time';
 import Iconify from 'src/components/iconify';
 import { Calendar } from 'src/components/calendar';
 
-import DashboardTrackerStrategyStatus from '../trading/trading-tracker/trading-tracker-strategy-status';
+import TradingTrackerStrategyStatus from '../trading/trading-tracker/trading-tracker-strategy-status';
 
-interface DashboardTrackingDetailDrawerProps {
+interface TrackingDetailDrawerProps {
     isShow?: boolean;
     handleClose?: () => void;
     selectedDate?: Date;
     handleChangeSelectedDate?: (date: Date) => void;
 }
 
-export default function DashboardTrackingDetailDrawer({
+export default function TrackingDetailDrawer({
     isShow = false,
     handleClose,
     selectedDate: currentDate = new Date(),
     handleChangeSelectedDate,
-}: DashboardTrackingDetailDrawerProps) {
+}: TrackingDetailDrawerProps) {
     const [currentTab, setCurrentTab] = useState('book');
     const [dateStatus, setDateStatus] = useState<"today" | "old" | "future">('today');
 
@@ -180,7 +180,7 @@ export default function DashboardTrackingDetailDrawer({
 
                         <Box>
                             <Typography variant="caption" sx={{ display: 'block' }}>100%</Typography>
-                            <DashboardTrackerStrategyStatus value={70} />
+                            <TradingTrackerStrategyStatus value={70} />
                             <Typography variant="caption" sx={{ display: 'block', color: "primary.main" }}>Completed</Typography>
                         </Box>
                     </Stack>

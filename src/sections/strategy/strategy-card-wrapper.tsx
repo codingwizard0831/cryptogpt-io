@@ -6,14 +6,14 @@ import { useStrategy } from "src/store/strategy/useStrategy";
 
 import Carousel, { useCarousel, CarouselArrows } from 'src/components/carousel';
 
-import DashboardStrategyCard from './dashboard-strategy-card';
+import StrategyCard from './strategy-card';
 
 
-interface DashboardStrategyCardWrapperProps extends BoxProps {
+interface StrategyCardWrapperProps extends BoxProps {
 
 };
 
-export default function DashboardStrategyCardWrapper({ sx, ...other }: DashboardStrategyCardWrapperProps) {
+export default function StrategyCardWrapper({ sx, ...other }: StrategyCardWrapperProps) {
     const coin1 = useStrategy((state) => state.coin1);
     const setCoin1 = useStrategy((state) => state.setCoin1);
     const coin2 = useStrategy((state) => state.coin2);
@@ -45,7 +45,7 @@ export default function DashboardStrategyCardWrapper({ sx, ...other }: Dashboard
                     [1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => <Box key={`key-${index}`} sx={{
                         px: 0.5
                     }}>
-                        <DashboardStrategyCard />
+                        <StrategyCard />
                     </Box>)
                 }
             </Carousel>

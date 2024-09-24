@@ -21,10 +21,10 @@ import CanvasLayout from 'src/layouts/common/canvas-layout';
 import { useStrategy } from 'src/store/strategy/useStrategy';
 import { useAITeacher } from 'src/store/strategy/useAITeacher';
 
-import StrategyCoinModel from '../dashboard-strategy-coin';
-import DashboardStrategyTeacher from '../dashboard-strategy-teacher';
-import DashboardStrategyCardWrapper from '../dashboard-strategy-card-wrapper';
-import DashboardStrategyContentBeta from '../dashboard-strategy-content-beta';
+import StrategyCoinModel from '../strategy-coin';
+import StrategyTeacher from '../strategy-teacher';
+import StrategyCardWrapper from '../strategy-card-wrapper';
+import StrategyContentBeta from '../strategy-content-beta';
 
 
 const Textarea = styled(BaseTextareaAutosize)(
@@ -118,7 +118,7 @@ const itemPlacement: ItemPlacement = {
   },
 };
 
-export default function DashboardStrategyBetaView() {
+export default function StrategyBetaView() {
   const teacher = useAITeacher((state) => state.teacher);
   const classroom = useAITeacher((state) => state.classroom);
   const step = useStrategy((state) => state.step);
@@ -209,12 +209,12 @@ export default function DashboardStrategyBetaView() {
             <Float speed={0.5} floatIntensity={0.2} rotationIntensity={0.1}>
               <Html transform {...itemPlacement[classroom].board} distanceFactor={1}>
                 <CanvasLayout>
-                  <DashboardStrategyContentBeta />
+                  <StrategyContentBeta />
                 </CanvasLayout>
               </Html>
               <Html transform {...itemPlacement[classroom].card} distanceFactor={1}>
                 <CanvasLayout>
-                  <DashboardStrategyCardWrapper />
+                  <StrategyCardWrapper />
                 </CanvasLayout>
               </Html>
 
@@ -225,7 +225,7 @@ export default function DashboardStrategyBetaView() {
                 {...itemPlacement[classroom].classroom}
               />
 
-              <DashboardStrategyTeacher
+              <StrategyTeacher
                 teacher={teacher}
                 key={teacher}
                 {...itemPlacement[classroom].teacher}

@@ -43,7 +43,7 @@ function Row() {
     );
 }
 
-export default function DashboardStrategyTableWithDetail() {
+export default function StrategyTableWithDetail() {
     return <Table sx={{
         width: '100%',
     }}>

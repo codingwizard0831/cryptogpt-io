@@ -57,18 +57,18 @@ const coinsData: CoinType[] = [
     },
 ]
 
-interface DashboardStrategyCoinSelectorProps extends BoxProps {
+interface StrategyCoinSelectorProps extends BoxProps {
     currency: CoinType,
     handleChange?: (v: CoinType) => void,
     size?: "small" | "medium",
 }
 
-export default function DashboardStrategyCoinSelector({
+export default function StrategyCoinSelector({
     currency = { name: "BNB", symbol: "BNB" },
     handleChange,
     size = "medium",
     sx,
-    ...other }: DashboardStrategyCoinSelectorProps) {
+    ...other }: StrategyCoinSelectorProps) {
     const coinListPopover = usePopover();
 
     const handleChangeCurrency = (v: CoinType) => {

@@ -23,13 +23,13 @@ interface DataPoint {
     action?: 'Buy' | 'Sell';
 }
 
-interface DashboardStrategyChatProps extends BoxProps {
+interface StrategyChatProps extends BoxProps {
 }
 
-export default function DashboardStrategyChat({
+export default function StrategyChat({
     sx,
     ...other
-}: DashboardStrategyChatProps) {
+}: StrategyChatProps) {
     const smUp = useResponsive("up", 'sm');
     const isPreview = useStrategy((state) => state.isPreview);
     const setIsPreview = useStrategy((state) => state.setIsPreview);
