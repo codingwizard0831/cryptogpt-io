@@ -14,14 +14,16 @@ type Props = {
   row: any;
   index: number;
   setIsModalOpened: (value: boolean) => void;
+  setCurrentID: (value: string) => void;
 };
 
 export default function InvoiceTableRow({
   row,
   index,
-  setIsModalOpened
+  setIsModalOpened,
+  setCurrentID
 }: Props) {
-  const { address, amount, created_at, status } = row;
+  const { address, amount, created_at, status, id } = row;
 
   return (
     <TableRow hover>
@@ -78,7 +80,7 @@ export default function InvoiceTableRow({
       </TableCell>
       <TableCell sx={{ width: '100px', textAlign: 'center' }}>
         {status === 'address_waiting' && (
-          <Button variant="contained" color="primary" size="small" sx={{ ml: 1 }} onClick={() => setIsModalOpened(true)}>
+          <Button variant="contained" color="primary" size="small" sx={{ ml: 1 }} onClick={() => { setIsModalOpened(true); setCurrentID(id) }}>
             Edit
           </Button>
         )}

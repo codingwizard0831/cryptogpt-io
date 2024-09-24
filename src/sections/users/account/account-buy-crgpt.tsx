@@ -109,6 +109,7 @@ const UIComponents = () => {
   const [address, setAddress] = useState("");
   const [currentPrice, setCurrentPrice] = useState(0);
   const [isModalOpened, setIsModalOpened] = useState(false);
+  const [currentID, setCurrentID] = useState('');
   const [cardPaymentState, setCardPaymentState] = useState({
     errorMessage: ''
   });
@@ -397,7 +398,7 @@ const UIComponents = () => {
     }
 
     try {
-      const response = await axios.post(endpoints.history.updateAddress, { address });
+      const response = await axios.post(endpoints.history.updateAddress, { address, id: currentID });
       if (response.data.success) {
         enqueueSnackbar('Address updated successfully', { variant: 'success' });
         setIsModalOpened(false);
@@ -529,6 +530,7 @@ const UIComponents = () => {
                           row={row}
                           index={index}
                           setIsModalOpened={setIsModalOpened}
+                          setCurrentID={setCurrentID}
                         />
                       ))}
 
