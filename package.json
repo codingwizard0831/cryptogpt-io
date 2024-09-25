@@ -64,6 +64,7 @@
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.39.0",
     "@tanstack/react-query": "^5.44.0",
+    "@trigger.dev/sdk": "^3.0.6",
     "@types/js-cookie": "^3.0.6",
     "@types/qrcode": "^1.5.5",
     "@types/react-credit-cards": "^0.8.4",
@@ -100,6 +101,7 @@
     "marked": "^13.0.2",
     "mui-one-time-password-input": "^2.0.1",
     "next": "^14.0.4",
+    "node-fetch": "^3.3.2",
     "notistack": "^3.0.1",
     "nprogress": "^0.2.0",
     "numeral": "^2.0.6",
@@ -153,6 +155,7 @@
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
+    "@trigger.dev/build": "^3.0.6",
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/lodash": "^4.14.202",
     "@types/mapbox-gl": "^2.7.19",
@@ -182,5 +185,6 @@
   },
   "resolutions": {
     "lit": "3.1.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
