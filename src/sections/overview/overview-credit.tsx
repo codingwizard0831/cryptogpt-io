@@ -167,8 +167,8 @@ const OverviewCredit: React.FC = () => {
     }
   }, [prices]);
 
+  fetchPrices();
   // useEffect(() => {
-  //   fetchPrices();
   //   // const interval = setInterval(fetchPrices, 20000000) //  realtime 20000;;
   //   // return () => clearInterval(interval);
   // }, [fetchPrices]);

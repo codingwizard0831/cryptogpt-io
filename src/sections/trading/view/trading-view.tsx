@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import { Box, Tab, Card, Tabs, Stack } from '@mui/material';
+import { Box, Tab, Card, Tabs, Stack, alpha } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -151,6 +151,7 @@ export default function TradingView() {
                             flexShrink: 0,
                             aspectRatio: isAIChatWindowFull.value ? `${chatAreaFullWidth}/309` : '2/1',
                             backdropFilter: 'none',
+                            backgroundColor: theme => alpha(theme.palette.background.default, 0.8),
                         }}>
                             <TradingAIChat isMinimized={isAIChatWindowFull.value} onBlockResize={() => isAIChatWindowFull.onToggle()} />
                         </Card>
