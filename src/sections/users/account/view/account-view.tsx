@@ -71,7 +71,7 @@ const TABS = [
 ];
 // ---------------------------------------------------------------------
 
-export default function DashboardProfileView() {
+export default function UserAccountView() {
     const smUp = useResponsive('up', 'sm');
 
     const [currentTab, setCurrentTab] = useState('general');
