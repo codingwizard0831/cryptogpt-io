@@ -20,10 +20,10 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-import { useMetaMask } from 'src/routes/hooks/useMetaMask';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useMetaMask } from 'src/hooks/use-metamask';
 
 import { isEmail, isPhoneNumber } from 'src/utils/validators';
 
