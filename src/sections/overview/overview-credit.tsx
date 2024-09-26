@@ -21,7 +21,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import { useMetaMask } from 'src/routes/hooks/useMetaMask';
+import { useMetaMask } from 'src/hooks/use-metamask';
 
 import axios, { endpoints } from 'src/utils/axios';
 
