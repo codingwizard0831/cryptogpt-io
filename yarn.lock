@@ -7894,20 +7894,20 @@
   resolved "https://registry.yarnpkg.com/@tokenizer/token/-/token-0.3.0.tgz#fe98a93fe789247e998c75e74e9c7c63217aa276"
   integrity sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==
 
-"@trigger.dev/build@^3.0.6":
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/@trigger.dev/build/-/build-3.0.6.tgz#5f4abb6670cb774d4242aa44eb4c291492ecb8ed"
-  integrity sha512-jSW6XDVoDdYdBoydG1XwPonh+PvJOwZp1im1zPLa5qqilRtGYNOh0bVtUilO+8hfojonsBNHyujz4kuvtseQcA==
+"@trigger.dev/build@3.0.7":
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/@trigger.dev/build/-/build-3.0.7.tgz#925d9f15020323e9bb8e9b0f781189e648fa4c2d"
+  integrity sha512-I5HvZwx//Q12k/wb3LQDLbe5I7gd0qEUlqv2tKT/wCV7GaHN3wTu5JrTW70Q8Uu0M9TTxpGBuZbryLTkpofL8g==
   dependencies:
-    "@trigger.dev/core" "3.0.6"
+    "@trigger.dev/core" "3.0.7"
     pkg-types "^1.1.3"
     tinyglobby "^0.2.2"
     tsconfck "3.1.3"
 
-"@trigger.dev/core@3.0.6":
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/@trigger.dev/core/-/core-3.0.6.tgz#466be3398942944c3455a6db29ab7a7a1dd92803"
-  integrity sha512-NpRRF4WKuUpX40YHQyhlouAe4LYMU3Vm74SB3fnHU4tKoRGAgtAc8zLX1HwzaWxItK0l3DBlgXaxB14SJaB/gw==
+"@trigger.dev/core@3.0.7":
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/@trigger.dev/core/-/core-3.0.7.tgz#54b23d7d39d4e643b24a0dc379a44e5cc82913c5"
+  integrity sha512-3HfnAseLvGvCcK8zEdYiblESPiwfwfGdiWRXW84dtR2jCl5g8/e42STZ31qvg4J8+nHegCpTVfgIaV8iEpDZZA==
   dependencies:
     "@google-cloud/precise-date" "^4.0.0"
     "@opentelemetry/api" "1.9.0"
@@ -7929,15 +7929,15 @@
     zod-error "1.5.0"
     zod-validation-error "^1.5.0"
 
-"@trigger.dev/sdk@^3.0.6":
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/@trigger.dev/sdk/-/sdk-3.0.6.tgz#e744f1f9195e6897a6c794778a6c5ad7d5fcd1d3"
-  integrity sha512-yqsRKWzSMaVJK1/LKVixyVQkkTbFBHL0Q3R+Be18qNGewoJFSf99dw04WlZfXi9FAEHBT1aErubMyCjrgUAoxA==
+"@trigger.dev/sdk@3.0.7":
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/@trigger.dev/sdk/-/sdk-3.0.7.tgz#e1f0d84eba54133c7370b1346fb013c27c0e9e76"
+  integrity sha512-8ZQieOmibq4B6yl574G1zDJNfR34GcZXPG5hh0qpI9+CmTsGdnR8LMO68MJSiAooPWTcMqvZAL6ymIfUyP0+/g==
   dependencies:
     "@opentelemetry/api" "1.9.0"
     "@opentelemetry/api-logs" "0.52.1"
     "@opentelemetry/semantic-conventions" "1.25.1"
-    "@trigger.dev/core" "3.0.6"
+    "@trigger.dev/core" "3.0.7"
     chalk "^5.2.0"
     cronstrue "^2.21.0"
     debug "^4.3.4"

@@ -2,6 +2,8 @@ import axios from 'axios';
 import crypto from 'crypto';
 import { NextResponse } from "next/server";
 
+import { createCustomServerClient } from "src/utils/supabase";
+
 import { MEXC_API } from 'src/config-global';
 
 function createSignature(queryString: string, secretKey: string): string {
@@ -14,6 +16,29 @@ function createSignature(queryString: string, secretKey: string): string {
 export async function POST(req: Request) {
   console.log('MEXC_API', MEXC_API);
   try {
+    const supabase = createCustomServerClient();
+
+    const { data: transactions, error: transactionError } = await supabase
+      .from("user_crgpt_token_history")
+      .select("*")
+      .eq("status", "blockchain_processing");
+
+    if (transactionError) {
+      return NextResponse.json(
+        { error: "Error fetching transactions." },
+        { status: 500 }
+      );
+    }
+
+    if (!transactions || transactions.length === 0) {
+      return NextResponse.json(
+        { error: "No transactions found with the given status." },
+        { status: 404 }
+      );
+    }
+
+    console.log('transactions', transactions);
+
     const mexcAccessKey = MEXC_API.accessKey || '';
     const mexcSecretKey = MEXC_API.secretKey || '';
 
@@ -41,11 +66,8 @@ export async function POST(req: Request) {
       .map(([key, value]) => `${key}=${value}`)
       .join('&');
 
-    console.log('Query string before signature:', queryString);
 
     const signature = createSignature(queryString, mexcSecretKey);
-
-    console.log('Generated signature:', signature);
 
     const finalParams = { ...sortedParams, signature };
 
@@ -61,9 +83,31 @@ export async function POST(req: Request) {
       }
     });
 
-    console.log('Response:', response);
-    
-    return NextResponse.json(response.data, { status: 200 });
+    // eslint-disable-next-line no-restricted-syntax
+    for (const transaction of transactions) {
+      const matchingMexcTransaction = response.data.find(
+        (mexcTx: { id: any; }) => mexcTx.id === transaction.w_id
+      );
+
+      if (matchingMexcTransaction && matchingMexcTransaction.explorerUrl) {
+        // eslint-disable-next-line no-await-in-loop
+        const { error: updateError } = await supabase
+          .from("user_crgpt_token_history")
+          .update({
+            status: "paid",
+            explorer_url: matchingMexcTransaction.explorerUrl
+          })
+          .eq("id", transaction.id);
+
+        if (updateError) {
+          console.error(`Error updating transaction ${transaction.id}:`, updateError);
+        } else {
+          console.log(`Successfully updated transaction ${transaction.id}`);
+        }
+      }
+    }
+
+    return NextResponse.json({ status: 200 });
   } catch (error) {
     console.error('Error:', error);
     if (axios.isAxiosError(error) && error.response) {
