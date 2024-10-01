@@ -1,3 +1,5 @@
+import { headers } from 'next/headers'
+
 import 'src/styles.css';
 import 'src/global.css';
 import 'src/converted-styles.css';
@@ -46,6 +48,7 @@ type Props = {
 };
 
 export default function RootLayout({ children }: Props) {
+  const cookie = headers().get('cookie'); // Access cookies if needed
 
   return (
     <html lang="en" className="">
