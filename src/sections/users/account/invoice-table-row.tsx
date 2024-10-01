@@ -23,7 +23,7 @@ export default function InvoiceTableRow({
   setIsModalOpened,
   setCurrentID
 }: Props) {
-  const { address, amount, created_at, status, id } = row;
+  const { address, amount, created_at, status, id, explorer_url } = row;
 
   return (
     <TableRow hover>
@@ -82,6 +82,11 @@ export default function InvoiceTableRow({
         {status === 'address_waiting' && (
           <Button variant="contained" color="primary" size="small" sx={{ ml: 1 }} onClick={() => { setIsModalOpened(true); setCurrentID(id) }}>
             Edit
+          </Button>
+        )}
+        {status === 'paid' && (
+          <Button variant="contained" color="primary" size="small" sx={{ ml: 1 }} onClick={() => window.open(explorer_url, '_blank')}>
+            View
           </Button>
         )}
       </TableCell>
