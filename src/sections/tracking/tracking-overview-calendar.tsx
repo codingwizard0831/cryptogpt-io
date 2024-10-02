@@ -112,23 +112,23 @@ export default function TrackingOverviewCalendar({
             position: 'relative',
             ...sx,
         }} {...other}>
-            <Stack direction="row" spacing={1} justifyContent="space-between" alignItems='center'>
+            <Stack direction="row" spacing={1} justifyContent="space-between" alignItems='flex-end' sx={{ mb: 2 }}>
                 <Box>
                     <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 1 }}>Total hours</Typography>
-                    <Typography variant="h5">22h</Typography>
+                    <Typography variant={smUp ? "h5" : "h6"}>22h</Typography>
                 </Box>
 
                 <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{
                     border: theme => `1px solid ${theme.palette.divider}`,
                     borderRadius: 1,
                 }}>
-                    <IconButton onClick={() => {
+                    <IconButton size={smUp ? 'medium' : 'small'} onClick={() => {
                         const newDate = new Date(currentDate);
                         newDate.setMonth(newDate.getMonth() - numberofMonth);
                         setCurrentDate(newDate);
                     }}><Iconify icon="mingcute:left-fill" /></IconButton>
-                    <Typography variant="body1">{monthRangeContentOfButton}</Typography>
-                    <IconButton onClick={() => {
+                    <Typography variant={smUp ? "body1" : 'caption'}>{monthRangeContentOfButton}</Typography>
+                    <IconButton size={smUp ? 'medium' : 'small'} onClick={() => {
                         const newDate = new Date(currentDate);
                         newDate.setMonth(newDate.getMonth() + numberofMonth);
                         setCurrentDate(newDate);
@@ -215,6 +215,10 @@ export default function TrackingOverviewCalendar({
                                                 selected={date.getDate() === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() && date.getFullYear() === selectedDate.getFullYear()}
                                                 isActive={date.getDay() === 0 || date.getDay() === 6}
                                                 isToday={date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear()}
+                                                detailEleemnt={<>
+                                                    <Typography>Detailed Title</Typography>
+                                                    <Typography>Detail Content</Typography>
+                                                </>}
                                                 onClick={() => {
                                                     setSelectedDate(date);
                                                     handlechangeSelectedDate?.(date);

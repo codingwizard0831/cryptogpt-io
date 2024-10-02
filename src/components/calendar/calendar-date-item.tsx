@@ -1,4 +1,6 @@
 
+import { ReactNode } from "react";
+
 import { Box, alpha, BoxProps, Typography } from "@mui/material";
 
 import { useBoolean } from "src/hooks/use-boolean";
@@ -11,6 +13,7 @@ interface CalendarDateItemProps extends BoxProps {
     disabled?: boolean;
     size?: 'small' | 'large';
     displayAttribute?: "week" | "month" | "none";
+    detailEleemnt?: ReactNode;
 }
 
 export function CalendarDateItem({
@@ -21,6 +24,7 @@ export function CalendarDateItem({
     disabled,
     size = 'small',
     displayAttribute = "week",
+    detailEleemnt,
     sx, ...other
 }: CalendarDateItemProps) {
 
@@ -118,23 +122,24 @@ export function CalendarDateItem({
             </>
                 }</Typography>
 
-            <Box sx={{
-                position: 'absolute',
-                bottom: 32,
-                left: 32,
-                backgroundColor: (theme) => alpha(theme.palette.background.opposite, 0.1),
-                backdropFilter: 'blur(10px)',
-                border: (theme) => `1px solid ${theme.palette.primary.main}`,
-                transition: 'all 0.3s',
-                opacity: 0,
-                invisility: 'hidden',
-                width: '200px',
-            }}>
-                <Typography variant="caption" sx={{
-                    fontSize: '8px',
-                    color: 'text.disabled',
-                }}>Hoever Detail</Typography>
-            </Box>
+            {
+                detailEleemnt &&
+                <Box sx={{
+                    position: 'absolute',
+                    bottom: 32,
+                    left: 32,
+                    backgroundColor: (theme) => alpha(theme.palette.background.default, 0.9),
+                    zIndex: 100,
+                    // backdropFilter: 'blur(10px)',
+                    border: (theme) => `1px solid ${theme.palette.primary.main}`,
+                    transition: 'all 0.3s',
+                    opacity: 0,
+                    invisility: 'hidden',
+                    width: '200px',
+                }}>
+                    {detailEleemnt}
+                </Box>
+            }
         </Box>
     );
 }

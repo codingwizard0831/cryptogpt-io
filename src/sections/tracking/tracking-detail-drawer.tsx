@@ -9,7 +9,6 @@ import { Box, Tab, Tabs, Stack, alpha, Button, Select, MenuItem, TextField, Typo
 import { fDate } from 'src/utils/format-time';
 
 import Iconify from 'src/components/iconify';
-import { Calendar } from 'src/components/calendar';
 
 import TradingTrackerStrategyStatus from '../trading/trading-tracker/trading-tracker-strategy-status';
 
@@ -75,29 +74,18 @@ export default function TrackingDetailDrawer({
             flexDirection: 'column',
             gap: 2,
             p: 2,
+            position: 'relative',
         }}>
-            <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mt: 2 }}>
+            <IconButton onClick={handleHideDrawer} sx={{
+                position: 'absolute',
+                top: 2,
+                right: 2,
+            }}><Iconify icon="material-symbols:close" /></IconButton>
+
+            <Stack direction="row" spacing={1} alignItems="flex-start" justifyContent="space-between" sx={{ mt: 2 }}>
                 <Typography variant="h6">Tracker Detail</Typography>
             </Stack>
-
-            <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{
-                border: theme => `1px solid ${theme.palette.divider}`,
-                borderRadius: 1,
-            }}>
-                <IconButton onClick={() => {
-                    const newDate = new Date(currentDate);
-                    newDate.setMonth(newDate.getMonth() - 1);
-                    handleChangeDate(newDate);
-                }}><Iconify icon="mingcute:left-fill" /></IconButton>
-                <Typography variant="body1">{currentDate.toLocaleString('default', { month: 'long' })}</Typography>
-                <IconButton onClick={() => {
-                    const newDate = new Date(currentDate);
-                    newDate.setMonth(newDate.getMonth() + 1);
-                    handleChangeDate(newDate);
-                }}><Iconify icon="mingcute:right-fill" /></IconButton>
-            </Stack>
-
-            <Calendar date={currentDate} isShowWeekDay isSelectable={false} sx={{ mb: 1 }} />
+            <Typography variant="body1" sx={{ mb: 1 }}>Ai Trading Strategy for <b>{fDate(new Date())}</b></Typography>
 
             {
                 dateStatus === "today" && <Tabs value={currentTab} onChange={handleTabChange}>
@@ -191,7 +179,6 @@ export default function TrackingDetailDrawer({
             {
                 (dateStatus === "future" || (dateStatus === 'today' && currentTab === 'book')) &&
                 <Box>
-                    <Typography variant="body1" sx={{ mb: 1 }}>Ai Trading Strategy for {fDate(new Date())}</Typography>
                     <Stack direction="column" spacing={1} sx={{
                         p: 1,
                         border: theme => `1px solid ${theme.palette.divider}`,

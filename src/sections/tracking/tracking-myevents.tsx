@@ -8,19 +8,21 @@ import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import { Box, alpha, Button, Select, useTheme, BoxProps, MenuItem, Checkbox, TextField, Typography, IconButton, FormControlLabel } from "@mui/material";
 
 import { useBoolean } from 'src/hooks/use-boolean'
+import { useResponsive } from 'src/hooks/use-responsive'
 
 import Iconify from 'src/components/iconify'
 import { StyledDialog } from 'src/components/styled-component'
 
-interface TrackingSummaryProps extends BoxProps {
+interface TrackingMyEventsProps extends BoxProps {
 
 }
 
-export default function TrackingSummary({
+export default function TrackingMyEvents({
     sx,
     ...other
-}: TrackingSummaryProps) {
+}: TrackingMyEventsProps) {
     const theme = useTheme();
+    const smUp = useResponsive('up', 'sm');
     const detailDialigVisible = useBoolean(false);
     const addEventDialogVisible = useBoolean(false);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -63,29 +65,64 @@ export default function TrackingSummary({
         <Box
             sx={{
                 '.fc-toolbar': {
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
+                    backgroundColor: alpha(theme.palette.background.default, 0.2),
+                    color: theme.palette.text.primary,
+                    mb: `8px !important`,
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 1,
+                    '.fc-button-group': {
+                        gap: 1,
+                    },
+                    ...(
+                        smUp ? {
+                        } : {
+                            '.fc-toolbar-chunk:first-of-type': {
+                                width: 1,
+                                textAlign: 'center',
+                            },
+                        }
+                    ),
                 },
                 '.fc-toolbar-title': {
-                    color: theme.palette.primary.contrastText,
+                    color: theme.palette.primary.main,
+                    fontSize: '16px',
+                    fontWeight: 'bold',
                 },
                 '.fc-button': {
+                    px: 1,
+                    py: 0.25,
                     backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
+                    color: theme.palette.text.primary,
                     border: 'none',
                     '&:hover': {
                         backgroundColor: theme.palette.primary.dark,
                     },
+                    '&:disabled': {
+                        backgroundColor: `${theme.palette.primary.dark} !important`,
+                    },
+                },
+                '.fc-button-active': {
+                    backgroundColor: `${theme.palette.primary.dark} !important`,
+                },
+                '.fc-license-message': {
+                    display: 'none',
                 },
                 ...sx,
             }}
             {...other}
         >
-            <Typography variant='h6' sx={{ mb: 2 }}>Tracking Summary</Typography>
-
-            <Button variant="contained" color="primary" onClick={handleAddEvent}>
-                Add Event
-            </Button>
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 2,
+            }}>
+                <Typography variant='h6' sx={{ mb: 2 }}>Your events</Typography>
+                <Button variant="contained" size="small" color="primary" onClick={handleAddEvent} sx={{ mb: 1 }}>
+                    Create Event
+                </Button>
+            </Box>
 
             <FullCalendar
                 ref={calendarRef}
@@ -96,9 +133,17 @@ export default function TrackingSummary({
                     timeGridPlugin
                 ]}
                 headerToolbar={{
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'resourceTimelineWeek,dayGridMonth,timeGridWeek'
+                    ...(
+                        smUp ? {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'resourceTimelineWeek,dayGridMonth,timeGridWeek'
+                        } : {
+                            left: 'title',
+                            center: 'prev,next today',
+                            right: 'resourceTimelineWeek,dayGridMonth,timeGridWeek'
+                        }
+                    ),
                 }}
                 initialView='resourceTimelineWeek'
                 nowIndicator
@@ -293,7 +338,7 @@ export default function TrackingSummary({
                     </Select>
                     <TextField name="priceThreshold" label="Price Threshold Alert" type="number" fullWidth />
                     <TextField name="notes" label="Notes/Comments" multiline rows={3} fullWidth />
-                    <Button type="submit" variant="contained" color="primary">Add Event</Button>
+                    <Button type="submit" variant="contained" color="primary">Create Event</Button>
                 </Box>
             </StyledDialog>
         </Box>

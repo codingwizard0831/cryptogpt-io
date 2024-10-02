@@ -14,7 +14,7 @@ import Carousel, { useCarousel } from 'src/components/carousel';
 import { TradingAIChat } from 'src/sections/trading/trading-ai-chat';
 
 import TrackingHistory from '../tracking-history';
-import TrackingSummary from '../tracking-summary';
+import TrackingMyEvents from '../tracking-myevents';
 import TrackingDetailDrawer from '../tracking-detail-drawer';
 import TrackingOverviewCalendar from '../tracking-overview-calendar';
 
@@ -91,9 +91,9 @@ export default function TrackingView() {
                     height: '100%',
                 }}>
                     <Stack direction="column" spacing={1} sx={{ height: '100%' }}>
-                        <Tabs value={currentTab} onChange={handleChangeTab}>
+                        <Tabs value={currentTab} onChange={handleChangeTab} sx={{ mb: 2 }}>
                             <Tab value='overview' label="Overview" />
-                            <Tab value='summary' label="Summary" />
+                            <Tab value='myevents' label="My Events" />
                         </Tabs>
                         <Box sx={{
                             height: 0,
@@ -103,7 +103,7 @@ export default function TrackingView() {
                                 currentTab === 'overview' && <TrackingOverviewCalendar selectedDate={selectedDate} handlechangeSelectedDate={handleChangleSelectedDate} />
                             }
                             {
-                                currentTab === 'summary' && <TrackingSummary />
+                                currentTab === 'myevents' && <TrackingMyEvents />
                             }
                         </Box>
                     </Stack>
