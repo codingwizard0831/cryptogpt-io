@@ -22,9 +22,9 @@ export const useMetaMask = () => {
       const accounts = await sdk?.connect();
 
       const account = accounts?.[0];
-
+      
       setCurrentAccount(account);
-
+      localStorage.setItem('currentAccount', account);
       await fetchBalance(account);
 
       return account;
@@ -34,6 +34,13 @@ export const useMetaMask = () => {
 
     return null;
   };
+
+  useEffect(() => {
+    const account = localStorage.getItem('currentAccount');
+    if (account) {
+      setCurrentAccount(account);
+    }
+  }, []);
 
   useEffect(() => {
     if (currentAccount == null) {

@@ -21,8 +21,6 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import { useMetaMask } from 'src/hooks/use-metamask';
-
 import axios, { endpoints } from 'src/utils/axios';
 
 import { useTokenBalances } from './useTokenBalances';
@@ -49,7 +47,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const OverviewCredit: React.FC = () => {
   const { eth, usdt, usdc, crgpt, dot, sol, avax } = useTokenBalances();
-  const { currentBalance } = useMetaMask();
   const [prices, setPrices] = useState<{ [key: string]: number }>({});
   const [priceHistory, setPriceHistory] = useState<{
     [key: string]: { time: number; price: number }[];

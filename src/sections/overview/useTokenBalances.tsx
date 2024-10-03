@@ -50,12 +50,12 @@ export function useTokenBalances() {
 
             // Fetch token balances
             const [usdt, usdc, crgpt, dot, sol, avax] = await Promise.all([
-                getTokenBalance(USDT_ADDRESS),
-                getTokenBalance(USDC_ADDRESS),
-                getTokenBalance(CRGPT_ADDRESS),
-                getTokenBalance(DOT_ADDRESS),
-                getTokenBalance(SOL_ADDRESS),
-                getTokenBalance(AVAX_ADDRESS),
+                getTokenBalance(USDT_ADDRESS).catch(() => '0'),
+                getTokenBalance(USDC_ADDRESS).catch(() => '0'),
+                getTokenBalance(CRGPT_ADDRESS).catch(() => '0'),
+                getTokenBalance(DOT_ADDRESS).catch(() => '0'),
+                getTokenBalance(SOL_ADDRESS).catch(() => '0'),
+                getTokenBalance(AVAX_ADDRESS).catch(() => '0'),
             ]);
 
             setBalances({
