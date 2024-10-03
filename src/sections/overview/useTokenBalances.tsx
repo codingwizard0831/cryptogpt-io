@@ -1,7 +1,9 @@
 import { ethers } from 'ethers';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { useMetaMask } from 'src/hooks/use-metamask';
+
+import axios, { endpoints } from 'src/utils/axios';
 
 // Define token addresses (use mainnet addresses)
 const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
@@ -28,6 +30,21 @@ export function useTokenBalances() {
         sol: '0',
         avax: '0',
     });
+
+    const saveBalancesToDB = useCallback(async (balanceData: any) => {
+        try {
+            const response: any = await axios.post(endpoints.history.saveBalance, balanceData);
+            console.log('test response', response)
+            if (!response.ok) {
+                throw new Error('Failed to save balance data');
+            }
+
+            const result = await response.json();
+            console.log('Balance data saved successfully:', result);
+        } catch (error) {
+            console.error('Error saving balance data:', error);
+        }
+    }, []);
 
     useEffect(() => {
         const fetchBalances = async () => {
@@ -58,6 +75,17 @@ export function useTokenBalances() {
                 getTokenBalance(AVAX_ADDRESS).catch(() => '0'),
             ]);
 
+            const balanceData = {
+                usdt,
+                usdc,
+                crgpt,
+                dot,
+                sol,
+                avax
+            };
+
+            saveBalancesToDB(balanceData);
+
             setBalances({
                 eth: formattedEthBalance,
                 usdt,
@@ -70,7 +98,7 @@ export function useTokenBalances() {
         };
 
         fetchBalances();
-    }, [currentAccount, provider]);
+    }, [currentAccount, provider, saveBalancesToDB]);
 
     return balances;
 }
