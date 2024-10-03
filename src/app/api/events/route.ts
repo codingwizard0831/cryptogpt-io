@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
         console.log('body', body);
 
         const { title, start_date, end_date, type, pair, suggestion, strategy_id, details, status, alert, reminder } = body;
+        console.log('data:', title, start_date, end_date, type, pair, suggestion, strategy_id, details, status, alert, reminder);
 
         const { data, error } = await supabase
             .from('events')

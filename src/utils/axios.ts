@@ -129,6 +129,7 @@ export const endpoints = {
   },
   video: (url: string) => `/api/video-stream?url=${url}`,
   event: {
+    index: '/api/event',
     list: '/api/event/list',
     details: '/api/event/details',
     search: '/api/event/search',

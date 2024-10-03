@@ -12,6 +12,7 @@ import { useResponsive } from 'src/hooks/use-responsive'
 
 import Iconify from 'src/components/iconify'
 import { StyledDialog } from 'src/components/styled-component'
+import axios, { endpoints } from 'src/utils/axios'
 
 interface TrackingMyEventsProps extends BoxProps {
 
@@ -43,7 +44,7 @@ export default function TrackingMyEvents({
         createEventDialogVisible.onTrue();
     };
 
-    const handleCreateEventSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleCreateEventSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         console.log('eventTitle', formData.get('eventTitle'));
@@ -55,9 +56,9 @@ export default function TrackingMyEvents({
         console.log('appNotification', formData.get('appNotification'));
         const newEvent = {
             title: formData.get('eventTitle'),
-            start: new Date(formData.get('eventStartTime') as string || ''), // Ensure it's a string
-            end: new Date(formData.get('eventEndTime') as string || ''),     // Ensure it's a string
-            description: formData.get('eventDescription'),
+            start_date: new Date(formData.get('eventStartTime') as string || ''), // Ensure it's a string
+            end_date: new Date(formData.get('eventEndTime') as string || ''),     // Ensure it's a string
+            details: formData.get('eventDescription'),
             emailNotification: formData.get('emailNotification') === 'on',
             smsNotification: formData.get('smsNotification') === 'on',
             appNotification: formData.get('appNotification') === 'on',
@@ -66,6 +67,11 @@ export default function TrackingMyEvents({
         };
 
         console.log('newEvent', newEvent);
+
+        const response = await axios.post(endpoints.event.index, {
+            ...newEvent,
+        });
+        console.log(response);
 
         const calendarApi = calendarRef.current?.getApi();
         if (calendarApi) {
