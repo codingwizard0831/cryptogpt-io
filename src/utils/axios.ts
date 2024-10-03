@@ -128,5 +128,10 @@ export const endpoints = {
     initial_prompt: '/api/strategies/initial-prompt',
   },
   video: (url: string) => `/api/video-stream?url=${url}`,
+  event: {
+    list: '/api/event/list',
+    details: '/api/event/details',
+    search: '/api/event/search',
+  }
 };
 
